@@ -58,8 +58,8 @@ jobs:
         [ -e $GITHUB_WORKSPACE/README.md ] && cp $GITHUB_WORKSPACE/README.md $GITHUB_WORKSPACE/${{matrix.target}}
         cd $GITHUB_WORKSPACE/${{matrix.target}}
         sed -i '/url =/d' ./.git/config
-        git config --local user.name "actions"
-        git config --local user.email "action@github.com"
+        git config --global user.name "actions"
+        git config --global user.email "action@github.com"
         git add .
         git commit -m "${{ env.RELEASE_NAME }}"
         git remote set-url --add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
