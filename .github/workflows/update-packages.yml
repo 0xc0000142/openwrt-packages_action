@@ -61,7 +61,7 @@ jobs:
         git config --global user.name "actions"
         git config --global user.email "action@github.com"
         git add .
-        git commit -m "${{ env.RELEASE_NAME }}"
+        git commit -m "update$(TZ='Asia/Shanghai' date +@%Y%m%d)"
         git remote set-url --add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
         git push -u -f origin ${{matrix.target}}
  
