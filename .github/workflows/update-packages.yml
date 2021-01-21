@@ -60,7 +60,7 @@ jobs:
         git add .
         git commit -m "${{ env.RELEASE_NAME }}"
         git remote set-url --add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
-        git push -u -f origin master
+        git push -u -f origin ${{matrix.target}}
  
 
  
