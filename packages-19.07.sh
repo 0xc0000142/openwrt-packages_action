@@ -48,10 +48,10 @@ svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package
 svn co https://github.com/rosywrt/luci-theme-rosy/trunk/luci-theme-rosy
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/UnblockNeteaseMusic
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/UnblockNeteaseMusicGo
-svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/adbyby
+#svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/adbyby
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/baidupcs-web
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-baidupcs-web
-svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-adbyby-plus
+#svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-adbyby-plus
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-airplay2
 svn co https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom/trunk/luci-theme-infinityfreedom
 svn co https://github.com/cnzd/luci-app-koolproxyR/trunk ./luci-app-koolproxyR
