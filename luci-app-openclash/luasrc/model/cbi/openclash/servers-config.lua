@@ -94,6 +94,11 @@ s = m:section(NamedSection, sid, "servers")
 s.anonymous = true
 s.addremove   = false
 
+o = s:option(DummyValue, "server_url", "SS/SSR/VMESS/TROJAN URL")
+o.rawhtml = true
+o.template = "openclash/server_url"
+o.value = sid
+
 o = s:option(ListValue, "config", translate("Config File"))
 o:value("all", translate("Use For All Config File"))
 local e,a={}
@@ -123,7 +128,7 @@ o.rmempty = false
 
 o = s:option(Value, "server", translate("Server Address"))
 o.datatype = "host"
-o.rmempty = false
+o.rmempty = true
 
 o = s:option(Value, "port", translate("Server Port"))
 o.datatype = "port"
@@ -374,7 +379,7 @@ o = a:option(Button,"Back", " ")
 o.inputtitle = translate("Back Configurations")
 o.inputstyle = "reset"
 o.write = function()
-   m.uci:revert(openclash)
+   m.uci:revert(openclash, sid)
    luci.http.redirect(m.redirect)
 end
 

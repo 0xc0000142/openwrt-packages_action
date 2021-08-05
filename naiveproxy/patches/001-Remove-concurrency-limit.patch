@@ -18,7 +18,7 @@ Subject: [PATCH] Remove concurrency limit
  #include <utility>
  
  #include "base/bind.h"
-@@ -39,7 +38,7 @@ NaiveProxy::NaiveProxy(std::unique_ptr<ServerSocket> listen_socket,
+@@ -39,7 +38,7 @@ NaiveProxy::NaiveProxy(std::unique_ptr<S
        protocol_(protocol),
        listen_user_(listen_user),
        listen_pass_(listen_pass),
@@ -29,7 +29,7 @@ Subject: [PATCH] Remove concurrency limit
        net_log_(
 --- a/src/net/tools/naive/naive_proxy_bin.cc
 +++ b/src/net/tools/naive/naive_proxy_bin.cc
-@@ -299,7 +299,7 @@ bool ParseCommandLine(const CommandLine&
+@@ -296,7 +296,7 @@ bool ParseCommandLine(const CommandLine&
  
    if (!cmdline.concurrency.empty()) {
      if (!base::StringToInt(cmdline.concurrency, &params->concurrency) ||

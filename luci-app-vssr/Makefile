@@ -19,12 +19,12 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun
 	bool "Include Kcptun"
 	default n
 
-config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
-	bool "Include ShadowsocksR Server"
-	default y if i386||x86_64||arm||aarch64
-
 config PACKAGE_$(PKG_NAME)_INCLUDE_Xray_plugin
 	bool "Include Shadowsocks Xray Plugin"
+	default y if i386||x86_64||arm||aarch64
+	
+config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Server
+	bool "Include ShadowsocksR Libev Server"
 	default y if i386||x86_64||arm||aarch64
 endef
 
@@ -33,7 +33,7 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Trojan \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray_plugin \
-	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Server
 
 define Package/luci-app-vssr
  	SECTION:=luci
@@ -48,7 +48,7 @@ define Package/luci-app-vssr
 			+PACKAGE_$(PKG_NAME)_INCLUDE_Trojan:ipt2socks \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_Kcptun:kcptun-client \
 			+PACKAGE_$(PKG_NAME)_INCLUDE_Xray_plugin:xray-plugin \
-			+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Server:shadowsocksr-libev-ssr-server
+			+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Server:shadowsocksr-libev-ssr-server
 endef
 
 define Build/Prepare

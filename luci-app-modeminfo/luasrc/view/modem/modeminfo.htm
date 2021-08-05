@@ -11,6 +11,75 @@
 
 <script type="text/javascript">//<![CDATA[
 
+	function bar(v, m)
+        {
+                var vn = parseInt(v) || 0;
+                var mn = parseInt(m) || 100;
+		if (vn > -50) { vn = -50 };
+		if (vn < -110) { vn = -110 };
+                var pc =  Math.floor(100*(1-(-50 - vn)/(-50 - mn)));
+                return String.format(
+                        '<div style="width:100%%; max-width:200px; position:relative; border:1px solid #999999">' +
+                                '<div style="animation-direction: reverse; background-color:#90c0e0; width:%d%%; height:15px">' +
+                                        '<div style="position:absolute; left:0; top:0; text-align:center; width:100%%; color:#000000">' +
+                                                '<small>%s</small>' +
+                                        '</div>' +
+                                '</div>' +
+                        '</div>', pc, v, m, pc
+                );
+        }
+
+	function rsrp_bar(v, m)
+        {
+                var vn = parseInt(v) || 0;
+                var mn = parseInt(m) || 100;
+                if (vn > -50) { vn = -50 };
+                if (vn < -140) { vn = -140 };
+                var pc =  Math.floor(100*(1-(-50 - vn)/(-50 - mn)));
+                return String.format(
+                        '<div style="width:100%%; max-width:200px; position:relative; border:1px solid #999999">' +
+                                '<div style="animation-direction: reverse; background-color:#90c0e0; width:%d%%; height:15px">' +
+                                        '<div style="position:absolute; left:0; top:0; text-align:center; width:100%%; color:#000000">' +
+                                                '<small>%s</small>' +
+                                        '</div>' +
+                                '</div>' +
+                        '</div>', pc, v, m, pc
+                );
+        }
+	
+	function sinr_bar(v, m)
+        {
+                var vn = parseInt(v) || 0;
+                var mn = parseInt(m) || 100;
+                var pc = Math.floor(100-(100*(1-((mn - vn)/(mn - 30)))));
+                return String.format(
+                        '<div style="width:100%%; max-width:200px; position:relative; border:1px solid #999999">' +
+                                '<div style="animation-direction: reverse; background-color:#90c0e0; width:%d%%; height:15px">' +
+                                        '<div style="position:absolute; left:0; top:0; text-align:center; width:100%%; color:#000000">' +
+                                                '<small>%s</small>' +
+                                        '</div>' +
+                                '</div>' +
+                        '</div>', pc, v, m, pc
+                );
+        }
+
+	function rsrq_bar(v, m)
+        {
+                var vn = parseInt(v) || 0;
+                var mn = parseInt(m) || 100;
+                var pc = Math.floor(100-(100/mn)*vn);
+		if (vn > 0) { vn = 0; };
+                return String.format(
+                        '<div style="width:100%%; max-width:200px; position:relative; border:1px solid #999999">' +
+                                '<div style="animation-direction: reverse; background-color:#90c0e0; width:%d%%; height:15px">' +
+                                        '<div style="position:absolute; left:0; top:0; text-align:center; width:100%%; color:#000000">' +
+                                                '<small>%s</small>' +
+                                        '</div>' +
+                                '</div>' +
+                        '</div>', pc, v, m, pc
+                );
+        }
+
 
 XHR.poll(4, '<%=build_url("admin/modem/data")%>', null,
 		function(x, data)
@@ -38,15 +107,15 @@ XHR.poll(4, '<%=build_url("admin/modem/data")%>', null,
 			var rg = (data.reg)
 				if (rg == 0)
 					reg = "<%:No Registration%>";
-				else if (rg == 1)
+				else if (rg == 1 || rg == 6 || rg == 9)
 					reg = "<%:Registered%>";
-				else if (rg == 2)
+				else if (rg == 2 || rg == 8)
 					reg = "<%:Searching%>";
 				else if (rg == 3)
 					reg = "<%:Denied%>";
 				else if (rg == 4)
 					reg = "<%:Unknown%>";
-				else if (rg == 5)
+				else if (rg == 5 || rg == 7 || rg == 10)
 					reg = "<%:Roaming%>";
 				else
 					reg = "<%:No Data%>";
@@ -242,22 +311,44 @@ XHR.poll(4, '<%=build_url("admin/modem/data")%>', null,
 			 	e.innerHTML = String.format(data.csq_per+"%");
 			
 			if (e = document.getElementById('arfcn'))
-	            e.innerHTML = String.format(arfcn);
+				e.innerHTML = String.format(arfcn);
 
 			if (e = document.getElementById('lac'))
 			 	e.innerHTML = String.format(lactac);
 
 			if (e = document.getElementById('rssi'))
-			 	e.innerHTML = String.format(data.rssi + " dBm");
-
+				if (data.rssi == "--") {
+					e.innerHTML = String.format(data.rssi + " dBm");
+				} else {
+					var rssi_min = -110;
+					e.innerHTML = bar(data.rssi + " dBm", rssi_min);
+				}
 			if (e = document.getElementById('sinr'))
-			 	e.innerHTML = String.format(data.sinr + " dB");
-
+				if (data.sinr == "--" || netmode == "--") {
+					e.innerHTML = String.format(data.sinr + " dB");
+				} else {
+					if (netmode == "LTE") {
+						var sinr_min = -20;
+						e.innerHTML = sinr_bar(data.sinr + " dB", sinr_min);
+					} else {
+						var sinr_min = -24;
+						e.innerHTML = rsrq_bar(data.sinr + " dB", sinr_min);
+					}
+				}
 			if (e = document.getElementById('rsrp'))
-			 	e.innerHTML = String.format(data.rsrp + " dBm");
-
+				if (data.rsrp == "--") {
+					e.innerHTML = String.format(data.rsrp + " dBm");
+				} else {
+					var rsrp_min = -140;
+					e.innerHTML = rsrp_bar(data.rsrp + " dBm", rsrp_min);
+				}
 			if (e = document.getElementById('rsrq'))
-			 	e.innerHTML = String.format(data.rsrq + " dB");
+				if (data.rsrq == "--") {
+					e.innerHTML = String.format(data.rsrq + " dB");
+				} else {
+					var rsrq_min = -20;
+					e.innerHTML = rsrq_bar(data.rsrq + " dB", rsrq_min);
+				}
 
 			if (e = document.getElementById('imei'))
 			 	e.innerHTML = String.format(data.imei);
