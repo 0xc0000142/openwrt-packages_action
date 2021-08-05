@@ -96,6 +96,7 @@ svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frps
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_aliyun
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_dnspod
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-cifs-mount
+svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-turboacc
 git clone https://github.com/yiguihai/luci-app-passwall-plus
 svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package/ctcgfw/openwrt-udpspeeder
 git clone https://github.com/koshev-msk/luci-app-modeminfo
@@ -109,7 +110,6 @@ svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package
 svn co https://github.com/obsy/packages/trunk/3ginfo
 git clone https://github.com/jerrykuku/luci-app-argon-config
 svn co https://github.com/sirpdboy/sirpdboy-package/trunk/luci-app-socat
-
 rm -rf ./*/.git
 rm -rf ./*/.svn 
 rm -f .gitattributes .gitignore
