@@ -319,7 +319,7 @@ appfilter_handle_dev_list(struct ubus_context *ctx, struct ubus_object *obj,
 
             json_object_object_add(dev_obj, "applist", app_array);
             json_object_object_add(dev_obj, "mac", json_object_new_string(node->mac));
-            char hostname[32] = {0};
+            char hostname[128] = {0};
             get_hostname_by_mac(node->mac, hostname);
             json_object_object_add(dev_obj, "ip", json_object_new_string(node->ip));
 
@@ -512,9 +512,13 @@ static void appfilter_add_object(struct ubus_object *obj)
 
 int appfilter_ubus_init(void)
 {
-    ubus_ctx = ubus_connect("/var/run/ubus.sock");
-    if (!ubus_ctx)
-        return -EIO;
+	ubus_ctx = ubus_connect("/var/run/ubus/ubus.sock");
+    if (!ubus_ctx){
+		ubus_ctx = ubus_connect("/var/run/ubus.sock");
+	}
+	if (!ubus_ctx){
+		return -EIO;
+	}
 
     appfilter_add_object(&main_object);
     ubus_add_uloop(ubus_ctx);
