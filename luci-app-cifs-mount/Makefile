@@ -13,6 +13,6 @@ PKG_NAME:=luci-app-cifs-mount
 PKG_VERSION:=1
 PKG_RELEASE:=7
 
-include $(TOPDIR)/feeds/luci/luci.mk
+include ../../luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature

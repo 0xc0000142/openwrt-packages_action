@@ -24,11 +24,11 @@ define Package/luci-app-turboacc/config
 config PACKAGE_TURBOACC_INCLUDE_OFFLOADING
 	bool "Include Flow Offload"
 	depends on PACKAGE_TURBOACC_INCLUDE_SHORTCUT_FE=n
-	default y if i386||x86_64||TARGET_ramips
+	default y
 
 config PACKAGE_TURBOACC_INCLUDE_SHORTCUT_FE
 	bool "Include Shortcut-FE"
-	default y if !(TARGET_ipq806x||TARGET_ipq807x||TARGET_ramips)
+	default n
 
 config PACKAGE_TURBOACC_INCLUDE_BBR_CCA
 	bool "Include BBR CCA"
@@ -50,6 +50,6 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_TURBOACC_INCLUDE_OFFLOADING \
 	CONFIG_PACKAGE_TURBOACC_INCLUDE_SHORTCUT_FE
 
-include $(TOPDIR)/feeds/luci/luci.mk
+include ../../luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
