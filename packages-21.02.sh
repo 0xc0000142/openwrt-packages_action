@@ -90,11 +90,9 @@ for ipk in $(ls applications); do
 		rm -rf applications/$ipk
 	fi
 done
-cd applications
-sed -i 's/..\/..\/luci.mk/..\/luci.mk/g' ./*/Makefile
-cd ..
 cp -ufr applications/* ./ 
 rm -rf applications/
+sed -i 's/..\/..\/luci.mk/..\/luci.mk/g' ./*/Makefile
 wget https://github.com/immortalwrt/luci/raw/openwrt-21.02/luci.mk
 svn co https://github.com/kenzok8/openwrt-packages/trunk/AdGuardHome
 svn co https://github.com/immortalwrt/immortalwrt/branches/openwrt-19.07/package/ctcgfw/gost
