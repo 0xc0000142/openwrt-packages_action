@@ -5,8 +5,7 @@
 START=90
 STOP=10
 
-EXTRA_COMMANDS="check_status"
-EXTRA_HELP="	check_status Check running status of utils"
+extra_command "check_status" "Check running status of utils"
 
 restart_utils="true"
 

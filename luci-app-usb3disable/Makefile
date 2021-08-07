@@ -25,7 +25,7 @@ define Package/luci-app-usb3disable/postinst
 	rm -f /tmp/luci-modulecache/*
 exit 0
 endef
-include $(TOPDIR)/feeds/luci/luci.mk
+include ../luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
 
