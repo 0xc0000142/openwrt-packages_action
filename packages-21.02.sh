@@ -89,6 +89,8 @@ for ipk in $(ls applications); do
 		rm -rf applications/$ipk
 	fi
 done
+cp -ufr applications/* ./ 
+rm -rf applications/
 
 svn co https://github.com/kenzok8/openwrt-packages/trunk/AdGuardHome
 svn co https://github.com/immortalwrt/immortalwrt/branches/openwrt-19.07/package/ctcgfw/gost
@@ -175,6 +177,7 @@ svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ramfree
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-unblockmusic
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-vlmcsd
+svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/UnblockNeteaseMusic-Go
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/vlmcsd
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-vsftpd
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-xlnetacc
