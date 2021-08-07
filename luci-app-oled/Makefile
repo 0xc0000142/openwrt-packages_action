@@ -17,6 +17,6 @@ PKG_LICENSE:=GPLv3
 PKG_LINCESE_FILES:=LICENSE
 PKF_MAINTAINER:=natelol <natelol@github.com>
 
-include ../luci.mk
+include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
