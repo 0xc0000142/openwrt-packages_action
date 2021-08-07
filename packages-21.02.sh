@@ -84,14 +84,17 @@ net/subconverter net/ngrokc net/oscam net/njitclient net/scutclient net/gost net
 admin/bpytop libs/jpcre2 libs/wxbase libs/rapidjson libs/libcron libs/quickjspp \
 utils/cpulimit utils/filebrowser utils/phicomm-k3screenctrl multimedia/gmediarender multimedia/UnblockNeteaseMusic-Go
 
-#svn export --force https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications
-#for ipk in $(ls applications); do
-#	if [[ $ipk != "luci-app-transmission" && $(ls -l applications/$ipk/po | wc -l) -gt 3 ]]; then
-#		rm -rf applications/$ipk
-#	fi
-#done
-#cp -ufr applications/* ./ 
-#rm -rf applications/
+svn export --force https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications
+for ipk in $(ls applications); do
+	if [[ $ipk != "luci-app-transmission" && $(ls -l applications/$ipk/po | wc -l) -gt 3 ]]; then
+		rm -rf applications/$ipk
+	fi
+done
+cd applications
+sed -i 's/..\/..\/luci.mk/..\/luci.mk/g' ./*/Makefile
+cd ..
+cp -ufr applications/* ./ 
+rm -rf applications/
 
 svn co https://github.com/kenzok8/openwrt-packages/trunk/AdGuardHome
 svn co https://github.com/immortalwrt/immortalwrt/branches/openwrt-19.07/package/ctcgfw/gost
