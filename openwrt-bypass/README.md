@@ -27,9 +27,9 @@
 
 [TG交流与反馈](https://t.me/opwrts)
 
-默认集成本插件的固件推荐: [https://github.com/garypang13/OpenWrt](https://t.me/opwrts)
+默认集成本插件的固件推荐: [https://github.com/kiddin9/OpenWrt_x86-r2s-r4s](https://github.com/kiddin9/OpenWrt_x86-r2s-r4s)
 
-![](https://raw.githubusercontent.com/garypang13/luci-app-bypass/main/screenshot.png)
+![](https://raw.githubusercontent.com/kiddin9/luci-app-bypass/main/screenshot.png)
 
 ### 感谢
 https://github.com/fw876/helloworld
