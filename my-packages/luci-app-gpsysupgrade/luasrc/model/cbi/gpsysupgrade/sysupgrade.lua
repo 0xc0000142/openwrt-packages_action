@@ -4,11 +4,23 @@ local sys = require "luci.sys"
 local util = require "luci.util"
 local i18n = require "luci.i18n"
 local ipkg = require("luci.model.ipkg")
-local api = require "luci.model.cbi.gpsysupgrade.api"
 
 function get_system_version()
 	local system_version = luci.sys.exec("[ -f '/etc/openwrt_version' ] && echo -n `cat /etc/openwrt_version`")
     return system_version
+end
+
+function auto_get_model()
+    local arch = nixio.uname().machine or ""
+    if fs.access("/etc/openwrt_release") then
+		if arch == "x86_64" then
+		model = "x86_64"
+		else
+        local boardinfo = luci.util.ubus("system", "board") or { }
+		model = boardinfo.model
+		end
+    end
+    return util.trim(model)
 end
 
 function check_update()
@@ -29,7 +41,7 @@ function check_update()
 end
 
 function to_check()
-    if not model or model == "" then model = api.auto_get_model() end
+    if not model or model == "" then model = auto_get_model() end
 	sysverformat = luci.sys.exec("date -d $(echo " ..get_system_version().. " | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
 	currentTimeStamp = luci.sys.exec("expr $(date -d \"$(date '+%Y-%m-%d %H:%M:%S')\" +%s) - 172800")
 	if model == "x86_64" then
@@ -43,21 +55,11 @@ function to_check()
     elseif model:match(".*R2S.*") then
 		model = "nanopi-r2s"
 		check_update()
-		if fs.access("/overlay/upper") then
-			download_url = "https://op.supes.top/firmware/" ..model.. "/" ..dateyr.. "-openwrt-rockchip-armv8-nanopi-r2s-squashfs-sysupgrade.img.gz"
-		else
-			download_url = "https://op.supes.top/firmware/" ..model.. "/" ..dateyr.. "-openwrt-rockchip-armv8-nanopi-r2s-ext4-sysupgrade.img.gz"
-			md5 = ""
-		end
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..dateyr.. "-openwrt-rockchip-armv8-nanopi-r2s-squashfs-sysupgrade.img.gz"
     elseif model:match(".*R4S.*") then
 		model = "nanopi-r4s"
 		check_update()
-		if fs.access("/overlay/upper") then
-			download_url = "https://op.supes.top/firmware/" ..model.. "/" ..dateyr.. "-openwrt-rockchip-armv8-nanopi-r4s-squashfs-sysupgrade.img.gz"
-		else
-			download_url = "https://op.supes.top/firmware/" ..model.. "/" ..dateyr.. "-openwrt-rockchip-armv8-nanopi-r4s-ext4-sysupgrade.img.gz"
-			md5 = ""
-		end
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..dateyr.. "-openwrt-rockchip-armv8-nanopi-r4s-squashfs-sysupgrade.img.gz"
     elseif model:match(".*Pi 4 Model B.*") then
 		model = "Rpi-4B"
 		check_update()
@@ -102,20 +104,20 @@ function to_download(url,md5)
 
     local tmp_file = util.trim(util.exec("mktemp -u -t firmware_download.XXXXXX"))
 
-    local result = api.exec(api.curl, {api._unpack(api.curl_args), "-o", tmp_file, url}, nil, api.command_timeout) == 0
+    local result = sys.exec("curl -skL --connect-timeout 3 --retry 3 -m 60 " ..url.. " -o " ..tmp_file.. "")
 
 	local md5local = sys.exec("echo -n $(md5sum " .. tmp_file .. " | awk '{print $1}')")
 	
 	if md5 ~= "" and md5local ~= md5 then
-		api.exec("/bin/rm", {"-f", tmp_file})
+		sys.exec("/bin/rm -f " ..tmp_file.. "")
 		return {
             code = 1,
             error = i18n.translatef("Md5 check failed: %s", url)
         }
 	end
 
-    if not result then
-        api.exec("/bin/rm", {"-f", tmp_file})
+    if result == 0 then
+        sys.exec("/bin/rm -f " ..tmp_file.. "")
         return {
             code = 1,
             error = i18n.translatef("File download failed or timed out: %s", url)
@@ -130,12 +132,12 @@ function to_flash(file,retain)
         return {code = 1, error = i18n.translate("Firmware file is required.")}
     end
 if not retain or retain == "" then
-	local result = api.exec("/sbin/sysupgrade", {file}, nil, api.command_timeout) == 0
+	local result = sys.exec("/sbin/sysupgrade " ..file.. "")
 else
 	if retain:match(".*-k.*") then
 		luci.sys.exec("echo -e /etc/backup/user_installed.opkg>/lib/upgrade/keep.d/luci-app-gpsysupgrade")
 	end
-	local result = api.exec("/sbin/sysupgrade", {retain, file}, nil, api.command_timeout) == 0
+	local result = sys.exec("/sbin/sysupgrade " ..retain.. " " ..file.. "")
 end
 
     if not result or not fs.access(file) then
