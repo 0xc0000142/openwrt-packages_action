@@ -6,12 +6,11 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for Scheduled Reboot
-LUCI_DEPENDS:=+luci
 LUCI_PKGARCH:=all
 PKG_VERSION:=1.0
-PKG_RELEASE:=8
+PKG_RELEASE:=9
 
-include ../luci.mk
+include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
 
