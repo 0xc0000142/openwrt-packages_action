@@ -12,7 +12,7 @@
 | 提供者 | 名称 | Luci版本(默认分支) | 地址 |  
 | --- | -- | ------ | -- |
 | Openwrt Officl | Openwrt 官方源 | 21.02 |[https://github.com/openwrt/openwrt](https://github.com/openwrt/openwrt) |
-| ImmortalWRT | ImmortalWRT(China) | 21.02 | [https://github.com/immortalwrt/immortalwrt](https://github.com/immortalwrt/immortalwrt)|
+| ImmortalWRT(China) | ImmortalWRT | 21.02 | [https://github.com/immortalwrt/immortalwrt](https://github.com/immortalwrt/immortalwrt)|
 | Lean | Openwrt R21 | 18.06 |  [https://github.com/coolsnowwolf/lede](https://github.com/coolsnowwolf/lede)|
 
 
