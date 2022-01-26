@@ -12,7 +12,6 @@
 	margin-bottom: 1rem;
 	padding: .5rem;
 	line-height: 2rem;
-	background-color: #fff;
 }
 #control_panel > :nth-child(1), #control_panel > :nth-child(2) {
 	display: inline-block;
@@ -42,9 +41,6 @@ div > label + select {
 #control_panel + div > div:nth-of-type(2) {
 	flex: 1 1 35%;
 	text-align: right;
-}
-#updated, #updating {
-	display: inline;
 }
 #thClient {
 	width: 17%;

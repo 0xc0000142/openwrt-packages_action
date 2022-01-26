@@ -6,11 +6,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=adguardhome
-PKG_VERSION:=0.107.0-b.12
+PKG_VERSION:=0.108.0-b.1
 PKG_RELEASE:=
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=ce0df255be331c616acf79dd0dd93d448a142f99
+PKG_SOURCE_VERSION:=e9c59b098e1c432b7612bedae55a26feb047e23a
 PKG_SOURCE_URL:=https://github.com/AdguardTeam/AdGuardHome
 PKG_MIRROR_HASH:=skip
 
@@ -18,13 +18,11 @@ PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE.txt
 PKG_MAINTAINER:=Dobroslaw Kijowski <dobo90@gmail.com>
 
-PKG_BUILD_DEPENDS:=golang/host node/host node-yarn/host packr/host
+PKG_BUILD_DEPENDS:=golang/host node/host node-yarn/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
-PKG_CONFIG_DEPENDS:= \
-	CONFIG_ADGUARDHOME_COMPRESS_GOPROXY \
-	CONFIG_ADGUARDHOME_COMPRESS_UPX
+PKG_CONFIG_DEPENDS:=CONFIG_ADGUARDHOME_COMPRESS_GOPROXY
 
 GO_PKG:=github.com/AdguardTeam/AdGuardHome
 GO_PKG_BUILD_PKG:=github.com/AdguardTeam/AdGuardHome
@@ -50,11 +48,7 @@ endef
 
 define Package/adguardhome/conffiles
 /etc/adguardhome.yaml
-endef
-
-define Package/adguardhome/postinst
-#!/bin/sh
-	/etc/init.d/AdGuardHome restart
+/etc/config/adguardhome
 endef
 
 define Package/adguardhome/description
@@ -64,10 +58,6 @@ endef
 define Package/$(PKG_NAME)/config
 config ADGUARDHOME_COMPRESS_GOPROXY
 	bool "Compiling with GOPROXY proxy"
-	default n
-
-config ADGUARDHOME_COMPRESS_UPX
-	bool "Compress executable files with UPX"
 	default n
 endef
 
@@ -80,20 +70,19 @@ define Build/Compile
 	( \
 		pushd $(PKG_BUILD_DIR) ; \
 		make js-deps js-build ; \
-		packr -z -v -i internal ; \
 		popd ; \
 		$(call GoPackage/Build/Compile) ; \
 	)
-ifeq ($(CONFIG_ADGUARDHOME_COMPRESS_UPX),y)
-	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(GO_PKG_BUILD_BIN_DIR)/AdGuardHome
-endif
 endef
 
-#define Package/adguardhome/install
-#	$(call GoPackage/Package/Install/Bin,$(1))
-#	$(INSTALL_DIR) $(1)/etc/init.d
-#	$(INSTALL_BIN) ./files/adguardhome.init $(1)/etc/init.d/adguardhome
-#endef
+define Package/adguardhome/install
+	$(call GoPackage/Package/Install/Bin,$(1))
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/adguardhome.init $(1)/etc/init.d/adguardhome
+
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_DATA) ./files/adguardhome.config $(1)/etc/config/adguardhome
+endef
 
 $(eval $(call GoBinPackage,adguardhome))
 $(eval $(call BuildPackage,adguardhome))
