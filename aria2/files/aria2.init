@@ -162,7 +162,10 @@ aria2_start() {
 
 	[ "$enabled" = "1" ] || { _info "Instance \"$section\" disabled."; return 1; }
 	[ -n "$dir" ] || { _err "Please set download dir."; return 1; }
-	[ -d "$dir" ] || { _err "Please create download dir first."; return 1; }
+	[ -d "$dir" ] || _make_dir "$dir" || {
+			_err "Can't create download dir: $dir"
+			return 1
+		}
 
 	config_file="$config_dir/$NAME.conf.$section"
 	config_file_tmp="$config_dir/$NAME.conf.tmp"
@@ -310,7 +313,7 @@ aria2_start() {
 	config_list_foreach "$section" "header" append_header
 	config_list_foreach "$section" "extra_settings" append_setting
 
-	cd /usr/share/aria2 && sh ./tracker.sh
+	cd /usr/share/aria2 && sh ./tracker.sh >/dev/null 2>&1
 	cat /usr/share/aria2/aria2.conf > "$config_file"
 	echo '' >> "$config_file"
 	sed '/^$/d' "$config_file_tmp" >> "$config_file"

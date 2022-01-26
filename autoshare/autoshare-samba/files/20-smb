@@ -63,7 +63,12 @@ case "$ACTION" in
 
 	wait_for_init
 
-	cat /proc/mounts | while read j
+	[ "$(uci -q get samba4.@samba[0].autoshare)" == "1" ] && {
+		/etc/init.d/samba4 restart
+		exit 0;
+	}
+
+	cat /proc/mounts | grep -v '/boot\|/opt' | while read j
 	do
 		str=${j%% *}
 		if [ "$str" == $path ];then
@@ -89,6 +94,8 @@ case "$ACTION" in
 			fi
 		fi
 	done
+	uci -q set samba4.@samba[0].autoshare='1'
+	uci commit samba4
 	;;
 
 	remove)

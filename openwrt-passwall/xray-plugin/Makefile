@@ -1,32 +1,26 @@
+# SPDX-License-Identifier: GPL-3.0-only
 #
-# Copyright (C) 2021 ImmortalWrt
-# <https://project-openwrt.eu.org>
-#
-# This is free software, licensed under the GNU General Public License v3.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2021 ImmortalWrt.org
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=xray-plugin
-PKG_VERSION:=1.4.5
+PKG_VERSION:=1.5.2
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/teddysun/xray-plugin/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=a4483fa0e3071935da8b8bd19a9a6b349fc2c221ba2fe777ff2131915debb607
+PKG_HASH:=4a8516b26c08f97ba41b1585fb7603ec194e510a776c8b0d26577e874665afe2
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@project-openwrt.eu.org>
 
 PKG_CONFIG_DEPENDS:= \
-	CONFIG_XRAY_PLUGIN_PROVIDE_V2RAY_PLUGIN \
 	CONFIG_XRAY_PLUGIN_COMPRESS_GOPROXY \
 	CONFIG_XRAY_PLUGIN_COMPRESS_UPX
 
 PKG_BUILD_DEPENDS:=golang/host
-PKG_BUILD_DEPENDS += XRAY_PLUGIN_COMPRESS_UPX:upx/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
@@ -37,17 +31,14 @@ include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
 define Package/xray-plugin/config
-config XRAY_PLUGIN_PROVIDE_V2RAY_PLUGIN
-	bool "Provide v2ray-plugin binary using xray-plugin"
-	default n
-
 config XRAY_PLUGIN_COMPRESS_GOPROXY
 	bool "Compiling with GOPROXY proxy"
 	default n
 
 config XRAY_PLUGIN_COMPRESS_UPX
 	bool "Compress executable files with UPX"
-	default y
+	depends on !mips64
+	default n
 endef
 
 ifneq ($(CONFIG_XRAY_PLUGIN_COMPRESS_GOPROXY),)
@@ -56,15 +47,12 @@ ifneq ($(CONFIG_XRAY_PLUGIN_COMPRESS_GOPROXY),)
 endif
 
 define Package/xray-plugin
-	SECTION:=net
-	CATEGORY:=Network
-	TITLE:=SIP003 plugin for Shadowsocks, based on Xray
-	URL:=https://github.com/teddysun/xray-plugin
-	DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
-endef
-
-define Package/xray-plugin/description
-	Yet another SIP003 plugin for Shadowsocks, based on Xray.
+  SECTION:=net
+  CATEGORY:=Network
+  SUBMENU:=Web Servers/Proxies
+  TITLE:=SIP003 plugin for Shadowsocks, based on Xray
+  URL:=https://github.com/teddysun/xray-plugin
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 
 define Build/Compile
@@ -75,10 +63,8 @@ endif
 endef
 
 define Package/xray-plugin/install
-	$(call GoPackage/Package/Install/Bin,$(1))
-ifneq ($(CONFIG_XRAY_PLUGIN_PROVIDE_V2RAY_PLUGIN),)
-	$(LN) xray-plugin $(1)/usr/bin/v2ray-plugin
-endif
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/xray-plugin $(1)/usr/bin/xray-plugin
 endef
 
 $(eval $(call GoBinPackage,xray-plugin))

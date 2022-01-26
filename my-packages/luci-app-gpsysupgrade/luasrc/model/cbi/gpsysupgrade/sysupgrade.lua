@@ -3,7 +3,6 @@ local fs = require "nixio.fs"
 local sys = require "luci.sys"
 local util = require "luci.util"
 local i18n = require "luci.i18n"
-local ipkg = require("luci.model.ipkg")
 local api = require "luci.model.cbi.gpsysupgrade.api"
 
 function get_system_version()
@@ -13,8 +12,8 @@ end
 
 function check_update()
 		needs_update, notice, md5 = false, false, false
-		remote_version = luci.sys.exec("curl -s https://op.supes.top/firmware/" ..model.. "/version.txt")
-		updatelogs = luci.sys.exec("curl -s https://op.supes.top/firmware/" ..model.. "/updatelogs.txt")
+		remote_version = luci.sys.exec("curl -skfL https://op.supes.top/firmware/" ..model.. "/version.txt")
+		updatelogs = luci.sys.exec("curl -skfL https://op.supes.top/firmware/" ..model.. "/updatelogs.txt")
 		remoteformat = luci.sys.exec("date -d $(echo \"" ..remote_version.. "\" | tr '\r\n' ',' | awk -F, '{printf $1}' | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
 		fnotice = luci.sys.exec("echo \"" ..remote_version.. "\" | tr '\r\n' ',' | awk -F, '{printf $(NF-1)}'")
 		dateyr = luci.sys.exec("echo \"" ..remote_version.. "\" | tr '\r\n' ',' | awk -F. '{printf $1\".\"$2}'")
@@ -48,6 +47,10 @@ function to_check()
 		model = "nanopi-r4s"
 		check_update()
 			download_url = "https://op.supes.top/firmware/" ..model.. "/" ..dateyr.. "-openwrt-rockchip-armv8-nanopi-r4s-squashfs-sysupgrade.img.gz"
+    elseif model:match(".*R2C.*") then
+		model = "nanopi-r2c"
+		check_update()
+			download_url = "https://op.supes.top/firmware/" ..model.. "/" ..dateyr.. "-openwrt-rockchip-armv8-nanopi-r2c-squashfs-sysupgrade.img.gz"
     elseif model:match(".*Pi 4 Model B.*") then
 		model = "Rpi-4B"
 		check_update()
@@ -92,7 +95,7 @@ function to_download(url,md5)
 
     local tmp_file = util.trim(util.exec("mktemp -u -t firmware_download.XXXXXX"))
 
-    local result = api.exec(api.curl, {api._unpack(api.curl_args), "-o", tmp_file, url}, nil, api.command_timeout) == 0
+    local result = api.exec(api.wget, {api._unpack(api.wget_args), "-O", tmp_file, url}, nil, api.command_timeout) == 0
 
     if not result then
         api.exec("/bin/rm", {"-f", tmp_file})
@@ -119,13 +122,14 @@ function to_flash(file,retain)
     if not file or file == "" or not fs.access(file) then
         return {code = 1, error = i18n.translate("Firmware file is required.")}
     end
+sys.call("uci -q del opkg.auto;uci commit opkg")
 if not retain or retain == "" then
 	local result = api.exec("/sbin/sysupgrade", {file}, nil, api.command_timeout) == 0
 else
 	if retain:match(".*-q .*") then
-		luci.sys.exec("echo -e /etc/backup/user_installed.opkg>/lib/upgrade/keep.d/luci-app-gpsysupgrade")
+		sys.call(". /etc/profile.d/opkg.sh;opkg save;")
 	end
-	sys.exec("/sbin/sysupgrade " ..retain.. " " ..file.. "")
+	sys.call("/sbin/sysupgrade " ..retain.. " " ..file.. "")
 end
 
     return {code = 0}

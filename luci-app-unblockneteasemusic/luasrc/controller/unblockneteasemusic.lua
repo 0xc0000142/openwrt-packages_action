@@ -1,6 +1,5 @@
--- This is a free software, use it under GNU General Public License v3.0.
--- Created By ImmortalWrt
--- https://github.com/immortalwrt
+-- SPDX-License-Identifer: GPL-3.0-only
+-- Copyright (C) 2019-2021 Tianling Shen <cnsztl@immortalwrt.org>
 
 module("luci.controller.unblockneteasemusic", package.seeall)
 
@@ -31,12 +30,12 @@ function act_status()
 end
 
 function update_core()
-	core_cloud_ver=luci.sys.exec("uclient-fetch -q -O- 'https://api.github.com/repos/UnblockNeteaseMusic/server/commits/enhanced' | jsonfilter -e '@.sha'")
+	core_cloud_ver=luci.sys.exec("uclient-fetch -qO- 'https://api.github.com/repos/UnblockNeteaseMusic/server/commits?sha=enhanced&path=precompiled' | jsonfilter -e '@[0].sha'")
 	core_cloud_ver_mini=string.sub(core_cloud_ver, 1, 7)
 	if not core_cloud_ver or not core_cloud_ver_mini then
 		return "1"
 	else
-		core_local_ver=luci.sys.exec("cat '/usr/share/unblockneteasemusic/core_local_ver'")
+		core_local_ver=luci.sys.exec("cat '/usr/share/unblockneteasemusic/core_local_ver' 2>'/dev/null'")
 		if not core_local_ver or (core_local_ver ~= core_cloud_ver) then
 			luci.sys.call("rm -f /usr/share/unblockneteasemusic/update_core_successfully")
 			luci.sys.call("/usr/share/unblockneteasemusic/update.sh update_core_from_luci")
@@ -61,7 +60,7 @@ end
 
 function act_remove_core()
 	local ret = {}
-	ret.ret = luci.sys.call("cd /usr/share/unblockneteasemusic && rm -rf core && rm -f core_local_ver") == 0
+	ret.ret = luci.sys.call("cd /usr/share/unblockneteasemusic && rm -rf core/* && rm -f core_local_ver") == 0
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(ret)
 end

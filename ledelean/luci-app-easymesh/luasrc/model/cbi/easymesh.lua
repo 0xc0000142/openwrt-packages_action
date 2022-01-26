@@ -46,11 +46,18 @@ o = s:option(Flag, "enabled", translate("Enable"), translate("Enable or disable 
 o.default = 0
 o.rmempty = false
 
+o = s:option(ListValue, "role", translate("role"))
+o:value("off", translate("off"))
+o:value("server", translate("host MESH"))
+o:value("client", translate("son MESH"))
+o.rmempty = false
+
 apRadio = s:option(ListValue, "apRadio", translate("MESH Radio device"), translate("The radio device which MESH use"))
 uci:foreach("wireless", "wifi-device",
 							function(s)
 								apRadio:value(s['.name'])
 							end)
+apRadio:value("all", translate("ALL"))
 o.default = "radio0"
 o.rmempty = false
 
@@ -66,5 +73,50 @@ enable.rmempty = false
 o = s:option(Value, "key", translate("Key"))
 o.default = "easymesh"
 o:depends("encryption", 1)
+
+---- kvr
+enable = s:option(Flag, "kvr", translate("K/V/R"), translate(""))
+enable.default = 1
+enable.rmempty = false
+
+o = s:option(Value, "mobility_domain", translate("Mobility Domain"), translate("4-character hexadecimal ID"))
+o.default = "4f57"
+o.datatype = "and(hexstring,rangelength(4,4))"
+o:depends("kvr", 1)
+
+o = s:option(Value, "rssi_val", translate("Threshold for an good RSSI"))
+o.default = "-60"
+o.atatype = "range(-1,-120)"
+o:depends("kvr", 1)
+
+o = s:option(Value, "low_rssi_val", translate("Threshold for an bad RSSI"))
+o.default = "-88"
+o.atatype = "range(-1,-120)"
+o:depends("kvr", 1)
+
+---- ap_mode
+enable = s:option(Flag, "ap_mode", translate("AP MODE Enable"), translate("Enable or disable AP MODE"))
+enable.default = 0
+enable.rmempty = false
+
+o = s:option(Value, "ipaddr", translate("IPv4-Address"))
+o.default = "192.168.1.10"
+o.datatype = "ip4addr"
+o:depends("ap_mode", 1)
+
+o = s:option(Value, "netmask", translate("IPv4 netmask"))
+o.default = "255.255.255.0"
+o.datatype = "ip4addr"
+o:depends("ap_mode", 1)
+
+o = s:option(Value, "gateway", translate("IPv4 gateway"))
+o.default = "192.168.1.1"
+o.datatype = "ip4addr"
+o:depends("ap_mode", 1)
+
+o = s:option(Value, "dns", translate("Use custom DNS servers"))
+o.default = "192.168.1.1"
+o.datatype = "ip4addr"
+o:depends("ap_mode", 1)
 
 return m

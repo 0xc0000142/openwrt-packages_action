@@ -138,7 +138,7 @@ jobs:
         echo -e "$(($(nproc)+1)) thread compile"
         mv -f package/feeds/custom custom.b
         mkdir package/feeds/custom
-        mv -f custom.b/{luci-app-bypass,lua-maxminddb,smartdns-le} package/feeds/custom/
+        mv -f custom.b/{luci-app-bypass,lua-maxminddb,smartdns} package/feeds/custom/
         make package/luci-app-bypass/compile -j$(($(nproc)+1)) || make package/luci-app-bypass/compile -j1 V=s
 
     - name: Check space usage

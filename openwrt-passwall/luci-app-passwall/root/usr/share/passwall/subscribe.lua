@@ -19,19 +19,68 @@ local ssub, slen, schar, sbyte, sformat, sgsub = string.sub, string.len, string.
 local jsonParse, jsonStringify = luci.jsonc.parse, luci.jsonc.stringify
 local b64decode = nixio.bin.b64decode
 local uci = luci.model.uci.cursor()
-local allowInsecure_default = uci:get_bool(appname, "@global_subscribe[0]", "allowInsecure")
-local ss_aead_type = uci:get(appname, "@global_subscribe[0]", "ss_aead_type") or "shadowsocks-libev"
-local trojan_type = uci:get(appname, "@global_subscribe[0]", "trojan_type") or "trojan-plus"
+uci:revert(appname)
+
 local has_ss = api.is_finded("ss-redir")
 local has_ss_rust = api.is_finded("sslocal")
 local has_trojan_plus = api.is_finded("trojan-plus")
 local has_v2ray = api.is_finded("v2ray")
 local has_xray = api.is_finded("xray")
 local has_trojan_go = api.is_finded("trojan-go")
-uci:revert(appname)
+local allowInsecure_default = true
+local ss_aead_type_default = uci:get(appname, "@global_subscribe[0]", "ss_aead_type") or "shadowsocks-libev"
+local trojan_type_default = uci:get(appname, "@global_subscribe[0]", "trojan_type") or "trojan-plus"
+-- 判断是否过滤节点关键字
+local filter_keyword_mode_default = uci:get(appname, "@global_subscribe[0]", "filter_keyword_mode") or "0"
+local filter_keyword_discard_list_default = uci:get(appname, "@global_subscribe[0]", "filter_discard_list") or {}
+local filter_keyword_keep_list_default = uci:get(appname, "@global_subscribe[0]", "filter_keep_list") or {}
+local function is_filter_keyword(value)
+	if filter_keyword_mode_default == "1" then
+		for k,v in ipairs(filter_keyword_discard_list_default) do
+			if value:find(v, 1, true) then
+				return true
+			end
+		end
+	elseif filter_keyword_mode_default == "2" then
+		local result = true
+		for k,v in ipairs(filter_keyword_keep_list_default) do
+			if value:find(v, 1, true) then
+				result = false
+			end
+		end
+		return result
+	elseif filter_keyword_mode_default == "3" then
+		local result = false
+		for k,v in ipairs(filter_keyword_discard_list_default) do
+			if value:find(v, 1, true) then
+				result = true
+			end
+		end
+		for k,v in ipairs(filter_keyword_keep_list_default) do
+			if value:find(v, 1, true) then
+				result = false
+			end
+		end
+		return result
+	elseif filter_keyword_mode_default == "4" then
+		local result = true
+		for k,v in ipairs(filter_keyword_keep_list_default) do
+			if value:find(v, 1, true) then
+				result = false
+			end
+		end
+		for k,v in ipairs(filter_keyword_discard_list_default) do
+			if value:find(v, 1, true) then
+				result = true
+			end
+		end
+		return result
+	end
+	return false
+end
 
 local nodeResult = {} -- update result
-local arg2 = arg[2]
+local debug = false
 
 local ss_rust_encrypt_method_list = {
     "aes-128-gcm", "aes-256-gcm", "chacha20-ietf-poly1305"
@@ -39,10 +88,10 @@ local ss_rust_encrypt_method_list = {
 
 local log = function(...)
 	local result = os.date("%Y-%m-%d %H:%M:%S: ") .. table.concat({...}, " ")
-	if arg2 == "print" then
+	if debug == true then
 		print(result)
 	else
-		local f, err = io.open("/var/log/" .. appname .. ".log", "a")
+		local f, err = io.open("/tmp/log/" .. appname .. ".log", "a")
 		if f and err == nil then
 			f:write(result .. "\n")
 			f:close()
@@ -259,29 +308,6 @@ do
 	end
 end
 
--- 判断是否过滤节点关键字
-local filter_keyword_mode = uci:get(appname, "@global_subscribe[0]", "filter_keyword_mode") or "0"
-local filter_keyword_discard_list = uci:get(appname, "@global_subscribe[0]", "filter_discard_list") or {}
-local filter_keyword_keep_list = uci:get(appname, "@global_subscribe[0]", "filter_keep_list") or {}
-local function is_filter_keyword(value)
-	if filter_keyword_mode == "1" then
-		for k,v in ipairs(filter_keyword_discard_list) do
-			if value:find(v) then
-				return true
-			end
-		end
-	elseif filter_keyword_mode == "2" then
-		local result = true
-		for k,v in ipairs(filter_keyword_keep_list) do
-			if value:find(v) then
-				result = false
-			end
-		end
-		return result
-	end
-	return false
-end
-
 -- 分割字符串
 local function split(full, sep)
 	if full then
@@ -378,7 +404,6 @@ local function processData(szType, content, add_mode, add_from)
 		result.address = info.add
 		result.port = info.port
 		result.protocol = 'vmess'
-		result.alter_id = info.aid
 		result.uuid = info.id
 		result.remarks = info.ps
 		-- result.mux = 1
@@ -422,7 +447,7 @@ local function processData(szType, content, add_mode, add_from)
 		if not info.security then result.security = "auto" end
 		if info.tls == "tls" or info.tls == "1" then
 			result.tls = "1"
-			result.tls_serverName = info.sni
+			result.tls_serverName = (info.sni and info.sni ~= "") and info.sni or info.host
 			result.tls_allowInsecure = allowInsecure_default and "1" or "0"
 		else
 			result.tls = "0"
@@ -490,15 +515,15 @@ local function processData(szType, content, add_mode, add_from)
 			end
 		end
 		if flag then
-			if ss_aead_type == "shadowsocks-libev" and has_ss then
+			if ss_aead_type_default == "shadowsocks-libev" and has_ss then
 				result.type = "SS"
-			elseif ss_aead_type == "shadowsocks-rust" and has_ss_rust then
+			elseif ss_aead_type_default == "shadowsocks-rust" and has_ss_rust then
 				result.type = 'SS-Rust'
-			elseif ss_aead_type == "v2ray" and has_v2ray and not result.plugin then
+			elseif ss_aead_type_default == "v2ray" and has_v2ray and not result.plugin then
 				result.type = 'V2ray'
 				result.protocol = 'shadowsocks'
 				result.transport = 'tcp'
-			elseif ss_aead_type == "xray" and has_xray and not result.plugin then
+			elseif ss_aead_type_default == "xray" and has_xray and not result.plugin then
 				result.type = 'Xray'
 				result.protocol = 'shadowsocks'
 				result.transport = 'tcp'
@@ -568,15 +593,15 @@ local function processData(szType, content, add_mode, add_from)
 			result.tls_serverName = peer and peer or sni
 			result.tls_allowInsecure = allowInsecure and "1" or "0"
 		end
-		if trojan_type == "trojan-plus" and has_trojan_plus then
+		if trojan_type_default == "trojan-plus" and has_trojan_plus then
 			result.type = "Trojan-Plus"
-		elseif trojan_type == "v2ray" and has_v2ray then
+		elseif trojan_type_default == "v2ray" and has_v2ray then
 			result.type = 'V2ray'
 			result.protocol = 'trojan'
-		elseif trojan_type == "xray" and has_xray then
+		elseif trojan_type_default == "xray" and has_xray then
 			result.type = 'Xray'
 			result.protocol = 'trojan'
-		elseif trojan_type == "trojan-go" and has_trojan_go then
+		elseif trojan_type_default == "trojan-go" and has_trojan_go then
 			result.type = 'Trojan-Go'
 		end
 	elseif szType == "trojan-go" then
@@ -735,9 +760,7 @@ local function processData(szType, content, add_mode, add_from)
 					result.xtls = "1"
 					result.flow = params.flow or "xtls-rprx-direct"
 				end
-				if params.sni then
-					result.tls_serverName = params.sni
-				end
+				result.tls_serverName = (params.sni and params.sni ~= "") and params.sni or params.host
 			end
 
 			result.port = port
@@ -758,14 +781,12 @@ local function processData(szType, content, add_mode, add_from)
 end
 
 -- curl
-local function curl(url, file)
-	local ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
-	local a = ""
-	if luci.sys.call('curl --help all | grep "\\-\\-retry-all-errors" > /dev/null') == 0 then
-		a = "--retry-all-errors"
+local function curl(url, file, ua)
+	if not ua or ua == "" then
+		ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36"
 	end
 	local stdout = ""
-	local cmd = string.format('curl -skL --user-agent "%s" --retry 3 --connect-timeout 3 %s "%s"', ua, a, url)
+	local cmd = string.format('curl -skL --user-agent "%s" --retry 3 --connect-timeout 3 "%s"', ua, url)
 	if file then
 		cmd = cmd .. " -o " .. file
 		stdout = luci.sys.call(cmd .. " > /dev/null")
@@ -779,7 +800,7 @@ local function curl(url, file)
 		if uci:get(appname, "@global_subscribe[0]", "subscribe_proxy") or "0" == "1" and uci:get(appname, "@global[0]", "enabled") or "0" == "1" then
 			log('通过代理订阅失败，尝试关闭代理订阅。')
 			luci.sys.call("/etc/init.d/" .. appname .. " stop > /dev/null")
-			stdout = luci.sys.exec(string.format('curl -skL --user-agent "%s" -k --retry 3 --connect-timeout 3 %s "%s"', ua, a, url))
+			stdout = luci.sys.exec(string.format('curl -skL --user-agent "%s" -k --retry 3 --connect-timeout 3 "%s"', ua, url))
 		end
 	end
 	return trim(stdout)
@@ -797,7 +818,13 @@ local function truncate_nodes(add_from)
 			config.set(config)
 		else
 			if config.currentNode.add_mode == "2" then
-				config.set(config, "nil")
+				if add_from then
+					if config.currentNode.add_from and config.currentNode.add_from == add_from then
+						config.set(config, "nil")
+					end
+				else
+					config.set(config, "nil")
+				end
 				if config.id then
 					uci:delete(appname, config.id)
 				end
@@ -935,7 +962,7 @@ local function update_node(manual)
 	if manual == 0 and #group > 0 then
 		uci:foreach(appname, "nodes", function(node)
 			-- 如果是未发现新节点或手动导入的节点就不要删除了...
-			if (node.add_from and group:find(node.add_from)) and node.add_mode == "2" then
+			if (node.add_from and group:find(node.add_from, 1, true)) and node.add_mode == "2" then
 				uci:delete(appname, node['.name'])
 			end
 		end)
@@ -1068,45 +1095,79 @@ end
 
 local execute = function()
 	do
+		local subscribe_list = {}
 		local retry = {}
-		uci:foreach(appname, "subscribe_list", function(obj)
-			local enabled = obj.enabled or nil
-			if enabled and enabled == "1" then
-				local remark = obj.remark
-				local url = obj.url
-				log('正在订阅: ' .. url)
-				local raw = curl(url, "/tmp/" .. remark)
-				if raw == 0 then
-					local f = io.open("/tmp/" .. remark, "r")
-					local stdout = f:read("*all")
-					f:close()
-					raw = trim(stdout)
-					os.remove("/tmp/" .. remark)
-					parse_link(raw, "2", remark)
-				else
-					retry[#retry + 1] = obj
-				end
+		if arg[2] then
+			string.gsub(arg[2], '[^' .. "," .. ']+', function(w)
+				subscribe_list[#subscribe_list + 1] = uci:get_all(appname, w) or {}
+			end)
+		else
+			uci:foreach(appname, "subscribe_list", function(o)
+				subscribe_list[#subscribe_list + 1] = o
+			end)
+		end
+
+		for index, value in ipairs(subscribe_list) do
+			local cfgid = value[".name"]
+			local remark = value.remark
+			local url = value.url
+			if value.allowInsecure and value.allowInsecure ~= "1" then
+				allowInsecure_default = nil
 			end
-		end)
+			local filter_keyword_mode = value.filter_keyword_mode or "5"
+			if filter_keyword_mode == "0" then
+				filter_keyword_mode_default = "0"
+			elseif filter_keyword_mode == "1" then
+				filter_keyword_mode_default = "1"
+				filter_keyword_discard_list_default = value.filter_discard_list or {}
+			elseif filter_keyword_mode == "2" then
+				filter_keyword_mode_default = "2"
+				filter_keyword_keep_list_default = value.filter_keep_list or {}
+			elseif filter_keyword_mode == "3" then
+				filter_keyword_mode_default = "3"
+				filter_keyword_keep_list_default = value.filter_keep_list or {}
+				filter_keyword_discard_list_default = value.filter_discard_list or {}
+			elseif filter_keyword_mode == "4" then
+				filter_keyword_mode_default = "4"
+				filter_keyword_keep_list_default = value.filter_keep_list or {}
+				filter_keyword_discard_list_default = value.filter_discard_list or {}
+			end
+			local ss_aead_type = value.ss_aead_type or "global"
+			if ss_aead_type ~= "global" then
+				ss_aead_type_default = ss_aead_type
+			end
+			local trojan_type = value.trojan_type or "global"
+			if trojan_type ~= "global" then
+				trojan_type_default = trojan_type
+			end
+			local ua = value.user_agent
+			log('正在订阅:【' .. remark .. '】' .. url)
+			local raw = curl(url, "/tmp/" .. cfgid, ua)
+			if raw == 0 then
+				local f = io.open("/tmp/" .. cfgid, "r")
+				local stdout = f:read("*all")
+				f:close()
+				raw = trim(stdout)
+				os.remove("/tmp/" .. cfgid)
+				parse_link(raw, "2", remark)
+			else
+				retry[#retry + 1] = value
+			end
+			allowInsecure_default = true
+			filter_keyword_mode_default = uci:get(appname, "@global_subscribe[0]", "filter_keyword_mode") or "0"
+			filter_keyword_discard_list_default = uci:get(appname, "@global_subscribe[0]", "filter_discard_list") or {}
+			filter_keyword_keep_list_default = uci:get(appname, "@global_subscribe[0]", "filter_keep_list") or {}
+			ss_aead_type_default = uci:get(appname, "@global_subscribe[0]", "ss_aead_type") or "shadowsocks-libev"
+			trojan_type_default = uci:get(appname, "@global_subscribe[0]", "trojan_type") or "trojan-plus"
+		end
+
 		if #retry > 0 then
-			if (uci:get(appname, "@global_subscribe[0]", "subscribe_proxy") or "0") == "1" and (uci:get(appname, "@global[0]", "enabled") or "0") == "1" then
-				log('通过代理订阅失败，尝试关闭代理订阅。')
-				luci.sys.call("/etc/init.d/" .. appname .. " stop > /dev/null")
-				for index, value in ipairs(retry) do
-					log('正在订阅: ' .. value.url)
-					local raw = curl(value.url, "/tmp/" .. value.remark)
-					if raw == 0 then
-						local f = io.open("/tmp/" .. value.remark, "r")
-						local stdout = f:read("*all")
-						f:close()
-						raw = trim(stdout)
-						os.remove("/tmp/" .. value.remark)
-						parse_link(raw, "2", value.remark)
-					else
-						log(value.remark .. '订阅失败，可能是订阅地址失效，或是网络问题，请检测。')
-					end
+			for index, value in ipairs(retry) do
+				if (uci:get(appname, "@global_subscribe[0]", "subscribe_proxy") or "0") == "1" and (uci:get(appname, "@global[0]", "enabled") or "0") == "1" then
+					log(value.remark .. '订阅失败，请尝试关闭代理后再订阅。')
+				else
+					log(value.remark .. '订阅失败，可能是订阅地址失效，或是网络问题，请诊断！')
 				end
-				luci.sys.call("/etc/init.d/" .. appname .. " restart > /dev/null 2>&1 &")
 			end
 		end
 		update_node(0)
@@ -1115,18 +1176,13 @@ end
 
 if arg[1] then
 	if arg[1] == "start" then
-		local count = luci.sys.exec("echo -n $(uci show " .. appname .. " | grep @subscribe_list | grep -c \"enabled='1'\")")
-		if count and tonumber(count) > 0 then
-			log('开始订阅...')
-			xpcall(execute, function(e)
-				log(e)
-				log(debug.traceback())
-				log('发生错误, 正在恢复服务')
-			end)
-			log('订阅完毕...')
-		else
-			log('未设置订阅或未启用订阅, 请检查设置...')
-		end
+		log('开始订阅...')
+		xpcall(execute, function(e)
+			log(e)
+			log(debug.traceback())
+			log('发生错误, 正在恢复服务')
+		end)
+		log('订阅完毕...')
 	elseif arg[1] == "add" then
 		local f = assert(io.open("/tmp/links.conf", 'r'))
 		local content = f:read('*all')
