@@ -55,7 +55,9 @@ git clone --depth 1 https://github.com/LGA1150/openwrt-sysuh3c && mvdir openwrt-
 git clone --depth 1 https://github.com/gdck/luci-app-cupsd cupsd1 && mv -n cupsd1/luci-app-cupsd cupsd1/cups/cups ./ ; rm -rf cupsd1 &
 svn export https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-autoreboot &
 svn export https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-ddns/trunk/tencentcloud_ddns luci-app-tencentddns &
-svn export https://github.com/coolsnowwolf/lede/trunk/package/lean ledelean &
+svn export https://github.com/coolsnowwolf/lede/trunk/package/lean ledelean 
+	mv ledelean/* ./
+	rm -rf ledelean
 svn export https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync &
 svn export https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd &
 svn export https://github.com/coolsnowwolf/packages/trunk/net/mwan3 &
@@ -204,6 +206,8 @@ svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package
 svn co https://github.com/obsy/packages/trunk/3ginfo
 git clone https://github.com/jerrykuku/luci-app-argon-config
 svn co https://github.com/sirpdboy/sirpdboy-package/trunk/luci-app-socat
+mkdir luci
+mv -f ./luci-* ./luci
 rm -rf ./*/.git
 rm -rf ./*/.svn 
 rm -f .gitattributes .gitignore
