@@ -1,10 +1,5 @@
 #!/bin/bash
 #Theme:
-	svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-argonne
-	svn co https://github.com/kenzok8/luci-theme-ifit/trunk/luci-theme-ifit
-	svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-mcat
-	svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-tomato
-	svn co https://github.com/XXKDB/luci-theme-argon_armygreen/trunk ./luci-theme-argon_armygreen
 	git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git
 	git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config.git
 	git clone --depth 1 https://github.com/tano-systems/luci-theme-tano.git
