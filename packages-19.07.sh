@@ -16,7 +16,7 @@ svn co https://github.com/kenzok8/openwrt-packages/trunk/
 svn co https://github.com/cnsilvan/luci-app-unblockneteasemusic/trunk/UnblockNeteaseMusic ./UnblockNeteaseMusic-Go
 svn co https://github.com/cnsilvan/luci-app-unblockneteasemusic/trunk/luci-app-unblockneteasemusic ./luci-app-UnblockNeteaseMusicGo
 git clone --depth 1 https://github.com/Lienol/openwrt-package 
-git clone --depth 1 https://github.com/goldkeyber112/openwrt-r8168.git
+git clone --depth 1 https://github.com/goldkeyber112/openwrt-r8168.git r8168
 git clone --depth 1 https://github.com/fw876/helloworld && mvdir helloworld 
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall && mvdir openwrt-passwall 
 git clone --depth 1 https://github.com/kiddin9/my-packages && mvdir my-packages 

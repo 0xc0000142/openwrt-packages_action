@@ -226,6 +226,8 @@ git clone https://github.com/sensec/luci-app-udp2raw
 svn co https://github.com/obsy/packages/trunk/3ginfo
 git clone https://github.com/jerrykuku/luci-app-argon-config
 svn co https://github.com/sirpdboy/sirpdboy-package/trunk/luci-app-socat
+mv -f ./openwrt-r8168/* ./r8168/
+rm -rf openwrt-r8168
 rm -rf ./*/.git
 rm -rf ./*/.svn 
 rm -f .gitattributes .gitignore
