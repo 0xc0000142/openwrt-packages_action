@@ -71,7 +71,7 @@ git clone --depth 1 https://github.com/gdck/luci-app-cupsd cupsd1 && mv -n cupsd
 svn export https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-autoreboot 
 svn export https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-ddns/trunk/tencentcloud_ddns luci-app-tencentddns 
 svn export https://github.com/coolsnowwolf/lede/trunk/package/lean ledelean 
-	mv ledelean/* ./
+	mv -n ledelean/* ./
 	rm -rf ledelean
 svn export https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync 
 svn export https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd 
@@ -226,9 +226,6 @@ git clone https://github.com/sensec/luci-app-udp2raw
 svn co https://github.com/obsy/packages/trunk/3ginfo
 git clone https://github.com/jerrykuku/luci-app-argon-config
 svn co https://github.com/sirpdboy/sirpdboy-package/trunk/luci-app-socat
-
-mkdir luci
-mv -f ./luci-* ./luci
 rm -rf ./*/.git
 rm -rf ./*/.svn 
 rm -f .gitattributes .gitignore
