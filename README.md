@@ -18,7 +18,7 @@
 
 ## 食用方式（三选一，这里以21.02为例）：
 
-**本仓库中包含可编译的 R8168 驱动 如果您希望使用请使用如下命令行安装仓库:**
+**本仓库中包含可编译的 `Realtek Semiconductor Co., Ltd. RTL8168 PCI Express Gigabit Ethernet Controller` 驱动 如果您希望使用请使用如下命令行安装仓库:**
 
 `./scripts/feeds install -a -f`
 
