@@ -1,5 +1,6 @@
 #!/bin/bash
 git clone --depth 1 https://github.com/Lienol/openwrt-package &
+git clone --depth 1 https://github.com/goldkeyber112/openwrt-r8168.git &
 git clone --depth 1 https://github.com/fw876/helloworld && mvdir helloworld &
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall && mvdir openwrt-passwall &
 git clone --depth 1 https://github.com/kiddin9/my-packages && mvdir my-packages &
