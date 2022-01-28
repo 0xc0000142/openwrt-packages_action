@@ -1,4 +1,20 @@
 #!/bin/bash
+#Theme:
+	svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-argonne
+	svn co https://github.com/kenzok8/luci-theme-ifit/trunk/luci-theme-ifit
+	svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-mcat
+	svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-tomato
+	svn co https://github.com/XXKDB/luci-theme-argon_armygreen/trunk ./luci-theme-argon_armygreen
+	git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git
+	git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config.git
+	git clone --depth 1 https://github.com/tano-systems/luci-theme-tano.git
+	git clone --depth 1 https://github.com/sajati/luci-theme-waton.git
+	git clone --depth 1 https://github.com/52014app/luci-theme-edge.git
+	git clone --depth 1 https://github.com/fhh200000/luci-theme-lafite-port.git
+
+svn co https://github.com/kenzok8/openwrt-packages/trunk/
+svn co https://github.com/cnsilvan/luci-app-unblockneteasemusic/trunk/UnblockNeteaseMusic ./UnblockNeteaseMusicGo
+svn co https://github.com/cnsilvan/luci-app-unblockneteasemusic/trunk/luci-app-unblockneteasemusic ./luci-app-UnblockNeteaseMusicGo
 git clone --depth 1 https://github.com/Lienol/openwrt-package 
 git clone --depth 1 https://github.com/goldkeyber112/openwrt-r8168.git
 git clone --depth 1 https://github.com/fw876/helloworld && mvdir helloworld 
@@ -9,7 +25,6 @@ git clone --depth 1 https://github.com/kiddin9/luci-app-dnsfilter
 git clone --depth 1 https://github.com/kiddin9/aria2 
 git clone --depth 1 https://github.com/kiddin9/luci-app-eqos 
 git clone --depth 1 https://github.com/kiddin9/luci-app-baidupcs-web 
-git clone --depth 1 https://github.com/kiddin9/luci-theme-edge 
 git clone --depth 1 https://github.com/kiddin9/qBittorrent-Enhanced-Edition 
 git clone --depth 1 https://github.com/kiddin9/autoshare && mvdir autoshare 
 git clone --depth 1 https://github.com/kiddin9/openwrt-openvpn && my-packages openwrt-openvpn 
@@ -25,11 +40,11 @@ git clone --depth 1 https://github.com/rufengsuixing/luci-app-onliner
 git clone --depth 1 https://github.com/tty228/luci-app-serverchan 
 git clone --depth 1 https://github.com/4IceG/luci-app-sms-tool smstool && mvdir smstool 
 git clone --depth 1 https://github.com/rufengsuixing/luci-app-usb3disable 
+git clone --depth 1 https://github.com/fszok/luci-app-advancedsetting.git
 git clone --depth 1 https://github.com/silime/luci-app-xunlei 
 git clone --depth 1 https://github.com/ysc3839/luci-proto-minieap 
 git clone --depth 1 https://github.com/zzsj0928/luci-app-pushbot 
 git clone --depth 1 https://github.com/shanglanxin/luci-app-homebridge 
-git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon 
 git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config 
 git clone --depth 1 https://github.com/jerrykuku/luci-app-vssr 
 git clone --depth 1 https://github.com/jerrykuku/luci-app-ttnode ttnode && mv -n ttnode/ttnode/* ./ ; rm -Rf ttnode 
@@ -87,7 +102,7 @@ mv -f ./openwrt-r8168/* ./r8168
 git_sparse_clone master "https://github.com/immortalwrt/packages" "immpkgs" net/mwol net/nps net/verysync net/sub-web \
 net/subconverter net/ngrokc net/oscam net/njitclient net/scutclient net/gost net/amule net/gowebdav \
 admin/bpytop libs/jpcre2 libs/wxbase libs/rapidjson libs/libcron libs/quickjspp \
-utils/cpulimit utils/filebrowser utils/phicomm-k3screenctrl multimedia/gmediarender multimedia/UnblockNeteaseMusic-Go
+utils/cpulimit utils/filebrowser utils/phicomm-k3screenctrl multimedia/gmediarender 
 
 svn export --force https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications
 for ipk in $(ls applications); do
@@ -99,8 +114,6 @@ cp -ufr applications/* ./
 rm -rf applications/
 sed -i 's/..\/..\/luci.mk/..\/luci.mk/g' ./*/Makefile
 wget https://github.com/immortalwrt/luci/raw/openwrt-21.02/luci.mk
-svn co https://github.com/kenzok8/openwrt-packages/trunk/AdGuardHome
-svn co https://github.com/immortalwrt/immortalwrt/branches/openwrt-19.07/package/ctcgfw/gost
 svn co https://github.com/rufengsuixing/luci-app-adguardhome/trunk ./luci-app-adguardhome
 svn co https://github.com/immortalwrt/immortalwrt/branches/openwrt-19.07/package/ntlf9t/luci-app-advancedsetting
 svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-app-aliddns
@@ -111,9 +124,7 @@ git clone https://github.com/vernesong/OpenClash.git
 mv -f OpenClash/luci-app-openclash .
 rm -rf OpenClash
 svn co https://github.com/garypang13/luci-app-eqos/trunk ./luci-app-eqos
-svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package/ctcgfw/luci-app-gost
 svn co https://github.com/jerrykuku/luci-app-jd-dailybonus/trunk ./luci-app-jd-dailybonus
-svn co https://github.com/jerrykuku/luci-theme-argon/trunk ./luci-theme-argon
 svn co https://github.com/jerrykuku/luci-app-vssr/trunk ./luci-app-vssr
 svn co https://github.com/tty228/luci-app-serverchan/trunk ./luci-app-serverchan
 svn co https://github.com/fw876/helloworld/trunk ./
@@ -128,33 +139,18 @@ svn co https://github.com/xiaorouji/openwrt-package/trunk/package ./
 rm -rf .svn
 svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-app-smartdns
 svn co https://github.com/kenzok8/openwrt-packages/trunk/smartdns
-svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-argon_new
-svn co https://github.com/kenzok8/luci-theme-ifit/trunk/luci-theme-ifit
-svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-atmaterial
-svn co https://github.com/garypang13/luci-theme-edge/trunk ./luci-theme-edge
-svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-opentomato
-svn co https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-opentomcat
 svn co https://github.com/jerrykuku/node-request/trunk ./node-request
 svn co https://github.com/jerrykuku/lua-maxminddb/trunk ./lua-maxminddb
-svn co https://github.com/jerrykuku/luci-theme-argon/trunk ./luci-theme-argon
-svn co https://github.com/jerrykuku/luci-app-argon-config/trunk ./luci-app-argon-config
-svn co https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom/trunk/luci-theme-infinityfreedom
-svn co https://github.com/XXKDB/luci-theme-argon_armygreen/trunk ./luci-theme-argon_armygreen
-
-
-svn co https://github.com/rosywrt/luci-theme-rosy/trunk/luci-theme-rosy
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/UnblockNeteaseMusic
-svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/UnblockNeteaseMusicGo
 #svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/adbyby
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/baidupcs-web
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-baidupcs-web
 #svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-adbyby-plus
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-airplay2
-svn co https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom/trunk/luci-theme-infinityfreedom
 svn co https://github.com/cnzd/luci-app-koolproxyR/trunk ./luci-app-koolproxyR
 svn co https://github.com/MiRouter/luci-app-vssr-plus/trunk ./luci-app-vssr-plus
-svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package/ctcgfw/GoQuiet
-svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package/ctcgfw/ChinaDNS
+svn co https://github.com/immortalwrt/packages/trunk/net/GoQuiet/
+svn co https://github.com/immortalwrt/packages/trunk/net/chinadns
 svn co https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman
 svn co https://github.com/lisaac/luci-lib-docker/trunk/collections/luci-lib-docker
 svn co https://github.com/lisaac/luci-app-diskman/trunk ./luci-app-diskman
@@ -184,9 +180,9 @@ svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ramfree
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-unblockmusic
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-vlmcsd
-svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/UnblockNeteaseMusic-Go
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/vlmcsd
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-vsftpd
+svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-cpufreq
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-xlnetacc
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frpc
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/frp
@@ -195,22 +191,19 @@ svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_aliy
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_dnspod
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-cifs-mount
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-turboacc
-git clone https://github.com/yiguihai/luci-app-passwall-plus
-svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package/ctcgfw/openwrt-udpspeeder
+git clone https://github.com/1mi9908303/luci-app-passwall-plus
+svn co https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/udpspeeder
 git clone https://github.com/koshev-msk/luci-app-modeminfo
-svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package/ntlf9t/openwrt-Pcap_DNSProxy
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/microsocks
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/redsocks2
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/tcpping
-svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package/ntlf9t/dnscrypt-proxy-full
 svn co https://github.com/coolsnowwolf/lede/trunk/package/lean/dnsforwarder
-svn co https://github.com/project-openwrt/openwrt/branches/openwrt-19.07/package/ntlf9t/openwrt-udp2raw
+git clone https://github.com/sensec/luci-app-udp2raw
 svn co https://github.com/obsy/packages/trunk/3ginfo
 git clone https://github.com/jerrykuku/luci-app-argon-config
 svn co https://github.com/sirpdboy/sirpdboy-package/trunk/luci-app-socat
+
 mkdir luci
-mv -n openwrt-*/* ./ 
-rm -rf mv -n openwrt-*/*
 mv -f ./luci-* ./luci
 rm -rf ./*/.git
 rm -rf ./*/.svn 
