@@ -83,26 +83,50 @@ svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
 svn export https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman 
 svn export https://github.com/doushang/luci-app-shortcutmenu/tunk/luci-app-shortcutmenu 
 svn export https://github.com/sundaqiang/openwrt-packages/trunk/luci-app-services-wolplus 
-
-git_sparse_clone openwrt-21.02 "https://github.com/openwrt/luci" "opluci" applications/luci-app-aria2 \
-applications/luci-app-ddns applications/luci-app-https-dns-proxy applications/luci-app-acme \
-applications/luci-app-ksmbd applications/luci-app-samba4 
-
-git_sparse_clone master "https://github.com/openwrt/packages" "oppackages" net/shadowsocks-libev net/https-dns-proxy \
-net/openvpn net/adguardhome utils/cgroupfs-mount 
-
-git_sparse_clone master "https://github.com/x-wrt/com.x-wrt" "x-wrt" natflow luci-app-wizard luci-app-macvlan 
-
-git_sparse_clone master "https://github.com/immortalwrt/immortalwrt" "immwrt" package/kernel/mt7601u-ap package/kernel/mtk-eip93 \
-package/kernel/r8152 package/kernel/r8168 package/kernel/rtl8188eu package/kernel/rtl8812au-ac \
-package/kernel/rtl8821cu package/kernel/rtl88x2bu
-
-mv -f ./openwrt-r8168/* ./r8168
-
-git_sparse_clone master "https://github.com/immortalwrt/packages" "immpkgs" net/mwol net/nps net/verysync net/sub-web \
-net/subconverter net/ngrokc net/oscam net/njitclient net/scutclient net/gost net/amule net/gowebdav \
-admin/bpytop libs/jpcre2 libs/wxbase libs/rapidjson libs/libcron libs/quickjspp \
-utils/cpulimit utils/filebrowser utils/phicomm-k3screenctrl multimedia/gmediarender 
+svn co https://github.com/openwrt/luci/trunk/applications/luci-app-aria2
+svn co https://github.com/openwrt/luci/trunk/applications/luci-app-ddns
+svn co https://github.com/openwrt/luci/trunk/applications/luci-app-https-dns-proxy
+svn co https://github.com/openwrt/luci/trunk/applications/luci-app-acme
+svn co https://github.com/openwrt/luci/trunk/applications/luci-app-ksmbd
+svn co https://github.com/openwrt/luci/trunk/applications/luci-app-samba4 
+svn co https://github.com/openwrt/packages/trunk/net/shadowsocks-libev
+svn co https://github.com/openwrt/packages/trunk/net/https-dns-proxy
+svn co https://github.com/openwrt/packages/trunk/net/openvpn
+svn co https://github.com/openwrt/packages/trunk/net/adguardhome
+svn co https://github.com/openwrt/packages/trunk/utils/cgroupfs-mount
+svn co https://github.com/x-wrt/com.x-wrt/trunk/natflow
+svn co https://github.com/x-wrt/com.x-wrt/trunk/luci-app-wizard
+svn co https://github.com/x-wrt/com.x-wrt/trunk/luci-app-macvlan 
+svn co https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/mt7601u-ap
+svn co https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/mtk-eip93
+svn co https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/r8152
+svn co https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/r8168
+svn co https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/rtl8188eu
+svn co https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/rtl8812au-ac
+svn co https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/rtl8821cu
+svn co https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/rtl88x2bu
+svn co https://github.com/immortalwrt/packages/trunk/net/mwol
+svn co https://github.com/immortalwrt/packages/trunk/net/nps
+svn co https://github.com/immortalwrt/packages/trunk/net/verysync
+svn co https://github.com/immortalwrt/packages/trunk/net/sub-web
+svn co https://github.com/immortalwrt/packages/trunk/net/subconverter
+svn co https://github.com/immortalwrt/packages/trunk/net/ngrokc
+svn co https://github.com/immortalwrt/packages/trunk/net/oscam
+svn co https://github.com/immortalwrt/packages/trunk/net/njitclient
+svn co https://github.com/immortalwrt/packages/trunk/net/scutclient
+svn co https://github.com/immortalwrt/packages/trunk/net/gost
+svn co https://github.com/immortalwrt/packages/trunk/net/amule
+svn co https://github.com/immortalwrt/packages/trunk/net/gowebdav
+svn co https://github.com/immortalwrt/packages/trunk/admin/bpytop
+svn co https://github.com/immortalwrt/packages/trunk/libs/jpcre2
+svn co https://github.com/immortalwrt/packages/trunk/libs/wxbase
+svn co https://github.com/immortalwrt/packages/trunk/libs/rapidjson
+svn co https://github.com/immortalwrt/packages/trunk/libs/libcron
+svn co https://github.com/immortalwrt/packages/trunk/libs/quickjspp
+svn co https://github.com/immortalwrt/packages/trunk/utils/cpulimit
+svn co https://github.com/immortalwrt/packages/trunk/utils/filebrowser
+svn co https://github.com/immortalwrt/packages/trunk/utils/phicomm-k3screenctrl
+svn co https://github.com/immortalwrt/packages/trunk/multimedia/gmediarender
 
 svn export --force https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications
 for ipk in $(ls applications); do
