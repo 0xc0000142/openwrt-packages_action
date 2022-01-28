@@ -9,10 +9,10 @@
 21.\*版luci请使用`packages-21.02`分支
 
 ### 常用源码
-| 提供者 | 名称 | Luci版本(默认分支) | 地址 |  
+| 提供者 | 名称 | Luci版本 | 地址 |  
 | --- | -- | ------ | -- |
-| Openwrt Officl | Openwrt 官方源 | 21.02 |[https://github.com/openwrt/openwrt](https://github.com/openwrt/openwrt) |
-| ImmortalWRT(China) | ImmortalWRT | 21.02 | [https://github.com/immortalwrt/immortalwrt](https://github.com/immortalwrt/immortalwrt)|
+| Openwrt Officl | Openwrt 官方源 | 18.06~21.02(Def) |[https://github.com/openwrt/openwrt](https://github.com/openwrt/openwrt) |
+| ImmortalWRT(China) | ImmortalWRT | 18.06(Def)~21.02 | [https://github.com/immortalwrt/immortalwrt](https://github.com/immortalwrt/immortalwrt)|
 | Lean | Openwrt R21 | 18.06 |  [https://github.com/coolsnowwolf/lede](https://github.com/coolsnowwolf/lede)|
 
 
@@ -24,11 +24,11 @@
 ```
 2. 或者添加下面代码到feeds.conf.default文件
 ```bash
- src-git 0xc0000142_packages https://github.com/liuran001/openwrt-packages^packages-21.02
+ src-git 0xc0000142_packages https://github.com/0xc0000142/openwrt-packages_action/^packages-21.02
 ```
 3. 先cd进package目录，然后执行
 ```bash
- svn co https://github.com/liuran001/openwrt-packages/branches/packages-21.02
+ svn co https://github.com/0xc0000142/openwrt-packages_action/branches/packages-21.02
 ```
 
 
