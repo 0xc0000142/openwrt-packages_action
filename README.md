@@ -20,11 +20,11 @@
 `还是建议按需取用，不然碰到依赖问题不太好解决`
 1. 先cd进package目录，然后执行
 ```bash
- git clone -b packages-21.02 https://github.com/0xc0000142/openwrt-packages_action/
+ git clone -b packages-21.02 https://github.com/0xc0000142/openwrt-packages_action.git
 ```
 2. 或者添加下面代码到feeds.conf.default文件
 ```bash
- src-git 0xc0000142_packages https://github.com/0xc0000142/openwrt-packages_action/^packages-21.02
+ src-git 0xc0000142_packages https://github.com/0xc0000142/openwrt-packages_action.git;packages-21.02
 ```
 3. 先cd进package目录，然后执行
 ```bash
