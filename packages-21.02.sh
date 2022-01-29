@@ -2,10 +2,8 @@
 #Theme:
 	git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git
 	git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config.git
-	git clone --depth 1 https://github.com/tano-systems/luci-theme-tano.git
 	git clone --depth 1 https://github.com/sajati/luci-theme-waton.git
 	git clone --depth 1 https://github.com/52014app/luci-theme-edge.git
-	git clone --depth 1 https://github.com/fhh200000/luci-theme-lafite-port.git
 
 svn co https://github.com/kenzok8/openwrt-packages/trunk/
 svn co https://github.com/cnsilvan/luci-app-unblockneteasemusic/trunk/UnblockNeteaseMusic ./UnblockNeteaseMusic-Go
