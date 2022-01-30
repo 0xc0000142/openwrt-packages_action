@@ -22,7 +22,7 @@ set opkg.defaults.proc='--force-overwrite --force-checksum --force-depends'
 set opkg.defaults.reinstall='--force-reinstall --force-overwrite --force-checksum --force-depends'
 set opkg.defaults.newconf='/etc'
 EOI
-echo "opkg kmod uwsgi firewall base-files luci-base busybox nginx dnsmasq-full coremark miniupnpd luci-mod-network luci-mod-status luci-mod-system " \
+echo "kmod busybox " \
 | sed -e "s/\s/ ipkg\n/g" | opkg uci ignore
 }
 
