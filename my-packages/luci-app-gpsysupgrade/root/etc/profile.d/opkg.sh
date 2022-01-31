@@ -22,7 +22,7 @@ set opkg.defaults.proc='--force-overwrite --force-checksum --force-depends'
 set opkg.defaults.reinstall='--force-reinstall --force-overwrite --force-checksum --force-depends'
 set opkg.defaults.newconf='/etc'
 EOI
-echo "kmod busybox " \
+echo "kmod busybox base-files " \
 | sed -e "s/\s/ ipkg\n/g" | opkg uci ignore
 }
 
