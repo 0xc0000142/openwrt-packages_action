@@ -14,6 +14,6 @@ PKG_RELEASE:=1
 PKG_MAINTAINER:=Dennis <openwrt@tossp.com>
 PKG_LICENSE:=GPL-3.0
 
-include ../luci.mk
+include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature

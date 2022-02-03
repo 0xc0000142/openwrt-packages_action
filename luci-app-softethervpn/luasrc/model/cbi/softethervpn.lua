@@ -1,7 +1,8 @@
 local s = require"luci.sys"
 local m,s,o
 
-m = Map("softethervpn", translate("SoftEther VPN Server"))
+m = Map("softethervpn")
+m.title = translate("SoftEther VPN Service")
 m.description = translate("SoftEther VPN is an open source, cross-platform, multi-protocol virtual private network solution developed by university of tsukuba graduate student Daiyuu Nobori for master's thesis. <br>can easily set up OpenVPN, IPsec, L2TP, ms-sstp, L2TPv3 and EtherIP servers on the router using the console.")
 
 m:section(SimpleSection).template = "softethervpn/softethervpn_status"
