@@ -5,17 +5,18 @@
 START=90
 STOP=10
 
-extra_command "check_status" "Check running status of utils"
+EXTRA_COMMANDS="check_status"
+EXTRA_HELP="	check_status Check running status of utils"
 
 restart_utils="true"
+
+PS="/bin/busybox ps"
 
 inital_conf(){
 	config_load "turboacc"
 	config_get "sw_flow" "config" "sw_flow" "0"
 	config_get "hw_flow" "config" "hw_flow" "0"
 	config_get "sfe_flow" "config" "sfe_flow" "0"
-	config_get "sfe_bridge" "config" "sfe_bridge" "0"
-	config_get "sfe_ipv6" "config" "sfe_ipv6" "0"
 	config_get "bbr_cca" "config" "bbr_cca" "0"
 	config_get "fullcone_nat" "config" "fullcone_nat" "0"
 	config_get "dns_caching" "config" "dns_caching" "0"
@@ -23,7 +24,7 @@ inital_conf(){
 	config_get "dns_caching_dns" "config" "dns_caching_dns"
 
 	[ ! -e "/lib/modules/$(uname -r)/xt_FLOWOFFLOAD.ko" ] && { sw_flow="0"; hw_flow="0"; }
-	[ ! -e "/lib/modules/$(uname -r)/fast-classifier.ko" ] && { sfe_flow="0"; sfe_bridge="0"; sfe_ipv6="0"; }
+	[ ! -e "/lib/modules/$(uname -r)/shortcut-fe-cm.ko" ] && sfe_flow="0"
 	[ ! -e "/lib/modules/$(uname -r)/tcp_bbr.ko" ] && bbr_cca="0"
 	[ ! -e "/lib/modules/$(uname -r)/xt_FULLCONENAT.ko" ] && fullcone_nat="0"
 }
@@ -202,8 +203,9 @@ start_dnsproxy() {
 }
 
 stop_dnscache() {
-	killall -9 "dnscache"
-	kill -9 $(ps -w | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}')
+	$PS -w | grep dnscache | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	$PS -w | grep dnscache-while.sh | grep -v "grep" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	killall -q -9 dnscache
 	rm -rf "/var/dnscache" "/var/run/dnscache"
 	echo "Stop DNS Caching"
 }
@@ -214,18 +216,13 @@ change_dns() {
 	uci set dhcp.@dnsmasq[0].noresolv="1"
 	uci commit dhcp
 
-	touch "/var/run/dnscache/.dns-changed"
 }
 
 revert_dns() {
-	[ -e "/var/run/dnscache/.dns-changed" ] || return 1
-
 	uci -q del_list dhcp.@dnsmasq[0].server="127.0.0.1#5333"
 	uci set dhcp.@dnsmasq[0].resolvfile="/tmp/resolv.conf.d/resolv.conf.auto"
 	uci set dhcp.@dnsmasq[0].noresolv="0"
 	uci commit dhcp
-
-	rm -f "/var/run/dnscache/.dns-changed"
 }
 
 start(){
@@ -236,14 +233,20 @@ start(){
 	uci set firewall.@defaults[0].fullcone="${fullcone_nat}"
 	uci commit firewall
 
-	[ "${sw_flow}" -ne "1" ] && [ "${sfe_flow}" -eq "1" ] && {
-		lsmod | grep -q fast_classifier || modprobe fast_classifier 2>"/dev/null"
-		echo "${sfe_bridge}" > "/sys/fast_classifier/skip_to_bridge_ingress" 2>"/dev/null"
-		if [ "${sfe_ipv6}" -eq "1" ]; then
-			[ -e "/dev/sfe_ipv6" ] || mknod "/dev/sfe_ipv6" "c" "$(cat "/sys/sfe_ipv6/debug_dev")" "0"
-		else
-			rm -f "/dev/sfe_ipv6"
-		fi
+	/etc/init.d/turboacc_fss start
+
+	[ "${sw_flow}" -ne "1" ] && {
+		[ "${sfe_flow}" -eq "1" ] && {
+			[ "$(have_ecm_init)" = "0" ] && {
+				/etc/init.d/shortcut-fe enabled || /etc/init.d/shortcut-fe enable
+				/etc/init.d/shortcut-fe start
+			}
+		}
+		[ "${sfe_flow}" -eq "0" ] && [ -e "/etc/init.d/shortcut-fe" ] && [ "$(have_ecm_init)" = "0" ] && \
+		/etc/init.d/shortcut-fe enabled && {
+			/etc/init.d/shortcut-fe stop 2>"/dev/null"
+			/etc/init.d/shortcut-fe disable
+		}
 	}
 
 	if [ "${bbr_cca}" -eq "1" ];  then
@@ -266,16 +269,14 @@ start(){
 		fi
 
 		change_dns
-
 		/usr/share/dnscache/dnscache-while.sh > "/var/log/dnscache.file" 2>&1 &
 	else
-		revert_dns
 		stop_dnscache
+		revert_dns
 	fi
 
 	if [ "${restart_utils}" = "true" ]; then
-		echo "DNSMASQ change"
-		/etc/init.d/dnsmasq restart >"/dev/null" 2>&1
+		/etc/init.d/dnsmasq restart >"/dev/null" 2>&1 && echo "DNSMASQ change"
 		/etc/init.d/firewall restart >"/dev/null" 2>&1
 	fi
 }
@@ -288,33 +289,34 @@ stop(){
 	uci set firewall.@defaults[0].fullcone="${fullcone_nat}"
 	uci commit firewall
 
-	[ "${sfe_flow}" -eq "1" ] || {
-		echo "0" > "/sys/fast_classifier/skip_to_bridge_ingress" 2>"/dev/null"
-		rm -f "/dev/sfe_ipv6"
-		rmmod "fast_classifier" 2>"/dev/null"
+	[ "${sfe_flow}" -ne "1" ] && {
+		[ -e "/etc/init.d/shortcut-fe" ] && [ "$(have_ecm_init)" = "0" ] && {
+			/etc/init.d/shortcut-fe stop 2>"/dev/null"
+			/etc/init.d/shortcut-fe enabled && /etc/init.d/shortcut-fe disable
+		}
 	}
 
 	stop_dnscache
 	revert_dns
 
 	if [ "${restart_utils}" = "true" ]; then
-		echo "DNSMASQ revert"
-		/etc/init.d/dnsmasq restart >"/dev/null" 2>&1
+		/etc/init.d/dnsmasq restart >"/dev/null" 2>&1 && echo "DNSMASQ revert"
 		/etc/init.d/firewall restart >"/dev/null" 2>&1
 	fi
 }
 
 restart(){
 	restart_utils="false"
-
 	stop
 	start
-
-	echo "DNSMASQ restart"
-	/etc/init.d/dnsmasq restart >"/dev/null" 2>&1
+	/etc/init.d/dnsmasq restart >"/dev/null" 2>&1 && echo "DNSMASQ restart"
 	/etc/init.d/firewall restart >"/dev/null" 2>&1
 }
 
+have_ecm_init() {
+	[ -d "/etc/init.d/qca-nss-ecm" ] && echo 1 && return
+	echo 0
+}
 
 check_status(){
 	case "$1" in
@@ -323,9 +325,14 @@ check_status(){
 			echo -n "Flow Offloading"
 			exit 0
 		elif lsmod | grep -q "ecm"; then
-			echo -n "QCA-NSS-ECM"
-			exit 0
-		elif lsmod | grep -q "fast_classifier"; then
+			if lsmod | grep -q "shortcut_fe_drv"; then
+				echo -n "QCA-NSS-ECM-SFE"
+				exit 0
+			else
+				echo -n "QCA-NSS-ECM"
+				exit 0
+			fi
+		elif lsmod | grep -q "shortcut_fe_cm"; then
 			echo -n "Shortcut-FE"
 			exit 0
 		else
