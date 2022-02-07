@@ -3,7 +3,7 @@
 grep -q ng_index.html /etc/config/nginx ||
 	sed -i "s/cgi-bin\///" /www/index.html
 
-[[ "$(df | grep overlay)" && ! "$(df | grep /rom/overlay)" ]] && firstboot
+# [[ "$(df | grep overlay)" && ! "$(df | grep /rom/overlay)" ]] && firstboot
 
 version=`uci -q get base_config.@status[0].version`
 
