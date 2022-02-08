@@ -1,7 +1,11 @@
 #!/bin/sh
 
-grep -q ng_index.html /etc/config/nginx ||
-	sed -i "s/cgi-bin\///" /www/index.html
+grep -q ng_index.html /etc/config/nginx || {
+	uci -q set nginx._lan.index="ng_index.html"
+	uci -q set nginx._ssl.index="ng_index.html"
+	uci commit nginx
+	service nginx reload
+}
 
 # [[ "$(df | grep overlay)" && ! "$(df | grep /rom/overlay)" ]] && firstboot
 
