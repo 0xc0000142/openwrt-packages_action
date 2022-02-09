@@ -179,18 +179,18 @@ start()
     if [ $REPLACE_MUSIC_SOURCE -ne 0 ]; then
       export MIN_BR=$REPLACE_MUSIC_SOURCE
     fi
-    if [ $LOCAL_VIP -eq 1 ]; then
+	if [ $LOCAL_VIP -eq 1 ]; then
       export ENABLE_LOCAL_VIP=true
     fi
     node /usr/share/UnblockNeteaseMusic/app.js -p 5200 $musictype >>/tmp/unblockmusic.log 2>&1 &
     node /usr/share/UnblockNeteaseMusic/app.js -e https://music.163.com -p 5203:5201 $musictype >>/tmp/unblockmusic.log 2>&1 &
     add_cron
     echo "$(date -R) # UnblockNeteaseMusic Nodejs Version (http:5200, https:5201)" >>/tmp/unblockmusic.log  
-	elif [ "$APPTYPE" == "go" ]; then
+  elif [ "$APPTYPE" == "go" ]; then
     if [ $FLAC -eq 1 ]; then
       ENABLE_FLAC="-b "
     fi
-    UnblockNeteaseMusic $musictype $ENABLE_FLAC -p 5200 -sp 5201 -c /usr/share/UnblockNeteaseMusicGo/server.crt -k /usr/share/UnblockNeteaseMusicGo/server.key -m 0 -e -sl ${SEARCHLIMIT} -l /tmp/unblockmusic.log &
+    UnblockNeteaseMusic -o "kuwo:kugou" $ENABLE_FLAC -p 5200 -sp 5201 -c /usr/share/UnblockNeteaseMusicGo/server.crt -k /usr/share/UnblockNeteaseMusicGo/server.key -m 0 -e -sl ${SEARCHLIMIT} -l /tmp/unblockmusic.log &
     echo "$(date -R) # UnblockNeteaseMusic Golang Version (http:5200, https:5201)" >>/tmp/unblockmusic.log
     else
     kill -9 $(busybox ps -w | grep 'sleep 60m' | grep -v grep | awk '{print $1}') >/dev/null 2>&1
