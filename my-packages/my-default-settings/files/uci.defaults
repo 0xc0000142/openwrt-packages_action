@@ -1,6 +1,6 @@
 #!/bin/sh
 
-grep -q ng_index.html /etc/config/nginx || {
+grep -q "ng_index.html index.html" /etc/config/nginx || {
 	uci -q set nginx._lan.index="ng_index.html index.html index.htm"
 	uci -q set nginx._ssl.index="ng_index.html index.html index.htm"
 	uci commit nginx
