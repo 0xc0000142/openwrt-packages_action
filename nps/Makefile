@@ -29,7 +29,7 @@ GO_PKG_BUILD_PKG:=ehang.io/nps/cmd/...
 GO_PKG_LDFLAGS:=-s -w
 
 include $(INCLUDE_DIR)/package.mk
-include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
+include ../../lang/golang/golang-package.mk
 
 define Package/nps/template
   SECTION:=net
@@ -53,13 +53,15 @@ Package/nps/description = $(Package/nps/description/template)
 define Package/npc/config
 	config NPC_COMPRESS_UPX
 		bool "Compress executable files with UPX"
-		default y
+		depends on !mips64
+		default n
 endef
 
 define Package/nps/config
 	config NPS_COMPRESS_UPX
 		bool "Compress executable files with UPX"
-		default y
+		depends on !mips64
+		default n
 endef
 
 define Build/Compile
