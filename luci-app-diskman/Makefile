@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-diskman
-PKG_VERSION:=v0.2.11
+PKG_VERSION:=0.2.11
 PKG_RELEASE:=2
 
 PKG_MAINTAINER:=lisaac <lisaac.cn@gmail.com>
@@ -48,6 +48,6 @@ define Package/$(PKG_NAME)/postinst
 rm -fr /tmp/luci-indexcache /tmp/luci-modulecache
 endef
 
-include $(TOPDIR)/feeds/luci/luci.mk
+include ../luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
