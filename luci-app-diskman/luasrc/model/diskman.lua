@@ -28,8 +28,8 @@ function byte_format(byte)
     if byte > 1024 and i < 5 then
       byte = byte / 1024
     else
-      return string.format("%.2f %s", byte, suff[i])
-    end
+      return string.format("%.2f %s", byte, suff[i]) 
+    end 
   end
 end
 
@@ -246,7 +246,7 @@ local get_parted_info = function(device)
       end
     end
   end
-  result = disk_temp
+  result = disk_temp or result
   result.partitions = partitions_temp
 
   return result
@@ -387,7 +387,7 @@ end
   {
     sda={
       path, model, inuse, size_formated,
-      partitions={
+      partitions={ 
         { name, inuse, size_formated }
         ...
       }
@@ -474,6 +474,18 @@ d.get_format_cmd = function()
   return result
 end
 
+d.find_free_md_device = function()
+  for num=0,127 do
+    local md = io.open("/dev/md"..tostring(num), "r")
+    if md == nil then
+      return "/dev/md"..tostring(num)
+    else
+      io.close(md)
+    end
+  end
+  return nil
+end
+
 d.create_raid = function(rname, rlevel, rmembers)
   local mb = {}
   for _, v in ipairs(rmembers) do
@@ -494,18 +506,8 @@ d.create_raid = function(rname, rlevel, rmembers)
       return "ERR: Invalid raid name"
     end
   else
-    local mdnum = 0
-    for num=1,127 do
-      local md = io.open("/dev/md"..tostring(num), "r")
-      if md == nil then
-        mdnum = num
-        break
-      else
-        io.close(md)
-      end
-    end
-    if mdnum == 0 then return "ERR: Cannot find proper md number" end
-    rname = "/dev/md"..mdnum
+    rname = d.find_free_md_device()
+    if rname == nil then return "ERR: Cannot find free md device" end
   end
 
   if rlevel == "5" or rlevel == "6" then

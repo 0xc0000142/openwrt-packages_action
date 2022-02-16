@@ -1,3 +1,4 @@
+
 module("luci.controller.cpufreq", package.seeall)
 
 function index()
@@ -5,5 +6,8 @@ function index()
 		return
 	end
 
-	entry({"admin", "services", "cpufreq"}, cbi("cpufreq"), _("CPU Freq"), 900).dependent = false
+	local page
+	page = entry({"admin", "system", "cpufreq"}, cbi("cpufreq"), _("CPU Freq"), 900)
+	page.dependent = false
+	page.acl_depends = { "luci-app-cpufreq" }
 end
