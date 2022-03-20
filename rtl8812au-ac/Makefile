@@ -1,4 +1,7 @@
 #
+# Copyright (C) 2020 stepheny
+# <https://github.com/aircrack-ng/rtl8812au/pull/619>
+#
 # Copyright (C) 2021 ImmortalWrt
 # <https://immortalwrt.org>
 #
@@ -8,17 +11,18 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=rtl88x2bu
+PKG_NAME:=rtl8812au-ac
 PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://github.com/morrownr/88x2bu.git
+PKG_SOURCE_URL:=https://github.com/aircrack-ng/rtl8812au.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-11-09
-PKG_SOURCE_VERSION:=47a666315d0a5ff37b53adb48ca21404787565cf
-PKG_MIRROR_HASH:=454449d0d11dec7cfc4196899ddbb6cd4851dcc767b7f40e293820952a12b024
+PKG_SOURCE_DATE:=2021-05-22
+PKG_SOURCE_VERSION:=0b87ed921a8682856aed5a3e68344b0087f3c93c
+PKG_MIRROR_HASH:=f351622acacda52580d5983f5fa6130f625c80f9ee7500543ff8333d57ec3b74
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
+PKG_MAINTAINER:=Marty Jones <mj8263788@gmail.com>
 
 PKG_BUILD_PARALLEL:=1
 
@@ -27,13 +31,13 @@ STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backpor
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/rtl88x2bu
+define KernelPackage/rtl8812au-ac
   SUBMENU:=Wireless Drivers
-  TITLE:=Realtek 8812BU/8822BU support
+  TITLE:=Realtek RTL8812AU/21AU wireless drivers
   DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
-  FILES:=$(PKG_BUILD_DIR)/rtl88x2bu.ko
-  AUTOLOAD:=$(call AutoProbe,rtl88x2bu)
-  PROVIDES:=kmod-rtl88x2bu
+  FILES:=$(PKG_BUILD_DIR)/rtl8812au.ko
+  AUTOLOAD:=$(call AutoProbe,rtl8812au)
+  CONFLICTS:=kmod-rtl8812au-ct
 endef
 
 NOSTDINC_FLAGS = \
@@ -46,6 +50,10 @@ NOSTDINC_FLAGS = \
 	-include backport/autoconf.h \
 	-include backport/backport.h
 
+EXTRA_KCONFIG:= \
+	CONFIG_88XXAU=m \
+	USER_MODULE_NAME=rtl8812au
+
 EXTRA_CFLAGS:= \
 	-DRTW_SINGLE_WIPHY \
 	-DRTW_USE_CFG80211_STA_EVENT \
@@ -53,9 +61,11 @@ EXTRA_CFLAGS:= \
 	-DCONFIG_CONCURRENT_MODE \
 	-DBUILD_OPENWRT
 
-EXTRA_KCONFIG:= \
-	CONFIG_RTL8822BU=m \
-	USER_MODULE_NAME=rtl88x2bu
+ifeq ($(CONFIG_BIG_ENDIAN),y)
+EXTRA_CFLAGS += -DCONFIG_BIG_ENDIAN
+else
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+endif
 
 MAKE_OPTS:= \
 	$(KERNEL_MAKE_FLAGS) \
@@ -70,4 +80,4 @@ define Build/Compile
 		modules
 endef
 
-$(eval $(call KernelPackage,rtl88x2bu))
+$(eval $(call KernelPackage,rtl8812au-ac))
