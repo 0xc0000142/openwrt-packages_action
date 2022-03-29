@@ -1,4 +1,7 @@
 #
+# Copyright (C) 2020 stepheny
+# <https://github.com/aircrack-ng/rtl8812au/pull/619>
+#
 # Copyright (C) 2021 ImmortalWrt
 # <https://immortalwrt.org>
 #
@@ -8,18 +11,18 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=rtl8821cu
+PKG_NAME:=rtl8812au-ac
 PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://github.com/brektrou/rtl8821CU.git
+PKG_SOURCE_URL:=https://github.com/aircrack-ng/rtl8812au.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2020-12-19
-PKG_SOURCE_VERSION:=428a0820487418ec69c0edb91726d1cf19763b1e
-PKG_MIRROR_HASH:=77958d3bff8b0145504a10959765be0e3743b9c4880a5173d156238c2c569a56
+PKG_SOURCE_DATE:=2021-05-22
+PKG_SOURCE_VERSION:=0b87ed921a8682856aed5a3e68344b0087f3c93c
+PKG_MIRROR_HASH:=f351622acacda52580d5983f5fa6130f625c80f9ee7500543ff8333d57ec3b74
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINTER:=CN_SZTL <cnsztl@immortalwrt.org>
+PKG_MAINTAINER:=Marty Jones <mj8263788@gmail.com>
 
 PKG_BUILD_PARALLEL:=1
 
@@ -28,13 +31,13 @@ STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backpor
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/rtl8821cu
+define KernelPackage/rtl8812au-ac
   SUBMENU:=Wireless Drivers
-  TITLE:=Realtek RTL8811CU/RTL8821CU support
+  TITLE:=Realtek RTL8812AU/21AU wireless drivers
   DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
-  FILES:=$(PKG_BUILD_DIR)/rtl8821cu.ko
-  AUTOLOAD:=$(call AutoProbe,rtl8821cu)
-  PROVIDES:=kmod-rtl8821cu
+  FILES:=$(PKG_BUILD_DIR)/rtl8812au.ko
+  AUTOLOAD:=$(call AutoProbe,rtl8812au)
+  CONFLICTS:=kmod-rtl8812au-ct
 endef
 
 NOSTDINC_FLAGS = \
@@ -48,12 +51,8 @@ NOSTDINC_FLAGS = \
 	-include backport/backport.h
 
 EXTRA_KCONFIG:= \
-	CONFIG_RTL8821CU=m \
-	USER_MODULE_NAME=rtl8821cu
-
-ifeq ($(ARCH),aarch64)
-	EXTRA_KCONFIG += CONFIG_MP_VHT_HW_TX_MODE=n
-endif
+	CONFIG_88XXAU=m \
+	USER_MODULE_NAME=rtl8812au
 
 EXTRA_CFLAGS:= \
 	-DRTW_SINGLE_WIPHY \
@@ -62,12 +61,10 @@ EXTRA_CFLAGS:= \
 	-DCONFIG_CONCURRENT_MODE \
 	-DBUILD_OPENWRT
 
-ifeq ($(ARCH),arm)
-	EXTRA_CFLAGS += -mfloat-abi=softfp
-endif
-
-ifeq ($(BOARD),x86)
-	EXTRA_CFLAGS += -mhard-float
+ifeq ($(CONFIG_BIG_ENDIAN),y)
+EXTRA_CFLAGS += -DCONFIG_BIG_ENDIAN
+else
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
 endif
 
 MAKE_OPTS:= \
@@ -83,4 +80,4 @@ define Build/Compile
 		modules
 endef
 
-$(eval $(call KernelPackage,rtl8821cu))
+$(eval $(call KernelPackage,rtl8812au-ac))
