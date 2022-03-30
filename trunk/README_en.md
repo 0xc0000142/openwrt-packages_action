@@ -10,7 +10,7 @@
 
 <img src="https://v2.jinrishici.com/one.svg?font-size=24&spacing=2&color=Black">
 
-<br>English | [简体中文](README_ZH.md)
+<br>English | [简体中文](README.md)
 
 ##### illustrate
 
@@ -18,7 +18,7 @@
 
 * [small-package warehouse address](https://github.com/kenzok8/small-package)
 
-* The software synchronizes the Dashen library updates from time to time, suitable for one-click download for openwrt compilation
+* The software syn the updates from to time, suitable for one-click download for openwrt compilation
 
 
 ##### Plugin update download:
