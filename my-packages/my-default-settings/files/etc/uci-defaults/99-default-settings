@@ -73,19 +73,28 @@ test $version -lt 1 && {
 	uci -q get wireless.${radio} >/dev/null 2>&1 && {
 		uci -q batch <<-EOT
 			set -q wireless.${radio}.disabled='0'
+			set -q wireless.${radio}.country='CN'
+			set -q wireless.${radio}.channel='auto'
+			set wireless.${radio}.cell_density='0'
 		EOT
 		
 		if [ "$(uci -q get wireless.${radio}.hwmode)" = "11a" ]; then
 			uci -q set wireless.${radio}.htmode='VHT80'
+			uci -q set wireless.${radio}.txpower='23'
 		else
 			uci -q set wireless.${radio}.htmode='VHT40'
+			uci -q set wireless.${radio}.txpower='20'
 		fi
 
 		obj=`uci -q add wireless wifi-iface`
 		test -n "$obj" && {
+			uci -q set wireless.${radio}="wifi-iface"
 			uci -q set wireless.$obj.device="${radio}"
 			uci -q set wireless.$obj.network='lan'
 			uci -q set wireless.$obj.mode='ap'
+			uci set wireless.$obj.ieee80211r='1'
+			uci set wireless.$obj.ft_over_ds='1'
+			uci set wireless.$obj.ft_psk_generate_local='1'
 			if [ "$(uci -q get wireless.${radio}.hwmode)" == "11a" ]; then
 				uci -q set wireless.$obj.ssid="${SSID}_5G"
 			else
