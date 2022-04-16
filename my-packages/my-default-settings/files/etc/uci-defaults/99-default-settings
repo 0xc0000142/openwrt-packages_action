@@ -75,19 +75,16 @@ test $version -lt 1 && {
 			uci -q set wireless.${radio}.country='AU'
 			uci -q set wireless.${radio}.channel='auto'
 		
-		if [ "$(uci -q get wireless.${radio}.hwmode)" = "11a" ]; then
+		if [ "$(uci -q get wireless.${radio}.band)" = "5g" ]; then
 			uci -q set wireless.${radio}.htmode='VHT80'
+			uci -q set wireless.default_${radio}.ssid="${SSID}_5G"
 		else
 			uci -q set wireless.${radio}.htmode='VHT40'
+			uci -q set wireless.default_${radio}.ssid="${SSID}_2.4G"
 		fi
 			uci -q set wireless.default_${radio}.device="${radio}"
 			uci -q set wireless.default_${radio}.mode='ap'
 			uci -q set wireless.default_${radio}.ieee80211r='1'
-			if [ "$(uci -q get wireless.${radio}.hwmode)" == "11a" ]; then
-				uci -q set wireless.default_${radio}.ssid="${SSID}_5G"
-			else
-				uci -q set wireless.default_${radio}.ssid="${SSID}_2.4G"
-			fi
 			if [ "${SSID_PASSWD}" ]; then
 				uci -q set wireless.default_${radio}.encryption='psk2'
 				uci -q set wireless.default_${radio}.key="${SSID_PASSWD}"
@@ -106,6 +103,7 @@ test $version -lt 1 && {
 		done
 		uci commit wireless
 		wifi up
+		) &
 	}
 
 	uci -q set upnpd.config.enabled='1'
