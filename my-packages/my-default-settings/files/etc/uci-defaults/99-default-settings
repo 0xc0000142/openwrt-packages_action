@@ -6,9 +6,8 @@
 
 version=`uci -q get base_config.@status[0].version`
 
-. /etc/openwrt_release
-test -n "${DISTRIB_ID}" || DISTRIB_ID=OpenWrt
-DISTRIB_ID=`echo -n $DISTRIB_ID | tr a-z A-Z`
+hostname=`uci -q get system.@system[0].hostname`
+test -n "${hostname}" || hostname="OpenWrt"
 
 if [ "$(uci -q get dhcp.@dnsmasq[0].port)" != "53" ]; then
 	uci -q set dhcp.@dnsmasq[0].port='53'
@@ -52,7 +51,6 @@ test $version -lt 1 && {
 	uci commit dropbear
 	
 	uci -q get system.@system[0] >/dev/null 2>&1 && {
-		uci -q set system.@system[0].hostname="${DISTRIB_ID}"
 		uci -q set system.@system[0].zonename='Asia/Shanghai'
 		uci -q set system.@system[0].timezone='CST-8'
 		uci -q del system.ntp.server
@@ -95,15 +93,12 @@ test $version -lt 1 && {
 	}
 
 	[ -f /etc/config/wireless ] && {
-		SSID=${DISTRIB_ID}
+		SSID=${hostname}
 		SSID_PASSWD=""
-		wifi reconf
 		for radio in radio0 radio1 radio2 radio3 wifi0 wifi1 wifi2 wifi3; do
 			wifi_setup_radio ${radio}
 		done
 		uci commit wireless
-		wifi up
-		) &
 	}
 
 	uci -q set upnpd.config.enabled='1'

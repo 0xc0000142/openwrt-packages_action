@@ -1,8 +1,8 @@
-version=`uci -q get base_config.@status[0].version`
+#!/bin/sh
 
-. /etc/openwrt_release
-test -n "${DISTRIB_ID}" || DISTRIB_ID=OpenWrt
-DISTRIB_ID=`echo -n $DISTRIB_ID | tr a-z A-Z`
+version=`uci -q get base_config.@status[0].version`
+hostname=`uci -q get system.@system[0].hostname`
+test -n "${hostname}" || hostname="OpenWrt"
 
 	wifi_setup_radio(){
 	local radio=$1
@@ -29,26 +29,25 @@ DISTRIB_ID=`echo -n $DISTRIB_ID | tr a-z A-Z`
 			fi
 		}
 	}
-
+  
 test $version -lt 3 && {
 uci set firewall.@defaults[0].flow_offloading='1'
 uci commit firewall
+
 	[ -f /etc/config/wireless ] && {
-		SSID=${DISTRIB_ID}
+		SSID=${hostname}
 		SSID_PASSWD=""
 		( while ! cat /etc/config/wireless | grep "radio0"; do
-		wifi reconf
 		sleep 1
 		done
 		for radio in radio0 radio1 radio2 radio3 wifi0 wifi1 wifi2 wifi3; do
 			wifi_setup_radio ${radio}
 		done
 		uci commit wireless
-		wifi up
+		wifi reload
 		) &
 	}
 }
 
-uci commit luci
 uci -q set base_config.@status[0].version=3
 uci commit base_config
