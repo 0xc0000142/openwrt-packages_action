@@ -27,6 +27,7 @@ test -n "${hostname}" || hostname="OpenWrt"
 			else
 				uci -q set wireless.default_${radio}.encryption='none'
 			fi
+			rm -rf /tmp/luci-*
 		}
 	}
   
