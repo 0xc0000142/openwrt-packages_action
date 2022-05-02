@@ -11,9 +11,10 @@
 START=99
 STOP=15
 
+extra_command "rules"
+
 SERVICE_DAEMONIZE=1
 NAME=vssr
-EXTRA_COMMANDS=rules
 
 #定义配置文件名称
 CONFIG_FILE=/var/etc/${NAME}_t.json
@@ -214,14 +215,13 @@ start_rules() {
         router) gfwmode="-r" ;;
         oversea) gfwmode="-c" ;;
         all) gfwmode="-z" ;;
-        direct) gfwmode="-d" ;;
     esac
 
     local dports=$(uci_get_by_type global dports 1)
     if [ $dports = "1" ]; then
         proxyport=" "
     else
-        proxyport="-m multiport --dports 22,53,587,465,995,993,143,80,443,9418"
+        proxyport="-m multiport --dports 22,53,587,465,995,993,143,80,443 "
     fi
 
     $VSSR_RULES_BIN \
@@ -433,7 +433,7 @@ start_redir() {
             ;;
         v2ray | vless)
             $ucmd -config $last_config_file >/dev/null 2>&1 &
-            echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay: $($sscmd -version | head -1) 已启动!" >>/tmp/vssr.log
+            echo "$(date "+%Y-%m-%d %H:%M:%S") UDP TPROXY Relay: V2ray 已启动!" >>/tmp/vssr.log
             ;;
         trojan)
             $ucmd --config $last_config_file >/dev/null 2>&1 &
@@ -584,13 +584,7 @@ start() {
                 rm -rf /tmp/dnsmasq.oversea
             fi
             mkdir -p /tmp/dnsmasq.d
-            if [ "$run_mode" = "direct" ]; then
-                mkdir -p /tmp/dnsmasq.ssr
-                cp -rf /etc/vssr/ad.conf /tmp/dnsmasq.ssr/
-                cat >/tmp/dnsmasq.d/dnsmasq-ssr.conf <<EOF
-conf-dir=/tmp/dnsmasq.ssr
-EOF
-            elif ! [ "$run_mode" = "oversea" ]; then
+            if ! [ "$run_mode" = "oversea" ]; then
                 mkdir -p /tmp/dnsmasq.ssr
                 cp -rf /etc/vssr/gfw_list.conf /tmp/dnsmasq.ssr/
                 cp -rf /etc/vssr/gfw_base.conf /tmp/dnsmasq.ssr/
