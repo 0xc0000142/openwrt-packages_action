@@ -118,10 +118,14 @@ function to_check()
 		model = "xiaomi-3g"
 		check_update()
 		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-router-3g-squashfs-sysupgrade.bin"
-    elseif model:match(".*AC2100.*") then
-		model = "AC2100"
+    elseif model:match(".*Redmi Router AC2100.*") then
+		model = "redmi-2100"
 		check_update()
 		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-redmi-ac2100-squashfs-sysupgrade.bin"
+    elseif model:match(".*Mi Router AC2100.*") then
+		model = "mi-2100"
+		check_update()
+		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-ac2100-squashfs-sysupgrade.bin"
     else
 		local needs_update = false
 		return {
