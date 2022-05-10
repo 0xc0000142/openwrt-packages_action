@@ -57,23 +57,23 @@ function to_check()
     elseif model:match(".*AX6S.*") then
 		model = "redmi-ax6s"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-mt7622-redmi-ax6s-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/mediatek_mt7622/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-mt7622-redmi-ax6s-squashfs-sysupgrade.bin"
     elseif model:match(".*E8450.*") then
 		model = "linksys-e8450-ubi"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-mt7622-linksys_e8450-ubi-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/mediatek_mt7622/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-mt7622-linksys_e8450-ubi-squashfs-sysupgrade.bin"
     elseif model:match(".*AX6.*") then
 		model = "redmi-ax6"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-redmi_ax6-squashfs-nand-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ipq807x/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-redmi_ax6-squashfs-nand-sysupgrade.bin"
     elseif model:match(".*AX9000.*") then
 		model = "xiaomi-ax9000"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-xiaomi_ax9000-squashfs-nand-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ipq807x/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-xiaomi_ax9000-squashfs-nand-sysupgrade.bin"
     elseif model:match(".*AX3600.*") then
 		model = "xiaomi-ax3600"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-xiaomi_ax3600-squashfs-nand-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ipq807x/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-xiaomi_ax3600-squashfs-nand-sysupgrade.bin"
     elseif model:match(".*DoorNet2.*") then
 		model = "doornet2"
 		check_update()
@@ -97,31 +97,31 @@ function to_check()
     elseif model:match(".*XY-C5.*") then
 		model = "xy-c5"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaoyu_xy-c5-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaoyu_xy-c5-squashfs-sysupgrade.bin"
     elseif model:match(".*D2") then
 		model = "newifi-d2"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-d-team_newifi-d2-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-d-team_newifi-d2-squashfs-sysupgrade.bin"
     elseif model:match(".*CR660x.*") then
 		model = "cr660x"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-router-cr660x-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-router-cr660x-squashfs-sysupgrade.bin"
     elseif model:match("Mi Router 3 Pro") then
 		model = "xiaomi-3pro"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-router-3-pro-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-router-3-pro-squashfs-sysupgrade.bin"
     elseif model:match("Mi Router 4") then
 		model = "xiaomi-4"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-router-4-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-router-4-squashfs-sysupgrade.bin"
     elseif model:match("Mi Router 3G") then
 		model = "xiaomi-3g"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-router-3g-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-xiaomi_mi-router-3g-squashfs-sysupgrade.bin"
     elseif model:match(".*AC2100.*") then
 		model = "AC2100"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-redmi-ac2100-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/ramips_mt7621/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-redmi-ac2100-squashfs-sysupgrade.bin"
     else
 		local needs_update = false
 		return {
