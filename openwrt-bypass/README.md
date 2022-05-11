@@ -19,6 +19,6 @@ https://github.com/fw876/helloworld
 
 https://github.com/small-5
 
-https://github.com/xiaorouji/openwrt-passwall/tree/main/luci-app-passwall
+https://github.com/xiaorouji/openwrt-passwall2/tree/main/luci-app-passwall2
 
 https://github.com/jerrykuku/luci-app-vssr
