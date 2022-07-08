@@ -11,8 +11,8 @@ include $(INCLUDE_DIR)/kernel.mk
 PKG_NAME:=mtk-eip93
 PKG_RELEASE:=1.3
 
-PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/vschagen/mtk-eip93.git
+PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=ca08387bf8352652129019bb19e2423ab313d5cb
 PKG_MIRROR_HASH:=4505ee2a175a6cf77a1a3b4fa7bf188da8f8b47894e5afa62c8cb008fbfa15ed
 
