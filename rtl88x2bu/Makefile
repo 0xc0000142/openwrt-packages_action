@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2021 ImmortalWrt
+# <https://immortalwrt.org>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -7,14 +8,17 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=rtl8188eu
+PKG_NAME:=rtl88x2bu
 PKG_RELEASE:=1
 
-PKG_SOURCE_URL:=https://github.com/aircrack-ng/rtl8188eus.git
+PKG_SOURCE_URL:=https://github.com/morrownr/88x2bu.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_DATE:=2021-02-06
-PKG_SOURCE_VERSION:=1e7145f3237b3eeb3baf775f4a883e6d79c1cfe6
-PKG_MIRROR_HASH:=3f68779aed2b9fabca042ea4effbdf35e25e632a00febe6c3f09646a8c75ee5d
+PKG_SOURCE_DATE:=2021-11-09
+PKG_SOURCE_VERSION:=47a666315d0a5ff37b53adb48ca21404787565cf
+PKG_MIRROR_HASH:=454449d0d11dec7cfc4196899ddbb6cd4851dcc767b7f40e293820952a12b024
+
+PKG_LICENSE:=GPL-2.0
+PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_PARALLEL:=1
 
@@ -23,12 +27,13 @@ STAMP_CONFIGURED_DEPENDS := $(STAGING_DIR)/usr/include/mac80211-backport/backpor
 include $(INCLUDE_DIR)/kernel.mk
 include $(INCLUDE_DIR)/package.mk
 
-define KernelPackage/rtl8188eu
+define KernelPackage/rtl88x2bu
   SUBMENU:=Wireless Drivers
-  TITLE:=Realtek 8188EU(S)/8188ETV support
-  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT
-  FILES:=$(PKG_BUILD_DIR)/rtl8188eu.ko
-  AUTOLOAD:=$(call AutoProbe,rtl8188eu)
+  TITLE:=Realtek 8812BU/8822BU support
+  DEPENDS:=+kmod-cfg80211 +kmod-usb-core +@DRIVER_11N_SUPPORT +@DRIVER_11AC_SUPPORT
+  FILES:=$(PKG_BUILD_DIR)/rtl88x2bu.ko
+  AUTOLOAD:=$(call AutoProbe,rtl88x2bu)
+  PROVIDES:=kmod-rtl88x2bu
 endef
 
 NOSTDINC_FLAGS = \
@@ -48,15 +53,9 @@ EXTRA_CFLAGS:= \
 	-DCONFIG_CONCURRENT_MODE \
 	-DBUILD_OPENWRT
 
-ifeq ($(CONFIG_BIG_ENDIAN),y)
-EXTRA_CFLAGS += -DCONFIG_BIG_ENDIAN
-else
-EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
-endif
-
 EXTRA_KCONFIG:= \
-	CONFIG_RTL8188EU=m \
-	USER_MODULE_NAME=rtl8188eu
+	CONFIG_RTL8822BU=m \
+	USER_MODULE_NAME=rtl88x2bu
 
 MAKE_OPTS:= \
 	$(KERNEL_MAKE_FLAGS) \
@@ -71,4 +70,4 @@ define Build/Compile
 		modules
 endef
 
-$(eval $(call KernelPackage,rtl8188eu))
+$(eval $(call KernelPackage,rtl88x2bu))
