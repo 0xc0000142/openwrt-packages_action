@@ -12,6 +12,10 @@ msgstr ""
 msgid "BitSrunLogin-Go"
 msgstr ""
 
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:109
+msgid "Check interval"
+msgstr ""
+
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:82
 msgid "China Mobile (cmcc)"
 msgstr ""
@@ -27,6 +31,10 @@ msgstr ""
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:66
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:37
 msgid "Collecting data..."
+msgstr ""
+
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:118
+msgid "Debug mode"
 msgstr ""
 
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:72
@@ -45,11 +53,11 @@ msgstr ""
 msgid "ISP type"
 msgstr ""
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:109
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:115
 msgid "Interface name"
 msgstr ""
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:110
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:116
 msgid ""
 "Interface name in regex, e.g. \"eth0\\.[2-3]\".<br/>Multi-interfaces mode "
 "will be enabled if not empty."
@@ -63,11 +71,11 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:50
-msgid "Log file is not found."
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:53
+msgid "Log file does not exist."
 msgstr ""
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:46
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:44
 msgid "Log is clean."
 msgstr ""
 
@@ -79,8 +87,16 @@ msgstr ""
 msgid "Maximum time allowed for connection."
 msgstr ""
 
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:119
+msgid "More granular information will be given in log."
+msgstr ""
+
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:36
 msgid "NOT RUNNING"
+msgstr ""
+
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:110
+msgid "Network connectivity check interval."
 msgstr ""
 
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:90
@@ -91,7 +107,7 @@ msgstr ""
 msgid "RUNNING"
 msgstr ""
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:69
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:70
 msgid "Refresh every %s seconds."
 msgstr ""
 
@@ -113,7 +129,7 @@ msgstr ""
 msgid "Timeout"
 msgstr ""
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:56
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:57
 msgid "Unknown error: %s"
 msgstr ""
 
