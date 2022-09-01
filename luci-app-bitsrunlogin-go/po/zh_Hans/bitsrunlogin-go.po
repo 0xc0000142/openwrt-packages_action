@@ -17,7 +17,11 @@ msgstr "深澜校园网自动登录工具。"
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:52
 #: applications/luci-app-bitsrunlogin-go/root/usr/share/luci/menu.d/luci-app-bitsrunlogin-go.json:3
 msgid "BitSrunLogin-Go"
-msgstr ""
+msgstr "BitSrunLogin-Go"
+
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:109
+msgid "Check interval"
+msgstr "检查间隔"
 
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:82
 msgid "China Mobile (cmcc)"
@@ -36,6 +40,10 @@ msgstr "中国联通（cucc）"
 msgid "Collecting data..."
 msgstr "收集数据中..."
 
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:118
+msgid "Debug mode"
+msgstr "调试模式"
+
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:72
 msgid "Enable"
 msgstr "启用"
@@ -52,11 +60,11 @@ msgstr "授予访问 BitSrunLogin-Go 配置的权限"
 msgid "ISP type"
 msgstr "运营商类型"
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:109
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:115
 msgid "Interface name"
 msgstr "接口名称"
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:110
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:116
 msgid ""
 "Interface name in regex, e.g. \"eth0\\.[2-3]\".<br/>Multi-interfaces mode "
 "will be enabled if not empty."
@@ -70,11 +78,11 @@ msgstr "加载中..."
 msgid "Log"
 msgstr "日志"
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:50
-msgid "Log file is not found."
-msgstr "未找到日志文件。"
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:53
+msgid "Log file does not exist."
+msgstr "日志文件不存在。"
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:46
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:44
 msgid "Log is clean."
 msgstr "日志为空。"
 
@@ -86,9 +94,17 @@ msgstr "登录地址"
 msgid "Maximum time allowed for connection."
 msgstr "连接最长允许时间。"
 
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:119
+msgid "More granular information will be given in log."
+msgstr "日志中将打印更多详细信息。"
+
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:36
 msgid "NOT RUNNING"
 msgstr "未运行"
+
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:110
+msgid "Network connectivity check interval."
+msgstr "网络连通性检查间隔。"
 
 #: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/base.js:90
 msgid "Password"
@@ -98,7 +114,7 @@ msgstr "密码"
 msgid "RUNNING"
 msgstr "运行中"
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:69
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:70
 msgid "Refresh every %s seconds."
 msgstr "每 %s 秒刷新。"
 
@@ -122,7 +138,7 @@ msgstr "跳过证书检查"
 msgid "Timeout"
 msgstr "超时"
 
-#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:56
+#: applications/luci-app-bitsrunlogin-go/htdocs/luci-static/resources/view/bitsrunlogin-go/log.js:57
 msgid "Unknown error: %s"
 msgstr "未知错误：%s"
 
