@@ -1,5 +1,5 @@
 # openwrt-packages
-国内常用OpenWrt软件包源码合集，每天自动更新，**不**建议使用lean源码 因为他的luci版本太拉了
+国内常用OpenWrt软件包源码合集，每天自动更新.
 
 
 18.06版luci请使用`packages`分支 **18.06版本已停止维护 仅进行日常软件更新**
@@ -11,8 +11,8 @@
 ### 常用源码
 | 提供者 | 名称 | Luci版本 | 地址 |  
 | --- | -- | ------ | -- |
-| Openwrt Officl | Openwrt 官方源 | 18.06~21.02(Def) |[https://github.com/openwrt/openwrt](https://github.com/openwrt/openwrt) |
-| ImmortalWRT(China) | ImmortalWRT | 18.06(Def)~21.02 | [https://github.com/immortalwrt/immortalwrt](https://github.com/immortalwrt/immortalwrt)|
+| Openwrt Offical | Openwrt 官方源 | 18.06~21.02(Def) |[https://github.com/openwrt/openwrt](https://github.com/openwrt/openwrt) |
+| ImmortalWRT(China) | ImmortalWRT | 18.06~21.02(Def) | [https://github.com/immortalwrt/immortalwrt](https://github.com/immortalwrt/immortalwrt)|
 | Lean | Openwrt R21 | 18.06 |  [https://github.com/coolsnowwolf/lede](https://github.com/coolsnowwolf/lede)|
 | X-wrt | X-wrt | 21.02 | [https://github.com/x-wrt/x-wrt](https://github.com/x-wrt/x-wrt)|
 
