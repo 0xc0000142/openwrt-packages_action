@@ -1,4 +1,3 @@
-//  compress: false
 /**
  *  Argon is a clean HTML5 theme for LuCI. It is based on luci-theme-material and Argon Template
  *
@@ -19,7 +18,7 @@
  *  luci-theme-material:
  *      https://github.com/LuttyYang/luci-theme-material/
  *
- *  Agron Theme
+ *  Argon Theme
  *	    https://demos.creative-tim.com/argon-dashboard/index.html
  *
  *  Login background
@@ -58,7 +57,7 @@
     --warning: #fb6340;
     --footer-color: #aaa;
     --menubar-background: #fff;
-    --menubar-scrollbar-thumb: #f6f9fc;
+    --menubar-scrollbar-thumb: #eee;
     --menubar-text-color: #4c4c4c;
     --blue: #5e72e4;
     --indigo: #5603ad;
@@ -179,12 +178,40 @@ body {
     color: var(--white);
 }
 
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar,
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #9e9e9e;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #757575;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #424242;
+}
+
 a:link,
 a:visited,
 a:active {
-    color: #5e72e4;
     color: var(--primary);
     text-decoration: none;
+}
+
+a:-webkit-any-link:not(li a, .main-left a, .brand, .pull-right a, .alert-message a, .login-container footer a, .cbi-button) {
+    color: -webkit-link;
+    cursor: pointer;
+    color: var(--primary);
+    text-shadow: 1px 1px 2px #ccc;
 }
 
 a:hover {
@@ -257,7 +284,8 @@ li {
 
         video {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
         }
     }
 
@@ -319,26 +347,19 @@ li {
             max-width: 420px;
             background-color: #fff;
             background-color: var(--white);
+            overflow:hidden;
 
             .brand {
                 display: flex;
                 -webkit-box-align: center;
                 align-items: center;
-                margin: 50px auto 100px 50px;
+                margin: 50px auto 15px auto;
                 color: #525461;
                 color: var(--default);
 
                 .icon {
                     width: 50px;
                     height: auto;
-                    margin-right: 25px;
-                }
-
-                .brand-text {
-                    font-size: 1.25rem;
-                    font-weight: 700;
-                    font-family: "TypoGraphica";
-
                 }
 
                 &:hover {
@@ -346,8 +367,24 @@ li {
                 }
             }
 
+            .brand-text {
+                font-size: 1.8rem;
+                font-weight: 700;
+                margin-bottom: 85px;
+                font-family: "TypoGraphica";
+                width: 420px;
+                padding: 0 0.5rem 0 0.5rem;
+                text-align: center;
+                word-break: break-word;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+
             .form-login {
-                width: 100%;
+                width: 420px;
                 padding: 20px 50px;
                 box-sizing: border-box;
 
@@ -487,6 +524,14 @@ li {
                 display: block;
             }
         }
+
+        footer {
+            color: var(--default);
+
+            a {
+                color: var(--default);
+            }
+        }
     }
 }
 
@@ -583,13 +628,9 @@ footer {
 
     text-align: right;
     padding: 1rem;
-    color: #aaa;
-    color: var(--footer-color);
     font-size: 0.8rem;
 
     a {
-        color: #aaa;
-        color: var(--footer-color);
         text-decoration: none;
     }
 }
@@ -636,6 +677,7 @@ footer {
         position: fixed;
         z-index: 100;
         transition: width 0.2s ease-in-out;
+        overflow-y: scroll;
 
         &::-webkit-scrollbar {
             width: 5px;
@@ -649,8 +691,7 @@ footer {
         }
 
         &::-webkit-scrollbar-track {
-            background-color: #fff;
-            background-color: var(--menubar-background);
+            background-color: transparent;
         }
 
         .sidenav-header {
@@ -789,6 +830,7 @@ footer {
                             color: #fff;
                             background: #5e72e4;
                             background: var(--primary);
+                            box-shadow: 0 0 1px #ccc;
 
                             a {
                                 color: #000;
@@ -903,6 +945,7 @@ footer {
                                     background-color: #5e72e4;
                                     background-color: var(--primary);
                                     transition: all 0.2s;
+                                    box-shadow: 0 0 1px #ccc;
                                 }
 
                                 &:hover::after {
@@ -1060,7 +1103,7 @@ footer {
 }
 
 .cbi-button:active {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.19), 0 5px 5px rgba(0, 0, 0, 0.23);
 }
 
 .cbi-button:disabled {
@@ -1111,10 +1154,6 @@ form.inline+form.inline,
     border-color: var(--primary) !important;
 }
 
-.cbi-button-add {
-    margin-left: 1.5rem;
-}
-
 .node-services-vssr .ssr-button {
     margin-left: 0.3rem;
 
@@ -1134,6 +1173,34 @@ form.inline+form.inline,
     min-width: 2.5rem !important;
 }
 
+/* Replace LuCI's default file and folder type icons */
+img[src="/luci-static/resources/cbi/reload.gif"] {
+    content: url("/luci-static/argon/img/reload.webp");
+}
+img[src="/luci-static/resources/cbi/file.gif"] {
+    content: url("/luci-static/argon/img/file.webp");
+}
+img[src="/luci-static/resources/cbi/add.gif"] {
+    content: url("/luci-static/argon/img/add.webp");
+}
+img[src="/luci-static/resources/cbi/remove.gif"] {
+    content: url("/luci-static/argon/img/remove.webp");
+}
+img[src="/luci-static/resources/cbi/edit.gif"] {
+    content: url("/luci-static/argon/img/edit.webp");
+}
+img[src="/luci-static/resources/cbi/fieldadd.gif"] {
+    content: url("/luci-static/argon/img/fieldadd.webp");
+}
+img[src="/luci-static/resources/cbi/link.gif"] {
+    content: url("/luci-static/argon/img/link.webp");
+}
+img[src="/luci-static/resources/cbi/find.gif"] {
+    content: url("/luci-static/argon/img/find.webp");
+}
+img[src="/luci-static/resources/cbi/folder.gif"] {
+    content: url("/luci-static/argon/img/folder.webp");
+}
 
 /* input */
 .cbi-value input[type="password"],
@@ -1165,23 +1232,25 @@ select {
     text-align: center;
 }
 
-
-
 /*textarea*/
-
-.cbi-input-textarea {
-    width: 100%;
-    min-height: 14rem;
-    padding: 0.8rem;
-    font-size: 0.8rem;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+textarea {
+    border: 1px solid #dee2e6 !important;
+    outline: none;
+    min-height: 14rem !important;
+    padding: 0.8rem !important;
+    background-color: #fff;
+    font-family: var(--font-family-monospace) !important;
+    font-size: inherit;
     color: black;
+    border-radius: 0.375rem !important;
+    vertical-align: middle;
 }
 
-
+.cbi-value .cbi-value-field textarea {
+    margin: 0.25rem;
+}
 
 /* change */
-
 .uci-change-list {
     font-family: monospace;
 }
@@ -1268,18 +1337,17 @@ input[type="checkbox"] {
     -webkit-appearance: none !important;
     border: 1px solid #dee2e6;
 
-    width: 16px !important;
-    height: 16px !important;
+    width: 17px !important;
+    height: 17px !important;
     padding: 0;
     cursor: pointer;
     transition: all 0.2s;
 
-    margin: 0.9rem 0.25rem 0 0.25rem;
+    margin: 0.5rem 0.25rem 0.7rem 0.25rem;
+    vertical-align: middle;
 }
 
 input[type="checkbox"]:checked {
-    border: 1px solid #5e72e4;
-    border: 1px solid var(--primary);
     background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 8 8\'%3e%3cpath fill=\'%23fff\' d=\'M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z\'/%3e%3c/svg%3e') !important;
     background-color: #5e72e4;
     background-color: var(--primary);
@@ -1289,7 +1357,8 @@ input[type="checkbox"]:checked {
 }
 
 ul li .cbi-input-checkbox {
-    margin: 0.5rem 0.25rem !important;
+    margin: 0.5rem 0.25rem 0.7rem 0.25rem !important;
+    vertical-align: middle !important;
 }
 
 .cbi-input-radio {
@@ -1307,8 +1376,6 @@ ul li .cbi-input-checkbox {
 }
 
 .cbi-input-radio:checked {
-    border: 1px solid #5e72e4;
-    border: 1px solid var(--primary);
     background-image: url('data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'-4 -4 8 8\'%3e%3ccircle r=\'3\' fill=\'%23fff\'/%3e%3c/svg%3e') !important;
     background-color: #5e72e4;
     background-color: var(--primary);
@@ -1422,7 +1489,7 @@ ul li .cbi-input-checkbox {
 
 .cbi-section-create {
     margin: 0;
-    padding-left: 1rem;
+    padding-left: 0.5rem;
     align-items: center;
 
 }
@@ -1439,7 +1506,8 @@ div.cbi-value var,
 td.cbi-value-field var,
 .td.cbi-value-field var {
     font-style: italic;
-    color: #0069D6;
+    color: var(--primary);
+    text-shadow: 1px 1px 2px #ccc;
 }
 
 small {
@@ -1495,11 +1563,46 @@ small {
     display: none !important;
 }
 
-.cbi-section-error {
-    padding: 1.5rem;
-    color: #fb6340;
-    font-weight: 600;
+/* Define the error text border breathe display animation */
+@keyframes error-border-breathe {
+    0%{
+        border-color: #fb6340;
+    }
+    50%{
+        border-color: transparent;
+    }
+    100%{
+        border-color: #fb6340;
+    }
 }
+
+/* Center display error text box */
+.cbi-section-error > ul{
+    text-align: center;
+}
+
+/* Add border for error text box, and border breathe display animation to make it more noticeable */
+.cbi-section-error > ul > li {
+    font-weight: 600;
+    max-width: 60%;
+    color: #fb6340;
+    line-height: 1rem;
+    display: inline-block;
+    border: 2px solid #fb6340;
+    border-radius: 0.3rem;
+    animation: error-border-breathe 1.5s ease-in-out infinite;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.cbi-input-invalid, 
+.cbi-value-error input {
+    color: #fb6340;
+    border: 1px dashed #fb6340;
+}
+
 
 fieldset>fieldset {
     margin: 0;
@@ -1571,6 +1674,7 @@ input[name="nslookup"] {
     height: 1.6rem !important;
     line-height: 1.6rem;
     border-radius: .25rem;
+    overflow: hidden;
 }
 
 #swaptotal>div>div,
@@ -1584,7 +1688,16 @@ input[name="nslookup"] {
     background-color: var(--primary) !important;
     background-image: url(../img/trafficbar.png);
     background-position: left top;
-    animation: sparkle 1500ms linear infinite;
+    animation: sparkle 1000ms linear infinite;
+}
+
+#swaptotal>div>div>div>small,
+#swapfree>div>div>div>small,
+#memfree>div>div>div>small,
+#membuff>div>div>div>small,
+#conns>div>div>div>small,
+#memtotal>div>div>div>small {
+    text-shadow: 1px 1px 2px #ccc;
 }
 
 /* fix multiple table */
@@ -1681,6 +1794,31 @@ td>table>tbody>tr>td,
 
 .a-to-btn {
     text-decoration: none;
+}
+
+/* file selector button */
+::file-selector-button {
+    color: #fff;
+    border-radius: .25rem;
+    border: 1px solid #2e6da4;
+    padding: .4rem .5rem;
+    background-color: #337ab7;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+::file-selector-button:hover,
+::file-selector-button:focus,
+::file-selector-button:active {
+    outline: 0;
+    text-decoration: none;
+}
+::file-selector-button:hover,
+::file-selector-button:focus {
+    box-shadow: 0 0px 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.2);
+}
+::file-selector-button:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.19), 0 5px 5px rgba(0, 0, 0, 0.23);
 }
 
 /* table */
@@ -1835,6 +1973,41 @@ td>table>tbody>tr>td,
     flex-basis: 12%;
 }
 
+/* Fix background color of table-titles */
+.cbi-section-node>.cbi-section-table>tbody>.cbi-section-table-titles th {
+    background-color: var(--lighter);
+    border: none;
+}
+
+/* Fix background color of table-descr */
+.cbi-section-node>.cbi-section-table>tbody>.cbi-section-table-descr th {
+    border: none;
+}
+
+/* Fix background color not change when the H tag is in the table rowstyle-1 */
+.cbi-section-node>.cbi-section-table>tbody>.cbi-rowstyle-1 th {
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    border-bottom: none;
+}
+
+/* Fix background color not change when the H tag is in the table rowstyle-2 */
+.cbi-section-node>.cbi-section-table>tbody>.cbi-rowstyle-2 th {
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+    border-bottom: none;
+}
+
+/* Change the color of the H label in the table to make it more visible */
+th h1, td h1,
+th h2, td h2,
+th h3, td h3,
+th h4, td h4,
+th h5, td h5,
+th h6, td h6 {
+    background: var(--lighter);
+}
+
 /* language fix */
 body.lang_pl.node-main-login .cbi-value-title {
     width: 12rem;
@@ -1980,7 +2153,7 @@ body.lang_pl.node-main-login .cbi-value-title {
 
 .cbi-rowstyle-2 .cbi-button-up,
 .cbi-rowstyle-2 .cbi-button-down {
-    background-color: #FFF !important;
+    background-color: var(--lighter);
 
 }
 
@@ -2030,7 +2203,8 @@ input {
     margin: 0.25rem;
 }
 
-select:not([multiple="multiple"]):focus,
+select:not([multiple="multiple"]):hover,
+input:hover,
 input:focus {
     border-color: #5e72e4;
     border-color: var(--primary);
@@ -2165,11 +2339,21 @@ table>thead>tr>th,
     margin-bottom: 0;
 }
 
+.cbi-section-table-row>.cbi-value-field .cbi-dropdown,
 .cbi-section-table-row>.cbi-value-field .cbi-input-select,
 .cbi-section-table-row>.cbi-value-field .cbi-input-text,
-.cbi-section-table-row>.cbi-value-field .cbi-input-password,
-.cbi-section-table-row>.cbi-value-field .cbi-dropdown {
-    width: 100%;
+.cbi-section-table-row>.cbi-value-field .cbi-input-password{
+    width:100%
+}
+
+.cbi-section-table-row>.cbi-value-field .cbi-input-text,
+.cbi-section-table-row>.cbi-value-field .cbi-input-password{
+    min-width:100px
+}
+
+#lease6_status_table > tbody > .cbi-section-table-row.cbi-rowstyle-1 div,
+#lease6_status_table > tbody > .cbi-section-table-row.cbi-rowstyle-2 div{
+    min-width:100%;
 }
 
 .cbi-section-table-row>.cbi-value-field [data-dynlist]>input,
@@ -2193,10 +2377,27 @@ div>.table>.tbody>.tr:nth-of-type(2n) {
     color: #fff !important;
 }
 
-.warning {
-    background-color: #fb6340 !important;
-    background-color: var(--warning) !important;
-    color: #fff !important;
+/* Define the warning background-color breathe display animation */
+@keyframes warning-background-color-breathe {
+    0%{
+        color: #fff;
+        background-color: #fb6340;
+    }
+    50%{
+        color: #32325d;
+        background-color: #fff;
+    }
+    100%{
+        color: #fff;
+        background-color: #fb6340;
+    }
+}
+.warning,
+.warning * {
+    background-color: #fb6340;
+    background-color: var(--warning);
+    color: #fff;
+    animation: warning-background-color-breathe 1.5s ease-in-out infinite !important;
 }
 
 .notice {
@@ -2287,7 +2488,7 @@ h3 {
     letter-spacing: 0.1rem;
     padding: 1rem 1.5rem;
     border-radius: 0.375rem;
-    background: #fff;
+    background: var(--lighter);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }
 
@@ -2341,6 +2542,8 @@ fieldset.cbi-section p {
     letter-spacing: 0.1rem;
     color: #32325d;
     font-weight: 600;
+    position: sticky;
+    left: 0;
 }
 
 table {
@@ -2373,7 +2576,6 @@ table>thead>tr>th {
     padding-top: .75rem;
     padding-bottom: .75rem;
     letter-spacing: 1px;
-    text-transform: uppercase;
     border-bottom: 1px solid #e9ecef;
 }
 
@@ -2434,16 +2636,24 @@ td>table>tbody>tr>td {
     overflow-x: auto;
 
     &::-webkit-scrollbar {
-        width: 1px;
+        width: 5px;
         height: 5px;
     }
 
     &::-webkit-scrollbar-thumb {
-        background-color: #f6f9fc
+        background-color: #9e9e9e;
+    }
+
+	&::-webkit-scrollbar-thumb:hover {
+        background-color: #757575;
+    }
+
+	&::-webkit-scrollbar-thumb:active {
+        background-color: #424242;
     }
 
     &::-webkit-scrollbar-track {
-        background-color: #fff;
+        background-color: transparent;
     }
 
     li[class~="active"],
@@ -2453,7 +2663,7 @@ td>table>tbody>tr>td {
         border-bottom: 0.18751rem solid var(--primary);
         color: #5e72e4;
         color: var(--primary);
-        background-color: #dce1fe;
+        background-color: var(--light-subtabs-background);
         margin-bottom: 0;
         border-radius: 0;
 
@@ -2482,9 +2692,17 @@ td>table>tbody>tr>td {
     }
 }
 
+.cbi-section::-webkit-scrollbar,
+.cbi-section > *::-webkit-scrollbar,
+textarea::-webkit-scrollbar,
+div::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
 .cbi-tabmenu {
     color: white;
-    padding: 0.5rem 1rem 0 1rem;
+    padding: 0.5rem 0.5rem 0 0.5rem;
     white-space: nowrap;
     overflow-x: auto;
     border-bottom: 1px solid #ddd !important;
@@ -2495,15 +2713,23 @@ td>table>tbody>tr>td {
     }
 
     &::-webkit-scrollbar-thumb {
-        background-color: #f6f9fc
+        background-color: #9e9e9e;
     }
 
-    &::-webkit-scrollbar-track {
-        background-color: #fff;
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #757575;
+    }
+
+    &::-webkit-scrollbar-thumb:active {
+        background-color: t#424242;
+    }
+
+	&::-webkit-scrollbar-track {
+        background-color: transparent;
     }
 
     li {
-        background: #dce3e9;
+        background: #e3e3e3;
         display: inline-block;
         font-size: 0.875rem;
         border-top-left-radius: 0.25rem;
@@ -2523,7 +2749,7 @@ td>table>tbody>tr>td {
             border-bottom: 0.18751rem solid var(--primary);
             color: #5e72e4;
             color: var(--primary);
-            background-color: #dce1fe;
+            background-color: var(--light-subtabs-background);
             margin-bottom: 0;
 
             a {
@@ -2536,7 +2762,7 @@ td>table>tbody>tr>td {
         border-bottom: 0.18751rem solid #5e72e4;
         border-bottom: 0.18751rem solid var(--primary);
         color: var(--primary);
-        background-color: #dce1fe;
+        background-color: var(--light-subtabs-background);
         margin-bottom: 0;
 
         a {
@@ -2811,11 +3037,12 @@ select[multiple="multiple"] {
 
 
 .cbi-section-node .cbi-value {
-    padding: 0.3rem 1rem 0.3rem 1rem;
+    padding: 0.5rem 1rem 0.5rem 1rem !important;
 }
 
 
-.cbi-tabcontainer>.cbi-value:nth-of-type(2n) {
+.cbi-tabcontainer>.cbi-value:nth-of-type(2n),
+.cbi-tabcontainer>.cbi-value:nth-of-type(2n)>textarea {
     background-color: #f9f9f9;
 }
 
@@ -2824,9 +3051,20 @@ select[multiple="multiple"] {
     display: table-cell;
     line-height: 1.6;
     font-size: 0.875rem;
-
 }
 
+/* Fix text position of the luci-app-filebrowser running state */
+#cbi-filebrowser>.cbi-section>.cbi-section>.cbi-value>.cbi-value-field,
+/* Fix text position of the luci-apps running state of the [Control] type */
+form>.cbi-map>.cbi-section>.cbi-section-node>.cbi-value>.cbi-value-field font {
+    word-wrap: break-word;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    padding: 0.7rem;
+    padding-left: 0;
+    text-align: right;
+    display: table-cell;
+}
 
 
 .cbi-value-helpicon>img {
@@ -2838,8 +3076,9 @@ select[multiple="multiple"] {
 }
 
 .cbi-value-description {
+    color: #8d8d8d;
+    opacity: 0.8;
     font-size: small;
-    opacity: 0.5;
     padding: 0.5rem;
 }
 
@@ -2851,7 +3090,6 @@ select[multiple="multiple"] {
     padding: .7rem;
     padding-left: 0;
     width: 23rem;
-    float: left;
     text-align: right;
     display: table-cell;
 }
@@ -2931,39 +3169,17 @@ td>.ifacebadge {
     margin: 0 0.3rem;
 }
 
-/*textarea*/
-
-.cbi-input-textarea {
-    width: 100%;
-    border: 0;
-    outline: none;
-    min-height: 14rem;
-    padding: 0.8rem;
-    font-size: 0.8rem;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: black;
-}
-
 #syslog {
     width: 100%;
     min-height: 15rem;
     padding: 1rem;
     line-height: 1.4em;
-    font-size: small;
     color: #1e1e1e;
     border-radius: 0;
     background-color: #fff;
     border: none;
     outline: none;
 }
-
-
-
-
-
-
-
-
 
 
 .ifacebadge {
@@ -2985,7 +3201,7 @@ td>.ifacebadge,
 .ifacebadge>img {
     display: inline-block;
     margin: 0 0.3rem;
-    align-self: flex-start;
+    align-self: center;
 }
 
 
@@ -3097,21 +3313,25 @@ td>.ifacebadge,
     margin-top: 0.3rem;
 }
 
-.cbi-value-field .cbi-input-checkbox,
-.cbi-value-field .cbi-input-radio {
-    margin: 0.9rem 0.25rem 0 0.25rem;
+.cbi-value-field .cbi-input-checkbox {
+    margin: 0.5rem 0.25rem 0.7rem 0.25rem;
+    vertical-align: middle;
     height: 1rem;
     line-height: 1.6;
 }
 
 .cbi-input-checkbox {
-    margin: 0.9rem 0.25rem 0 0.25rem;
+    margin: 0.5rem 0.25rem 0.7rem 0.25rem;
+    vertical-align: middle;
 }
 
 .cbi-value-field .cbi-input-radio {
     margin: 0rem 0.25rem;
 }
 
+.cbi-input-radio {
+    margin: 0rem 0.25rem;
+}
 
 .cbi-value-field>input+.cbi-value-description {
     padding: 0;
@@ -3139,23 +3359,11 @@ td>.ifacebadge,
 }
 
 .cbi-section-create>.cbi-button-add {
-    margin: 0.5rem 0.5rem 0.5rem 0.5rem;
+    margin: 0.75rem 0.75rem 0.75rem 0.25rem;
 }
 
 .cbi-section-remove {
     padding: 0.5rem;
-}
-
-div.cbi-value var,
-td.cbi-value-field var {
-    font-style: italic;
-    color: #0069D6;
-}
-
-small {
-    font-size: 90%;
-    white-space: normal;
-    line-height: 1.42857143;
 }
 
 
@@ -3276,6 +3484,10 @@ input[name="nslookup"] {
             border-right: 0 !important;
             background-color: #5e72e4 !important;
             background-color: var(--primary) !important;
+            height: 100% !important;
+            background-image: url(../img/trafficbar.png);
+            background-position: left top;
+            animation: sparkle 1000ms linear infinite;
         }
     }
 
@@ -3298,15 +3510,14 @@ input[name="nslookup"] {
     overflow-y: hidden;
 
     em {
-        padding: 0.75rem 1.5rem;
         font-size: 0.7rem;
         font-weight: 600;
-        color: #525f7f;
+        color: var(--primary);
+        text-shadow: 1px 1px 2px #ccc;
         text-align: center;
     }
 
     h4 {
-        padding: 0.75rem 1.5rem;
         font-size: 0.7rem;
         font-weight: 600;
         color: #525f7f;
@@ -3347,6 +3558,14 @@ input[name="nslookup"] {
 .node-system-packages fieldset,
 .node-system-flashops fieldset {
     margin-top: 0;
+}
+
+.node-system-flashops fieldset > ul {
+    padding: 1rem;
+}
+
+.node-system-flashops fieldset + .cbi-page-actions {
+    margin-top: 1rem;
 }
 
 .node-status-iptables .cbi-tabmenu,
@@ -3411,6 +3630,82 @@ input[name="nslookup"] {
     display: block;
 }
 
+/* luci-app-passwall */
+#cbi-passwall #add_link_div,
+#cbi-passwall #set_node_div {
+    background: #fffffff0;
+}
+#cbi-passwall .cbi-section-table tbody ._now_use {
+    background: #5e72e473 !important;
+}
+
+/* luci-app-commands */
+.commandbox h3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.commandbox code {
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+div.commandbox {
+    height: 16em;
+}
+
+/* luci-app-ssr-plus */
+#cbi-shadowsocksr .cbi-map-descr h3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* luci-app-mwan3 */
+.node-status-mwan .cbi-tabmenu {
+    padding: 3rem 0.5rem 0 0.5rem;
+}
+
+/* luci-app-openclash */
+.node-services-openclash .cbi-tabmenu {
+    font-size: 0;
+}
+.node-services-openclash .cbi-tabmenu > li {
+    margin-right: 4px;
+}
+.node-services-openclash .cbi-tabmenu > li:last-child {
+    margin-right: 0;
+}
+
+/* luci-app-ddnsto */
+.node-services-ddnsto .cbi-section-node .cbi-value div {
+    display: table-cell;
+    line-height: 1.6;
+    font-size: 0.875rem;
+}
+
+/* luci-app-dockerman */
+#cbi-dockerd > .cbi-section > br,
+#cbi-docker > .cbi-section > br {
+    display: none;
+}
+
+/* luci-app-diskman */
+#cbi-diskman > .cbi-section > br {
+    display: none;
+}
+
+/* luci-app-istorex (Quick Start) */
+#app #main #page .app-container_body .btn-f,
+#app #main #page .app-container_body .btn-r {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+    width: 30px;
+}
 
 @media screen and (max-width: 1600px) {
 
@@ -3425,7 +3720,7 @@ input[name="nslookup"] {
     }
 
 
-    .cbi-button {
+    .cbi-button:not(.cbi-button-up, .cbi-button-down) {
         /*padding: 0.3rem 1.5rem;*/
         font-size: 0.8rem;
     }
@@ -3445,10 +3740,6 @@ input[name="nslookup"] {
 
     fieldset {
         padding: 0;
-    }
-
-    .cbi-input-textarea {
-        font-size: small;
     }
 
     .node-status-iptables>.main fieldset li>a {
@@ -3503,30 +3794,6 @@ input[name="nslookup"] {
     }
 }
 
-@media screen and (min-width: 600px) {
-    ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-    }
-
-    ::-webkit-scrollbar,
-    ::-webkit-scrollbar-corner {
-        background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #9e9e9e;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #757575;
-    }
-
-    ::-webkit-scrollbar-thumb:active {
-        background: #424242;
-    }
-}
-
 @media screen and (max-width: 992px) {
     .main {
         .main-left {
@@ -3555,15 +3822,8 @@ input[name="nslookup"] {
         font-size: 1.7rem;
     }
 
-
-
     header>.fill>.container>.brand {
         display: inline-block;
-    }
-
-    .cbi-value-title {
-        width: 9rem;
-        padding-right: 1rem;
     }
 
     .node-network-diagnostics>.main .cbi-map fieldset>div * {
@@ -3594,6 +3854,18 @@ input[name="nslookup"] {
 
 }
 
+@media screen and (max-width: 500px) {
+.login-page {
+    .login-container {
+        margin-left: 0rem !important;
+        width: 500px;
+
+        .login-form {
+            max-width: 500px;
+        }
+    }
+}
+
 @media screen and (max-width: 480px) {
     body {
         font-size: 0.8rem;
@@ -3604,19 +3876,11 @@ input[name="nslookup"] {
         margin-top: 0rem !important;
     }
 
-    .login-page .video {
-        video {
-            width: auto !important;
-            height: 100% !important;
-        }
-    }
-
     .login-page .login-container {
         margin-left: 0rem !important;
         width: 100%;
 
         .login-form {
-            max-width: 480px;
 
             .form-login {
                 .input-group {
@@ -3716,25 +3980,14 @@ input[name="nslookup"] {
         position: relative;
     }
 
-    .cbi-value-field .cbi-input-checkbox,
-    .cbi-value-field .cbi-input-radio {
-        margin: 0rem 0.25rem 0 0.25rem;
-        height: 1rem;
-        line-height: 1.6;
-    }
-
     .cbi-page-actions>div>input {
         display: none;
     }
 
 
-    .tabs,
-    .cbi-tabmenu {
-        &::-webkit-scrollbar {
-            width: 0px;
-            height: 0px;
-        }
-
+    ::-webkit-scrollbar {
+        width: 0px !important;
+        height: 0px  !important;
     }
 
 
