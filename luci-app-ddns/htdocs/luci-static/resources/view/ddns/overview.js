@@ -477,7 +477,9 @@ return view.extend({
 
 			return m.save(function() {
 				uci.add('ddns', 'service', section_id);
-				uci.set('ddns', section_id, 'service_name', service_value);
+				if (service_value != '-') {
+					uci.set('ddns', section_id, 'service_name', service_value);
+				}
 				uci.set('ddns', section_id, 'use_ipv6', ipv6_value);
 			}).then(L.bind(m.children[1].renderMoreOptionsModal, m.children[1], section_id));
 		};
@@ -517,8 +519,7 @@ return view.extend({
 			service_name = s2.option(form.ListValue, 'service_name',
 					String.format('%s', _("DDNS Service provider")));
 			service_name.value('-',"-- " + _("custom") + " --");
-			for (var elem in _this.services)
-				service_name.value(elem);
+			Object.keys(_this.services).sort().forEach(name => service_name.value(name));
 			service_name.validate = function(section_id, value) {
 				if (value == '') return _("Select a service");
 				if (s2.service_supported == null) return _("Checking the service support...");
@@ -640,8 +641,7 @@ return view.extend({
 					String.format('%s', _("DDNS Service provider")));
 				service_name.modalonly = true;
 				service_name.value('-',"-- " + _("custom") + " --");
-				for (var elem in _this.services)
-					service_name.value(elem);
+				Object.keys(_this.services).sort().forEach(name => service_name.value(name));
 				service_name.cfgvalue = function(section_id) {
 					return uci.get('ddns', section_id, 'service_name') || '-';
 				};
@@ -882,7 +882,7 @@ return view.extend({
 					};
 
 					if (env['has_bindnet']) {
-						o = s.taboption('advanced', widgets.ZoneSelect, 'bind_network',
+						o = s.taboption('advanced', widgets.NetworkSelect, 'bind_network',
 							_("Bind Network"),
 							_('OPTIONAL: Network to use for communication')
 							+ '<br />' +
@@ -1012,7 +1012,7 @@ return view.extend({
 
 					o = s.taboption("timer", form.ListValue, "force_unit",
 						_('Force Unit'),
-						_("Interval unit to force updates send to DDNS Provider"));
+						_("Interval unit to force updates sent to DDNS Provider."));
 					o.modalonly = true;
 					o.optional = true;
 					o.default  = "minutes"
@@ -1022,9 +1022,9 @@ return view.extend({
 
 					o = s.taboption("timer", form.Value, "retry_count",
 						_("Error Retry Counter"),
-						_("On Error the script will stop execution after given number of retrys")
+						_("On Error the script will stop execution after given number of retrys.")
 						+ "<br />" +
-						_("The default setting of '0' will retry infinite."));
+						_("The default setting of '0' will retry infinitely."));
 					o.placeholder = "0";
 					o.optional = true;
 					o.modalonly = true;
@@ -1032,9 +1032,7 @@ return view.extend({
 
 					o = s.taboption("timer", form.Value, "retry_interval",
 						_("Error Retry Interval"),
-						_("On Error the script will stop execution after given number of retrys")
-						+ "<br />" +
-						_("The default setting of '0' will retry infinite."));
+  						_("The interval between which each succesive retry will commence."));
 					o.placeholder = "60";
 					o.optional = true;
 					o.modalonly = true;
@@ -1042,7 +1040,7 @@ return view.extend({
 
 					o = s.taboption("timer", form.ListValue, "retry_unit",
 						_('Retry Unit'),
-						_("On Error the script will retry the failed action after given time"));
+						_("Which time units to use for retry counters."));
 					o.modalonly = true;
 					o.optional = true;
 					o.default  = "seconds"

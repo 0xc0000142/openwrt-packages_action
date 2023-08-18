@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=hysteria
-PKG_VERSION:=1.2.1
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_VERSION:=1.3.5
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/HyNetwork/hysteria/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=cdac1f149651ca5eaa77ea69ee913d0f1391a07da681ad4908a60a6603307543
+PKG_SOURCE_URL:=https://codeload.github.com/apernet/hysteria/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=9b3b5fca069d215a1f4c9cf3aa0a7b4e9b1fe21216fddb483a20ab42eb4a4dd7
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILE:=LICENSE
@@ -19,9 +19,10 @@ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16
 
-GO_PKG:=github.com/HyNetwork/hysteria
-GO_PKG_BUILD_PKG:=$(GO_PKG)/cmd
+GO_PKG:=github.com/apernet/hysteria
+GO_PKG_BUILD_PKG:=$(GO_PKG)/app/cmd
 GO_PKG_LDFLAGS_X:=main.appVersion=$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -31,7 +32,7 @@ define Package/hysteria
   SECTION:=net
   CATEGORY:=Network
   TITLE:=A feature-packed network utility optimized for networks of poor quality
-  URL:=https://github.com/tobyxdd/hysteria
+  URL:=https://github.com/apernet/hysteria
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 

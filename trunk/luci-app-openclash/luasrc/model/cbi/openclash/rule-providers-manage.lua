@@ -26,7 +26,8 @@ o = a:option(Button, "Refresh", " ")
 o.inputtitle = translate("Refresh Page")
 o.inputstyle = "apply"
 o.write = function()
-  HTTP.redirect(DISP.build_url("admin", "services", "openclash", "rule-providers-manage"))
+   SYS.call("rm -rf /tmp/rule_providers_name 2>/dev/null")
+   HTTP.redirect(DISP.build_url("admin", "services", "openclash", "rule-providers-manage"))
 end
 
 o = a:option(Button, "Apply", " ")
@@ -80,7 +81,7 @@ form=SimpleForm("filelist")
 form.reset=false
 form.submit=false
 tb=form:section(Table,e)
-nu=tb:option(DummyValue,"num",translate("Order Number"))
+nu=tb:option(DummyValue,"num",translate("Serial Number"))
 st=tb:option(DummyValue,"exist",translate("State"))
 st.template="openclash/cfg_check"
 tp=tb:option(DummyValue,"rule_type",translate("Rule Type"))

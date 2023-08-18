@@ -65,11 +65,11 @@ music.migu.cn
 #win10本地连接检测
 +.msftconnecttest.com
 +.msftncsi.com
-msftconnecttest.com
-msftncsi.com
-#QQ快捷登录
+#QQ登录
 localhost.ptlogin2.qq.com
 localhost.sec.qq.com
++.qq.com
++.tencent.com
 #Game
 #Nintendo Switch
 +.srv.nintendo.net
@@ -112,6 +112,7 @@ swdist.apple.com
 #Google
 lens.l.google.com
 stun.l.google.com
+na.b.g-tun.com
 #Netflix
 +.nflxvideo.net
 #FinalFantasy XIV Worldwide Server & CN Server
@@ -128,7 +129,11 @@ ff.dorado.sdo.com
 shark007.net
 #Mijia
 Mijia Cloud
-+.dns.google
 #招商银行
 +.cmbchina.com
 +.cmbimg.com
+#AdGuard
+local.adguard.org
+#迅雷
++.sandai.net
++.n0808.com

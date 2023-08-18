@@ -1,5 +1,5 @@
 <%
-local api = require "luci.model.cbi.passwall.api.api"
+local api = require "luci.passwall.api"
 -%>
 <script type="text/javascript">
 	//<![CDATA[
@@ -14,6 +14,7 @@ local api = require "luci.model.cbi.passwall.api.api"
 			}
 		);
 	}
+
 	XHR.poll(3, '<%=api.url("server_get_log")%>', null,
 		function(x, data) {
 			if(x && x.status == 200) {

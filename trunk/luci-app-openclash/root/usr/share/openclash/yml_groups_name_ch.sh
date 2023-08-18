@@ -26,12 +26,12 @@ cfg_groups_set()
    
    if [ -z "$old_name_cfg" ]; then
       uci -q set openclash."$section".old_name_cfg="$name"
-      uci commit openclash
+      uci -q commit openclash
    fi
    
    if [ -z "$old_name" ]; then
       uci -q set openclash."$section".old_name="$name"
-      uci commit openclash
+      uci -q commit openclash
    fi
    
    #名字变化时处理配置文件
@@ -44,7 +44,7 @@ cfg_groups_set()
       sed -i "s/new_servers_group \'${old_name_cfg}\'/new_servers_group \'${name}\'/g" $CFG_FILE 2>/dev/null
       sed -i "s/relay_groups \'${old_name_cfg}\'/relay_groups \'${name}\'/g" $CFG_FILE 2>/dev/null
       #第三方规则处理
-      OTHER_RULE_NAMES=("GlobalTV" "AsianTV" "Proxy" "Youtube" "Bilibili" "Bahamut" "HBOGo" "HBOMax" "Pornhub" "Apple" "GoogleFCM" "Scholar" "Microsoft" "Netflix" "Disney" "Spotify" "Steam" "Speedtest" "Telegram" "PayPal" "Netease_Music" "AdBlock" "Domestic" "Others")
+      OTHER_RULE_NAMES=("GlobalTV" "AsianTV" "Proxy" "Youtube" "Bilibili" "Bahamut" "HBOGo" "HBOMax" "Pornhub" "Apple" "GoogleFCM" "Scholar" "Microsoft" "Netflix" "Disney" "Spotify" "Steam" "Speedtest" "Telegram" "PayPal" "Netease_Music" "AdBlock" "Domestic" "Others" "miHoYo" "ChatGPT" "AppleTV" "Crypto" "Discord")
       for i in ${OTHER_RULE_NAMES[@]}; do
       	sed -i "s/option ${i} \'${old_name_cfg}\'/option ${i} \'${name}\'/g" $CFG_FILE 2>/dev/null
       done 2>/dev/null

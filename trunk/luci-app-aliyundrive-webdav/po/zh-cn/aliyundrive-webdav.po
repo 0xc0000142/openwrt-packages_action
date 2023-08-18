@@ -22,6 +22,12 @@ msgstr "监听主机"
 msgid "Port"
 msgstr "监听端口"
 
+msgid "Aliyun drive type"
+msgstr "云盘驱动类型"
+
+msgid "Supports drive type: resource, backup"
+msgstr "支持驱动器类型：resource, backup"
+
 msgid "TLS certificate file path"
 msgstr "TLS 证书文件路径"
 
@@ -68,7 +74,7 @@ msgid "Debug Mode"
 msgstr "调试模式"
 
 msgid "<a href=\"https://github.com/messense/aliyundrive-webdav\" target=\"_blank\">Project GitHub URL</a>"
-msgstr "<a href=\"https://github.com/messense/aliyundrive-webdav\" target=\"_blank\">GitHub 项目地址</a>"
+msgstr "<a href=\"https://github.com/messense/aliyundrive-webdav\" target=\"_blank\">GitHub 项目地址</a> | <a href=\"https://t.zsxq.com/0c9sq6Ca8\" target=\"_blank\">加入知识星球</a>"
 
 msgid "Double click the input box above to get refresh token by scanning qrcode"
 msgstr "鼠标双击上面的输入框扫码登录自动获取 refresh token"
@@ -85,12 +91,6 @@ msgstr "启用只读模式"
 msgid "Disallow upload, modify and delete file operations"
 msgstr "禁止上传、修改和删除文件操作"
 
-msgid "Domain ID"
-msgstr "阿里云相册与云盘服务 domainId"
-
-msgid "Input domain_id option will use <a href=\"https://www.aliyun.com/product/storage/pds\" target=\"_blank\">Aliyun PDS</a> instead of <a href=\"https://www.aliyundrive.com\" target=\"_blank\">AliyunDrive</a>"
-msgstr "填写此选项将使用<a href=\"https://www.aliyun.com/product/storage/pds\" target=\"_blank\">阿里云相册与网盘服务</a>而不是<a href=\"https://www.aliyundrive.com\" target=\"_blank\">阿里云盘</a>"
-
 msgid "Skip uploading same size files"
 msgstr "跳过上传相同大小的文件"
 
@@ -103,8 +103,8 @@ msgstr "使用 HTTP 下载"
 msgid "Prefer downloading files using HTTP instead of HTTPS protocol"
 msgstr "优先使用 HTTP 而不是 HTTPS 协议下载，低端设备上降低 CPU 占用"
 
-msgid "Disable Redirect"
-msgstr "禁用重定向"
+msgid "Enable 302 Redirect"
+msgstr "启用 302 重定向"
 
-msgid "Disable 302 redirect when using app refresh token"
-msgstr "使用 app refresh token 时禁用 302 重定向"
+msgid "Enable 302 redirect when possible"
+msgstr "在可能的情况下启用 302 重定向"

@@ -1,99 +1,172 @@
-msgid "Turbo ACC Center"
-msgstr "Turbo ACC 网络加速"
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: zh-Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-msgid "Turbo ACC Acceleration Settings"
-msgstr "Turbo ACC 网络加速设置"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:91
+msgid "Acceleration Status"
+msgstr "加速状态"
 
-msgid "Linux Flow Offload Forwarding Engine Settings"
-msgstr "Linux Flow Offload Forwarding 转发加速引擎设置"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:191
+msgid "Boardcom fullcone"
+msgstr "Boardcom fullcone"
 
-msgid "Opensource Flow Offloading driver (Fast Path or Hardware NAT)"
-msgstr "开源流量分载驱动 (支持 Fast Path 或者 硬件 NAT)"
-
-msgid "Software flow offloading"
-msgstr "软件流量分载"
-
-msgid "Software based offloading for routing/NAT"
-msgstr "基于软件的 Routing/NAT 分载"
-
-msgid "Hardware flow offloading"
-msgstr "硬件流量分载"
-
-msgid "Requires hardware NAT support. Implemented at least for mt762x"
-msgstr "需要硬件 NAT 支持。目前 mt762x 已实现"
-
-msgid "Shortcut-FE flow offloading"
-msgstr "Shortcut-FE 流量分载"
-
-msgid "Shortcut-FE based offloading for routing/NAT"
-msgstr "基于 Shortcut-FE 的 Routing/NAT 分载"
-
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:151
 msgid "Bridge Acceleration"
 msgstr "桥接加速"
 
-msgid "Enable Bridge Acceleration (may be functional conflict with bridge-mode VPN server)"
-msgstr "启用桥接加速 (可能会和路由器上桥接模式的VPN服务器冲突)"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:95
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:99
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:103
+msgid "Collecting data..."
+msgstr "正在收集数据…"
 
-msgid "IPv6 Acceleration"
-msgstr "IPv6 加速"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:120
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:188
+msgid "Disable"
+msgstr "禁用"
 
-msgid "Enable IPv6 Acceleration"
-msgstr "启用 IPv6 加速"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:57
+msgid "Disabled"
+msgstr "已禁用"
 
-msgid "BBR CCA"
-msgstr "BBR 拥塞控制算法"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:159
+msgid "Enable IPv6 Acceleration."
+msgstr "启用 IPv6 加速。"
 
-msgid "Using BBR CCA can improve TCP network performance effectively"
-msgstr "使用 BBR 拥塞控制算法可以有效提升 TCP 网络性能"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:152
+msgid ""
+"Enable bridge acceleration (may be functional conflict with bridge-mode VPN "
+"server)."
+msgstr "启用桥接加速（可能会与桥接模式的 VPN 服务器冲突）。"
 
-msgid "FullCone NAT"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:165
+msgid "Enable ethernet HNAT"
+msgstr "启用以太网 HNAT"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:171
+msgid "Enable ethernet IPv6 HNAT"
+msgstr "启用以太网 IPv6 HNAT"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:172
+msgid "Enable hardware offloading for wired IPv6 connections."
+msgstr "为有线 IPv6 连接启用硬件加速。"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:166
+msgid "Enable hardware offloading for wired connections."
+msgstr "为有线连接启用硬件加速。"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:178
+msgid "Enable hardware offloading for wireless connections."
+msgstr "为无线连接启用硬件加速。"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:177
+msgid "Enable wireless HNAT"
+msgstr "启用无线 HNAT"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:124
+msgid "Fast classifier"
+msgstr "Fast classifier"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:136
+msgid "Fast classifier connection manager for the shortcut forwarding engine."
+msgstr "快速转发引擎（SFE）的 fast classifier 连接管理器。"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:94
+msgid "FastPath Engine"
+msgstr "快速转发引擎"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:118
+msgid "Fastpath engine"
+msgstr "快速转发引擎"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:122
+msgid "Flow offloading"
+msgstr "Flow offloading"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:98
+msgid "Full Cone NAT"
 msgstr "全锥形 NAT"
 
-msgid "Using FullCone NAT can improve gaming performance effectively"
-msgstr "使用全锥形 NAT 可以有效提升游戏体验"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:186
+msgid "Full cone NAT"
+msgstr "全锥形 NAT"
 
-msgid "DNS Caching"
-msgstr "DNS 缓存"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:187
+msgid "Full cone NAT (NAT1) can improve gaming performance effectively."
+msgstr "Full cone NAT（NAT1）可以有效提升游戏体验。"
 
-msgid "Enable DNS Caching and anti ISP DNS pollution"
-msgstr "启用 DNS 多线程查询、缓存，并防止 ISP 的 DNS 广告和域名劫持"
+#: applications/luci-app-turboacc/root/usr/share/rpcd/acl.d/luci-app-turboacc.json:3
+msgid "Grant UCI access for luci-app-turboacc"
+msgstr "授予 luci-app-turboacc 访问 UCI 配置的权限。"
 
-msgid "Resolve DNS Mode"
-msgstr "DNS 解析方式"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:145
+msgid "Hardware flow offloading"
+msgstr "硬件流量分载"
 
-msgid "DNS Program"
-msgstr "DNS 解析程序"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:158
+msgid "IPv6 acceleration"
+msgstr "IPv6 加速"
 
-msgid "Using PDNSD to query and cache"
-msgstr "使用 PDNSD 解析"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:128
+msgid "MediaTek HNAT"
+msgstr "MediaTek HNAT"
 
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:140
+msgid "MediaTek's open source hardware offloading engine."
+msgstr "由联发科实现的开源硬件流量分载引擎。"
 
-msgid "Using DNSForwarder to query and cache"
-msgstr "使用 DNSForwarder 解析"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:74
+msgid "Open source flow offloading engine (fast path or hardware NAT)."
+msgstr "开源流量分载引擎（快速转发或硬件 NAT）。"
 
-msgid "Using DNSProxy to query and cache"
-msgstr "使用 DNSProxy 解析"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:179
+msgid "Redirect to wireless settings"
+msgstr "跳转到无线设置"
 
-msgid "Upsteam DNS Server"
-msgstr "上游 DNS 服务器"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:146
+msgid "Requires hardware NAT support. Implemented at least for mt7621."
+msgstr "需要硬件 NAT 支持。目前 mt7621 已实现。"
 
-msgid "Muitiple DNS server can saperate with ','"
-msgstr "多个上游 DNS 服务器请用 ',' 分隔（注意用英文逗号)"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:126
+msgid "SFE connection manager"
+msgstr "SFE connection manager"
 
-msgid "Running Status"
-msgstr "运行状态"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:138
+msgid "Simple connection manager for the shortcut forwarding engine."
+msgstr "快速转发引擎（SFE）的简单连接管理器。"
 
-msgid "Flow Offloading"
-msgstr "流量分载"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:134
+msgid "Software based offloading for routing/NAT."
+msgstr "基于软件的 路由/NAT 分载。"
 
-msgid "BBR CCA"
-msgstr "BBR 拥塞控制算法"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:102
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:195
+msgid "TCP CCA"
+msgstr "TCP 拥塞控制算法"
 
-msgid "FullCone NAT"
-msgstr "全锥型 NAT"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:196
+msgid "TCP congestion control algorithm."
+msgstr "TCP 拥塞控制算法。"
 
-msgid "DNS Caching"
-msgstr "DNS 缓存"
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:119
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:142
+msgid "The offloading engine for routing/NAT."
+msgstr "用于 路由/NAT 的分载引擎。"
 
-msgid "Open Web Interface"
-msgstr "打开 Web 界面"
+#: applications/luci-app-turboacc/root/usr/share/luci/menu.d/luci-app-turboacc.json:3
+msgid "TurboACC"
+msgstr "网络加速"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:73
+msgid "TurboACC settings"
+msgstr "网络加速设置"
+
+#: applications/luci-app-turboacc/htdocs/luci-static/resources/view/turboacc.js:190
+msgid "xt_FULLCONENAT"
+msgstr "xt_FULLCONENAT"

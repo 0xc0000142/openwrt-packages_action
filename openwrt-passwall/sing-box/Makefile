@@ -6,30 +6,20 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
-PKG_VERSION:=1.1-beta8
-PKG_RELEASE:=$(AUTORELEASE)
+PKG_VERSION:=1.3.6
+PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/SagerNet/sing-box/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=074e7e63d7e408ce634d6aa0a8434fc56370421be37553efa04fe71bbc0611a9
+PKG_HASH:=a6462c1c41acfea0ac1c815985e6573dc92895541f75f678c805203879421927
 
-PKG_LICENSE:=GPL-3.0
-PKG_LICENSE_FILE:=LICENSE
-
-PKG_CONFIG_DEPENDS:= \
-	CONFIG_TAG_$(PKG_NAME)_ACME \
-	CONFIG_TAG_$(PKG_NAME)_CLASH_API \
-	CONFIG_TAG_$(PKG_NAME)_ECH \
-	CONFIG_TAG_$(PKG_NAME)_GVISOR \
-	CONFIG_TAG_$(PKG_NAME)_GRPC \
-	CONFIG_TAG_$(PKG_NAME)_QUIC \
-	CONFIG_TAG_$(PKG_NAME)_SHADOWSOCKSR \
-	CONFIG_TAG_$(PKG_NAME)_UTLS \
-	CONFIG_TAG_$(PKG_NAME)_WIREGUARD
+PKG_LICENSE:=GPL-3.0-or-later
+PKG_LICENSE_FILES:=LICENSE
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
+PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/sagernet/sing-box
 GO_PKG_BUILD_PKG:=$(GO_PKG)/cmd/sing-box
@@ -44,84 +34,109 @@ define Package/$(PKG_NAME)
   SUBMENU:=Web Servers/Proxies
   TITLE:=The universal proxy platform.
   URL:=https://sing-box.sagernet.org
-  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle +kmod-tun
+  DEPENDS:=$(GO_ARCH_DEPENDS) \
+    +ca-bundle \
+    +kmod-inet-diag \
+    +kmod-netlink-diag \
+    +kmod-tun
+endef
+
+define Package/$(PKG_NAME)/description
+  Sing-box is a universal proxy platform which supports hysteria, SOCKS, Shadowsocks,
+  ShadowsocksR, ShadowTLS, Tor, trojan, VLess, VMess, WireGuard and so on.
 endef
 
 GO_PKG_TARGET_VARS:=$(filter-out CGO_ENABLED=%,$(GO_PKG_TARGET_VARS)) CGO_ENABLED=0
 
 define Package/$(PKG_NAME)/config
   menu "Customizing build tags"
+    depends on PACKAGE_sing-box
 
-    config TAG_$(PKG_NAME)_ACME
+    config SING_BOX_WITH_ACME
       bool "Build with ACME TLS certificate issuer support"
       default n
 
-    config TAG_$(PKG_NAME)_CLASH_API
+    config SING_BOX_WITH_CLASH_API
       bool "Build with Clash API support (EXPERIMENTAL!!!)"
       default y
 
-    config TAG_$(PKG_NAME)_ECH
+    config SING_BOX_WITH_DHCP
+      bool "Build with DHCP support"
+      default y
+
+    config SING_BOX_WITH_ECH
       bool "Build with TLS ECH extension support"
       default n
 
-    config TAG_$(PKG_NAME)_GRPC
+    config SING_BOX_WITH_GRPC
       bool "Build with standard gRPC support"
-      default y
+      default n
+      help
+      sing-box has better performance gun-lite gRPC built-in by default.
+      This standard gRPC has better compatibility but poor performance.
 
-    config TAG_$(PKG_NAME)_GVISOR
+    config SING_BOX_WITH_GVISOR
       bool "Build with gVisor support"
       default n
 
-    config TAG_$(PKG_NAME)_QUIC
+    config SING_BOX_WITH_QUIC
       bool "Build with QUIC support"
       default y
       help
         Required by HTTP3 DNS transports, Naive inbound,
         Hysteria inbound / outbound, and v2ray QUIC transport.
 
-    config TAG_$(PKG_NAME)_SHADOWSOCKSR
+    config SING_BOX_WITH_REALITY_SERVER
+      bool "Build with reality TLS server support"
+      default n
+
+    config SING_BOX_WITH_SHADOWSOCKSR
       bool "Build with ShadowsockR support"
       default n
 
-    config TAG_$(PKG_NAME)_UTLS
+    config SING_BOX_WITH_UTLS
       bool "Build with uTLS support"
       default y
 
-    config TAG_$(PKG_NAME)_WIREGUARD
+    config SING_BOX_WITH_V2RAY_API
+      bool "Build with V2Ray API support (EXPERIMENTAL!!!)"
+      default n
+
+    config SING_BOX_WITH_WIREGUARD
       bool "Build with WireGuard support"
       default y
 
   endmenu
 endef
 
-ifneq ($(CONFIG_TAG_$(PKG_NAME)_ACME),)
-  GO_PKG_TAGS+=with_acme
-endif
-ifneq ($(CONFIG_TAG_$(PKG_NAME)_CLASH_API),)
-  GO_PKG_TAGS+=with_clash_api
-endif
-ifneq ($(CONFIG_TAG_$(PKG_NAME)_ECH),)
-  GO_PKG_TAGS+=with_ech
-endif
-ifneq ($(CONFIG_TAG_$(PKG_NAME)_GRPC),)
-  GO_PKG_TAGS+=with_grpc
-endif
-ifneq ($(CONFIG_TAG_$(PKG_NAME)_GVISOR),)
-  GO_PKG_TAGS+=gvisor
-endif
-ifneq ($(CONFIG_TAG_$(PKG_NAME)_QUIC),)
-  GO_PKG_TAGS+=with_quic
-endif
-ifneq ($(CONFIG_TAG_$(PKG_NAME)_SHADOWSOCKSR),)
-  GO_PKG_TAGS+=with_shadowsocksr
-endif
-ifneq ($(CONFIG_TAG_$(PKG_NAME)_UTLS),)
-  GO_PKG_TAGS+=with_utls
-endif
-ifneq ($(CONFIG_TAG_$(PKG_NAME)_WIREGUARD),)
-  GO_PKG_TAGS+=with_wireguard
-endif
-GO_PKG_TAGS:=$(subst $(space),$(comma),$(strip $(GO_PKG_TAGS)))
+PKG_CONFIG_DEPENDS:= \
+	CONFIG_SING_BOX_WITH_ACME \
+	CONFIG_SING_BOX_WITH_CLASH_API \
+	CONFIG_SING_BOX_WITH_DHCP \
+	CONFIG_SING_BOX_WITH_ECH \
+	CONFIG_SING_BOX_WITH_GRPC \
+	CONFIG_SING_BOX_WITH_GVISOR \
+	CONFIG_SING_BOX_WITH_QUIC \
+	CONFIG_SING_BOX_WITH_REALITY_SERVER \
+	CONFIG_SING_BOX_WITH_SHADOWSOCKSR \
+	CONFIG_SING_BOX_WITH_UTLS \
+	CONFIG_SING_BOX_WITH_V2RAY_API \
+	CONFIG_SING_BOX_WITH_WIREGUARD
+
+GO_PKG_TAGS:=$(subst $(space),$(comma),$(strip \
+	$(if $(CONFIG_SING_BOX_WITH_ACME),with_acme) \
+	$(if $(CONFIG_SING_BOX_WITH_CLASH_API),with_clash_api) \
+	$(if $(CONFIG_SING_BOX_WITH_DHCP),with_dhcp) \
+	$(if $(CONFIG_SING_BOX_WITH_ECH),with_ech) \
+	$(if $(CONFIG_SING_BOX_WITH_GRPC),with_grpc) \
+	$(if $(CONFIG_SING_BOX_WITH_GVISOR),with_gvisor) \
+	$(if $(CONFIG_SING_BOX_WITH_QUIC),with_quic) \
+	$(if $(CONFIG_SING_BOX_WITH_REALITY_SERVER),with_reality_server) \
+	$(if $(CONFIG_SING_BOX_WITH_SHADOWSOCKSR),with_shadowsocksr) \
+	$(if $(CONFIG_SING_BOX_WITH_UTLS),with_utls) \
+	$(if $(CONFIG_SING_BOX_WITH_V2RAY_API),with_v2ray_api) \
+	$(if $(CONFIG_SING_BOX_WITH_WIREGUARD),with_wireguard) \
+))
 
 define Package/$(PKG_NAME)/conffiles
 /etc/sing-box/config.json
@@ -134,18 +149,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./files/sing-box.init $(1)/etc/init.d/sing-box
 
 	$(INSTALL_DIR) $(1)/etc/sing-box
-	$(INSTALL_DATA) ./files/config.json.example $(1)/etc/sing-box/config.json
-endef
-
-define Package/$(PKG_NAME)/postinst
-#!/bin/sh
-
-# check if we are on real system
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/sing-box stop >/dev/null 2>&1
-	/etc/init.d/sing-box disable >/dev/null 2>&1
-fi
-exit 0
+	$(INSTALL_DATA) ./files/config.json.example $(1)/etc/sing-box/config.json.example
 endef
 
 $(eval $(call GoBinPackage,sing-box))

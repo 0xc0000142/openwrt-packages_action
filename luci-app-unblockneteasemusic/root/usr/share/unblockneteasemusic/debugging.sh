@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2021-2022 Tianling Shen <cnsztl@immortalwrt.org>
+# Copyright (C) 2021-2023 Tianling Shen <cnsztl@immortalwrt.org>
 
 . /lib/functions.sh
 
@@ -17,7 +17,8 @@ echo -e "\n"
 echo -e "uclient-fetch info:"
 opkg info uclient-fetch
 opkg info libustream-*
-uclient-fetch -O- 'https://api.github.com/repos/UnblockNeteaseMusic/server/commits?sha=enhanced&path=precompiled' | jsonfilter -e '@[0].sha' || echo -e "Failed to connect to GitHub with uclient-fetch."
+opkg info wget-ssl
+wget -O- 'https://api.github.com/repos/UnblockNeteaseMusic/server/commits?sha=enhanced&path=precompiled' | jsonfilter -e '@[0].sha' || echo -e "Failed to connect to GitHub with uclient-fetch."
 echo -e "\n"
 
 echo -e "Node.js info:"
@@ -91,4 +92,4 @@ echo -e "\n"
 	echo -e ""
 }
 
-cat "/tmp/$NAME.log" 2>"/dev/null" || echo -e "Log is not avaiable."
+cat "/var/run/$NAME/run.log" 2>"/dev/null" || echo -e "Log is not avaiable."
