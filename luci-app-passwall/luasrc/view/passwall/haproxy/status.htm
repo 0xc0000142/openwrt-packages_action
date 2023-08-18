@@ -1,5 +1,5 @@
 <%
-local api = require "luci.model.cbi.passwall.api.api"
+local api = require "luci.passwall.api"
 local console_port = api.uci_get_type("global_haproxy", "console_port", "")
 -%>
 <p id="_status"></p>
@@ -18,7 +18,7 @@ local console_port = api.uci_get_type("global_haproxy", "console_port", "")
 				}
 			}
 		});
-		
+
 	function openwebui(){
 		var url = window.location.hostname + ":<%=console_port%>";
 		window.open('http://' + url, 'target', '');

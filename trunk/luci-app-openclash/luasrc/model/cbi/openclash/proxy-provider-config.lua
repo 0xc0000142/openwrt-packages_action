@@ -49,6 +49,11 @@ for t,f in ipairs(fs.glob("/etc/openclash/config/*"))do
   end
 end
 
+o = s:option(Flag, "manual", translate("Custom Tag"))
+o.rmempty = false
+o.default = "0"
+o.description = translate("Mark as Custom Node to Prevent Retention config from being Deleted When Enabled")
+
 o = s:option(ListValue, "type", translate("Provider Type"))
 o.rmempty = true
 o.description = translate("Choose The Provider Type")
@@ -58,9 +63,6 @@ o:value("file")
 o = s:option(Value, "name", translate("Provider Name"))
 o.rmempty = false
 o.default = "Proxy-provider - "..sid
-if not m.uci:get("openclash", sid, "name") then
-	m.uci:set("openclash", sid, "manual", 1)
-end
 
 o = s:option(ListValue, "path", translate("Provider Path"))
 o.description = translate("Update Your Proxy Provider File From Config Luci Page")
@@ -106,7 +108,7 @@ o = s:option(Value, "health_check_interval", translate("Health Check Interval(s)
 o.default = "300"
 o.rmempty = false
 
-o = s:option(DynamicList, "groups", translate("Proxy Group"))
+o = s:option(DynamicList, "groups", translate("Proxy Group (Support Regex)"))
 o.description = font_red..bold_on..translate("No Need Set when Config Create, The added Proxy Groups Must Exist")..bold_off..font_off
 o.rmempty = true
 o:value("all", translate("All Groups"))

@@ -11,6 +11,8 @@ int af_test_mode = 0;
 // todo: rename af_log.c
 int g_oaf_enable __read_mostly = 0;
 int af_work_mode = AF_MODE_GATEWAY;
+unsigned int af_lan_ip = 0;
+unsigned int af_lan_mask = 0;
 /* 
 	cat /proc/sys/oaf/debug
 */
@@ -42,6 +44,20 @@ static struct ctl_table oaf_table[] = {
 		.maxlen 	= sizeof(int),
 		.mode		= 0666,
 		.proc_handler	= proc_dointvec,
+	},
+	{
+		.procname	= "lan_ip",
+		.data		= &af_lan_ip,
+		.maxlen = 	sizeof(unsigned int),
+		.mode		= 0666,
+		.proc_handler	= proc_douintvec,
+	},
+	{
+		.procname = "lan_mask",
+		.data = &af_lan_mask,
+		.maxlen = sizeof(unsigned int),
+		.mode = 0666,
+		.proc_handler = proc_douintvec,
 	},
 	{
 	}

@@ -1,21 +1,16 @@
 -- Copyright (C) 2018-2020 L-WRT Team
--- Copyright (C) 2021-2022 xiaorouji
+-- Copyright (C) 2021-2023 xiaorouji
 
 module("luci.controller.passwall", package.seeall)
-local api = require "luci.model.cbi.passwall.api.api"
+local api = require "luci.passwall.api"
 local appname = api.appname
 local ucic = luci.model.uci.cursor()
 local http = require "luci.http"
 local util = require "luci.util"
 local i18n = require "luci.i18n"
-local brook = require("luci.model.cbi." .. appname ..".api.brook")
-local v2ray = require("luci.model.cbi." .. appname ..".api.v2ray")
-local xray = require("luci.model.cbi." .. appname ..".api.xray")
-local trojan_go = require("luci.model.cbi." .. appname ..".api.trojan_go")
-local hysteria = require("luci.model.cbi." .. appname ..".api.hysteria")
 
 function index()
-	appname = require "luci.model.cbi.passwall.api.api".appname
+	appname = require "luci.passwall.api".appname
 	entry({"admin", "services", appname}).dependent = true
 	entry({"admin", "services", appname, "reset_config"}, call("reset_config")).leaf = true
 	entry({"admin", "services", appname, "show"}, call("show_menu")).leaf = true
@@ -72,16 +67,15 @@ function index()
 	entry({"admin", "services", appname, "clear_all_nodes"}, call("clear_all_nodes")).leaf = true
 	entry({"admin", "services", appname, "delete_select_nodes"}, call("delete_select_nodes")).leaf = true
 	entry({"admin", "services", appname, "update_rules"}, call("update_rules")).leaf = true
-	entry({"admin", "services", appname, "brook_check"}, call("brook_check")).leaf = true
-	entry({"admin", "services", appname, "brook_update"}, call("brook_update")).leaf = true
-	entry({"admin", "services", appname, "v2ray_check"}, call("v2ray_check")).leaf = true
-	entry({"admin", "services", appname, "v2ray_update"}, call("v2ray_update")).leaf = true
-	entry({"admin", "services", appname, "xray_check"}, call("xray_check")).leaf = true
-	entry({"admin", "services", appname, "xray_update"}, call("xray_update")).leaf = true
-	entry({"admin", "services", appname, "trojan_go_check"}, call("trojan_go_check")).leaf = true
-	entry({"admin", "services", appname, "trojan_go_update"}, call("trojan_go_update")).leaf = true
-	entry({"admin", "services", appname, "hysteria_check"}, call("hysteria_check")).leaf = true
-	entry({"admin", "services", appname, "hysteria_update"}, call("hysteria_update")).leaf = true
+
+	--[[Components update]]
+	entry({"admin", "services", appname, "check_passwall"}, call("app_check")).leaf = true
+	local coms = require "luci.passwall.com"
+	local com
+	for com, _ in pairs(coms) do
+		entry({"admin", "services", appname, "check_" .. com}, call("com_check", com)).leaf = true
+		entry({"admin", "services", appname, "update_" .. com}, call("com_update", com)).leaf = true
+	end
 end
 
 local function http_write_json(content)
@@ -119,11 +113,19 @@ end
 function autoswitch_add_node()
 	local key = luci.http.formvalue("key")
 	if key and key ~= "" then
-		for k, e in ipairs(api.get_valid_nodes()) do
-			if e.node_type == "normal" and e["remark"]:find(key) then
-				luci.sys.call(string.format("uci -q del_list passwall.@auto_switch[0].tcp_node='%s' && uci -q add_list passwall.@auto_switch[0].tcp_node='%s'", e.id, e.id))
+		local new_list = ucic:get(appname, "@auto_switch[0]", "tcp_node") or {}
+		for i = #new_list, 1, -1 do
+			if (ucic:get(appname, new_list[i], "remarks") or ""):find(key) then
+				table.remove(new_list, i)
 			end
 		end
+		for k, e in ipairs(api.get_valid_nodes()) do
+			if e.node_type == "normal" and e["remark"]:find(key) then
+				table.insert(new_list, e.id)
+			end
+		end
+		ucic:set_list(appname, "@auto_switch[0]", "tcp_node", new_list)
+		ucic:commit(appname)
 	end
 	luci.http.redirect(api.url("auto_switch"))
 end
@@ -131,11 +133,14 @@ end
 function autoswitch_remove_node()
 	local key = luci.http.formvalue("key")
 	if key and key ~= "" then
-		for k, e in ipairs(ucic:get(appname, "@auto_switch[0]", "tcp_node") or {}) do
-			if e and (ucic:get(appname, e, "remarks") or ""):find(key) then
-				luci.sys.call(string.format("uci -q del_list passwall.@auto_switch[0].tcp_node='%s'", e))
+		local new_list = ucic:get(appname, "@auto_switch[0]", "tcp_node") or {}
+		for i = #new_list, 1, -1 do
+			if (ucic:get(appname, new_list[i], "remarks") or ""):find(key) then
+				table.remove(new_list, i)
 			end
 		end
+		ucic:set_list(appname, "@auto_switch[0]", "tcp_node", new_list)
+		ucic:commit(appname)
 	end
 	luci.http.redirect(api.url("auto_switch"))
 end
@@ -220,7 +225,7 @@ function connect_status()
 	local e = {}
 	e.use_time = ""
 	local url = luci.http.formvalue("url")
-	local result = luci.sys.exec('curl --connect-timeout 3 -o /dev/null -I -skL -w "%{http_code}:%{time_starttransfer}" ' .. url)
+	local result = luci.sys.exec('curl --connect-timeout 3 -o /dev/null -I -sk -w "%{http_code}:%{time_starttransfer}" ' .. url)
 	local code = tonumber(luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $1}'") or "0")
 	if code ~= 0 then
 		local use_time = luci.sys.exec("echo -n '" .. result .. "' | awk -F ':' '{print $2}'")
@@ -285,7 +290,7 @@ end
 
 function copy_node()
 	local section = luci.http.formvalue("section")
-	local uuid = api.gen_uuid()
+	local uuid = api.gen_short_uuid()
 	ucic:section(appname, "nodes", uuid)
 	for k, v in pairs(ucic:get_all(appname, section)) do
 		local filter = k:find("%.")
@@ -331,11 +336,12 @@ function delete_select_nodes()
 	local ids = luci.http.formvalue("ids")
 	local auto_switch_tcp_node_list = ucic:get(appname, "@auto_switch[0]", "tcp_node") or {}
 	string.gsub(ids, '[^' .. "," .. ']+', function(w)
-		for k, v in ipairs(auto_switch_tcp_node_list) do
-			if v == w then
-				luci.sys.call(string.format("uci -q del_list passwall.@auto_switch[0].tcp_node='%s'", w))
+		for i = #auto_switch_tcp_node_list, 1, -1 do
+			if w == auto_switch_tcp_node_list[i] then
+				table.remove(auto_switch_tcp_node_list, i)
 			end
 		end
+		ucic:set_list(appname, "@auto_switch[0]", "tcp_node", auto_switch_tcp_node_list)
 		if (ucic:get(appname, "@global[0]", "tcp_node") or "nil") == w then
 			ucic:set(appname, '@global[0]', "tcp_node", "nil")
 		end
@@ -398,94 +404,26 @@ function server_clear_log()
 	luci.sys.call("echo '' > /tmp/log/passwall_server.log")
 end
 
-function brook_check()
-	local json = brook.to_check("")
+function app_check()
+	local json = api.to_check_self()
 	http_write_json(json)
 end
 
-function brook_update()
-	local json = nil
-	local task = http.formvalue("task")
-	if task == "move" then
-		json = brook.to_move(http.formvalue("file"))
-	else
-		json = brook.to_download(http.formvalue("url"), http.formvalue("size"))
-	end
-
+function com_check(comname)
+	local json = api.to_check("",comname)
 	http_write_json(json)
 end
 
-function v2ray_check()
-	local json = v2ray.to_check("")
-	http_write_json(json)
-end
-
-function v2ray_update()
+function com_update(comname)
 	local json = nil
 	local task = http.formvalue("task")
 	if task == "extract" then
-		json = v2ray.to_extract(http.formvalue("file"), http.formvalue("subfix"))
+		json = api.to_extract(comname, http.formvalue("file"), http.formvalue("subfix"))
 	elseif task == "move" then
-		json = v2ray.to_move(http.formvalue("file"))
+		json = api.to_move(comname, http.formvalue("file"))
 	else
-		json = v2ray.to_download(http.formvalue("url"), http.formvalue("size"))
+		json = api.to_download(comname, http.formvalue("url"), http.formvalue("size"))
 	end
 
 	http_write_json(json)
 end
-
-function xray_check()
-	local json = xray.to_check("")
-	http_write_json(json)
-end
-
-function xray_update()
-	local json = nil
-	local task = http.formvalue("task")
-	if task == "extract" then
-		json = xray.to_extract(http.formvalue("file"), http.formvalue("subfix"))
-	elseif task == "move" then
-		json = xray.to_move(http.formvalue("file"))
-	else
-		json = xray.to_download(http.formvalue("url"), http.formvalue("size"))
-	end
-
-	http_write_json(json)
-end
-
-function trojan_go_check()
-	local json = trojan_go.to_check("")
-	http_write_json(json)
-end
-
-function trojan_go_update()
-	local json = nil
-	local task = http.formvalue("task")
-	if task == "extract" then
-		json = trojan_go.to_extract(http.formvalue("file"), http.formvalue("subfix"))
-	elseif task == "move" then
-		json = trojan_go.to_move(http.formvalue("file"))
-	else
-		json = trojan_go.to_download(http.formvalue("url"), http.formvalue("size"))
-	end
-
-	http_write_json(json)
-end
-
-function hysteria_check()
-	local json = hysteria.to_check("")
-	http_write_json(json)
-end
-
-function hysteria_update()
-	local json = nil
-	local task = http.formvalue("task")
-	if task == "move" then
-		json = hysteria.to_move(http.formvalue("file"))
-	else
-		json = hysteria.to_download(http.formvalue("url"), http.formvalue("size"))
-	end
-
-	http_write_json(json)
-end
-

@@ -30,15 +30,24 @@ function to_check()
     if not board_name or board_name == "" then board_name = api.auto_get_board_name() end
 	sysverformat = luci.sys.exec("date -d $(echo " ..get_system_version().. " | awk -F. '{printf $3\"-\"$1\"-\"$2}') +%s")
 	currentTimeStamp = luci.sys.exec("expr $(date -d \"$(date '+%Y-%m-%d %H:%M:%S')\" +%s) - 172800")
-	if board_name == "x86_64" then
-		model = "x86_64"
-		check_update()
-		if fs.access("/sys/firmware/efi") then
-			download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-x86-64-generic-squashfs-combined-efi.img.gz"
-		else
-			download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-x86-64-generic-squashfs-combined.img.gz"
-			md5 = ""
-		end
+    if board_name == "x86_64" then
+    	model = "x86_64"
+    	check_update()
+    	if fs.access("/sys/firmware/efi") then
+    		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-x86-64-generic-squashfs-combined-efi.img.gz"
+    	else
+    		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-x86-64-generic-squashfs-combined.img.gz"
+    		md5 = ""
+    	end
+    elseif board_name == "x86_generic" then
+    	model = "x86_32"
+    	check_update()
+    	if fs.access("/sys/firmware/efi") then
+    		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-x86-generic-squashfs-combined-efi.img.gz"
+    	else
+    		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-x86-generic-squashfs-combined.img.gz"
+    		md5 = ""
+    	end
     elseif board_name:match("nanopi%-r2s$") then
 		model = "rockchip_armv8/friendlyarm_nanopi-r2s"
 		check_update()
@@ -51,6 +60,30 @@ function to_check()
 		model = "rockchip_armv8/friendlyarm_nanopi-r5s"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-rockchip-armv8-friendlyarm_nanopi-r5s-squashfs-sysupgrade.img.gz"
+    elseif board_name:match("nanopi%-r5c$") then
+		model = "rockchip_armv8/friendlyarm_nanopi-r5c"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-rockchip-armv8-friendlyarm_nanopi-r5c-squashfs-sysupgrade.img.gz"
+    elseif board_name:match("nanopi%-r6s$") then
+		model = "rockchip_rk3588_armv8/friendlyelec_nanopi-r6s"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-rockchip_rk3588_armv8-friendlyelec_nanopi-r6s-squashfs-sysupgrade.img.gz"
+    elseif board_name:match("nanopi%-r6c$") then
+		model = "rockchip_rk3588_armv8/friendlyelec_nanopi-r6c"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-rockchip_rk3588_armv8-friendlyelec_nanopi-r6c-squashfs-sysupgrade.img.gz"
+    elseif board_name:match("nanopc%-t6$") then
+		model = "rockchip_rk3588_armv8/friendlyelec_nanopc-t6"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-rockchip_rk3588_armv8-friendlyelec_nanopc-t6-squashfs-sysupgrade.img.gz"
+    elseif board_name:match("orangepi%-5$") then
+		model = "rockchip_rk3588_armv8/xunlong_orangepi-5"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-rockchip_rk3588_armv8-xunlong_orangepi-5-squashfs-sysupgrade.img.gz"
+    elseif board_name:match("orangepi%-5%-plus$") then
+		model = "rockchip_rk3588_armv8/xunlong_orangepi-5-plus"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-rockchip_rk3588_armv8-xunlong_orangepi-5-plus-squashfs-sysupgrade.img.gz"
     elseif board_name:match("nanopi%-r4se$") then
 		model = "rockchip_armv8/friendlyarm_nanopi-r4se"
 		check_update()
@@ -87,6 +120,10 @@ function to_check()
 		model = "rockchip_armv8/xunlong_orangepi-r1-plus"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-rockchip-armv8-xunlong_orangepi-r1-plus-squashfs-sysupgrade.img.gz"
+    elseif board_name:match("ariaboard,photonicat$") then
+		model = "rockchip_armv8/ariaboard_photonicat"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-rockchip-armv8-ariaboard_photonicat-squashfs-sysupgrade.img.gz"
     elseif board_name:match("nanopi%-neo3$") then
 		model = "rockchip_armv8/friendlyarm_nanopi-neo3"
 		check_update()
@@ -114,15 +151,15 @@ function to_check()
     elseif board_name:match("redmi,ax6$") then
 		model = "ipq807x_generic/redmi_ax6"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-redmi_ax6-squashfs-nand-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-redmi_ax6-squashfs-sysupgrade.bin"
     elseif board_name:match("xiaomi,ax9000$") then
 		model = "ipq807x_generic/xiaomi_ax9000"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-xiaomi_ax9000-squashfs-nand-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-xiaomi_ax9000-squashfs-sysupgrade.bin"
     elseif board_name:match("xiaomi,ax3600$") then
 		model = "ipq807x_generic/xiaomi_ax3600"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-xiaomi_ax3600-squashfs-nand-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-generic-xiaomi_ax3600-squashfs-sysupgrade.bin"
     elseif board_name:match("xy%-c5$") then
 		model = "ramips_mt7621/xiaoyu_xy-c5"
 		check_update()
@@ -167,6 +204,10 @@ function to_check()
 		model = "ramips_mt7621/phicomm_k2p"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-phicomm_k2p-squashfs-sysupgrade.bin"
+    elseif board_name:match("phicomm,k2p%-32m$") then
+		model = "ramips_mt7621/phicomm_k2p-32m"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-phicomm_k2p-32m-squashfs-sysupgrade.bin"
     elseif board_name:match("phicomm,k3$") then
 		model = "bcm53xx_generic/phicomm_k3"
 		check_update()
@@ -299,6 +340,10 @@ function to_check()
 		model = "ramips_mt7621/linksys_e5600"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-linksys_e5600-squashfs-sysupgrade.bin"
+    elseif board_name:match("jdcloud,luban$") then
+		model = "ramips_mt7621/jdcloud_luban"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7621-jdcloud_luban-squashfs-sysupgrade.bin"
     elseif board_name:match("rt%-ac1200$") then
 		model = "ramips_mt76x8/asus_rt-ac1200"
 		check_update()
@@ -327,6 +372,10 @@ function to_check()
 		model = "ramips_mt76x8/hiwifi_hc5861b"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt76x8-hiwifi_hc5861b-squashfs-sysupgrade.bin"
+    elseif board_name:match("hiwifi,hc5611$") then
+		model = "ramips_mt76x8/hiwifi_hc5611"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt76x8-hiwifi_hc5611-squashfs-sysupgrade.bin"
     elseif board_name:match("netgear,r6120$") then
 		model = "ramips_mt76x8/netgear_r6120"
 		check_update()
@@ -338,11 +387,11 @@ function to_check()
     elseif board_name:match("r619ac%-64m$") then
 		model = "ipq40xx_generic/p2w_r619ac-64m"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq40xx-generic-p2w_r619ac-64m-squashfs-nand-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq40xx-generic-p2w_r619ac-64m-squashfs-sysupgrade.bin"
     elseif board_name:match("r619ac%-128m$") then
 		model = "ipq40xx_generic/p2w_r619ac-128m"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq40xx-generic-p2w_r619ac-128m-squashfs-nand-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq40xx-generic-p2w_r619ac-128m-squashfs-sysupgrade.bin"
     elseif board_name:match("rt%-ac42u$") then
 		model = "ipq40xx_generic/asus_rt-ac42u"
 		check_update()
@@ -355,6 +404,10 @@ function to_check()
 		model = "ipq40xx_generic/mobipromo_cm520-79f"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq40xx-generic-mobipromo_cm520-79f-squashfs-nand-sysupgrade.bin"
+    elseif board_name:match("gl%-a1300$") then
+		model = "ipq40xx_generic/glinet_gl-a1300"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq40xx-generic-glinet_gl-a1300-squashfs-nand-sysupgrade.bin"
     elseif board_name:match("rt%-ac88u$") then
 		model = "bcm53xx_generic/asus_rt-ac88u"
 		check_update()
@@ -363,18 +416,38 @@ function to_check()
 		model = "mvebu_cortexa9/linksys_wrt1200ac"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mvebu-cortexa9-linksys_wrt1200ac-squashfs-sysupgrade.bin"
+    elseif board_name:match("linksys,wrt1900ac%-v2$") then
+		model = "mvebu_cortexa9/linksys_wrt1900ac-v2"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mvebu-cortexa9-linksys_wrt1900ac-v2-squashfs-sysupgrade.bin"
+    elseif board_name:match("linksys,wrt1900ac%-v1$") then
+		model = "mvebu_cortexa9/linksys_wrt1900ac-v1"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mvebu-cortexa9-linksys_wrt1900ac-v1-squashfs-sysupgrade.bin"
+    elseif board_name:match("linksys,wrt3200acm$") then
+		model = "mvebu_cortexa9/linksys_wrt3200acm"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mvebu-cortexa9-linksys_wrt3200acm-squashfs-sysupgrade.bin"
+    elseif board_name:match("linksys,wrt1900acs$") then
+		model = "mvebu_cortexa9/linksys_wrt1900acs"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mvebu-cortexa9-linksys_wrt1900acs-squashfs-sysupgrade.bin"
+    elseif board_name:match("linksys,wrt32x$") then
+		model = "mvebu_cortexa9/linksys_wrt32x"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mvebu-cortexa9-linksys_wrt32x-squashfs-sysupgrade.bin"
     elseif board_name:match("qihoo,v6$") then
 		model = "ipq60xx_generic/qihoo_v6"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq60xx-generic-qihoo_v6-squashfs-nand-sysupgrade.bin"
-    elseif board_name:match("gl%-ax1800$") then
-		model = "ipq60xx_generic/linet_gl-ax1800"
+    elseif board_name:match("glinet,axt1800$") then
+		model = "ipq807x_ipq60xx/glinet_axt1800"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq60xx-generic-glinet_gl-ax1800-squashfs-nand-sysupgrade.bin"
-    elseif board_name:match("gl%-axt1800$") then
-		model = "ipq60xx_generic/glinet_gl-axt1800"
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-glinet_axt1800-squashfs-sysupgrade.tar"
+    elseif board_name:match("glinet,ax1800$") then
+		model = "ipq807x_ipq60xx/glinet_ax1800"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq60xx-generic-glinet_gl-axt1800-squashfs-nand-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq807x-glinet_ax1800-squashfs-sysupgrade.tar"
     elseif board_name:match("linksys,mr7350$") then
 		model = "ipq60xx_generic/linksys_mr7350"
 		check_update()
@@ -439,10 +512,18 @@ function to_check()
 		model = "ramips_mt7620/xiaomi_miwifi-r3"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7620-xiaomi_miwifi-r3-squashfs-sysupgrade.bin"
-    elseif board_name:match("redmi%-router%-ax6000$") then
-		model = "mediatek_filogic/xiaomi_redmi-router-ax6000"
+    elseif board_name:match("hiwifi,r33$") then
+		model = "ramips_mt7620/hiwifi_r33"
 		check_update()
-		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-filogic-xiaomi_redmi-router-ax6000-squashfs-sysupgrade.bin"
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ramips-mt7620-hiwifi_r33-squashfs-sysupgrade.bin"
+    elseif board_name:match("redmi%-router%-ax6000%-ubootmod$") then
+		model = "mediatek_filogic/xiaomi_redmi-router-ax6000-ubootmod"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-filogic-xiaomi_redmi-router-ax6000-ubootmod-squashfs-sysupgrade.bin"
+    elseif board_name:match("mt7981%-360%-t7%-108M$") then
+		model = "mediatek_mt7981/mt7981-360-t7-108M"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-mt7981-mt7981-360-t7-108M-squashfs-sysupgrade.bin"
     elseif board_name:match("linksys,ea4500$") then
 		model = "kirkwood_generic/linksys_ea4500"
 		check_update()
@@ -451,6 +532,82 @@ function to_check()
 		model = "kirkwood_generic/linksys_e4200-v2"
 		check_update()
 		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-kirkwood-linksys_e4200-v2-squashfs-sysupgrade.bin"
+    elseif board_name:match("thunder%-onecloud$") then
+		model = "meson_meson8/thunder-onecloud"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-meson-meson8b-thunder-onecloud-ext4-sdcard.img.gz"
+    elseif board_name:match("gl%-ar300m%-nand$") then
+		model = "ath79_nand/glinet_gl-ar300m-nand"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-glinet_gl-ar300m-nand-squashfs-sysupgrade.bin"
+    elseif board_name:match("gl%-ar750s%-nor%-nand$") then
+		model = "ath79_nand/glinet_gl-ar750s-nor-nand"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-glinet_gl-ar750s-nor-nand-squashfs-sysupgrade.bin"
+    elseif board_name:match("gl%-e750$") then
+		model = "ath79_nand/glinet_gl-e750"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-glinet_gl-e750-squashfs-sysupgrade.bin"
+    elseif board_name:match("gl%-xe300$") then
+		model = "ath79_nand/glinet_gl-xe300"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-glinet_gl-xe300-squashfs-sysupgrade.bin"
+    elseif board_name:match("netgear,r6100$") then
+		model = "ath79_nand/netgear_r6100"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-netgear_r6100-squashfs-sysupgrade.bin"
+    elseif board_name:match("wndr3700%-v4$") then
+		model = "ath79_nand/netgear_wndr3700-v4"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-netgear_wndr3700-v4-squashfs-sysupgrade.bin"
+    elseif board_name:match("netgear,wndr4300$") then
+		model = "ath79_nand/netgear_wndr4300"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-netgear_wndr4300-squashfs-sysupgrade.bin"
+    elseif board_name:match("wndr4300%-v2$") then
+		model = "ath79_nand/netgear_wndr4300-v2"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-netgear_wndr4300-v2-squashfs-sysupgrade.bin"
+    elseif board_name:match("netgear,wndr4300sw$") then
+		model = "ath79_nand/netgear_wndr4300sw"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-netgear_wndr4300sw-squashfs-sysupgrade.bin"
+    elseif board_name:match("netgear,wndr4300tn$") then
+		model = "ath79_nand/netgear_wndr4300tn"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-netgear_wndr4300tn-squashfs-sysupgrade.bin"
+    elseif board_name:match("wndr4500%-v3$") then
+		model = "ath79_nand/netgear_wndr4500-v3"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-netgear_wndr4500-v3-squashfs-sysupgrade.bin"
+    elseif board_name:match("zte,mf286$") then
+		model = "ath79_nand/zte_mf286"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ath79-nand-zte_mf286-squashfs-sysupgrade.bin"
+    elseif board_name:match("gl%-mt2500$") then
+		model = "mediatek_mt7981/glinet_gl-mt2500"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-mt7981-glinet_gl-mt2500-squashfs-sysupgrade.bin"
+    elseif board_name:match("gl%-mt3000$") then
+		model = "mediatek_filogic/glinet_gl-mt3000"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-filogic-glinet_gl-mt3000-squashfs-sysupgrade.bin"
+    elseif board_name:match("gl%-x3000$") then
+		model = "mediatek_mt7981/glinet_gl-x3000"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-mt7981-glinet_gl-x3000-squashfs-sysupgrade.bin"
+    elseif board_name:match("gl%-xe3000$") then
+		model = "mediatek_mt7981/glinet_gl-xe3000"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-mt7981-glinet_gl-xe3000-squashfs-sysupgrade.bin"
+    elseif board_name:match("wr30u%-112M$") then
+		model = "mediatek_mt7981/xiaomi_wr30u-112M"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-mediatek-mt7981-xiaomi_wr30u-112M-squashfs-sysupgrade.bin"
+    elseif board_name:match("redmi,ax3000$") then
+		model = "ipq50xx_arm/redmi_ax3000"
+		check_update()
+		download_url = "https://op.supes.top/firmware/" ..model.. "/" ..remote_version.. "-openwrt-ipq50xx-arm-redmi_ax3000-squashfs-sysupgrade.bin"
     else
 		local needs_update = false
 		return {

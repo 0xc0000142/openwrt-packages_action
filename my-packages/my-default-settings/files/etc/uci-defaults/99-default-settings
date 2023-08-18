@@ -14,11 +14,6 @@ if [ "$(uci -q get dhcp.@dnsmasq[0].port)" != "53" ]; then
 	uci commit dhcp
 fi
 
-uci -q batch <<EOF
-set attendedsysupgrade.server.url='https://op.supes.top'
-commit attendedsysupgrade
-EOF
-
 uci -q set dockerd.firewall.extra_iptables_args='--match conntrack ! --ctstate RELATED,ESTABLISHED'
 uci commit dockerd
 
@@ -40,9 +35,14 @@ processor=`cat /proc/cpuinfo | grep 'processor' | wc -l`
 sed -i "/^threads =/c\threads = $processor" /etc/uwsgi/vassals/luci-webui.ini
 fi
 
+if [ -f /etc/config/attendedsysupgrade ]; then
+uci -q set attendedsysupgrade.server.url='https://openwrt.ai'
+uci commit attendedsysupgrade
+fi
+
 if [[ ! "$version" || "$version" -lt 1 ]]; then
 	uci -q set luci.main.lang='auto'
-	uci -q set luci.main.mediaurlbase=/luci-static/edge
+	uci -q set luci.main.mediaurlbase=/luci-static/argon
 	uci commit luci
 	
 	uci -q set dropbear.@dropbear[0].Interface='lan'
@@ -62,6 +62,9 @@ if [[ ! "$version" || "$version" -lt 1 ]]; then
 	uci -q set uhttpd.main.script_timeout='120'
 	uci commit uhttpd
 	
+	uci -q set upnpd.config.enabled='1'
+	uci commit upnpd
+	
 	(echo "root"; sleep 1; echo "root") | /bin/busybox passwd root >/dev/null 2>&1 &
 	
 	. /etc/openwrt_release
@@ -72,27 +75,33 @@ if [[ ! "$version" || "$version" -lt 1 ]]; then
 		uci commit firewall
 	fi
 
+	sed -i '/option disabled/d' /etc/config/wireless
+
 	wifi_setup_radio(){
 	local radio=$1
 	htmode="$(uci -q get wireless.${radio}.htmode)"
-	local widx=0
-	while uci rename wireless.@wifi-iface[$widx]=default_radio$widx >/dev/null 2>&1; do widx=$((widx+1)); done
 	if uci -q get wireless.${radio} >/dev/null; then
 			uci -q del wireless.${radio}.disabled
 			uci -q set wireless.${radio}.country='US'
+			uci -q set wireless.${radio}.mu_beamformer='1'
+			uci -q set wireless.${radio}.cell_density='3'
 		
 		if [ "$(uci -q get wireless.${radio}.band)" = "5g" ]; then
 			uci -q set wireless.default_${radio}.ssid="${SSID}_5G"
 			if [[ "${htmode}" == HE* ]]; then   # AX
-				uci -q set wireless.${radio}.htmode="HE160"
-				uci -q set wireless.${radio}.channel='44'
+				if [[ "$(board_name)" == *cr660x || "$(board_name)" == *ax9000 || "$DISTRIB_TARGET" == 'ipq60xx/generic' || "$DISTRIB_TARGET" == 'ipq807x/ipq60xx' ]]; then
+					uci -q set wireless.${radio}.htmode="HE80"
+					uci -q set wireless.${radio}.channel='157'
+				else
+					uci -q set wireless.${radio}.htmode="HE160"
+					uci -q set wireless.${radio}.channel='44'
+				fi
 			else
 				uci -q set wireless.${radio}.htmode="VHT80"   #AC
 				uci -q set wireless.${radio}.channel="157"
 			fi
-			if [[ "$(board_name)" == *cr660x || "$(board_name)" == *ax9000 || "$DISTRIB_TARGET" == 'ipq60xx/generic' ]]; then
-				uci -q set wireless.${radio}.htmode="HE80"
-				uci -q set wireless.${radio}.channel='157'
+			if [[ "$(board_name)" == *ax6000 ]]; then
+				uci -q set wireless.${radio}.htmode="VHT160"
 			fi
 		else
 			uci -q set wireless.${radio}.htmode="HT40"   #N
@@ -108,13 +117,19 @@ if [[ ! "$version" || "$version" -lt 1 ]]; then
 			else
 				uci -q set wireless.default_${radio}.encryption='none'
 			fi
+			if uci get wireless.${radio}.path | grep -q bcma || iwinfo wlan${radio:5} info | grep -qi Cypress; then
+				WLAN_IDX=${radio:5}
+				uci set wireless.default_${radio}.ifname="wlan${WLAN_IDX}"
+			fi
 		fi
 	}
 
-	if [ -f /etc/config/wireless ]; then
+	if [[ -f /etc/config/wireless ]]; then
 		SSID=${hostname}
 		SSID_PASSWD=""
 		[ "$(uci -q get wireless.radio1.band)" == "5g" ] && uci -q set wireless.radio0.band="2g"
+		widx=0
+		while uci rename wireless.@wifi-iface[$widx]=default_radio$widx >/dev/null 2>&1; do widx=$((widx+1)); done
 		for radio in radio0 radio1 radio2 radio3; do
 			wifi_setup_radio ${radio}
 		done
@@ -222,7 +237,15 @@ if [[ ! "$version" || "$version" -lt 1 ]]; then
 	version=1
 fi
 
-cp -pR /www/cgi-bin/* /www/
+grep -q "location /luci " /etc/nginx/conf.d/luci.locations 2>/dev/null &&
+	cp -pR /www/cgi-bin/* /www/
+
+grep -q "uwsgi_read_timeout" /etc/nginx/conf.d/luci.locations 2>/dev/null ||
+	sed -i "s/include uwsgi_params;/include uwsgi_params;\n\t\tuwsgi_read_timeout 300s;/" /etc/nginx/conf.d/luci.locations
+	
+sed -i "s/client_max_body_size 128/client_max_body_size 3072/" /etc/nginx/uci.conf.template
+sed -i "s/large_client_header_buffers 2 1k/large_client_header_buffers 4 512k/" /etc/nginx/uci.conf.template
+
 rm -rf /tmp/luci-*
 
 uci -q set base_config.@status[0].version=$version
