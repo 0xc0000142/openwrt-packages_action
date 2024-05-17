@@ -1,10 +1,12 @@
 #!/bin/sh
 
 uci -q batch <<-EOF >/dev/null
+	[ -e "/etc/config/ucitrack" ] && {
 	delete ucitrack.@shadowsocksr[-1]
 	add ucitrack shadowsocksr
 	set ucitrack.@shadowsocksr[-1].init=shadowsocksr
 	commit ucitrack
+	}
 
 	delete firewall.shadowsocksr
 	set firewall.shadowsocksr=include
@@ -28,7 +30,6 @@ touch /etc/ssrplus/ad.conf
 touch /etc/config/shadowsocksr
 [ -s "/etc/config/shadowsocksr" ] || /etc/init.d/shadowsocksr reset
 
-sed -i "s/option pdnsd_enable '3'/option pdnsd_enable '1'/g" /etc/config/shadowsocksr
 sed -i "s/option type 'vmess'/option type 'v2ray'\n\toption v2ray_protocol 'vmess'/g" /etc/config/shadowsocksr
 sed -i "s/option type 'vless'/option type 'v2ray'\n\toption v2ray_protocol 'vless'/g" /etc/config/shadowsocksr
 sed -i "s/option encrypt_method_v2ray_ss/option encrypt_method_ss/g" /etc/config/shadowsocksr

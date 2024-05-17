@@ -15,7 +15,7 @@
 [issues]: https://github.com/jerrykuku/luci-theme-argon/issues/new
 [issues-badge]: https://img.shields.io/badge/Issues-welcome-brightgreen.svg?style=flat-square
 [release]: https://github.com/jerrykuku/luci-theme-argon/releases
-[release-badge]: https://img.shields.io/github/v/release/jerrykuku/luci-theme-argon?include_prereleases&style=flat-square
+[release-badge]: https://img.shields.io/github/v/release/jerrykuku/luci-theme-argon?style=flat-square
 [download]: https://github.com/jerrykuku/luci-theme-argon/releases
 [download-badge]: https://img.shields.io/github/downloads/jerrykuku/luci-theme-argon/total?style=flat-square
 [contact]: https://t.me/jerryk6
@@ -149,7 +149,6 @@ Made with [contrib.rocks](https://contrib.rocks).
 ## 相关项目
 
 - [luci-app-argon-config](https://github.com/jerrykuku/luci-app-argon-config): Argon 主题的设置插件
-- [luci-app-vssr](https://github.com/jerrykuku/luci-app-vssr): 一个 OpenWrt 的互联网冲浪插件
 - [openwrt-package](https://github.com/jerrykuku/openwrt-package): 我的 OpenWrt Package
 - [CasaOS](https://github.com/IceWhaleTech/CasaOS): 一个简单、易用且优雅的开源个人家庭云系统（我目前主要开发的项目）
 
