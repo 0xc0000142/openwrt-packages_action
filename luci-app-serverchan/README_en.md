@@ -5,7 +5,7 @@
 
 [中文文档](README.md) | [English](README_en.md)
 
-A plugin for OpenWRT routers to push various information to a mobile phone via WeChat or Telegram.
+A plugin for OpenWRT routers to send various information notifications to a mobile phone via WeChat or Telegram.
 Supported services:
 | Push application | Method | description |
 | :-------- | :----- | :----- |
@@ -56,6 +56,11 @@ By default, ping/arping is used to actively detect device online status to count
 
 Traffic statistics functionality depends on `wrtbwmon`. Please install or compile it yourself. **Enabling this plugin will conflict with Routing/NAT, Flow Offloading, proxy internet access, and other plugins, resulting in the inability to obtain traffic statistics. Please choose accordingly.**
 
+**About Hard Drive Information:**
+
+When the OpenWrt system or remote host (PVE) does not have lsblk installed, the hard drive capacity information may be inconsistent with the actual capacity.
+
+When the OpenWrt system or remote host (PVE) does not have smartctl installed, information such as hard drive temperature, uptime, and health status will not be available.
 
 **Regarding Bug Submissions:**
 
