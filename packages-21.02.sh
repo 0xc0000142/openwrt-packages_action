@@ -18,10 +18,8 @@ git clone --depth 1 https://github.com/0xc0000142/openwrt-r8168.git
 git clone --depth 1 https://github.com/fw876/helloworld
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall 
 git clone --depth 1 https://github.com/kiddin9/my-packages 
-git clone --depth 1 https://github.com/kiddin9/openwrt-bypass 
 git clone --depth 1 https://github.com/kiddin9/luci-app-dnsfilter 
 git clone --depth 1 https://github.com/kiddin9/aria2 
-git clone --depth 1 https://github.com/kiddin9/luci-app-eqos 
 git clone --depth 1 https://github.com/kiddin9/luci-app-baidupcs-web 
 git clone --depth 1 https://github.com/kiddin9/qBittorrent-Enhanced-Edition 
 git clone --depth 1 https://github.com/kiddin9/autoshare 
@@ -83,7 +81,7 @@ git clone --depth 1 https://github.com/4IceG/luci-app-atinout-mod
 git clone --depth 1 https://github.com/izilzty/luci-app-chinadns-ng
 cp -r ./luci-app-atinout/atinout ./
 
-git clone --depth 1 https://github.com/muink/luci-app-pcap-dnsproxy/./luci-app-pcap-dnsproxy
+git clone --depth 1 -b app https://github.com/0xcFFFF142/luci-app-pcap-dnsproxy/./luci-app-pcap-dnsproxy
 git clone --depth 1 https://github.com/osnosn/3proxy-openwrt ./3proxy
 
 git clone --depth 1 https://github.com/lisaac/luci-app-diskman ./luci-app-diskman
