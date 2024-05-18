@@ -11,8 +11,8 @@
 git clone --depth 1 https://github.com/cnsilvan/luci-app-unblockneteasemusic/ ./luci-app-UnblockNeteaseMusicGo 
 git clone --depth 1  https://github.com/cnsilvan/luci-app-unblockneteasemusic ./UnblockNeteaseMusic-Go 
 
-git clone --depth 1 https://github.com/kenzok8/small-package.git
-git clone --depth 1 https://github.com/Lienol/openwrt-package 
+git clone --depth 1 https://github.com/kenzok8/small-package.git ./package48748641
+git clone --depth 1 https://github.com/Lienol/openwrt-package ./package136461651
 git clone --depth 1 https://github.com/0xc0000142/openwrt-r8168.git
 git clone --depth 1 https://github.com/fw876/helloworld
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall 
@@ -103,96 +103,51 @@ git clone --depth 1 https://github.com/jerrykuku/node-request ./node-request
 git clone --depth 1 https://github.com/jerrykuku/lua-maxminddb ./lua-maxminddb
 git clone --depth 1 https://github.com/garypang13/luci-app-eqos ./luci-app-eqos
 git clone --depth 1 https://github.com/jerrykuku/luci-app-jd-dailybonus ./luci-app-jd-dailybonus
-git clone --depth 1 https://github.com/jerrykuku/luci-app-vssr ./luci-app-vssr
+#git clone --depth 1 https://github.com/jerrykuku/luci-app-vssr ./luci-app-vssr
 git clone --depth 1 https://github.com/tty228/luci-app-serverchan ./luci-app-serverchan
 git clone --depth 1 https://github.com/frainzy1477/luci-app-clash ./luci-app-clash
 git clone --depth 1 https://github.com/rufengsuixing/luci-app-adguardhome ./luci-app-adguardhome
+git clone --depth 1 https://github.com/chenmozhijin/turboacc
+git clone --depth 1 https://github.com/siwind/luci-app-usb_printer
+git clone --depth 1 https://github.com/chinaboy2345/luci-app-ramfree
+git clone --depth 1 https://github.com/animefansxj/luci-app-vsftpd
+git clone --depth 1 https://github.com/openwrt-xiaomi/luci-app-cpufreq
+git clone --depth 1 https://github.com/sensec/luci-app-xlnetacc
+git clone --depth 1 https://github.com/sensec/ddns-scripts_aliyun
+git clone --depth 1 https://github.com/starsunyzl/ddns-scripts-dnspod
+git clone --depth 1 https://github.com/krystic/luci-app-cifs-mount
+git clone --depth 1 https://github.com/KFERMercer/luci-app-baidupcs-web
+git clone --depth 1 https://github.com/KFERMercer/openwrt-baidupcs-web ./baidupcs-web 
+git clone --depth 1 https://github.com/ghostnup/default-settings
+git clone --depth 1 https://github.com/kuoruan/openwrt-kcptun ./kcptun
+git clone --depth 1 https://github.com/honwen/openwrt-shadowsocksr ./shadowsocksr-libev
+git clone --depth 1 https://github.com/2lambda123/openwrt-chinadns ./chinadns
+git clone --depth 1 https://github.com/pexcn/openwrt-udpspeeder ./udpspeeder
+git clone --depth 1 https://github.com/gw826943555/openwrt-cpufreq ./cpufreq
+git clone --depth 1 https://github.com/padre-lacroix/bandwidthd-openwrt ./bandwidthd
 
-
-
-
-git clone --depth 1 https://github.com/coolsnowwolf/lede
-
-lean_package=(
-luci-app-usb-printer
-luci-app-ramfree
-luci-app-ttyd
-luci-app-unblockmusic
-luci-app-vlmcsd
-vlmcsd
-luci-app-vsftpd
-luci-app-cpufreq
-luci-app-xlnetacc
-luci-app-frpc
-frp
-luci-app-frps
-ddns-scripts_aliyun
-ddns-scripts_dnspod
-luci-app-cifs-mount
-luci-app-turboacc
-microsocks
-redsocks2
-tcpping
-dnsforwarder
-UnblockNeteaseMusic
-baidupcs-web
-luci-app-baidupcs-web
-luci-app-airplay2
-default-settings
+remove_packages=(
+base-files
+dnsmasq
+firewall
+firewall4
+fullconenat
+fullcontnat-nft
+libnftnl
+nftables
+opkg
+ppp
+wireless-regdb
 )
-for package in ${lean_package};do 
-        mv lede/package/lean/$package .
+for package in ${remove_packages[@]};do 
+        echo Remoing Package:$package
+        rm -rf small-package/$package
 done
-mv lede/package/network/services/shellsync ./shellsync -f
-mkdir UnblockNeteaseMusic
-mkdir adbyby
-mkdir baidupcs-web
-mkdir luci-app-baidupcs-web
-mkdir luci-app-adbyby-plus
-mkdir luci-app-airplay2
-mv lede/package/lean/UnblockNeteaseMusic ./UnblockNeteaseMusic -f
-mv lede/package/lean/adbyby ./adbyby -f 
-mv lede/package/lean/baidupcs-web ./baidupcs-web -f
-mv lede/package/lean/luci-app-baidupcs-web ./luci-app-baidupcs-web -f
-mv lede/package/lean/luci-app-adbyby-plus ./luci-app-adbyby-plus -f 
-mv lede/package/lean/luci-app-airplay2./luci-app-airplay2 -f
-rm -rf lede
-mv small-packages/* ./ -n
-rm -rf default-settings/files/zzz-default-settings
-cat <<EOF >default-settings/files/zzz-default-settings
-#!/bin/sh
 
-uci set luci.main.lang=zh_cn
-uci commit luci
-uci set system.@system[0].timezone=CST-8
-uci set system.@system[0].zonename=Asia/Shanghai
-uci commit system
-uci set fstab.@global[0].anon_mount=1
-uci commit fstab
-ln -sf /sbin/ip /usr/bin/ip
-sed -i 's/downloads.openwrt.org/mirrors.tuna.tsinghua.edu.cn\/openwrt/g' /etc/opkg/distfeeds.conf
-sed -i 's/http:/https:/g' /etc/opkg/distfeeds.conf
-sed -i '/option check_signature/d' /etc/opkg.conf
-sed -i "s/# //g" /etc/opkg/distfeeds.conf
-sed -i '/option disabled/d' /etc/config/wireless
-sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
-sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release
-sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release
-sed -i '/log-facility/d' /etc/dnsmasq.conf
-echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
-echo 'hsts=0' > /root/.wgetrc
-rm -rf /tmp/luci-modulecache/
-rm -f /tmp/luci-indexcache
-
-#从这里开始动 
-#
-#版本号
-echo "DISTRIB_REVISION='Openwrt'" >> /etc/openwrt_release
-#固件名称
-echo "DISTRIB_DESCRIPTION='OpenWrt '" >> /etc/openwrt_release
-
-exit 0
-EOF
+mv package48748641/* ./ -n
+mv package136461651/* ./ -n
+rm -rf ./*/.git ./*/.gitattributes ./*/.svn ./*/.github ./*/.gitignore README.md ./*/README.md ./*/*/README.md
+rm -rf ./package48748641 ./package136461651
 
 mv -f ./openwrt-r8168/* ./r8168/
 rm -rf openwrt-r8168
