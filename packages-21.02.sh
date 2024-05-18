@@ -147,7 +147,7 @@ rm -rf ./*/.git ./*/.gitattributes ./*/.svn ./*/.github ./*/.gitignore README.md
 rm -rf ./package48748641 ./package136461651
 rm -rf plugin-gargoyle*
 rm -rf luci-app-vssr-plus
-
+sed -i 's|egrep|grep -E|g' luci-app-advanced/luasrc/controller/fileassistant.lua luci-app-fileassistant/luasrc/controller/fileassistant.lua
 mkdir r8168
 mv -f ./openwrt-r8168/* ./r8168/
 rm -rf openwrt-r8168
