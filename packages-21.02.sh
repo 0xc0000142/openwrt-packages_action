@@ -132,7 +132,7 @@ dnsmasq
 firewall
 firewall4
 fullconenat
-fullcontnat-nft
+fullconenat-nft
 libnftnl
 nftables
 opkg
@@ -141,7 +141,7 @@ wireless-regdb
 )
 for package in ${remove_packages[@]};do 
         echo Remoing Package:$package
-        rm -rf small-package/$package
+        rm -rf package48748641/$package
 done
 
 mv package48748641/* ./ -n
