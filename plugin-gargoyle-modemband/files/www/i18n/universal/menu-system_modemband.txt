@@ -1,3 +1,0 @@
-fallback=Modem bands
-EN=Modem bands
-PL=Pasma modemu

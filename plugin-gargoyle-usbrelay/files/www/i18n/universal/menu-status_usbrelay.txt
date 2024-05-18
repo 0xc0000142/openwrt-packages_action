@@ -1,3 +1,0 @@
-fallback=USB Relay
-EN=USB Relay
-PL=Przekaźniki USB

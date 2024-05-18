@@ -1,3 +1,0 @@
-fallback=Cellular Modem
-EN=Cellular Modem
-PL=Modem komórkowy

@@ -1,3 +1,0 @@
-fallback=USB Modem
-EN=USB Modem
-PL=Modem USB
