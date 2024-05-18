@@ -42,7 +42,6 @@ git clone --depth 1 https://github.com/ysc3839/luci-proto-minieap
 git clone --depth 1 https://github.com/zzsj0928/luci-app-pushbot 
 git clone --depth 1 https://github.com/shanglanxin/luci-app-homebridge 
 git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config 
-#git clone --depth 1 https://github.com/jerrykuku/luci-app-vssr 
 git clone --depth 1 https://github.com/jerrykuku/luci-app-ttnode 
 git clone --depth 1 https://github.com/sirpdboy/luci-app-autotimeset
 git clone --depth 1 https://github.com/sirpdboy/luci-app-poweroffdevice
@@ -99,7 +98,6 @@ git clone --depth 1 https://github.com/jerrykuku/lua-maxminddb ./lua-maxminddb
 git clone --depth 1 https://github.com/Huangjoe123/luci-app-eqos ./luci-app-eqos
 git clone --depth 1 https://github.com/sirpdboy/luci-app-eqosplus
 git clone --depth 1 https://github.com/noiver/luci-app-jd-dailybonus ./luci-app-jd-dailybonus
-#git clone --depth 1 https://github.com/jerrykuku/luci-app-vssr ./luci-app-vssr
 git clone --depth 1 https://github.com/tty228/luci-app-serverchan ./luci-app-serverchan
 git clone --depth 1 https://github.com/frainzy1477/luci-app-clash ./luci-app-clash
 git clone --depth 1 https://github.com/rufengsuixing/luci-app-adguardhome ./luci-app-adguardhome
@@ -121,6 +119,8 @@ git clone --depth 1 https://github.com/2lambda123/openwrt-chinadns ./chinadns
 git clone --depth 1 https://github.com/pexcn/openwrt-udpspeeder ./udpspeeder
 git clone --depth 1 https://github.com/gw826943555/openwrt-cpufreq ./cpufreq
 git clone --depth 1 https://github.com/padre-lacroix/bandwidthd-openwrt ./bandwidthd
+git clone --depth 1 https://github.com/qiuweichao/luci-app-modem-info
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-disks-info
 
 remove_packages=(
 base-files
@@ -145,6 +145,8 @@ mv package136461651/* ./ -n
 mv package165456316486/* ./ -n
 rm -rf ./*/.git ./*/.gitattributes ./*/.svn ./*/.github ./*/.gitignore README.md ./*/README.md ./*/*/README.md
 rm -rf ./package48748641 ./package136461651
+rm -rf plugin-gargoyle*
+rm -rf luci-app-vssr-plus
 
 mkdir r8168
 mv -f ./openwrt-r8168/* ./r8168/
