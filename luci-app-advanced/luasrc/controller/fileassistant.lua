@@ -134,13 +134,13 @@ end
 function scandir(directory)
     local i, t, popen = 0, {}, io.popen
 
-    local pfile = popen("ls -lh \""..directory.."\" | egrep '^d' ; ls -lh \""..directory.."\" | egrep -v '^d|^l'")
+    local pfile = popen("ls -lh \""..directory.."\" | grep -E '^d' ; ls -lh \""..directory.."\" | grep -E -v '^d|^l'")
     for fileinfo in pfile:lines() do
         i = i + 1
         t[i] = fileinfo
     end
     pfile:close()
-    pfile = popen("ls -lh \""..directory.."\" | egrep '^l' ;")
+    pfile = popen("ls -lh \""..directory.."\" | grep -E '^l' ;")
     for fileinfo in pfile:lines() do
         i = i + 1
         linkindex, _, linkpath = string.find(fileinfo, "->%s+(.+)$")
