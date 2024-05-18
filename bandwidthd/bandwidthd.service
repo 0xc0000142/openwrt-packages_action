@@ -1,0 +1,9 @@
+[Unit]
+Description=Bandwidthd Network Traffic Monitor
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/bandwidthd -D
+
+[Install]
+WantedBy=multi-user.target

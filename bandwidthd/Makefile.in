@@ -1,0 +1,54 @@
+exec_prefix = @exec_prefix@
+prefix = @prefix@
+datadir = @datadir@
+sbindir = @sbindir@
+
+CC = @CC@
+LDFLAGS = @LDFLAGS@ @LIBS@
+OBS= bandwidthd.o graph.o sqlite.o conf.tab.o conf.l.o
+
+CFLAGS= -Wall @CFLAGS@ @CPPFLAGS@ @DEFS@ -DINSTALL_DIR="\"$(datadir)/bandwidthd\""
+NONWALLCFLAGS= @CFLAGS@ @CPPFLAGS@ @DEFS@
+
+# Debugging stuff
+#CFLAGS += -Wall -pg -DPROFILE
+#CFLAGS += -Wall -g -DDEBUG 
+
+all: bandwidthd
+
+bandwidthd: $(OBS) bandwidthd.h
+	$(CC) $(CFLAGS) $(OBS) -o bandwidthd $(LDFLAGS) 
+
+conf.tab.c: conf.y
+	@YACC@ -pbdconfig_ -d conf.y
+	mv y.tab.c conf.tab.c
+	mv y.tab.h conf.tab.h
+
+conf.l.c: conf.l
+	@LEX@ -Pbdconfig_ -s -i -t -I conf.l > conf.l.c
+
+clean:
+	rm -f *.o bandwidthd *~ DEADJOE core
+
+# Resets us to distributable code
+dist-clean: conf.tab.c conf.l.c clean
+	rm -f config.h config.log config.status Makefile
+
+# Deletes all derived files
+# You must have flex, bison, and autoconf to build the source if you run this
+# Before you can do anything after running this you must run "autoheader; autoconf"
+real-clean: dist-clean
+	rm -f conf.tab.c conf.tab.h conf.l.c config.h.in configure 
+
+install: all
+	@INSTALL@ -d $(DESTDIR)/etc
+	@INSTALL@ -d $(DESTDIR)$(datadir)/bandwidthd/htdocs
+	@INSTALL@ -d $(DESTDIR)$(sbindir)	
+	@INSTALL@ -m755 bandwidthd $(DESTDIR)$(sbindir)/bandwidthd	
+	if [ ! -f $(DESTDIR)/etc/bandwidthd.conf ] ; then @INSTALL@ -m644 etc/bandwidthd.conf $(DESTDIR)/etc/ ; fi
+	@INSTALL@ -m644 htdocs/legend.gif $(DESTDIR)$(datadir)/bandwidthd/htdocs
+	@INSTALL@ -m644 htdocs/logo.gif $(DESTDIR)$(datadir)/bandwidthd/htdocs
+
+#**** Stuff where -WALL is turned off to reduce the noise in a compile so I can see my own errors *******************
+conf.l.o: conf.l.c
+	$(CC) $(NONWALLCFLAGS) -c -o conf.l.o conf.l.c	

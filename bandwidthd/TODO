@@ -1,0 +1,36 @@
+These are for the OpenWRT implementation:
+- Implement the patches that are in OpenWRT.  There are currently 4 patches:
+ 1- 010-dont-add-host-paths-in-config.in.patch
+ 2- 020-change-p2p-tosmtp.patch
+ 3- 030-gcc10.patch
+ 4- 040-64bit-time-t-patch
+
+These patches are mostly required for the compilation and running properly in OpenWRT
+(patches 010 and 030)
+
+- Cleanup the code.  The code is not pretty clean and can use some cleaning to make it more
+  readable
+
+- Implement IPv6 tarcking.  For this code from another instance of bandwidthd can be used:
+  https://github.com/neatbasis/bandwidthd 
+
+- Implement storing the data in a MariaDB (mysql) database to improve flexibility.
+  This is in addition to the Postgresql and SQLite databases
+
+- Cleanup the PHP code to declare variables.
+
+These are what was in the TODO from NethServer.  This may never be implemented.
+Move output modules to forked section
+Config switches for sample intervals and graphing ranges
+
+# Features requested by people, I make a note of them here in case myself
+# or someone else wants to come along and implement them.
+List of IP's to exclude from the page
+Switch to hide all ip addresses
+
+Switch to only graph traffic not to and from the local network (internet
+	traffic only)
+
+Change ram datastore:  Linked lists with identifiers that store only non-zero traffic, use
+	longs for traffic storage instead of long longs and implement a multiplyer field.
+	will allow implementation of custom ports to graph and reduce ram usage by 70%ish
