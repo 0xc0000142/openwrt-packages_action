@@ -49,6 +49,8 @@ git clone --depth 1 https://github.com/sirpdboy/luci-theme-kucat
 git clone --depth 1 https://github.com/sirpdboy/luci-app-advancedplus
 git clone --depth 1 https://github.com/sirpdboy/luci-app-wizard
 git clone --depth 1 https://github.com/sirpdboy/luci-app-partexp
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status.git
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status-mini
 
 git clone --depth 1 https://github.com/jefferymvp/luci-app-koolproxyR 
 git clone --depth 1 https://github.com/peter-tank/luci-app-dnscrypt-proxy2 
