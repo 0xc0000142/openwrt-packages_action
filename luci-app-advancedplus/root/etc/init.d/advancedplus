@@ -232,9 +232,6 @@ tsoset
         $ipt -t mangle -A POSTROUTING -o ${dev} -j TTL --ttl-set 64
     fi
     #cpumode=`uci -q get advancedplus.@basic[0].cpumode`
-    #[ ! $cpumode ] || cpumodeset $cpumode   /usr/bin/zsh
-    sed -i "\/bin\/zsh/d" /etc/profile
-    [ "x$(uci -q get advancedplus.@basic[0].usshmenu)" = "x1" ] || echo '/usr/bin/zsh'  >> /etc/profile
     uci commit netwizard 
 }
 
