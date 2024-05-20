@@ -1,0 +1,29 @@
+#!/bin/sh
+uci get shadowsocks.@general[-1] >/dev/null 2>&1 || \
+	uci add shadowsocks general >/dev/null 2>&1
+uci get shadowsocks.@transparent_proxy[-1] >/dev/null 2>&1 || \
+	uci add shadowsocks transparent_proxy >/dev/null 2>&1
+uci get shadowsocks.@socks5_proxy[-1] >/dev/null 2>&1 || \
+	uci add shadowsocks socks5_proxy >/dev/null 2>&1
+uci get shadowsocks.@port_forward[-1] >/dev/null 2>&1 || \
+	uci add shadowsocks port_forward >/dev/null 2>&1
+uci get shadowsocks.@access_control[-1] >/dev/null 2>&1 || \
+	uci add shadowsocks access_control >/dev/null 2>&1
+uci commit shadowsocks
+uci -q batch <<-EOF >/dev/null
+	delete firewall.shadowsocks
+	set firewall.shadowsocks=include
+	set firewall.shadowsocks.type=script
+	set firewall.shadowsocks.path=/var/etc/shadowsocks.include
+	set firewall.shadowsocks.family=ipv4
+	set firewall.shadowsocks.reload=0
+	commit firewall
+EOF
+if [ -f /etc/crontabs/root ]; then
+	content=$(grep -v 'ss-subscribe' /etc/crontabs/root)
+	echo "$content" >/etc/crontabs/root
+fi
+mkdir -p /etc/crontabs
+echo '5  *  *  *  *  /usr/bin/ss-subscribe auto >/dev/null 2>&1' >>/etc/crontabs/root
+/etc/init.d/cron restart >/dev/null 2>&1
+exit 0

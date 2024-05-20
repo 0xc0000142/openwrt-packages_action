@@ -1,0 +1,29 @@
+msgid "A simple Dnspod-CN DDNS client, only support IPv4."
+msgstr "一个简单的只支持IPv4的Dnspod-CN DDNS客户端。"
+
+msgid "Basic Setting"
+msgstr "基本设置"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Token"
+msgstr "令牌"
+
+msgid "Full API token(ID,Token) like xxxxx,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+msgstr "完整的登录令牌（ID,Token）形如 xxxxx,xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+msgid "Domain Setting"
+msgstr "域名设置"
+
+msgid "Sub Domain"
+msgstr "子域名"
+
+msgid "Main Domain"
+msgstr "主域名"
+
+msgid "Manual Update"
+msgstr "手动更新"
+
+msgid "Update"
+msgstr "更新"

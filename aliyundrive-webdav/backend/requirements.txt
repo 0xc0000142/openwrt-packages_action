@@ -1,0 +1,4 @@
+fastapi>=0.93.0
+httpx
+streamlit_extras
+uvicorn[standard]
