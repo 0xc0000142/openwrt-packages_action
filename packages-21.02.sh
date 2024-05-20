@@ -14,6 +14,9 @@ git clone --depth 1  https://github.com/cnsilvan/luci-app-unblockneteasemusic ./
 git clone --depth 1 https://github.com/kenzok8/small-package.git ./package48748641
 git clone --depth 1 https://github.com/Lienol/openwrt-package ./package136461651
 git clone --depth 1 https://github.com/obsy/packages/ ./package165456316486
+git clone --depth 1 https://github.com/sirpdboy/sirpdboy-package ./package4577867
+git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall-packages.git ./package15486786
+
 git clone --depth 1 https://github.com/0xc0000142/openwrt-r8168.git
 git clone --depth 1 https://github.com/fw876/helloworld
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall 
@@ -51,6 +54,33 @@ git clone --depth 1 https://github.com/sirpdboy/luci-app-wizard
 git clone --depth 1 https://github.com/sirpdboy/luci-app-partexp
 git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status.git
 git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status-mini
+
+git clone --depth 1 https://github.com/tty228/luci-app-wechatpush
+git clone --depth 1 https://github.com/sbwml/luci-app-alist
+git clone --depth 1 https://github.com/sbwml/luci-app-mosdns
+git clone --depth 1 https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest
+git clone --depth 1 https://github.com/ophub/luci-app-amlogic
+git clone --depth 1 https://github.com/pymumu/luci-app-smartdns
+git clone --depth 1 https://github.com/kuoruan/openwrt-frp
+git clone --depth 1 https://github.com/kuoruan/openwrt-v2ray
+git clone --depth 1 https://github.com/4IceG/luci-app-3ginfo-lite
+git clone --depth 1 https://github.com/4IceG/luci-app-sms-tool-js
+git clone --depth 1 https://github.com/4IceG/luci-app-modemband
+git clone --depth 1 https://github.com/liudf0716/luci-app-xfrpc
+git clone --depth 1 https://github.com/jarod360/luci-app-xupnpd
+git clone --depth 1 https://github.com/liudf0716/luci-app-apfree-wifidog
+git clone --depth 1 https://github.com/fonlan/luci-app-poddns
+git clone --depth 1 https://github.com/blueberry-pie-11/luci-app-natmap
+git clone --depth 1 https://github.com/animegasan/luci-app-droidnet
+git clone --depth 1 https://github.com/danchexiaoyang/luci-app-kodexplore
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-log
+git clone --depth 1 https://github.com/messense/aliyundrive-webdav
+git clone --depth 1 https://github.com/frainzy1477/luci-app-clash
+git clone --depth 1 https://github.com/rufengsuixing/luci-app-adguardhome
+git clone --depth 1 https://github.com/shadowsocks/luci-app-shadowsocks
+git clone --depth 1 https://github.com/shadowsocks/openwrt-shadowsocks ./shadowsocksr-libev
+git clone --depth 1 https://github.com/lisaac/luci-app-dockerman
+git clone --depth 1 https://github.com/ilxp/luci-app-ikoolproxy
 
 git clone --depth 1 https://github.com/jefferymvp/luci-app-koolproxyR 
 git clone --depth 1 https://github.com/peter-tank/luci-app-dnscrypt-proxy2 
@@ -116,7 +146,6 @@ git clone --depth 1 https://github.com/KFERMercer/luci-app-baidupcs-web
 git clone --depth 1 https://github.com/KFERMercer/openwrt-baidupcs-web ./baidupcs-web 
 git clone --depth 1 https://github.com/ghostnup/default-settings
 git clone --depth 1 https://github.com/kuoruan/openwrt-kcptun ./kcptun
-git clone --depth 1 https://github.com/honwen/openwrt-shadowsocksr ./shadowsocksr-libev
 git clone --depth 1 https://github.com/2lambda123/openwrt-chinadns ./chinadns
 git clone --depth 1 https://github.com/pexcn/openwrt-udpspeeder ./udpspeeder
 git clone --depth 1 https://github.com/gw826943555/openwrt-cpufreq ./cpufreq
@@ -145,8 +174,10 @@ done
 mv package48748641/* ./ -n
 mv package136461651/* ./ -n
 mv package165456316486/* ./ -n
+mv package4577867/* ./ -n
+mv package15486786/* ./ -n 
 rm -rf ./*/.git ./*/.gitattributes ./*/.svn ./*/.github ./*/.gitignore README.md ./*/README.md ./*/*/README.md
-rm -rf ./package48748641 ./package136461651
+rm -rf ./package48748641 ./package136461651 ./package4577867 ./package165456316486 ./package15486786
 rm -rf plugin-gargoyle*
 rm -rf luci-app-vssr-plus
 sed -i 's|egrep|grep -E|g' luci-app-advanced/luasrc/controller/fileassistant.lua luci-app-fileassistant/luasrc/controller/fileassistant.lua
