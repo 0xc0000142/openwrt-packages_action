@@ -55,6 +55,11 @@ git clone --depth 1 https://github.com/sirpdboy/luci-app-partexp
 git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status.git
 git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status-mini
 
+git clone --depth 1 https://github.com/zhengmz/luci-app-zerotier
+git clone --depth 1 https://github.com/Ardentwheel/luci-app-cifs
+git clone --depth 1 https://github.com/krystic/luci-app-cifs-mount
+git clone --depth 1 https://github.com/tcsr200722/luci-app-samba
+
 git clone --depth 1 https://github.com/tty228/luci-app-wechatpush
 git clone --depth 1 https://github.com/sbwml/luci-app-alist
 git clone --depth 1 https://github.com/sbwml/luci-app-mosdns
@@ -183,8 +188,8 @@ rm -rf luci-app-vssr-plus
 sed -i 's|egrep|grep -E|g' luci-app-advanced/luasrc/controller/fileassistant.lua luci-app-fileassistant/luasrc/controller/fileassistant.lua
 sed -i '/\/zsh/d' luci-app-advancedplus/root/etc/init.d/advancedplus
 
-mkdir r8168
-mv -f ./openwrt-r8168/* ./r8168/
+#mkdir r8168
+#mv -f ./openwrt-r8168/* ./r8168/
 rm -rf openwrt-r8168
 rm -rf ./*/.git
 rm -rf ./*/.#svn 
