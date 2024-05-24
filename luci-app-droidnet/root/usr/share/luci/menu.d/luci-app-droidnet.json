@@ -9,17 +9,17 @@
 			"acl": [ "luci-app-droidnet" ]
 		}
 	},
-	"admin/services/droidnet/infomation": {
+	"admin/services/droidnet/device": {
 		"title": "Device",
-		"order": 10,
+		"order": 1,
 		"action": {
 			"type": "view",
-			"path": "droidnet/info"
+			"path": "droidnet/device"
 		}
 	},
 	"admin/services/droidnet/network": {
 		"title": "Network",
-		"order": 20,
+		"order": 2,
 		"action": {
 			"type": "view",
 			"path": "droidnet/network"
@@ -27,7 +27,7 @@
 	},
 	"admin/services/droidnet/service": {
 		"title": "Service",
-		"order": 30,
+		"order": 3,
 		"action": {
 			"type": "view",
 			"path": "droidnet/service"
@@ -35,7 +35,7 @@
 	},
 	"admin/services/droidnet/inbox": {
 		"title": "Inbox",
-		"order": 40,
+		"order": 4,
 		"action": {
 			"type": "view",
 			"path": "droidnet/inbox"
@@ -43,7 +43,7 @@
 	},
 	"admin/services/droidnet/log": {
 		"title": "Logs",
-		"order": 50,
+		"order": 5,
 		"action": {
 			"type": "view",
 			"path": "droidnet/log"
@@ -51,7 +51,7 @@
 	},
 	"admin/services/droidnet/setting": {
 		"title": "Setting",
-		"order": 60,
+		"order": 6,
 		"action": {
 			"type": "view",
 			"path": "droidnet/setting"
