@@ -86,7 +86,8 @@ git clone --depth 1 https://github.com/shadowsocks/luci-app-shadowsocks
 git clone --depth 1 https://github.com/shadowsocks/openwrt-shadowsocks ./shadowsocksr-libev
 git clone --depth 1 https://github.com/lisaac/luci-app-dockerman
 git clone --depth 1 https://github.com/ilxp/luci-app-ikoolproxy
-
+git clone --depth 1 https://github.com/pyrovski/wrtbwmon ./wrtbwmon
+git clone --depth 1 https://github.com/Kiougar/luci-wrtbwmon ./luci-app-wrtbwmon
 git clone --depth 1 https://github.com/jefferymvp/luci-app-koolproxyR 
 git clone --depth 1 https://github.com/peter-tank/luci-app-dnscrypt-proxy2 
 git clone --depth 1 https://github.com/sirpdboy/luci-app-advanced 
