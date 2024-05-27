@@ -11,19 +11,49 @@
 
 var page = 1;
 var filter = '';
-var logFile = '/var/log/droidnet.log';
 var apkFile = '/tmp/upload.apk';
-var powerMessage = _('Power service');
-var applicationMessage = _('Application service');
-var date = new Date().toLocaleDateString(undefined, {
-	weekday: 'short',
-	month: 'short',
-	day: '2-digit'
-});
-var time = new Date().toLocaleTimeString(undefined, {
-	hour: '2-digit',
-	minute: '2-digit'
-});
+function closeUi(type) {
+	if (type === 'OK') {
+		return E('button', {
+			'class': 'btn',
+			'click': function() {
+				return window.location.reload();
+			}
+		}, _('OK'));
+	} else {
+		return E('button', {
+			'class': 'btn cbi-button cbi-button-remove',
+			'style': 'margin-right: 10px',
+			'click': ui.hideModal
+		}, _('Cancel'));
+	};
+};
+function writeLog(message, service, error) {
+	var logFile = '/var/log/droidnet.log';
+	if (service === 'power') {
+		var serviceName = _('Power service');
+	} else {
+		var serviceName = _('Application service');
+	};
+	fs.read(logFile).then(function(result) {
+		var date = new Date().toLocaleDateString(undefined, {
+			weekday: 'short',
+			month: 'short',
+			day: '2-digit'
+		});
+		var time = new Date().toLocaleTimeString(undefined, {
+			hour: '2-digit',
+			minute: '2-digit'
+		});
+		if (error === false) {
+			var notif = `${date}, ${time} - ${serviceName}: ${message}`;
+		} else {
+			var notif = `${date}, ${time} - ${serviceName}: ${message}: ${error}`;
+		};
+		var newData = result.trim() + '\n' + notif;
+		return fs.write(logFile, newData);
+	});
+};
 function renderTable(data, display) {
 	var tableRows, value = data.application;
 	var start = (page - 1) * display;
@@ -52,7 +82,7 @@ function renderTable(data, display) {
 							ui.showModal(_('Remove application') + ` ${value}`, [
 								E('p', _('Are you sure want to remove this application?')),
 								E('div', {'class': 'right'}, [
-									E('button', {'class': 'btn cbi-button cbi-button-remove', 'style': 'margin-right: 10px', 'click': ui.hideModal}, _('Cancel')),
+									E(closeUi('Cancel')),
 									E('button', {
 										'class': 'btn cbi-button cbi-button-action',
 										'click': function() {
@@ -62,12 +92,7 @@ function renderTable(data, display) {
 											fs.exec('adb', ['-s', data.device, 'shell', 'pm', 'uninstall', '-k', '--user', '0', value]).then(function(result) {
 												var stdout = result.stdout;
 												if (stdout.trim() !== 'Success') {
-													fs.read(logFile).then(function(result) {
-														var message = _('Failed to remove %s application.').format(value);
-														var notif = `${date}, ${time} - ${applicationMessage}: ${message}: ${stdout}`;
-														var newData = result.trim() + '\n' + notif + '\n';
-														return fs.write(logFile, newData);
-													});
+													writeLog(_('Failed to remove %s application.').format(value), 'application', stdout);
 													ui.showModal(_('Package removal failed'), [
 														E('p', _('Failed to remove <em>%s</em> application.').format(value)),
 														E('em', {'style': 'color: red;'}, stdout),
@@ -76,17 +101,12 @@ function renderTable(data, display) {
 														])
 													]);
 												} else {
-													fs.read(logFile).then(function(result) {
-														var message = _('Removing %s application successfully.').format(value);
-														var notif = `${date}, ${time} - ${applicationMessage}: ${message}`;
-														var newData = result.trim() + '\n' + notif + '\n';
-														return fs.write(logFile, newData);
-													});
+													writeLog(_('Removing %s application successfully.').format(value), 'application', false);
 													setTimeout(function() {
 														ui.showModal(_('Removing application completed'), [
 															E('p', _('Application <em>%s</em> has been successfully removed.').format(value)),
 															E('div', {'class': 'right'}, [
-																E('button', {'class': 'btn', 'click': function() {return window.location.reload();}}, _('OK'))
+																E('div', {'class': 'right'}, [E(closeUi('OK'))])
 															])
 														]);
 													}, 10000);
@@ -244,7 +264,7 @@ return view.extend({
 									ui.showModal(_('Fastboot mode'), [
 										E('p', _('Are you sure want rebooting device to fastboot mode?')),
 										E('div', {'class': 'right'}, [
-											E('button', {'class': 'btn cbi-button cbi-button-remove', 'style': 'margin-right: 10px', 'click': ui.hideModal}, _('Cancel')),
+											E(closeUi('Cancel')),
 											E('button', {
 												'class': 'btn cbi-button cbi-button-action',
 												'click': function() {
@@ -252,17 +272,12 @@ return view.extend({
 														E('p', {'class': 'spinning'}, _('Waiting for device to reboot into fastboot mode…'))
 													]);
 													fs.exec('adb', ['-s', data.device, 'shell', 'reboot', 'bootloader']);
-													fs.read(logFile).then(function(result) {
-														var message = _('Device entered fastboot mode.');
-														var notif = `${date}, ${time} - ${powerMessage}: ${message}`;
-														var newData = result.trim() + '\n' + notif + '\n';
-														return fs.write(logFile, newData);
-													});
+													writeLog(_('Device entered fastboot mode.'), 'power', false);
 													setTimeout(function() {
 														ui.showModal(_('Fastboot mode completed'), [
 															E('p', _('Device has been successfully to fastboot mode.')),
 															E('div', {'class': 'right'}, [
-																E('button', {'class': 'btn', 'click': function() {return window.location.reload();}}, _('OK'))
+																E('div', {'class': 'right'}, [E(closeUi('OK'))])
 															])
 														]);
 													}, 10000);
@@ -281,7 +296,7 @@ return view.extend({
 									ui.showModal(_('Recovery mode'), [
 										E('p', _('Are you sure want rebooting device to recovery mode?')),
 										E('div', {'class': 'right'}, [
-											E('button', {'class': 'btn cbi-button cbi-button-remove', 'style': 'margin-right: 10px', 'click': ui.hideModal}, _('Cancel')),
+											E(closeUi('Cancel')),
 											E('button', {
 												'class': 'btn cbi-button cbi-button-action',
 												'click': function() {
@@ -289,17 +304,12 @@ return view.extend({
 														E('p', {'class': 'spinning'}, _('Waiting for device to reboot into recovery mode…'))
 													]);
 													fs.exec('adb', ['-s', data.device, 'shell', 'reboot', 'recovery']);
-													fs.read(logFile).then(function(result) {
-														var message = _('Device entered recovery mode.');
-														var notif = `${date}, ${time} - ${powerMessage}: ${message}`;
-														var newData = result.trim() + '\n' + notif + '\n';
-														return fs.write(logFile, newData);
-													});
+													writeLog(_('Device entered recovery mode.'), 'power', false);
 													setTimeout(function() {
 														ui.showModal(_('Recovery mode completed'), [
 															E('p', _('Device has been successfully to recovery mode.')),
 															E('div', {'class': 'right'}, [
-																E('button', {'class': 'btn', 'click': function() {return window.location.reload();}}, _('OK'))
+																E('div', {'class': 'right'}, [E(closeUi('OK'))])
 															])
 														]);
 													}, 10000);
@@ -318,7 +328,7 @@ return view.extend({
 									ui.showModal(_('Restart device'), [
 										E('p', _('Are you sure want to restart device?')),
 										E('div', {'class': 'right'}, [
-											E('button', {'class': 'btn cbi-button cbi-button-remove', 'style': 'margin-right: 10px', 'click': ui.hideModal}, _('Cancel')),
+											E(closeUi('Cancel')),
 											E('button', {
 												'class': 'btn cbi-button cbi-button-action',
 												'click': function() {
@@ -326,17 +336,12 @@ return view.extend({
 														E('p', {'class': 'spinning'}, _('Waiting for device restart to complete…'))
 													]);
 													fs.exec('adb', ['-s', data.device, 'shell', 'reboot']);
-													fs.read(logFile).then(function(result) {
-														var message = _('Device restarted successfully.');
-														var notif = `${date}, ${time} - ${powerMessage}: ${message}`;
-														var newData = result.trim() + '\n' + notif + '\n';
-														return fs.write(logFile, newData);
-													});
+													writeLog(_('Device restarted successfully.'), 'power', false);
 													setTimeout(function() {
 														ui.showModal(_('Device restart completed'), [
 															E('p', _('Device has been successfully restarted.')),
 															E('div', {'class': 'right'}, [
-																E('button', {'class': 'btn', 'click': function() {return window.location.reload();}}, _('OK'))
+																E('div', {'class': 'right'}, [E(closeUi('OK'))])
 															])
 														]);
 													}, 30000);
@@ -355,7 +360,7 @@ return view.extend({
 									ui.showModal(_('Shutdown device'), [
 										E('p', _('Are you sure want to shutdown device?')),
 										E('div', {'class': 'right'}, [
-											E('button', {'class': 'btn cbi-button cbi-button-remove', 'style': 'margin-right: 10px', 'click': ui.hideModal}, _('Cancel')),
+											E(closeUi('Cancel')),
 											E('button', {
 												'class': 'btn cbi-button cbi-button-action',
 												'click': function() {
@@ -363,17 +368,12 @@ return view.extend({
 														E('p', {'class': 'spinning'}, _('Waiting for device to shut down…'))
 													]);
 													fs.exec('adb', ['-s', data.device, 'shell', 'reboot', '-p']);
-													fs.read(logFile).then(function(result) {
-														var message = _('Device powered off successfully.');
-														var notif = `${date}, ${time} - ${powerMessage}: ${message}`;
-														var newData = result.trim() + '\n' + notif + '\n';
-														return fs.write(logFile, newData);
-													});
+													writeLog(_('Device powered off successfully.'), 'power', false);
 													setTimeout(function() {
 														ui.showModal(_('Device shutdown completed'), [
 															E('p', _('Device has been successfully shut down.')),
 															E('div', {'class': 'right'}, [
-																E('button', {'class': 'btn', 'click': function() {return window.location.reload();}}, _('OK'))
+																E('div', {'class': 'right'}, [E(closeUi('OK'))])
 															])
 														]);
 													}, 15000);
@@ -435,7 +435,7 @@ return view.extend({
 										ui.showModal(_('Update application list completed'), [
 											E('p', _('Application list has been successfully updated.')),
 											E('div', {'class': 'right'}, [
-												E('button', {'class': 'btn', 'click': function() {return window.location.reload();}}, _('OK'))
+												E('div', {'class': 'right'}, [E(closeUi('OK'))])
 											])
 										]);
 									}, 10000);
@@ -471,30 +471,20 @@ return view.extend({
 														fs.exec_direct('adb', ['-s', data.device, 'install', apkFile]).then(function(result) {
 															var apk = result.trim();
 															if (apk === 'Success') {
-																fs.read(logFile).then(function(result) {
-																	var message = _('Application %s has been successfully installed.').format(apkName);
-																	var notif = `${date}, ${time} - ${applicationMessage}: ${message}`;
-																	var newData = result.trim() + '\n' + notif + '\n';
-																	return fs.write(logFile, newData);
-																});
+																writeLog(_('Application %s has been successfully installed.').format(apkName), 'application', false);
 																ui.showModal(_('Application installation completed'), [
 																	E('p', _('Application <em>%s</em> has been successfully installed.').format(apkName)),
 																	E('div', {'class': 'right'}, [
-																		E('button', {'class': 'btn', 'click': function() {return window.location.reload();}}, _('OK'))
+																		E('div', {'class': 'right'}, [E(closeUi('OK'))])
 																	])
 																]);
 															} else {
-																fs.read(logFile).then(function(result) {
-																	var message = _('Failed to install %s application').format(apkName);
-																	var notif = `${date}, ${time} - ${applicationMessage}: ${message}: ${apk}`;
-																	var newData = result.trim() + '\n' + notif + '\n';
-																	return fs.write(logFile, newData);
-																});
+																writeLog(_('Failed to install %s application').format(apkName), 'application', apk);
 																ui.showModal(_('Application installation failed'), [
 																	E('p', _('Failed to install <em>%s</em> application.').format(apkName)),
 																	E('em', {'style': 'color: red;'}, apk),
 																	E('div', {'class': 'right'}, [
-																		E('button', {'class': 'btn', 'click': function() {return window.location.reload();}}, _('OK'))
+																		E('div', {'class': 'right'}, [E(closeUi('OK'))])
 																	])
 																]);
 															};
@@ -508,17 +498,12 @@ return view.extend({
 										if (error.message === 'Upload has been cancelled') {
 											ui.hideModal();
 										} else {
-											fs.read(logFile).then(function(result) {
-												var message = _('Failed to upload %s application.').format(apkName);
-												var notif = `${date}, ${time} - ${applicationMessage}: ${message}: ${error}`;
-												var newData = result.trim() + '\n' + notif + '\n';
-												return fs.write(logFile, newData);
-											});
+											writeLog(_('Failed to upload %s application.').format(apkName), 'application', error);
 											ui.showModal(_('Error uploading application'), [
 												E('p', _('Failed to upload <em>%s</em> application.').format(apkName)),
 												E('em', {'style': 'color: red;'}, error),
 												E('div', {'class': 'right'}, [
-													E('button', {'class': 'btn', 'click': function() {return window.location.reload();}}, _('OK'))
+													E('div', {'class': 'right'}, [E(closeUi('OK'))])
 												])
 											]);
 										};
@@ -558,3 +543,4 @@ return view.extend({
 		};
 	}
 });
+

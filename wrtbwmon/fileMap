@@ -1,0 +1,4 @@
+usr/sbin: wrtbwmon readDB.awk
+usr/share/wrtbwmon: usage.htm1 usage.htm2
+CONTROL: control postinst
+etc/init.d: init/wrtbwmon

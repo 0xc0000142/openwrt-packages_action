@@ -58,11 +58,23 @@ return view.extend({
 					return {tunnelService};
 				}).catch(function(error) {
 					throw new Error(error);
+				}),
+				fs.exec('pgrep', ['-f', '/usr/share/droidnet/monitoring']).then(function(result) {
+					var status = {};
+					if (result && result.code === 1) {
+						status = false;
+					} else {
+						status = true;
+					};
+					return {status};
+				}).catch(function(error) {
+					throw new Error(error);
 				})
 			]).then(function(results) {
 				var devices = results[0];
 				var tunnelService = results[1];
-				return Object.assign(devices, tunnelService)
+				var status = results[2];
+				return Object.assign(devices, tunnelService, status)
 			}).catch(function(error) {
 				throw new Error(error);
 			});
@@ -101,7 +113,7 @@ return view.extend({
 		o.rawhtml = true;
 		o.cfgvalue = function(section_id) {
 			var span = '<b><span style="color:%s">%s</span></b>';
-			var renderHTML = data[3] ?
+			var renderHTML = data.status ?
 				String.format(span, 'green', _('Running')) :
 				String.format(span, 'red', _('Not Running'));
 			return renderHTML;
@@ -165,3 +177,4 @@ return view.extend({
 		return m.render();
 	}
 });
+
