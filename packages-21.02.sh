@@ -107,6 +107,54 @@ git clone --depth 1 https://github.com/sensec/luci-app-udp2raw
 git clone --depth 1 https://github.com/LGA1150/openwrt-sysuh3c 
 git clone --depth 1 https://github.com/gdck/luci-app-cupsd cupsd1 && mv -n cupsd1/luci-app-cupsd cupsd1/cups/cups ./ ; rm -rf cupsd1 
 git clone --depth 1 https://github.com/4IceG/luci-app-socat.git
+git clone --depth 1 https://github.com/muink/luci-app-natmapt.git
+git clone --depth 1 https://github.com/muink/openwrt-stuntman.git ./stuntman
+git clone --depth 1 https://github.com/muink/openwrt-natmapt ./natmapt
+
+git clone --depth 1 https://github.com/muink/luci-app-alwaysonline
+git clone --depth 1 https://github.com/muink/luci-app-change-mac
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-perf
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status-mini
+git clone --depth 1 https://github.com/lisaac/luci-app-diskman
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-disks-info
+git clone --depth 1 https://github.com/muink/luci-app-dnsproxy
+git clone --depth 1 https://github.com/muink/luci-app-einat
+git clone --depth 1 https://github.com/muink/luci-app-homeproxy
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-interfaces-statistics
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-internet-detector
+git clone --depth 1 https://github.com/animegasan/luci-app-ipinfo
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-log
+git clone --depth 1 https://github.com/muink/luci-app-natmapt
+git clone --depth 1 https://github.com/muink/luci-app-natter
+git clone --depth 1 https://github.com/muink/luci-app-netdata
+git clone --depth 1 https://github.com/muink/luci-app-netspeedtest
+git clone --depth 1 https://github.com/muink/luci-app-packagesync
+git clone --depth 1 https://github.com/muink/luci-app-natter
+git clone --depth 1 https://github.com/muink/luci-app-pcap-dnsproxy
+git clone --depth 1 https://github.com/sbwml/luci-app-qbittorrent
+git clone --depth 1 https://github.com/tty228/luci-app-wechatpush
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-temp-status
+git clone --depth 1 https://github.com/muink/luci-app-tinyfilemanager
+git clone --depth 1 https://github.com/muink/luci-app-tn-netports
+git clone --depth 1 https://github.com/yichya/luci-app-xray
+git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon
+git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config
+git clone --depth 1 https://github.com/muink/openwrt-alwaysonline ./alwaysonline
+git clone --depth 1 https://github.com/muink/openwrt-einat-ebpf ./einat-ebpf
+git clone --depth 1 https://github.com/muink/openwrt-chinadns-ng ./chinadns-ng
+git clone --depth 1 https://github.com/muink/openwrt-go-stun ./go-stun
+git clone --depth 1 https://github.com/muink/openwrt-natmapt ./natmapt
+git clone --depth 1 https://github.com/muink/openwrt-Natter ./Natter
+git clone --depth 1 https://github.com/muink/openwrt-netdata-ssl ./netdata-ssl
+git clone --depth 1 https://github.com/muink/openwrt-Pcap_DNSProxy ./Pcap_DNSProxy
+git clone --depth 1 https://github.com/muink/openwrt-php-nginx ./php-nginx
+git clone --depth 1 https://github.com/muink/openwrt-rgmac ./rgmac
+git clone --depth 1 https://github.com/muink/openwrt-speedtest-go  ./speedtest-go
+git clone --depth 1 https://github.com/muink/openwrt-stuntman ./stuntman 
+git clone --depth 1 https://github.com/muink/openwrt-Toolkit 
+
+
 
 git clone --depth 1 https://github.com/msylgj/luci-app-tencentddns
 git clone --depth 1 https://github.com/riverscn/openwrt-iptvhelper/
@@ -115,8 +163,7 @@ git clone --depth 1 https://github.com/KFERMercer/luci-app-tcpdump ./luci-app-tc
 git clone --depth 1 https://github.com/tty228/luci-app-nodogsplash ./luci-app-nodogsplash
 git clone --depth 1 https://github.com/SankySyS/luci-app-atinout ./luci-app-atinout
 git clone --depth 1 https://github.com/4IceG/luci-app-atinout-mod
-git clone --depth 1 https://github.com/izilzty/luci-app-chinadns-ng
-cp -r ./luci-app-atinout/atinout ./
+
 
 git clone --depth 1 -b app https://github.com/0xcFFFF142/luci-app-pcap-dnsproxy/./luci-app-pcap-dnsproxy
 git clone --depth 1 https://github.com/osnosn/3proxy-openwrt ./3proxy
