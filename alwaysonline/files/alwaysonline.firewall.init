@@ -1,0 +1,129 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2023 muink
+#
+# depends 
+
+. "${IPKG_INSTROOT}/lib/functions/network.sh"
+
+START=99
+USE_PROCD=1
+# alwaysonline
+[ -x "$(command -v nft)" ] && FW='fw4' || FW='fw3'
+PROG='/usr/sbin/alwaysonline'
+HOSTFILE='/var/hosts/alwaysonline'
+FAKEIPV4='192.0.2.26'
+FAKEIPV6='::ffff:c000:21a'
+PORT=8083
+# uci
+CONFIG_NAME='alwaysonline'
+TYPEDSECTION='alwaysonline'
+DOMAINS='domain'
+
+config_load "$CONFIG_NAME"
+
+
+# define global var: NIC_br_lan
+define_nic() {
+	# get br-lan NICs
+	local dev='br-lan'
+	network_get_subnet NIC_${dev//-/_} $(uci show network|grep "device='$dev'"|cut -f2 -d'.'|head -1) # NIC_br_lan=192.168.1.1/24
+
+	return 0
+}
+define_nic
+
+validate_section_domain() {
+	uci_load_validate $CONFIG_NAME $DOMAINS "$1" "$2" \
+		'enabled:bool:0' \
+		'name:hostname' \
+		'group:string' \
+		'family:or("4", "6", "both"):both' \
+		'overwrite:ipaddr'
+}
+
+init_hosts() {
+	mkdir -p "${HOSTFILE%/*}" 2>/dev/null
+	echo "# auto-generated config file from /etc/config/alwaysonline" > "${HOSTFILE}"
+}
+
+gen_hosts() {
+	[ "$2" == "0" ] || { >&2 echo "section $1 validation failed"; return 1; }
+	[ "$enabled" == "0" ] && return 0
+
+	local _fake_ip4="$FAKEIPV4"
+	local _fake_ip6="$FAKEIPV6"
+
+	local familys
+	[ "$family" == "both" ] && familys="4 6" || familys="$family"
+
+for v in $familys; do
+	eval "domain_list=\"\${domain_list}\${overwrite:-\$_fake_ip$v} \${name}\n\""
+done
+}
+
+start_instance() {
+	procd_open_instance "$CONFIG_NAME"
+	procd_set_param command "$PROG"
+	procd_append_param netdev "br-lan"
+	procd_set_param respawn
+	procd_set_param user nobody
+	procd_set_param stderr 1
+	# Forward
+	procd_open_data
+	json_add_array firewall
+		json_add_object ''
+		json_add_string type redirect
+		json_add_string target DNAT
+		json_add_string name "alwaysonline_dnat"
+		json_add_string family ipv4
+		json_add_string proto tcp
+		json_add_string src "$($FW -q device br-lan)"
+		json_add_string src_ip "$NIC_br_lan"
+		json_add_string src_dip "$FAKEIPV4"
+		json_add_string src_dport 80
+		#json_add_string dest ''
+		json_add_string dest_ip "${NIC_br_lan%%/*}"
+		json_add_string dest_port "$PORT"
+		json_add_boolean reflection 0
+		json_close_object
+	json_close_array
+	procd_close_data
+	procd_close_instance
+}
+
+start_service() {
+	local enabled
+
+	stop_service
+	eval "enabled=\$CONFIG_${CONFIG_SECTIONS%% *}_enabled"
+	[ "${enabled:=0}" == "0" ] && return 1
+
+	# DNS
+	local domain_list=''
+	config_foreach validate_section_domain "$DOMAINS" gen_hosts || return $?
+	sed -Ei "1a$domain_list" "$HOSTFILE"
+	/etc/init.d/dnsmasq reload
+	# HTTP
+	start_instance
+}
+
+service_triggers() {
+	procd_add_reload_trigger "$CONFIG_NAME" 'network'
+
+	local iface=$(uci show network|grep "device='br-lan'"|cut -f2 -d'.'|head -n1)
+	[ -n "$iface" ] && procd_add_reload_interface_trigger "$iface"
+}
+
+stop_service() {
+	# DNS
+	init_hosts
+	/etc/init.d/dnsmasq reload
+}
+
+service_started() { procd_set_config_changed firewall; }
+
+service_stopped() { procd_set_config_changed firewall; }
+
+restart() {
+	start
+}

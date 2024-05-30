@@ -1,31 +1,28 @@
-
-# Copyright (C) 2020-2021 sirpdboy <herboy2008@gmail.com>
+# Copyright (C) 2023 muink <https://github.com/muink>
 #
-# This is free software, licensed under the GNU General Public License v3.
-# 
-
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=luci-app-netspeedtest
+LUCI_NAME:=luci-app-netspeedtest
+PKG_VERSION:=20240412
 
-PKG_VERSION:=2.2.4
-PKG_RELEASE:=20240319
+LUCI_TITLE:=LuCI Net Speedtest
+LUCI_DEPENDS:=+iperf3 +librespeed-go +python3-speedtest-cli +ca-certificates
 
-LUCI_TITLE:=LuCI Support for netspeedtest
-LUCI_DEPENDS:=+python3 +iperf3-ssl +homebox
-LUCI_PKGARCH:=all
-PKG_MAINTAINER:=<https://github.com/sirpdboy/netspeedtest>
+LUCI_DESCRIPTION:=Test Net speed
 
-
-define Package/$(PKG_NAME)/conffiles
+define Package/$(LUCI_NAME)/conffiles
 /etc/config/netspeedtest
 endef
 
-define Package/$(PKG_NAME)/postinst
+define Package/$(LUCI_NAME)/postinst
 endef
 
+define Package/$(LUCI_NAME)/prerm
+endef
 
 include $(TOPDIR)/feeds/luci/luci.mk
-
 
 # call BuildPackage - OpenWrt buildroot signature

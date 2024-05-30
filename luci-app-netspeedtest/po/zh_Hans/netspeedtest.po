@@ -1,169 +1,167 @@
-#
-# Copyright (C) 2020-2022 sirpdboy  herboy2008@gmail.com  https://github.com/sirpdboy/netspeedtest
-# This is free software, licensed under the GNU General Public License v3.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: LuCi Chinese Translation\n"
-"Report-Msgid-Bugs-To: \n"
-"Language: zh_CN\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2023-01-09 10:03+0000\n"
+"Last-Translator: muink <hukk1996@gmail.com>\n"
+"Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
+"openwrt/luciapplicationsnetspeedtest/zh_Hans/>\n"
+"Language: zh_Hans\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Pootle 2.0.6\n"
+"X-Generator: Weblate 4.12.1-dev\n"
 
-msgid "Net Speedtest"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/iperf3.js:66
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed-cfg.js:66
+msgid "Collecting data ..."
+msgstr "正在收集数据..."
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:156
+msgid "Download"
+msgstr "下载"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:155
+msgid "Download Ookla® SpeedTest-CLI"
+msgstr "下载 Ookla® SpeedTest-CLI"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/iperf3.js:77
+msgid "Download iperf3 client"
+msgstr "下载 iperf3 客户端"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/iperf3.js:73
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed.js:32
+msgid "Enable"
+msgstr "启用"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed-cfg.js:77
+msgid "Enable HTTP2"
+msgstr "启用 HTTP2"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed-cfg.js:81
+msgid "Enable TLS"
+msgstr "启用 TLS"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:121
+msgid "Enable proxy for downloader and test"
+msgstr "为下载器和测试启用代理"
+
+#: applications/luci-app-netspeedtest/root/usr/share/rpcd/acl.d/luci-app-netspeedtest.json:3
+msgid "Grant access to netspeedtest procedures"
+msgstr "授予访问 LuCI 应用 netspeedtest 的权限"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:31
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:102
+msgid "Installed"
+msgstr "已安装"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed-cfg.js:73
+msgid "Listen Port"
+msgstr "监听端口"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:50
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:82
+msgid "No result."
+msgstr "无结果."
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:34
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:104
+msgid "Not Installed"
+msgstr "未安装"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/iperf3.js:78
+msgid "Official website"
+msgstr "官方网站"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:61
+#: applications/luci-app-netspeedtest/root/usr/share/luci/menu.d/luci-app-netspeedtest.json:38
+msgid "Ookla SpeedTest"
+msgstr ""
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:98
+msgid "Ookla® SpeedTest-CLI Status"
+msgstr "Ookla® SpeedTest-CLI 状态"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:124
+msgid "Proxy Protocol"
+msgstr "代理协议"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:134
+msgid "Proxy Server"
+msgstr "代理服务器"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed.js:41
+msgid ""
+"Random port (port=0) is not supported.<br />Change to a fixed port and try "
+"again."
+msgstr "不支持随机端口 (port=0).<br />改为固定端口然后再试一次."
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/iperf3.js:50
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed-cfg.js:50
+msgid "SERVER NOT RUNNING"
+msgstr "服务器未运行"
+
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/iperf3.js:48
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed-cfg.js:48
+msgid "SERVER RUNNING"
+msgstr "服务器运行中"
+
+#: applications/luci-app-netspeedtest/root/usr/share/luci/menu.d/luci-app-netspeedtest.json:3
+msgid "SpeedTest"
 msgstr "网速测试"
 
-msgid "Network speed diagnosis test (including intranet and extranet)<br/>For specific usage, see:"
-msgstr "网络速度诊断测试（包括内网、外网、特定端口服务器测速）<br/>使用说明见:"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:89
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:90
+msgid "Start Test"
+msgstr "启动测试"
 
-msgid "Lan Speedtest Iperf3"
-msgstr "本地iperf3吞吐测速"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:145
+msgid "System Arch"
+msgstr "系统架构"
 
-msgid "Lan Speedtest Web"
-msgstr "本地测速网页版"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed-cfg.js:87
+msgid "TLS Cert file"
+msgstr "TLS 证书文件"
 
-msgid "Running state"
-msgstr "运行状态"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed-cfg.js:92
+msgid "TLS Key file"
+msgstr "TLS 密钥文件"
 
-msgid "Enable Homebox service"
-msgstr "启用homebox服务"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:47
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:79
+msgid "Test failed."
+msgstr "测试失败."
 
-msgid "The Iperf3 service is running."
-msgstr "iperf3服务已启动"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:40
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:70
+msgid "Testing in progress..."
+msgstr "测试进行中..."
 
-msgid "The Iperf3 service is not running."
-msgstr "iperf3服务未启动"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/speedtest.js:141
+msgid "Use Ookla® SpeedTest-CLI"
+msgstr "使用 Ookla® SpeedTest-CLI"
 
-msgid "Iperf3 Status"
-msgstr "iperf3服务状态"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/iperf3.js:60
+msgid "iperf3 Bandwidth Performance Test"
+msgstr "iperf3 带宽性能测试"
 
-msgid "The homebox service is running."
-msgstr "homebox网页测速服务已启动"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/iperf3.js:88
+msgid "iperf3 Common commands reference"
+msgstr "iperf3 常用命令参考"
 
-msgid "The homebox service is not running."
-msgstr "homebox网页测速服务未启动"
+#: applications/luci-app-netspeedtest/root/usr/share/luci/menu.d/luci-app-netspeedtest.json:14
+msgid "iperf3 Server"
+msgstr "iperf3 服务器"
 
-msgid "Please enable the Homebox service"
-msgstr "请将homebox服务启用"
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed-cfg.js:60
+#: applications/luci-app-netspeedtest/root/usr/share/luci/menu.d/luci-app-netspeedtest.json:30
+msgid "librespeed Config"
+msgstr "librespeed 配置"
 
-msgid "homebox Status"
-msgstr "homebox网页测速服务状态"
+#: applications/luci-app-netspeedtest/root/usr/share/luci/menu.d/luci-app-netspeedtest.json:22
+msgid "librespeed Server"
+msgstr "librespeed 服务器"
 
-msgid "</br>For specific usage, see:"
-msgstr "</br>具体使用方法参见："
-
-msgid "iperfstart"
-msgstr "iperf服务启动"
-
-msgid "iperfstop"
-msgstr "iperf服务停止"
-
-msgid "Select function"
-msgstr "选择功能"
-
-msgid "Execute selected functions"
-msgstr "执行选择的功能"
-
-msgid "client version selection"
-msgstr "客户端版本"
-
-msgid "python3-speedtest-cli"
-msgstr "python3网络测试客户端"
-
-msgid "ookla-speedtest-cli"
-msgstr "ookla网络测试客户端"
-
-msgid "iperf3 instructions"
-msgstr "iperf3使用说明"
-
-msgid "Test speed service started"
-msgstr "测试速度服务已经启动"
-
-msgid "The speed measurement terminal must be in the same LAN as the router that starts the speed measurement"
-msgstr "测速终端机必须与启动测速的路由器在同一局域网内"
-
-msgid "Operation steps: start router speed measurement service download test client run speed measurement client input IP address of router speed measurement service"
-msgstr "使用步骤：A.启动路由器测速服务 B.下载测试客户端 C.运行测速客户端 D.输入路由器测速服务IP地址。 "
-
-msgid "Github download iperf3"
-msgstr "Github下载iperf3"
-
-msgid "Iperf3 speed measurement software download"
-msgstr "iperf3测速软件下载"
-
-msgid "Broadband speed test"
-msgstr "宽带网速测试"
-
-msgid "speedtest.net Broadband speed test"
-msgstr "speedtest.net宽带网速测试"
-
-
-msgid "Operation execution complete"
-msgstr "操作执行完毕"
-
-msgid "Network speed test, please wait..."
-msgstr "网速测试中，请稍侯..."
-
-msgid "Download from foreign official websites"
-msgstr "国外官网"
-
-msgid "Server Port Latency Test"
-msgstr "服务器端口延迟测试"
-
-msgid "Test server address"
-msgstr "测试服务器地址"
-
-msgid "Test server port"
-msgstr "测试服务器端口"
-
-msgid "Enter the domain name or IP address of the server that needs to be tested"
-msgstr "输入需要测试的服务器域名或者IP地址"
-
-msgid "Test server port delay"
-msgstr "测试端口延时"
-
-msgid "Click to execute"
-msgstr "点击执行"
-
-msgid "Test failed"
-msgstr "测试失败"
-
-msgid "Waiting (executing)..."
-msgstr "努力执行中"
-
-msgid "Server Port Delay Value"
-msgstr "服务器端口延时值"
-
-msgid "iperf3 commands reference"
-msgstr "iperf3命令参考"
-
-msgid "-b, --bandwidth ..<number>[KMG]...target bandwidth in bits/sec (0 for unlimited)"
-msgstr "-b, --bandwidth ..<number>[KMG]...目标带宽（以位/秒为单位）（0表示无限制）"
-
-msgid "-t, --time .......<number>........time in seconds to transmit for (default 10 secs)"
-msgstr "-t, --time .......<number>........传输时间（以秒为单位）（默认为10秒）"
-
-msgid "-i, --interval ...<number>........seconds between periodic bandwidth reports"
-msgstr "-i, --interval ...<number>........测试报告之间的秒数"
-
-msgid "-P, --parallel ...<number>........number of parallel client streams to run"
-msgstr "-P, --parallel ...<number>........多线程运行的数量"
-
-msgid "-R, --reverse ....................run in reverse mode (server sends, client receives)"
-msgstr "-R, --reverse ....................反向模式运行（服务器发送，客户端接收）"
-
-msgid  "-c, --client host ................run in client mode, connecting to host"
-msgstr "-c, --client host ................客户端模式下运行，连接到host"
-
-msgid  "-s, --server .....................run in server mode"
-msgstr "-s, --server .....................服务器模式下运行"
-
-msgid "-u, --udp ........................use UDP rather than TCP"
-msgstr "-u, --udp ........................测试传输使用UDP而不是TCP"
-
-msgid "Perform OK"
-msgstr "执行完成"
-
+#: applications/luci-app-netspeedtest/htdocs/luci-static/resources/view/netspeedtest/librespeed.js:27
+msgid "librespeed Site Speed Test"
+msgstr "librespeed 站点速度测试"
