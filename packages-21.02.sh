@@ -110,6 +110,10 @@ git clone --depth 1 https://github.com/4IceG/luci-app-socat.git
 git clone --depth 1 https://github.com/muink/luci-app-natmapt.git
 git clone --depth 1 https://github.com/muink/openwrt-stuntman.git ./stuntman
 git clone --depth 1 https://github.com/muink/openwrt-natmapt ./natmapt
+git clone --depth 1 https://github.com/4IceG/luci-app-modeminfo
+git clone --depth 1 https://github.com/immortalwrt-collections/openwrt-gowebdav ./gowebdav
+git clone --depth 1 https://github.com/firkerword/openwrt-wrtbwmon ./wrtbwmon-openwrt
+
 
 git clone --depth 1 https://github.com/muink/luci-app-alwaysonline
 git clone --depth 1 https://github.com/muink/luci-app-change-mac
