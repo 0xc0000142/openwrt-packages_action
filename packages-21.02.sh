@@ -134,7 +134,6 @@ git clone --depth 1 https://github.com/muink/luci-app-natter
 git clone --depth 1 https://github.com/muink/luci-app-netdata
 git clone --depth 1 https://github.com/muink/luci-app-netspeedtest
 git clone --depth 1 https://github.com/muink/luci-app-packagesync
-git clone --depth 1 https://github.com/muink/luci-app-natter
 git clone --depth 1 https://github.com/muink/luci-app-pcap-dnsproxy
 git clone --depth 1 https://github.com/sbwml/luci-app-qbittorrent
 git clone --depth 1 https://github.com/tty228/luci-app-wechatpush
@@ -237,7 +236,7 @@ rm -rf ./*/.git ./*/.gitattributes ./*/.svn ./*/.github ./*/.gitignore README.md
 rm -rf ./package48748641 ./package136461651 ./package4577867 ./package165456316486 ./package15486786
 rm -rf plugin-gargoyle*
 rm -rf luci-app-vssr-plus
-sed -i 's|egrep|grep -E|g' luci-app-advanced/luasrc/controller/fileassistant.lua luci-app-fileassistant/luasrc/controller/fileassistant.lua
+sed -i 's|egrep|grep -E|g' luci-app-advanced/luasrc/controller/fileassistant.lua luci-app-fileassistant/luasrc/controller/fileassistant.lua ./* ./*/* ./*/*/* ./*/*/*/* ./*/*/*/*/* ./*/*/*/*/*/* ./*/*/*/*/*/*/*
 sed -i '/\/zsh/d' luci-app-advancedplus/root/etc/init.d/advancedplus
 
 #mkdir r8168
@@ -246,4 +245,12 @@ rm -rf openwrt-r8168
 rm -rf ./*/.git
 rm -rf ./*/.#svn 
 rm -f .gitattributes .gitignore
+
+for e in $(ls -d luci-*/po); do
+	if [[ -d $e/zh-cn && ! -d $e/zh_Hans ]]; then
+		ln -s zh-cn $e/zh_Hans 2>/dev/null
+	elif [[ -d $e/zh_Hans && ! -d $e/zh-cn ]]; then
+		ln -s zh_Hans $e/zh-cn 2>/dev/null
+	fi
+done
 exit 0
