@@ -2056,7 +2056,7 @@ _ACEOF
 if { (eval echo "$as_me:2056: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:2062: \$? = $ac_status" >&5
@@ -2089,7 +2089,7 @@ _ACEOF
 if { (eval echo "$as_me:2089: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:2095: \$? = $ac_status" >&5
@@ -2147,7 +2147,7 @@ _ACEOF
 if { (eval echo "$as_me:2147: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:2153: \$? = $ac_status" >&5
@@ -2180,7 +2180,7 @@ _ACEOF
 if { (eval echo "$as_me:2180: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:2186: \$? = $ac_status" >&5
@@ -2326,7 +2326,7 @@ _ACEOF
 if { (eval echo "$as_me:2326: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:2332: \$? = $ac_status" >&5
@@ -3413,7 +3413,7 @@ _ACEOF
 if { (eval echo "$as_me:3413: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:3419: \$? = $ac_status" >&5
@@ -3460,7 +3460,7 @@ _ACEOF
 if { (eval echo "$as_me:3460: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:3466: \$? = $ac_status" >&5
@@ -3515,7 +3515,7 @@ _ACEOF
 if { (eval echo "$as_me:3515: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:3521: \$? = $ac_status" >&5
@@ -3562,7 +3562,7 @@ _ACEOF
 if { (eval echo "$as_me:3562: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:3568: \$? = $ac_status" >&5
@@ -3617,7 +3617,7 @@ _ACEOF
 if { (eval echo "$as_me:3617: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:3623: \$? = $ac_status" >&5
@@ -3669,7 +3669,7 @@ _ACEOF
 if { (eval echo "$as_me:3669: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:3675: \$? = $ac_status" >&5
@@ -3723,7 +3723,7 @@ _ACEOF
 if { (eval echo "$as_me:3723: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:3729: \$? = $ac_status" >&5
@@ -3771,7 +3771,7 @@ _ACEOF
 if { (eval echo "$as_me:3771: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:3777: \$? = $ac_status" >&5
@@ -4057,7 +4057,7 @@ _ACEOF
 if { (eval echo "$as_me:4057: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:4063: \$? = $ac_status" >&5
@@ -4088,7 +4088,7 @@ if test $ac_cv_header_stdc = yes; then
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  egrep "memchr" >/dev/null 2>&1; then
+  grep -E "memchr" >/dev/null 2>&1; then
   :
 else
   ac_cv_header_stdc=no
@@ -4106,7 +4106,7 @@ if test $ac_cv_header_stdc = yes; then
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  egrep "free" >/dev/null 2>&1; then
+  grep -E "free" >/dev/null 2>&1; then
   :
 else
   ac_cv_header_stdc=no
@@ -4194,7 +4194,7 @@ _ACEOF
 if { (eval echo "$as_me:4194: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:4200: \$? = $ac_status" >&5
@@ -4599,7 +4599,7 @@ _ACEOF
 if { (eval echo "$as_me:4599: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:4605: \$? = $ac_status" >&5
@@ -4704,7 +4704,7 @@ _ACEOF
 if { (eval echo "$as_me:4704: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:4710: \$? = $ac_status" >&5
@@ -4735,7 +4735,7 @@ if test $ac_cv_header_stdc = yes; then
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  egrep "memchr" >/dev/null 2>&1; then
+  grep -E "memchr" >/dev/null 2>&1; then
   :
 else
   ac_cv_header_stdc=no
@@ -4753,7 +4753,7 @@ if test $ac_cv_header_stdc = yes; then
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  egrep "free" >/dev/null 2>&1; then
+  grep -E "free" >/dev/null 2>&1; then
   :
 else
   ac_cv_header_stdc=no
@@ -4891,7 +4891,7 @@ _ACEOF
 if { (eval echo "$as_me:4891: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
   ac_status=$?
-  egrep -v '^ *\+' conftest.er1 >conftest.err
+  grep -E -v '^ *\+' conftest.er1 >conftest.err
   rm -f conftest.er1
   cat conftest.err >&5
   echo "$as_me:4897: \$? = $ac_status" >&5
@@ -6102,7 +6102,7 @@ EOF
 # Break up conftest.defines because some shells have a limit on the size
 # of here documents, and old seds have small limits too (100 cmds).
 echo '  # Handle all the #define templates only if necessary.' >>$CONFIG_STATUS
-echo '  if egrep "^[ 	]*#[ 	]*define" $tmp/in >/dev/null; then' >>$CONFIG_STATUS
+echo '  if grep -E "^[ 	]*#[ 	]*define" $tmp/in >/dev/null; then' >>$CONFIG_STATUS
 echo '  # If there are no defines, we may have an empty if/fi' >>$CONFIG_STATUS
 echo '  :' >>$CONFIG_STATUS
 rm -f conftest.tail
@@ -6126,7 +6126,7 @@ do
   mv conftest.tail conftest.defines
 done
 rm -f conftest.defines
-echo '  fi # egrep' >>$CONFIG_STATUS
+echo '  fi # grep -E' >>$CONFIG_STATUS
 echo >>$CONFIG_STATUS
 
 # Break up conftest.undefs because some shells have a limit on the size

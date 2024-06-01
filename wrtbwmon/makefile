@@ -1,7 +1,7 @@
 DESTDIR?=/
 install-files=$(shell grep -v CONTROL fileMap  | cut -d: -f2- | tr -d '\n')
 ipk-files=$(shell grep CONTROL fileMap | cut -d: -f2-)
-version:=$(shell egrep '^Version:' ./control | awk '{print $$2}')
+version:=$(shell grep -E '^Version:' ./control | awk '{print $$2}')
 target=wrtbwmon_$(version)_all.ipk
 
 all: $(target)

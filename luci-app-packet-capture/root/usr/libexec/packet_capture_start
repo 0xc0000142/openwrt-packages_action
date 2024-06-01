@@ -35,7 +35,7 @@ if  [ -n "$interface" ];then
 fi
 
 if [ -n "$packets" ];then
-    echo "$packets" | egrep  '^[0-9]*$'
+    echo "$packets" | grep -E  '^[0-9]*$'
     if [ "$?" -eq 0 ];then
         args="$args -c $packets"
     else

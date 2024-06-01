@@ -653,7 +653,7 @@ sed -i "1i\   " $SERVER_FILE 2>/dev/null
 
 sed -i "2i\proxies:" $SERVER_FILE 2>/dev/null 
 
-egrep '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' >$Proxy_Group 2>&1
+grep -E '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' >$Proxy_Group 2>&1
 
 sed -i "s/^ \{0,\}/    - /" $Proxy_Group 2>/dev/null 
 fi

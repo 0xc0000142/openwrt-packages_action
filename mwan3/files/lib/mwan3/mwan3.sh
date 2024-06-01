@@ -202,7 +202,7 @@ mwan3_set_custom_ipset_v4()
 {
 	local custom_network_v4
 
-	for custom_network_v4 in $($IP4 route list table "$1" | awk '{print $1}' | egrep '[0-9]{1,3}(\.[0-9]{1,3}){3}'); do
+	for custom_network_v4 in $($IP4 route list table "$1" | awk '{print $1}' | grep -E '[0-9]{1,3}(\.[0-9]{1,3}){3}'); do
 		$LOG notice "Adding network $custom_network_v4 from table $1 to mwan3_custom_v4 ipset"
 		$IPS -! add mwan3_custom_v4_temp $custom_network_v4
 	done
@@ -212,7 +212,7 @@ mwan3_set_custom_ipset_v6()
 {
 	local custom_network_v6
 
-	for custom_network_v6 in $($IP6 route list table "$1" | awk '{print $1}' | egrep "$IPv6_REGEX"); do
+	for custom_network_v6 in $($IP6 route list table "$1" | awk '{print $1}' | grep -E "$IPv6_REGEX"); do
 		$LOG notice "Adding network $custom_network_v6 from table $1 to mwan3_custom_v6 ipset"
 		$IPS -! add mwan3_custom_v6_temp $custom_network_v6
 	done
@@ -245,11 +245,11 @@ mwan3_set_connected_iptables()
 	$IPS -! create mwan3_connected_v4 hash:net
 	$IPS create mwan3_connected_v4_temp hash:net
 
-	for connected_network_v4 in $($IP4 route | awk '{print $1}' | egrep '[0-9]{1,3}(\.[0-9]{1,3}){3}'); do
+	for connected_network_v4 in $($IP4 route | awk '{print $1}' | grep -E '[0-9]{1,3}(\.[0-9]{1,3}){3}'); do
 		$IPS -! add mwan3_connected_v4_temp $connected_network_v4
 	done
 
-	for connected_network_v4 in $($IP4 route list table 0 | awk '{print $2}' | egrep '[0-9]{1,3}(\.[0-9]{1,3}){3}'); do
+	for connected_network_v4 in $($IP4 route list table 0 | awk '{print $2}' | grep -E '[0-9]{1,3}(\.[0-9]{1,3}){3}'); do
 		$IPS -! add mwan3_connected_v4_temp $connected_network_v4
 	done
 
@@ -261,7 +261,7 @@ mwan3_set_connected_iptables()
 	$IPS -! create mwan3_connected_v6 hash:net family inet6
 	$IPS create mwan3_connected_v6_temp hash:net family inet6
 
-	for connected_network_v6 in $($IP6 route | awk '{print $1}' | egrep "$IPv6_REGEX"); do
+	for connected_network_v6 in $($IP6 route | awk '{print $1}' | grep -E "$IPv6_REGEX"); do
 		$IPS -! add mwan3_connected_v6_temp $connected_network_v6
 	done
 

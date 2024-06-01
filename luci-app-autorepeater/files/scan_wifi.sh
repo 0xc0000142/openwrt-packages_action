@@ -67,8 +67,8 @@
 			i_info=$( iwinfo "$i" info 2>/dev/null )
 			is_sta=$( printf "$i_info\n" | grep "Mode: *Client" )
 			if [ -n "$is_sta" ] ; then
-				is_g=$(   printf "$i_info\n" | egrep "802.11((b)|(bg)|(gb)|(g)|(gn)|(bgn))" )
-				is_a=$(   printf "$i_info\n" | egrep "802.11an" )
+				is_g=$(   printf "$i_info\n" | grep -E "802.11((b)|(bg)|(gb)|(g)|(gn)|(bgn))" )
+				is_a=$(   printf "$i_info\n" | grep -E "802.11an" )
 				if [ -n "$is_g" ] ; then
 					g_sta="$i"
 				elif [ -n "$is_a" ] ; then

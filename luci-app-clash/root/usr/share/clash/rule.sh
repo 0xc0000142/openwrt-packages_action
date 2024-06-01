@@ -5,7 +5,7 @@ RULE_YAML="/tmp/Rule"
 wget -c4 --no-check-certificate --user-agent="Clash/OpenWRT"  "$rule" -O 2>&1 >1 $RULE_YAML
 
 if [ -f  "$RULE_YAML" ]; then
-status=$(egrep '^ {0,}Rule:' /tmp/Rule)
+status=$(grep -E '^ {0,}Rule:' /tmp/Rule)
 
 	if  [ $status ];then
 		sed -i "/Rule:/i\===" $RULE_YAML   

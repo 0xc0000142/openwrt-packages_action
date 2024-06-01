@@ -88,7 +88,7 @@ function scandir(id, directory)
 	else
 		return
 	end
-	local pfile = popen(cmd_docker .. ' -H "'.. hosts ..'" exec ' ..id .." ls -lh \""..directory.."\" | egrep -v '^total'")
+	local pfile = popen(cmd_docker .. ' -H "'.. hosts ..'" exec ' ..id .." ls -lh \""..directory.."\" | grep -E -v '^total'")
 	for fileinfo in pfile:lines() do
 			i = i + 1
 			t[i] = fileinfo

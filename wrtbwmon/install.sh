@@ -1,9 +1,9 @@
 do_copy() {
     local dest perm file
     for file in $*; do
-	dest=`egrep ".+ $file( |$)" ./fileMap | cut -d':' -f1`
+	dest=`grep -E ".+ $file( |$)" ./fileMap | cut -d':' -f1`
 	mkdir -p $DESTDIR/$dest
-	if [ -n `echo $dest | egrep '/s*bin$'` ]; then
+	if [ -n `echo $dest | grep -E '/s*bin$'` ]; then
     	    perm=0744
 	else
     	    perm=0644

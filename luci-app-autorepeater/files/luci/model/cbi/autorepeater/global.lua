@@ -47,7 +47,7 @@ end
 -- check supported options -- ##################################################
 local has_miniupnpc = ATRP.has_bin("upnpc")
 -- cat /sys/kernel/debug/gpio | grep button
-local btcmd="ls -1 /etc/rc.button/ | egrep -v -e failsafe -e power -e [^.]{8,}"
+local btcmd="ls -1 /etc/rc.button/ | grep -E -v -e failsafe -e power -e [^.]{8,}"
 local shellpipe = io.popen(btcmd,"r")
 
 -- html constants -- ###########################################################

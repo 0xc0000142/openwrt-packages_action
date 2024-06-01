@@ -205,7 +205,7 @@ local function new_dtun_core()
 end
 
 local function e_mode()
-	return luci.sys.exec("egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}'")
+	return luci.sys.exec("grep -E '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}'")
 end
 
 

@@ -7,7 +7,7 @@ tmp_natter2_nat_type_file="/tmp/tmp_natter2_nat_type"
 rm -f $natter2_nat_type_file
 rm -f $tmp_natter2_nat_type_file
 
-$(which python) $script_file | egrep 'Checking TCP|Checking UDP' > $tmp_natter2_nat_type_file
+$(which python) $script_file | grep -E 'Checking TCP|Checking UDP' > $tmp_natter2_nat_type_file
 TCP=$(awk -F '[:]+' '/TCP/{print $2}' $tmp_natter2_nat_type_file | sed 's/\[//g;s/\]//g')
 UDP=$(awk -F '[:]+' '/UDP/{print $2}' $tmp_natter2_nat_type_file | sed 's/\[//g;s/\]//g')
 

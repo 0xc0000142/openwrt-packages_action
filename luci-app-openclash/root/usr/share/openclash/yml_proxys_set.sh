@@ -1434,7 +1434,7 @@ create_config=$(uci -q get openclash.config.create_config)
 LOG_OUT "Start Writing【$CONFIG_NAME】Proxies Setting..."
 echo "proxies:" >$SERVER_FILE
 config_foreach yml_servers_set "servers"
-egrep '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' 2>/dev/null >/tmp/Proxy_Server 2>&1
+grep -E '^ {0,}-' $SERVER_FILE |grep name: |awk -F 'name: ' '{print $2}' |sed 's/,.*//' 2>/dev/null >/tmp/Proxy_Server 2>&1
 if [ -s "/tmp/Proxy_Server" ]; then
    sed -i "s/^ \{0,\}/      - /" /tmp/Proxy_Server 2>/dev/null #添加参数
 else

@@ -80,12 +80,12 @@ uciLoadVar formatTodayLogDateRegex '^%a %b %e ..:..:.. %Y'	# filter for today mo
 # Clear bddb entries from environment
 bddbClear () { 
   local bddbVar
-  for bddbVar in `set | egrep '^bddb_[0-9_]*=' | cut -f1 -d= | xargs echo -n` ; do eval unset $bddbVar ; done
+  for bddbVar in `set | grep -E '^bddb_[0-9_]*=' | cut -f1 -d= | xargs echo -n` ; do eval unset $bddbVar ; done
   bddbStateChange=1
 }
 
 # Returns count of unique IP entries in environment
-bddbCount () { set | egrep '^bddb_[0-9_]*=' | wc -l ; }
+bddbCount () { set | grep -E '^bddb_[0-9_]*=' | wc -l ; }
 
 # Loads existing bddb file into environment
 # Arg: $1 = file, $2 = type (bddb/bddbz), $3 = 
@@ -106,9 +106,9 @@ bddbLoad () {
 bddbSave () { 
   local saveFile="$1.$2" fileType="$2"
   if [ "$fileType" = bddb ] ; then
-    set | egrep '^bddb_[0-9_]*=' | sed s/\'//g > "$saveFile"
+    set | grep -E '^bddb_[0-9_]*=' | sed s/\'//g > "$saveFile"
   elif [ "$fileType" = bddbz ] ; then
-    set | egrep '^bddb_[0-9_]*=' | sed s/\'//g | gzip -c > "$saveFile"
+    set | grep -E '^bddb_[0-9_]*=' | sed s/\'//g | gzip -c > "$saveFile"
   fi
   bddbStateChange=0 
 }
@@ -153,7 +153,7 @@ bddbRemoveRecord () {
 # Returns all IPs (not CIDR) present in records
 bddbGetAllIPs () { 
   local ipRaw record
-  set | egrep '^bddb_[0-9_]*=' | tr \' \  | while read record ; do
+  set | grep -E '^bddb_[0-9_]*=' | tr \' \  | while read record ; do
     ipRaw=`echo $record | cut -f1 -d= | sed 's/^bddb_//'`
     if [ `echo $ipRaw | tr _ \  | wc -w` -eq 4 ] ; then
       echo $ipRaw | tr _ .
@@ -168,7 +168,7 @@ bddbGetRecord () {
   eval echo \$$record
 }
 
-isValidBindTime () { echo "$1" | egrep -q '^[0-9]+$|^([0-9]+[wdhms]?)+$' ; }
+isValidBindTime () { echo "$1" | grep -E -q '^[0-9]+$|^([0-9]+[wdhms]?)+$' ; }
 
 # expands Bind time syntax into seconds (ex: 3w6d23h59m59s), Arg: $1=time string
 expandBindTime () {
@@ -199,7 +199,7 @@ getLogTime () {
 getLogIP () { 
   local logLine="$1"
   local ebaPID=`echo "$logLine" | sed -n 's/^.*authpriv.info \(dropbear\[[0-9]*\]:\) Exit before auth:.*/\1/p'`
-  [ -n "$ebaPID" ] && logLine=`$cmdLogreadEba | fgrep "${ebaPID} Child connection from "`
+  [ -n "$ebaPID" ] && logLine=`$cmdLogreadEba | grep -F "${ebaPID} Child connection from "`
   echo "$logLine" | sed -n 's/^.*[^0-9]\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*$/\1/p'
 }
 
@@ -477,8 +477,8 @@ elif [ "$logMode" = entire ] ; then
   saveState -f
 elif [ "$logMode" = today ] ; then 
   logLine 1 "Running in today mode"
-  # merge the egrep into sed with -e /^$formatTodayLogDateRegex/!d
-  $cmdLogread | egrep "`date +\'$formatTodayLogDateRegex\'`" | sed -nEf "$fileRegex" | while read line ; do 
+  # merge the grep -E into sed with -e /^$formatTodayLogDateRegex/!d
+  $cmdLogread | grep -E "`date +\'$formatTodayLogDateRegex\'`" | sed -nEf "$fileRegex" | while read line ; do 
       processLogLine "$line" 
       saveState
     done

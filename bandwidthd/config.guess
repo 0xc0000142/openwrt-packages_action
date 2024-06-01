@@ -969,13 +969,13 @@ EOF
 		UNAME_REL=`sed -n 's/.*Version //p' </usr/options/cb.name`
 		echo ${UNAME_MACHINE}-pc-isc$UNAME_REL
 	elif /bin/uname -X 2>/dev/null >/dev/null ; then
-		UNAME_REL=`(/bin/uname -X|egrep Release|sed -e 's/.*= //')`
-		(/bin/uname -X|egrep i80486 >/dev/null) && UNAME_MACHINE=i486
-		(/bin/uname -X|egrep '^Machine.*Pentium' >/dev/null) \
+		UNAME_REL=`(/bin/uname -X|grep -E Release|sed -e 's/.*= //')`
+		(/bin/uname -X|grep -E i80486 >/dev/null) && UNAME_MACHINE=i486
+		(/bin/uname -X|grep -E '^Machine.*Pentium' >/dev/null) \
 			&& UNAME_MACHINE=i586
-		(/bin/uname -X|egrep '^Machine.*Pent ?II' >/dev/null) \
+		(/bin/uname -X|grep -E '^Machine.*Pent ?II' >/dev/null) \
 			&& UNAME_MACHINE=i686
-		(/bin/uname -X|egrep '^Machine.*Pentium Pro' >/dev/null) \
+		(/bin/uname -X|grep -E '^Machine.*Pentium Pro' >/dev/null) \
 			&& UNAME_MACHINE=i686
 		echo ${UNAME_MACHINE}-pc-sco$UNAME_REL
 	else

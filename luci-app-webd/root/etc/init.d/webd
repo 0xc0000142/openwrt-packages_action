@@ -100,7 +100,7 @@ EXIT() {
 
 perm_converter() {
 	local u i=1
-	echo $1 | egrep -o [0-1] | while read X
+	echo $1 | grep -E -o [0-1] | while read X
 	do
 		if [ "$X" == 1 ]
 		then

@@ -386,7 +386,7 @@ add_address(){
 }
 
 
-		#fake_ip=$(egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
+		#fake_ip=$(grep -E '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
 		fake_ip=$(uci get clash.config.enhanced_mode 2>/dev/null)
 
 		if [ "${fake_ip}" == "fake-ip" ];then
@@ -422,10 +422,10 @@ add_address(){
 			fi	
 
 			sed -i '/fake-ip-filter:/d' "/etc/clash/config.yaml" 2>/dev/null
-			if [ ! -z "$(egrep '^ {0,}fake-ip-range:' "/etc/clash/config.yaml")" ];then	
+			if [ ! -z "$(grep -E '^ {0,}fake-ip-range:' "/etc/clash/config.yaml")" ];then	
 				sed -i '/fake-ip-range/a\  fake-ip-filter:' /etc/clash/config.yaml 2>/dev/null
 				sed -i '/fake-ip-filter:/r/usr/share/clash/fake_filter.list' "/etc/clash/config.yaml" 2>/dev/null	
-			elif [ ! -z "$(egrep '^ {0,}enhanced-mode:' "/etc/clash/config.yaml")" ];then
+			elif [ ! -z "$(grep -E '^ {0,}enhanced-mode:' "/etc/clash/config.yaml")" ];then
 				sed -i '/^enhanced-mode:/a\  fake-ip-filter:' /etc/clash/config.yaml 2>/dev/null
 				sed -i '/fake-ip-filter:/r/usr/share/clash/fake_filter.list' "/etc/clash/config.yaml" 2>/dev/null
 			fi	

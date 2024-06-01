@@ -12,8 +12,8 @@ start() {
 	done ; unset i
 	if [ "$main_enable" == 1 ]
 	then
-		server_number=$(uci show iperf3-server 2> /dev/null | egrep '@servers\[[0-9]\]+=servers' | wc -l)
-		# server_number=$(uci show iperf3-server 2> /dev/null | egrep -o '@servers\[[0-9]\]+=servers' | awk 'END {print}' | egrep -o "[0-9]")
+		server_number=$(uci show iperf3-server 2> /dev/null | grep -E '@servers\[[0-9]\]+=servers' | wc -l)
+		# server_number=$(uci show iperf3-server 2> /dev/null | grep -E -o '@servers\[[0-9]\]+=servers' | awk 'END {print}' | grep -E -o "[0-9]")
 		for u in $(seq 0 $((${server_number} - 1)))
 		do
 			for i in $server_list

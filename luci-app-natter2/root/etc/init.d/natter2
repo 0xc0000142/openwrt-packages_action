@@ -19,7 +19,7 @@ start_service() {
 	then
 		mkdir -p ${tmp_path}
 		mkdir -p /var/etc/natter2
-		for u in $(seq 0 $(($(uci show natter2 2> /dev/null | egrep '@instances\[[0-9]\]+=instances' | wc -l) - 1)))
+		for u in $(seq 0 $(($(uci show natter2 2> /dev/null | grep -E '@instances\[[0-9]\]+=instances' | wc -l) - 1)))
 		do
 			for i in $instance_list
 			do
@@ -103,7 +103,7 @@ stop_service() {
 		kill -9 "$i" 2> /dev/null
 	done
 	rm -r "$tmp_path" 2> /dev/null
-	for u in $(seq 0 $(($(uci show natter2 2> /dev/null | egrep '@instances\[[0-9]\]+=instances' | wc -l) - 1)))
+	for u in $(seq 0 $(($(uci show natter2 2> /dev/null | grep -E '@instances\[[0-9]\]+=instances' | wc -l) - 1)))
 	do
 		uci set natter2.@instances[$u].tmp_public_port=""
 		uci commit natter2

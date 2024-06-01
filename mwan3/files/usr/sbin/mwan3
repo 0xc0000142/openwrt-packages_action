@@ -160,7 +160,7 @@ stop()
 			$IP route flush table $route &> /dev/null
 		done
 
-		for rule in $($IP rule list | egrep '^[1-2][0-9]{3}\:' | cut -d ':' -f 1); do
+		for rule in $($IP rule list | grep -E '^[1-2][0-9]{3}\:' | cut -d ':' -f 1); do
 			$IP rule del pref $rule &> /dev/null
 		done
 	done

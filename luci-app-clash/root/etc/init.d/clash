@@ -225,14 +225,14 @@ rules(){
 		wan=$(ifconfig | grep 'inet addr' | awk '{print $2}' | cut -d: -f2 2>/dev/null)
 		ip6=$(ifconfig | grep 'inet6 addr' | awk '{print $3}' 2>/dev/null)
 		enable_udp=$(uci get clash.config.enable_udp 2>/dev/null)
-		fake_ip=$(egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
+		fake_ip=$(grep -E '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
 		PROXY_FWMARK="0x162"
 		PROXY_ROUTE_TABLE="0x162"
 		PROXY_BYPASS_USER="root"
 		dnsforwader=$(uci get clash.config.dnsforwader 2>/dev/null)
 		
 		
-		redir_host=$(egrep '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
+		redir_host=$(grep -E '^ {0,}enhanced-mode' /etc/clash/config.yaml |grep enhanced-mode: |awk -F ': ' '{print $2}')
 		if [ "$redir_host" == "redir-host" ];then
 		   if [ "$(uci get clash.config.access_control 2>/dev/null)" = "1" ] && [ -n "$(uci get clash.config.proxy_lan_ips 2>/dev/null)" ]; then
 				proxy_ips=$(uci get clash.config.proxy_lan_ips)
@@ -329,7 +329,7 @@ rules(){
 			  iptables -t nat -F clash_output
 			  iptables -t nat -A clash_output -m set --match-set localnetwork dst -j RETURN
 			  
-			  fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
+			  fake_ip_range=$(grep -E '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
 			  if [ ! -z "${fake_ip_range}" ];then
 				iptables -t nat -A clash_output -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
 			  else
@@ -358,7 +358,7 @@ rules(){
 				iptables -t nat -D PREROUTING $natx >/dev/null 2>&1
 			done
 			
-			TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
+			TUN_DEVICE=$(grep -E '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
 			if [ -z $TUN_DEVICE ];then
 			TUN_DEVICE_NAME="clash0"
 			else
@@ -397,7 +397,7 @@ rules(){
 			iptables -t nat -I PREROUTING -p tcp --dport 53 -j ACCEPT
 
 			if [ "${fake_ip}" == "fake-ip" ];then
-			fake_ip_range=$(egrep '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
+			fake_ip_range=$(grep -E '^ {0,}fake-ip-range' /etc/clash/config.yaml |grep fake-ip-range: |awk -F ': ' '{print $2}')
 			if [ ! -z "${fake_ip_range}" ];then
 				iptables -t nat -A OUTPUT -p tcp -d $fake_ip_range -j REDIRECT --to-ports "${redir_port}"
 			else
@@ -518,7 +518,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 
 	fi
 
-	if [ ! -z "$(egrep '^ {0,}rule-providers:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.core)" -ne 4 ];then
+	if [ ! -z "$(grep -E '^ {0,}rule-providers:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.core)" -ne 4 ];then
 		
 		if [ -f /etc/clash/dtun/clash ];then
 		uci set clash.config.core="4" && uci commit clash
@@ -536,7 +536,7 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		fi
 	fi
 	
-	if [ ! -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.core)" -ne 4 ];then
+	if [ ! -z "$(grep -E '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.core)" -ne 4 ];then
 		if [ -f /etc/clash/dtun/clash ];then
 		uci set clash.config.core="4" && uci commit clash
 		sleep 1
@@ -553,9 +553,9 @@ if  [  -f $CONFIG_YAML ] && [ "$(ls -l $CONFIG_YAML|awk '{print int($5)}')" -ne 
 		fi
 	fi
         
-	if [ ! -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.p_mode 2>/dev/null)" != "Script" ];then
+	if [ ! -z "$(grep -E '^ {0,}script:' "/etc/clash/config.yaml")" ] && [ "$(uci get clash.config.p_mode 2>/dev/null)" != "Script" ];then
 		uci set clash.config.p_mode="Script"&& uci commit clash
-	elif [ "$(uci get clash.config.p_mode)" == "Script" ] && [ -z "$(egrep '^ {0,}script:' "/etc/clash/config.yaml")" ];then
+	elif [ "$(uci get clash.config.p_mode)" == "Script" ] && [ -z "$(grep -E '^ {0,}script:' "/etc/clash/config.yaml")" ];then
 		uci set clash.config.p_mode="rule" && uci commit clash
 	fi
 
@@ -711,7 +711,7 @@ remove_mark(){
     	ip route del local 0.0.0.0/0  dev lo table "$PROXY_ROUTE_TABLE" >/dev/null 2>&1
 
 		
-		TUN_DEVICE=$(egrep '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
+		TUN_DEVICE=$(grep -E '^ {0,}device-url:' /etc/clash/config.yaml |grep device-url: |awk -F '//' '{print $2}')
 		if [ -z $TUN_DEVICE ];then
 		TUN_DEVICE_NAME="clash0"
 		else

@@ -6,7 +6,7 @@ SERVICE_DAEMONIZE=1
 SERVICE_WRITE_PID=1
 
 getKids() { 
- egrep "^PPid:	*$1$" /proc/[0-9]*/s*s 2>/dev/null | cut -f3 -d/ | xargs echo
+ grep -E "^PPid:	*$1$" /proc/[0-9]*/s*s 2>/dev/null | cut -f3 -d/ | xargs echo
 }
 
 start() {

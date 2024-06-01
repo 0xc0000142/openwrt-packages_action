@@ -74,11 +74,11 @@ trigger() {
 		;;
 	sysfree)
 		cd /overlay
-		rm -rf `ls | egrep -v '(upper|.fs_state)'`
+		rm -rf `ls | grep -E -v '(upper|.fs_state)'`
 		cd upper
-		rm -rf `ls | egrep -v '(etc)'`
+		rm -rf `ls | grep -E -v '(etc)'`
 		cd etc
-		rm -rf `ls | egrep -v '(config|ssr|bench.log|shadow)'`
+		rm -rf `ls | grep -E -v '(config|ssr|bench.log|shadow)'`
 		rm -rf /var/luci-modulecache
 		rm -rf /var/luci-indexcache
 		rm -rf /tmp/cache/*
