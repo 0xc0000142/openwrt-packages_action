@@ -236,7 +236,7 @@ rm -rf ./*/.git ./*/.gitattributes ./*/.svn ./*/.github ./*/.gitignore README.md
 rm -rf ./package48748641 ./package136461651 ./package4577867 ./package165456316486 ./package15486786
 rm -rf plugin-gargoyle*
 rm -rf luci-app-vssr-plus
-sed -i 's|egrep|grep -E|g' luci-app-advanced/luasrc/controller/fileassistant.lua luci-app-fileassistant/luasrc/controller/fileassistant.lua ./* ./*/* ./*/*/* ./*/*/*/* ./*/*/*/*/* ./*/*/*/*/*/* ./*/*/*/*/*/*/*
+#sed -i 's|egrep|grep -E|g' luci-app-advanced/luasrc/controller/fileassistant.lua luci-app-fileassistant/luasrc/controller/fileassistant.lua
 sed -i '/\/zsh/d' luci-app-advancedplus/root/etc/init.d/advancedplus
 
 #mkdir r8168
@@ -253,4 +253,17 @@ for e in $(ls -d luci-*/po); do
 		ln -s zh_Hans $e/zh-cn 2>/dev/null
 	fi
 done
+
+find . -type f | while read -r FILE; do
+  if grep -q "egrep" "$FILE"; then
+    sed -i 's/egrep/grep -E/g' "$FILE"
+    echo "Updated $FILE"
+  fi
+  if grep -q "fgrep" "$FILE"; then
+    sed -i 's/fgrep/grep -F/g' "$FILE"
+    echo "Updated $FILE"
+  fi
+done
+
+
 exit 0
