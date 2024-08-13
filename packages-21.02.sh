@@ -55,6 +55,7 @@ git clone --depth 1 https://github.com/sirpdboy/luci-app-wizard
 git clone --depth 1 https://github.com/sirpdboy/luci-app-partexp
 git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status.git
 git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status-mini
+git clone --depth 1 https://github.com/asvow/luci-app-tailscale
 
 git clone --depth 1 https://github.com/zhengmz/luci-app-zerotier
 git clone --depth 1 https://github.com/Ardentwheel/luci-app-cifs
