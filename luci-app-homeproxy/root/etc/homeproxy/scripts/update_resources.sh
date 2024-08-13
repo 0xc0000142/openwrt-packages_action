@@ -56,6 +56,9 @@ check_clash_dashboard_update() {
 	set_lock "set" "$dashtype"
 
 	local dashdata_ver="$($wget -O- "https://api.github.com/repos/$dashrepo/releases/latest" | jsonfilter -e "@.tag_name")"
+	[ -n "$dashdata_ver" ] || {
+		dashdata_ver="$($wget -O- "https://api.github.com/repos/$dashrepo/tags" | jsonfilter -e "@[*].name" | head -n1)"
+	}
 	if [ -z "$dashdata_ver" ]; then
 		log "[$(to_upper "$dashtype")] [$dashrepo] Failed to get the latest version, please retry later."
 
@@ -74,7 +77,7 @@ check_clash_dashboard_update() {
 		log "[$(to_upper "$dashtype")] [$dashrepo] Local version: $local_dashdata_ver, latest version: $dashdata_ver."
 	fi
 
-	$wget "https://github.com/$dashrepo/archive/gh-pages.zip" -O "$RUN_DIR/$dashtype.zip"
+	$wget "https://codeload.github.com/$dashrepo/zip/refs/heads/gh-pages" -O "$RUN_DIR/$dashtype.zip"
 	if [ ! -s "$RUN_DIR/$dashtype.zip" ]; then
 		rm -f "$RUN_DIR/$dashtype.zip"
 		log "[$(to_upper "$dashtype")] [$dashrepo] Update failed."

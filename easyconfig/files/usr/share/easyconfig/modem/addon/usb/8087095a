@@ -58,6 +58,7 @@ if [ "x$MODE_NUM" = "x7" ]; then
 	BWS4=""
 
 	CELLS=$(echo "$O" | awk -F[,:] '/^\+XLEC:/{print $3}')
+	[ -z "$CELLS" ] && CELLS=0
 	case $CELLS in
 		"1")
 			T=$(echo "$O" | awk -F[,:] '/^\+XLEC:/{print $4}')
@@ -371,6 +372,7 @@ IFS="
 #			T=$(echo "$LINE" | awk -F[,:] '/^\+XMCI: 4/{print $13}')
 #			[ "$T" != "255" ] && addon $((POS + 8)) "(S${IDX}) SNR" "$T dB"
 			IDX=$((IDX + 1))
+			[ $IDX -ge $CELLS ] && break
 			POS=$((POS + 10))
 		fi
 	done

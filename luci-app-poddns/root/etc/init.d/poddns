@@ -1,20 +1,26 @@
-#!/bin/sh /etc/rc.common
+#!/bin/bash /etc/rc.common
 
 START=95
 STOP=10
 
 start() {
-    if [ $(uci -q get poddns.config.enable) = 1 ]; then
-        if [ $(crontab -l | grep -c "poddns") = 0 ]; then
-            (crontab -l 2>/dev/null; echo "* */5 * * * /usr/share/poddns/check.sh") | crontab -
+    if [[ $(uci -q get poddns.config.enable) -eq 1 ]]; then
+        if [[ $(crontab -l | grep -c "poddns") -eq 0 ]]; then
+            (
+                crontab -l 2>/dev/null
+                echo "* */5 * * * /usr/share/poddns/check.sh"
+            ) | crontab -
         fi
     fi
 }
 
 restart() {
     (crontab -l 2>/dev/null | sed '/poddns/d') | crontab -
-    if [ $(uci -q get poddns.config.enable) = 1 ]; then
-        (crontab -l 2>/dev/null; echo "* */5 * * * /usr/share/poddns/check.sh") | crontab -
+    if [[ $(uci -q get poddns.config.enable) -eq 1 ]]; then
+        (
+            crontab -l 2>/dev/null
+            echo "* */5 * * * /usr/share/poddns/check.sh"
+        ) | crontab -
         /usr/share/poddns/check.sh
     fi
 }

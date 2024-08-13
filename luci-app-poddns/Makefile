@@ -6,7 +6,7 @@ PKG_RELEASE:=1
 
 LUCI_TITLE:=LuCI Support for poddns
 LUCI_PKGARCH:=all
-LUCI_DEPENDS:=+luci-compat +curl +jsonfilter
+LUCI_DEPENDS:=+luci-compat +curl +jq
 
 define Package/$(PKG_NAME)/conffiles
 /etc/config/poddns

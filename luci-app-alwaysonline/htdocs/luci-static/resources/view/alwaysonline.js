@@ -67,7 +67,7 @@ return view.extend({
 			]);
 		};
 
-		s = m.section(form.TypedSection, 'alwaysonline');
+		s = m.section(form.NamedSection, 'global', 'alwaysonline');
 		s.anonymous = true;
 
 		o = s.option(form.Flag, 'enabled', _('Enable'));

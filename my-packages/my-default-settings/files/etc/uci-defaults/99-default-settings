@@ -9,22 +9,17 @@ sed -i "s/op.supes.top/dl.openwrt.ai/" /etc/opkg/distfeeds.conf
 version=`uci -q get base_config.@status[0].version`
 
 hostname=`uci -q get system.@system[0].hostname`
-[ -n "${hostname}" ] || hostname="OpenWrt"
+[ -n "${hostname}" ] || hostname="KWrt"
 
 if [ "$(uci -q get dhcp.@dnsmasq[0].port)" != "53" ]; then
 	uci -q set dhcp.@dnsmasq[0].port='53'
 	uci commit dhcp
 fi
 
-uci -q set dockerd.firewall.extra_iptables_args='--match conntrack ! --ctstate RELATED,ESTABLISHED'
-uci commit dockerd
-
 sed -i '/profile.d/d' /lib/upgrade/keep.d/base-files
 
 echo $(uci -q get uhttpd.main.index_page) | grep -q "cgi-bin/luci" ||
 	uci -q add_list uhttpd.main.index_page='cgi-bin/luci' && uci commit uhttpd
-
-/etc/init.d/wizard disable
 
 [[ -x /usr/bin/wget && ! -x /usr/bin/wget-ssl ]] && 	
 	ln -s /usr/bin/wget /usr/bin/wget-ssl
@@ -73,12 +68,10 @@ if [[ ! "$version" || "$version" -lt 1 ]]; then
 	(echo "root"; sleep 1; echo "root") | /bin/busybox passwd root >/dev/null 2>&1 &
 	
 	. /etc/openwrt_release
-	
-	if [[ "$DISTRIB_TARGET" != "x86/64" ]]; then
+
 		uci -q set firewall.@defaults[0].flow_offloading='1'
 		uci -q set firewall.@defaults[0].flow_offloading_hw='1'
 		uci commit firewall
-	fi
 
 	sed -i '/option disabled/d' /etc/config/wireless
 
@@ -113,7 +106,7 @@ if [[ ! "$version" || "$version" -lt 1 ]]; then
 			uci -q set wireless.${radio}.noscan='1'
 			uci -q set wireless.${radio}.vendor_vht='1'
 			uci -q set wireless.default_${radio}.ssid="${SSID}_2.4G"
-			uci -q set wireless.${radio}.channel='auto'
+			uci -q set wireless.${radio}.channel='6'
 		fi
 			uci -q set wireless.default_${radio}.device="${radio}"
 			if [ "${SSID_PASSWD}" ]; then
@@ -227,7 +220,46 @@ if [[ ! "$version" || "$version" -lt 1 ]]; then
 	echo -n >$SYSCTL_LOCAL
 	echo net.nf_conntrack_max=$nf_conntrack_max >>$SYSCTL_LOCAL
 	echo net.core.rmem_max=$nf_conntrack_max >>$SYSCTL_LOCAL
+
+if [ -n "$(command -v nginx)" ]; then
+	uci add wizard shortcuts
+	uci set wizard.@shortcuts[-1].shortcut='pw'
+	uci set wizard.@shortcuts[-1].to_url='http://10.0.0.1/cgi-bin/luci/admin/services/passwall'
+	uci set wizard.@shortcuts[-1].comments='passwall'
+	uci commit wizard
+
+	uci -q set nginx._sc_pw=server
+	uci -q set nginx._sc_pw.server_name="pw"
+	uci -q add_list nginx._sc_pw.listen="80"
+	uci -q add_list nginx._sc_pw.listen="443"
+	uci -q set nginx._sc_pw.return="302 http://10.0.0.1/cgi-bin/luci/admin/services/passwall"
+
+	uci -q set dhcp._sc_pw=domain
+	uci -q set dhcp._sc_pw.name="pw"
+	uci -q set dhcp._sc_pw.ip="10.0.0.1"
+	uci -q set dhcp._sc_pw.comments="PassWall"
+	uci commit dhcp
+fi
 	version=1
+fi
+
+if [ -n "$(command -v nginx)" ]; then
+if [ -z "`uci -q get nginx.default_server`" ]; then
+	uci -q set nginx.default_server=server
+	uci -q set nginx.default_server.server_name='op'
+	uci -q add_list nginx.default_server.listen='80 default_server'
+	uci -q add_list nginx.default_server.listen='[::]:80 default_server'
+	uci -q add_list nginx.default_server.include='conf.d/*.locations'
+	uci -q set nginx.default_server.access_log='off; # logd openwrt'
+	uci commit nginx
+fi
+if [ -z "`uci -q get dhcp.default_server`" ]; then
+	uci -q set dhcp.default_server=domain
+	uci -q set dhcp.default_server.name='op'
+	uci -q set dhcp.default_server.ip='10.0.0.1'
+	uci -q set dhcp.default_server.comments='后台地址'
+	uci commit dhcp
+fi
 fi
 
 grep -q "location /luci " /etc/nginx/conf.d/luci.locations 2>/dev/null &&
@@ -240,11 +272,13 @@ sed -i "s/client_max_body_size 128/client_max_body_size 3072/" /etc/nginx/uci.co
 sed -i "s/large_client_header_buffers 2 1k/large_client_header_buffers 4 512k/" /etc/nginx/uci.conf.template
 
 rm -rf /tmp/luci-*
-
+/etc/init.d/dropbear restart
 uci -q set base_config.@status[0].version=$version
 uci commit base_config
 
 modprobe xt_FULLCONENAT || {
+[ "$(iptables -L -t nat | grep "FULLCONENAT")" ] || {
 uci -q set firewall.@defaults[0].fullcone='0'
 uci commit firewall
+}
 }

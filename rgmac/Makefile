@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2020-2023 muink
+# Copyright (C) 2020-2024 muink
 #
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
@@ -7,8 +7,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rgmac
-PKG_VERSION:=1.5.0
-PKG_RELEASE:=20240101
+PKG_VERSION:=1.5.1
+PKG_RELEASE:=20240803
 
 PKG_MAINTAINER:=muink <hukk1996@gmail.com>
 PKG_LICENSE:=MIT
@@ -16,7 +16,7 @@ PKG_LICENSE_FILES:=LICENSE
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/muink/rgmac/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=42f9a3c00467d73cba67dc50bfd6888ee8a03203a8cb2fdb6fe97ba31958972c
+PKG_HASH:=434869135973930de4aaa3e303d146eb438652b736a1fa9d9cdb4e218d2bcaaf
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk

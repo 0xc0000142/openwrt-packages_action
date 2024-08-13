@@ -21,10 +21,12 @@ function index()
 	entry({"admin", "services", appname, "reset_config"}, call("reset_config")).leaf = true
 	entry({"admin", "services", appname, "show"}, call("show_menu")).leaf = true
 	entry({"admin", "services", appname, "hide"}, call("hide_menu")).leaf = true
-	if uci:get(appname, "@global[0]", "hide_from_luci") == "1" then
-		return
+	local e
+	if uci:get(appname, "@global[0]", "hide_from_luci") ~= "1" then
+		e = entry({"admin", "services", appname}, alias("admin", "services", appname, "settings"), _("Pass Wall"), -1)
+	else
+		e = entry({"admin", "services", appname}, alias("admin", "services", appname, "settings"), nil, -1)
 	end
-	e = entry({"admin", "services", appname}, alias("admin", "services", appname, "settings"), _("Pass Wall"), -1)
 	e.dependent = true
 	e.acl_depends = { "luci-app-passwall" }
 	--[[ Client ]]
@@ -251,16 +253,19 @@ function connect_status()
 	e.use_time = ""
 	local url = luci.http.formvalue("url")
 	local baidu = string.find(url, "baidu")
-	local enabled = uci:get(appname, "@global[0]", "enabled")
-	local chn_list = uci:get(appname, "@global[0]", "chn_list")
+	local enabled = uci:get(appname, "@global[0]", "enabled") or "0"
+	local chn_list = uci:get(appname, "@global[0]", "chn_list") or "direct"
 	local gfw_list = uci:get(appname, "@global[0]", "use_gfw_list") or "1"
-	local proxy_mode = uci:get(appname, "@global[0]", "tcp_proxy_mode")
-	local socks_port = uci:get(appname, "@global[0]", "tcp_node_socks_port")
-	if enabled ~= 0 then
-		if (chn_list == "proxy" and gfw_list == 0 and proxy_mode ~= "proxy" and baidu ~= nil) or (chn_list == 0 and gfw_list == 0 and proxy_mode == "proxy") then
-			url = "--socks5 127.0.0.1:" .. socks_port .. " " .. url
+	local proxy_mode = uci:get(appname, "@global[0]", "tcp_proxy_mode") or "proxy"
+	local socks_port = uci:get(appname, "@global[0]", "tcp_node_socks_port") or "1070"
+	local local_proxy = uci:get(appname, "@global[0]", "localhost_proxy") or "1"
+	if enabled == "1" and local_proxy == "0" then
+		if (chn_list == "proxy" and gfw_list == "0" and proxy_mode ~= "proxy" and baidu ~= nil) or (chn_list == "0" and gfw_list == "0" and proxy_mode == "proxy") then
+		-- 中国列表+百度 or 全局
+			url = "-x socks5h://127.0.0.1:" .. socks_port .. " " .. url
 		elseif baidu == nil then
-			url = "--socks5 127.0.0.1:" .. socks_port .. " " .. url
+		-- 其他代理模式+百度以外网站
+			url = "-x socks5h://127.0.0.1:" .. socks_port .. " " .. url
 		end
 	end
 	local result = luci.sys.exec('curl --connect-timeout 3 -o /dev/null -I -sk -w "%{http_code}:%{time_appconnect}" ' .. url)

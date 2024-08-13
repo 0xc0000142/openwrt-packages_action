@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2023 muink <https://github.com/muink>
+# Copyright (C) 2023-2024 muink <https://github.com/muink>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_NAME:=luci-app-packagesync
-PKG_VERSION:=20240412
+PKG_VERSION:=20240805
 #PKG_RELEASE:=1
 
 LUCI_TITLE:=LuCI Local software source

@@ -190,6 +190,11 @@ if [ -z "$DEVICE" ]; then
 	exit 0
 fi
 
+if [ ! -e "$DEVICE" ]; then
+	echo '{"error":"Device not found"}'
+	exit 0
+fi
+
 O=""
 if [ -e /usr/bin/sms_tool ]; then
 	O=$(sms_tool -D -d $DEVICE at "AT+CPIN?;+CSQ;+COPS=3,0;+COPS?;+COPS=3,2;+COPS?;+CREG=2;+CREG?")
@@ -239,7 +244,7 @@ esac
 
 # MODE
 if [ -z "$MODE_NUM" ] || [ "x$MODE_NUM" = "x0" ]; then
-	MODE_NUM=$(echo "$O" | awk -F[,] '/^\+COPS/ {print $4;exit}')
+	MODE_NUM=$(echo "$O" | awk -F[,] '/^\+COPS/ {print $4;exit}' | xargs)
 fi
 case "$MODE_NUM" in
 	2*) MODE="UMTS";;

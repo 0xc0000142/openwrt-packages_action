@@ -12,7 +12,7 @@ MAINTAINER:=Rafał Wabik <4Rafal@gmail.com>
 LUCI_DESCRIPTION:=LuCI JS interface for the 3ginfo-lite. The package allows you to view the parameters of the mobile internet connection.
 LUCI_DEPENDS:=+sms-tool +comgt +kmod-usb-serial-option
 LUCI_PKGARCH:=all
-PKG_VERSION:=1.0.72-20240519
+PKG_VERSION:=1.0.75-20240811
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
-[ "$ACTION" = "ifup" -o "$ACTION" = "ifupdate" ] || exit 0
-[ "$(uci -q get poddns.config.enable)" = 1 -a "$INTERFACE" = "wan" ] && /usr/share/poddns/poddns.sh
+[[ "${ACTION}" == "ifup" || "${ACTION}" == "ifupdate" ]] || exit 0
+[[ "$(uci -q get poddns.config.enable)" -eq 1 && "${INTERFACE}" == "wan" ]] && /usr/share/poddns/poddns.sh

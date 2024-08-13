@@ -76,3 +76,120 @@ msgstr "认证服务器可达"
 
 msgid "Authentication servers"
 msgstr "认证服务器"
+
+msgid "App White List"
+msgstr "域名组白名单"
+
+msgid "The app white list of the gateway."
+msgstr "网关的域名组白名单, 由下面的组资源对象定义"
+
+msgid "MAC White List"
+msgstr "MAC 地址组白名单"
+
+msgid "The MAC white list of the gateway."
+msgstr "网关的 MAC 地址组白名单, 由下面的组资源对象定义"
+
+msgid "Group Define"
+msgstr "组资源定义"
+
+msgid "Group Type"
+msgstr "组类型"
+
+msgid "The type of the group."
+msgstr "组的类型"
+
+msgid "Group Description"
+msgstr "组资源描述"
+
+msgid "Domain Group"
+msgstr "域名组"
+
+msgid "MAC Group"
+msgstr "MAC 地址组"
+
+msgid "The MAC address of the group."
+msgstr "组的 MAC 地址"
+
+msgid "Group Description"
+msgstr "组资源描述"
+
+msgid "The description of the group."
+msgstr "组的描述"
+
+msgid "Domain Name"
+msgstr "域名"
+
+msgid "The domain name of the group."
+msgstr "组的域名"
+
+msgid "The log level of the apfree-wifidog."
+msgstr "apfree-wifidog 的日志级别"
+
+msgid "Rule Settings"
+msgstr "规则设置"
+
+msgid "Check Interval"
+msgstr "检查间隔"
+
+msgid "The interval of the check(s)."
+msgstr "检查的间隔，单位为秒"
+
+msgid "Check Timeout"
+msgstr "检查超时"
+
+msgid "The timeout of the client."
+msgstr "客户端的超时次数，超过未响应将被被下线"
+
+msgid "Wired Passed"
+msgstr "有线免认证"
+
+msgid "Wired users do not need to authenticate to access the internet."
+msgstr "有线用户无需认证即可访问互联网"
+
+msgid "Apple CNA"
+msgstr "苹果 CNA"
+
+msgid "Enable Apple Captive Network Assistant."
+msgstr "启用苹果CNA机制（不建议启用）"
+
+msgid "JS Filter"
+msgstr "JS 过滤"
+
+msgid "Enable JS redirect."
+msgstr "通过启用 JS 重定向的机制降低服务器段的压力"
+
+msgid "Enable WebSocket"
+msgstr "启用 Websocket"
+
+msgid "Enable websocket support."
+msgstr "启用 Websocket 支持, 用于实现认证服务器端放行功能"
+
+msgid "Client Timeout"
+msgstr "客户端超时"
+
+msgid "Enable Wildcard Domain"
+msgstr "启用通配符域名"
+
+msgid "Enable wildcard domain support."
+msgstr "支持通配符域名白名单，例如：.baidu.com，前面要加点"
+
+msgid "Trusted Wildcard Domains"
+msgstr "通配符域名白名单"
+
+msgid "The trusted wildcard domains of the gateway."
+msgstr "网关的通配符域名白名单"
+
+msgid "Wildcard White List"
+msgstr "通配符域名组白名单"
+
+msgid "The wildcard domain white list of the gateway."
+msgstr "网关的通配符域名组白名单, 由下面的组资源对象定义"
+
+msgid "Wildcard Domain Group"
+msgstr "通配符域名组"
+
+msgid "Wildcard Domain"
+msgstr "通配符域名"
+
+msgid "The wildcard domain of the group."
+msgstr "组的通配符域名"

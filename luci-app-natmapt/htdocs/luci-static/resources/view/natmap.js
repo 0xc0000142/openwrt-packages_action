@@ -1,6 +1,7 @@
 'use strict';
 'require form';
 'require fs';
+'require ui';
 'require uci';
 'require rpc';
 'require view';
@@ -91,7 +92,7 @@ return view.extend({
 		o.inputtitle = _('Reload');
 		o.inputstyle = 'apply';
 		o.onclick = function() {
-			return fs.exec('/etc/init.d/natmap', ['reload'])
+			return fs.exec('/etc/init.d/natmap', ['reload', ''])
 				.then(function(res) { return window.location = window.location.href.split('#')[0] })
 				.catch(function(e) { ui.addNotification(null, E('p', e.message), 'error') });
 		};
@@ -111,6 +112,9 @@ return view.extend({
 		o = s.option(form.Value, 'def_http_server', _('Default ') + _('HTTP keep-alive ') + _('Server'));
 		o.datatype = 'or(hostname, hostport)';
 		o.rmempty = false;
+
+		o = s.option(form.Value, 'def_fwmark_value', _('Default ') + _('Fwmark value'));
+		o.rmempty = true;
 
 		o = s.option(form.Value, 'def_tcp_interval', _('Default ') + _('TCP ') + _('keep-alive interval (seconds)'));
 		o.datatype = "and(uinteger, min(1))";
@@ -264,6 +268,10 @@ return view.extend({
 		o.rmempty = true;
 		o.modalonly = true;
 
+		o = s.taboption('general', form.Value, 'fwmark_value', _('Fwmark value'), _('Mark fwmark for STUN/HTTP outbound traffic'));
+		o.rmempty = true;
+		o.modalonly = true;
+
 		o = s.taboption('general', form.Value, 'comment', _('Comment'));
 		o.rmempty = true;
 
@@ -350,6 +358,14 @@ return view.extend({
 		o.rmempty = true;
 		o.retain = true;
 		o.depends('forward_mode', 'dnat');
+		o.modalonly = true;
+
+		o = s.taboption('forward', form.Value, 'forward_timeout', _('Forward timeout'), _('Port forwarding session idle timeout in seconds'));
+		o.datatype = "and(uinteger, min(1))";
+		o.placeholder = '120000';
+		o.rmempty = true;
+		o.retain = true;
+		o.depends('forward_mode', 'via');
 		o.modalonly = true;
 
 		o = s.taboption('forward', form.Value, 'forward_target', _('Forward target'));
@@ -662,6 +678,16 @@ return view.extend({
 		o = s.taboption('custom', form.Value, 'custom_script', _('Custom Script'));
 		o.datatype = 'file';
 		o.modalonly = true;
+
+		o = s.option(form.Button, '_reload');
+		o.inputtitle = _('⭮');
+		o.inputstyle = 'apply';
+		o.onclick = function(ev, section_id) {
+			return fs.exec('/etc/init.d/natmap', ['reload', section_id])
+				.catch(function(e) { ui.addNotification(null, E('p', e.message), 'error') });
+		};
+		o.editable = true;
+		o.modalonly = false;
 
 		return m.render();
 	}

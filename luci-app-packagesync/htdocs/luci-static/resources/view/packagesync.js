@@ -85,7 +85,7 @@ return view.extend({
 
 		m = new form.Map('packagesync');
 
-		s = m.section(form.TypedSection, 'packagesync', _('Local software source'),
+		s = m.section(form.NamedSection, 'config', 'packagesync', _('Local software source'),
 			_('packagesync used to build a local mirror feeds source on the router<br/>\
 			To use packagesync, you need to prepare a storage device with a size of at least <b>16G</b> and connect it to the router<br/>\
 			then open <a href="%s"><b>Mount Points</b></a>, find the connected device and set its mount point to <b>%s</b>, check <b>Enabled</b> and click <b>Save&Apple</b>')
@@ -316,6 +316,7 @@ return view.extend({
 		};
 
 		o = s.option(form.Value, 'target', _('Target'));
+		o.placeholder = 'x86/64';
 		o.rmempty = false;
 		o.validate = function(section, value) {
 			if (value == null || value == '' || value == 'ignore')
@@ -326,21 +327,6 @@ return view.extend({
 		if (targetslist.length) {
 			for (var i = 0; i < targetslist.length; i++)
 				o.value(targetslist[i]);
-		};
-
-		o = s.option(form.Value, 'subtarget', _('SubTarget'));
-		o.value('32');
-		o.value('64');
-		o.value('generic');
-		o.value('legacy');
-		o.value('nand');
-		o.value('mikrotik');
-		o.value('armv8');
-		o.rmempty = false;
-		o.validate = function(section, value) {
-			if (value == null || value == '' || value == 'ignore')
-				return _('Expecting: non-empty value');
-			return true;
 		};
 
 		o = s.option(form.Flag, 'extra', _('Supplementary Files'));

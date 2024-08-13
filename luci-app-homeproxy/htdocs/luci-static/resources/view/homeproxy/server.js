@@ -88,7 +88,7 @@ return view.extend({
 		s.nodescriptions = true;
 		s.modaltitle = L.bind(hp.loadModalTitle, this, _('Server'), _('Add a server'), data[0]);
 		s.sectiontitle = L.bind(hp.loadDefaultLabel, this, data[0]);
-		s.renderSectionAdd = L.bind(hp.renderSectionAdd, this, s, prefmt);
+		s.renderSectionAdd = L.bind(hp.renderSectionAdd, this, s, prefmt, false);
 		s.handleAdd = L.bind(hp.handleAdd, this, s, prefmt);
 
 		o = s.option(form.Value, 'label', _('Label'));
@@ -481,8 +481,7 @@ return view.extend({
 
 		o = s.option(form.Value, 'tls_sni', _('TLS SNI'),
 			_('Used to verify the hostname on the returned certificates unless insecure is given.'));
-		o.depends({'tls': '1', 'tls_reality': '0'});
-		o.depends({'tls': '1', 'tls_reality': null});
+		o.depends('tls', '1');
 		o.modalonly = true;
 
 		o = s.option(form.DynamicList, 'tls_alpn', _('TLS ALPN'),

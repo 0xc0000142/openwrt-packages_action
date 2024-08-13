@@ -1,5 +1,5 @@
 # Tiny File Manager by prasathmani <https://tinyfilemanager.github.io>
-# Copyright (C) 2022-2023 muink <https://github.com/muink>
+# Copyright (C) 2022-2024 muink <https://github.com/muink>
 #
 # This is free software, licensed under the GNU General Public License v3.
 # See /LICENSE for more information.
@@ -7,13 +7,15 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_NAME:=luci-app-tinyfilemanager
-PKG_VERSION:=2.5.3-20231119
+PKG_VERSION:=2.5.3-20240804
 #PKG_RELEASE:=1
 
 LUCI_TITLE:=LuCI Tiny File Manager
 LUCI_DEPENDS:=+php8 +php8-cgi +php8-fastcgi +php8-fpm +php8-mod-session +php8-mod-ctype +php8-mod-fileinfo +php8-mod-zip +php8-mod-iconv +php8-mod-mbstring +coreutils-stat +zoneinfo-asia +bash +curl +tar
 
 LUCI_DESCRIPTION:=A Web based File Manager in PHP
+
+PKG_UNPACK=$(CURDIR)/.prepare.sh $(PKG_NAME) $(CURDIR) $(PKG_BUILD_DIR)
 
 define Package/$(LUCI_NAME)/conffiles
 /etc/config/tinyfilemanager

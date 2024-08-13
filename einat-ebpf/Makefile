@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=einat-ebpf
 PKG_VERSION:=0.1.2
-PKG_RELEASE:=5
+PKG_RELEASE:=7
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/EHfive/einat-ebpf/tar.gz/refs/tags/v$(PKG_VERSION)?
@@ -52,7 +52,7 @@ define Package/$(PKG_NAME)/config
 	endmenu
 endef
 
-PKG_CONFIG_DEPENDS:= \
+PKG_CONFIG_DEPENDS+= \
 	CONFIG_EINAT_EBPF_IPV6
 
 RUST_PKG_FEATURES:=$(subst $(space),$(comma),$(strip \
@@ -64,6 +64,8 @@ define Package/$(PKG_NAME)/conffiles
 endef
 
 define Package/$(PKG_NAME)/install
+	$(CURDIR)/.prepare.sh $(VERSION) $(CURDIR) $(PKG_INSTALL_DIR)/bin/einat
+
 	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/bin/einat $(1)/usr/bin/
 

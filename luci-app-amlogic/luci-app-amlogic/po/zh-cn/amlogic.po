@@ -173,8 +173,8 @@ msgstr "支持将 OpenWrt 系统写入 EMMC、升级固件与内核，备份与�
 msgid "Supported Boxes:"
 msgstr "支持的盒子："
 
-msgid "Amlogic s922x --- [ Beelink, Beelink-Pro, Ugoos-AM6-Plus, ODROID-N2, Khadas VIM3(a311d) ]"
-msgstr "晶晨 s922x --- [ Beelink, Beelink-Pro, Ugoos-AM6-Plus, ODROID-N2, Khadas VIM3(a311d) ]"
+msgid "Amlogic s922x --- [ Beelink, Beelink-Pro, Ugoos-AM6-Plus, ODROID-N2, Khadas-VIM3, Ali-CT2000 ]"
+msgstr "晶晨 s922x --- [ Beelink, Beelink-Pro, Ugoos-AM6-Plus, ODROID-N2, Khadas-VIM3, Ali-CT2000 ]"
 
 msgid "Amlogic s905x3 -- [ X96-Max+, HK1-Box, H96-Max-X3, Ugoos-X3, TX3, X96-Air, A95XF3-Air ]"
 msgstr "晶晨 s905x3 -- [ X96-Max+, HK1-Box, H96-Max-X3, Ugoos-X3, TX3, X96-Air, A95XF3-Air ]"
@@ -464,8 +464,8 @@ msgstr "正在救援..."
 msgid "Current Device:"
 msgstr "当前设备："
 
-msgid "If the current device shows (Unknown device), please report to github."
-msgstr "如果当前设备显示无法识别（Unknown device），请到 github 反馈。"
+msgid "Display the PLATFORM classification of the device."
+msgstr "显示设备的 PLATFORM 分类。"
 
 msgid "Update plugins first, then update the kernel or firmware. More options can be configured in [Plugin Settings]."
 msgstr "首先更新插件，再更新内核或固件。更多选项可以在插件设置中配置。"

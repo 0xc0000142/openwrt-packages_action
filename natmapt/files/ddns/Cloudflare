@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 # Copyright (C) 2023 muink https://github.com/muink
 #
 # DDNS script
 #
-# depends curl jsonfilter
+# depends jsonfilter
 
 . /usr/lib/natmap/common.sh
 . /usr/share/libubox/jshn.sh
@@ -15,7 +15,7 @@ http_request() {
 	local method
 	[ -z "${id}" ] && method=POST || method=PUT # or PATCH
 
-	curl $retry -L -o /dev/null -X ${method} \
+	$CURL $retry -L -o /dev/null -X ${method} \
 		--url "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records/${id}" \
 		-H "Authorization: Bearer ${TOKEN}" \
 		-H 'Content-Type: application/json' \
@@ -24,19 +24,19 @@ http_request() {
 
 start() {
 	local retry='--connect-timeout 3 --retry 3'
-	#curl $retry -L -X GET \
+	#$CURL $retry -L -X GET \
 	#	--url "https://api.cloudflare.com/client/v4/user/tokens/verify" \
 	#	-H "Authorization: Bearer ${TOKEN}" \
 	#	-H "Content-Type:application/json" | jq
-	#curl $retry -L -X GET \
+	#$CURL $retry -L -X GET \
 	#	--url "https://api.cloudflare.com/client/v4/zones" \
 	#	-H "Authorization: Bearer ${TOKEN}" \
 	#	-H "Content-Type:application/json" | jq
-	local records="$(curl $retry -L -X GET \
+	local records="$($CURL $retry -L -X GET \
 		--url "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" \
 		-H "Authorization: Bearer ${TOKEN}" \
 		-H 'Content-Type: application/json')"
-	[ -z "$records" -o -n "$(echo "$records"|grep -E "\"success\":\s*false")" ] && return 1
+	[ -z "$records" -o -n "$(grep -E "\"success\":\s*false" <<< "$records")" ] && return 1
 
 	local the_record
 
