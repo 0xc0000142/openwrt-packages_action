@@ -6,6 +6,7 @@
 
 'use strict';
 'require form';
+'require fs';
 'require network';
 'require poll';
 'require rpc';
@@ -23,12 +24,6 @@ var callServiceList = rpc.declare({
 	method: 'list',
 	params: ['name'],
 	expect: { '': {} }
-});
-
-var callRcInit = rpc.declare({
-	object: 'rc',
-	method: 'init',
-	params: ['name', 'action']
 });
 
 var callReadDomainList = rpc.declare({
@@ -101,17 +96,6 @@ function renderStatus(isRunning, args) {
 		renderHTML = spanTemp.format('red', _('HomeProxy'), _('NOT RUNNING'));
 
 	return renderHTML;
-}
-
-function handleAction(action, ev) {
-	return callRcInit("homeproxy", action).then((ret) => {
-		if (ret)
-			throw _('Command failed');
-
-		return true;
-	}).catch((e) => {
-		ui.addNotification(null, E('p', _('Failed to execute "/etc/init.d/%s %s" action: %s').format("homeproxy", action, e)));
-	});
 }
 
 function validatePortRange(section_id, value) {
@@ -369,6 +353,15 @@ return view.extend({
 		so.depends('tcpip_stack', 'gvisor');
 		so.rmempty = false;
 
+		so = ss.option(form.Value, 'udp_timeout', _('UDP NAT expiration time'),
+			_('In seconds. <code>300</code> is used by default.'));
+		so.datatype = 'uinteger';
+		so.default = '300';
+		so.depends('homeproxy.config.proxy_mode', 'redirect_tproxy');
+		so.depends('homeproxy.config.proxy_mode', 'redirect_tun');
+		so.depends('homeproxy.config.proxy_mode', 'tun');
+		so.rmempty = false;
+
 		so = ss.option(form.Flag, 'bypass_cn_traffic', _('Bypass CN traffic'),
 			_('Bypass mainland China traffic via firewall rules by default.'));
 		so.default = so.disabled;
@@ -401,8 +394,11 @@ return view.extend({
 		so.inputtitle = _('Reload');
 		so.inputstyle = 'apply';
 		so.onclick = function() {
-			return handleAction('reload')
-				.then((res) => { return window.location = window.location.href.split('#')[0] });
+			return fs.exec('/etc/init.d/homeproxy', ['reload', 'client'])
+				.then((res) => { return window.location = window.location.href.split('#')[0] })
+				.catch((e) => {
+					ui.addNotification(null, E('p', _('Failed to execute "/etc/init.d/homeproxy %s %s" reason: %s').format('reload', 'client', e)));
+				});
 		};
 		/* Routing settings end */
 

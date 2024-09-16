@@ -36,7 +36,47 @@ function renderStatus(isRunning) {
 	return renderHTML;
 }
 
+async function loadCodeMirrorResources() {
+	const styles = [
+		'/luci-static/resources/codemirror5/theme/dracula.min.css',
+		'/luci-static/resources/codemirror5/addon/lint/lint.min.css',
+		'/luci-static/resources/codemirror5/codemirror.min.css',
+	];
+	const scripts = [
+		'/luci-static/resources/codemirror5/libs/js-yaml.min.js',
+		'/luci-static/resources/codemirror5/codemirror.min.js',
+		'/luci-static/resources/codemirror5/addon/display/autorefresh.min.js',
+		'/luci-static/resources/codemirror5/mode/yaml/yaml.min.js',
+		'/luci-static/resources/codemirror5/addon/lint/lint.min.js',
+		'/luci-static/resources/codemirror5/addon/lint/yaml-lint.min.js',
+	];
+	const loadStyles = async () => {
+		for (const href of styles) {
+			const link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = href;
+			document.head.appendChild(link);
+		}
+	};
+	const loadScripts = async () => {
+		for (const src of scripts) {
+			const script = document.createElement('script');
+			script.src = src;
+			document.head.appendChild(script);
+			await new Promise(resolve => script.onload = resolve);
+		}
+	};
+	await loadStyles();
+	await loadScripts();
+}
+
 return view.extend({
+	load: function () {
+		return Promise.all([
+			L.resolveDefault(fs.exec('/usr/bin/mosdns', ['version']), null),
+		]);
+	},
+
 	handleFlushCache: function (m, section_id, ev) {
 		return fs.exec('/usr/share/mosdns/mosdns.sh', ['flush'])
 			.then(function (lazy_cache) {
@@ -49,21 +89,34 @@ return view.extend({
 			});
 	},
 
-	render: function () {
-		var m, s, o;
+	render: function (basic) {
+		var m, s, o, v;
+		v = '';
 
-		m = new form.Map('mosdns', _('MosDNS'),
+		if (basic[0] && basic[0].code === 0) {
+			v = basic[0].stdout.trim();
+		}
+		m = new form.Map('mosdns', _('MosDNS') + '&#160;' + v,
 			_('MosDNS is a plugin-based DNS forwarder/traffic splitter.'));
 
 		s = m.section(form.TypedSection);
 		s.anonymous = true;
 		s.render = function () {
-			poll.add(function () {
-				return L.resolveDefault(getServiceStatus()).then(function (res) {
-					var view = document.getElementById('service_status');
-					view.innerHTML = renderStatus(res);
+			setTimeout(function () {
+				poll.add(function () {
+					return L.resolveDefault(getServiceStatus()).then(function (res) {
+						var view = document.getElementById('service_status');
+						if (view) {
+							view.innerHTML = renderStatus(res);
+						} else {
+							console.error('Element #service_status not found.');
+						}
+					});
 				});
-			});
+			}, 100);
+
+			/* dynamically loading Codemirror resources */
+			loadCodeMirrorResources();
 
 			return E('div', { class: 'cbi-section', id: 'status_bar' }, [
 				E('p', { id: 'service_status' }, _('Collecting data...'))
@@ -232,8 +285,7 @@ return view.extend({
 		o.default = false;
 		o.depends('configfile', '/var/etc/mosdns.json');
 
-		o = s.taboption('advanced', form.Value, 'cache_size', _('DNS Cache Size'),
-			_('DNS cache size (in piece). To disable caching, please set to 0.'));
+		o = s.taboption('advanced', form.Value, 'cache_size', _('DNS Cache Size'));
 		o.datatype = 'and(uinteger,min(0))';
 		o.default = 8000;
 		o.depends('cache', '1');
@@ -304,10 +356,15 @@ return view.extend({
 			return fs.trimmed('/etc/mosdns/rule/cloudflare-cidr.txt');
 		};
 		o.write = function (section_id, formvalue) {
-			return fs.write('/etc/mosdns/rule/cloudflare-cidr.txt', formvalue.trim().replace(/\r\n/g, '\n') + '\n')
-				.then(function (i) {
-					return fs.exec('/etc/init.d/mosdns', ['restart']);
-				});
+			return this.cfgvalue(section_id).then(function (value) {
+				if (value == formvalue) {
+					return;
+				}
+				return fs.write('/etc/mosdns/rule/cloudflare-cidr.txt', formvalue.trim().replace(/\r\n/g, '\n') + '\n')
+					.then(function (i) {
+						return fs.exec('/etc/init.d/mosdns', ['restart']);
+					});
+			});
 		};
 
 		/* api */
@@ -325,6 +382,23 @@ return view.extend({
 		o.depends('cache', '1');
 
 		/* configuration */
+		var configeditor = null;
+		setTimeout(function () {
+			var textarea = document.getElementById('widget.cbid.mosdns.config._custom');
+			if (textarea) {
+				configeditor = CodeMirror.fromTextArea(textarea, {
+					autoRefresh: true,
+					lineNumbers: true,
+					lineWrapping: true,
+					lint: true,
+					gutters: ['CodeMirror-lint-markers'],
+					matchBrackets: true,
+					mode: "text/yaml",
+					styleActiveLine: true,
+					theme: "dracula"
+				});
+			}
+		}, 600);
 		o = s.taboption('basic', form.TextValue, '_custom', _('Configuration Editor'),
 			_('This is the content of the file \'/etc/mosdns/config_custom.yaml\' from which your MosDNS configuration will be generated. \
 			Only accepts configuration content in yaml format.'));
@@ -334,14 +408,22 @@ return view.extend({
 			return fs.trimmed('/etc/mosdns/config_custom.yaml');
 		};
 		o.write = function (section_id, formvalue) {
-			return fs.write('/etc/mosdns/config_custom.yaml', formvalue.trim().replace(/\r\n/g, '\n') + '\n')
-				.then(function (i) {
-					ui.addNotification(null, E('p', _('Configuration have been saved.')), 'info');
-					return fs.exec('/etc/init.d/mosdns', ['restart']);
-				})
-				.catch(function (e) {
-					ui.addNotification(null, E('p', _('Unable to save contents: %s').format(e.message)));
-				});
+			if (configeditor) {
+				var editorContent = configeditor.getValue();
+				if (editorContent === formvalue) {
+					return window.location.reload();
+				}
+				return fs.write('/etc/mosdns/config_custom.yaml', editorContent.trim().replace(/\r\n/g, '\n') + '\n')
+					.then(function (i) {
+						return fs.exec('/etc/init.d/mosdns', ['restart']);
+					})
+					.then(function () {
+						return window.location.reload();
+					})
+					.catch(function (e) {
+						ui.addNotification(null, E('p', _('Unable to save contents: %s').format(e.message)));
+					});
+			}
 		};
 
 		o = s.taboption('geodata', form.DynamicList, 'geosite_tags', _('GeoSite Tags'),

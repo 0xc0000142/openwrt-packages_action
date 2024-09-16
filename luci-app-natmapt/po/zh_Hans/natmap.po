@@ -11,12 +11,17 @@ msgstr ""
 "X-Generator: Weblate 4.18-dev\n"
 
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:372
-msgid "(This device default Lan)"
-msgstr "(此装置默认 LAN)"
+msgid "This device default Lan"
+msgstr "此装置默认 LAN"
 
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:373
-msgid "(This device default Wan)"
-msgstr "(此装置默认 WAN)"
+msgid "This device default Wan"
+msgstr "此装置默认 WAN"
+
+#: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:530
+#: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:566
+msgid "<code># All external tokens required</code> Field"
+msgstr "<code># All external tokens required</code> 字段"
 
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:562
 msgid "A Record"
@@ -29,6 +34,11 @@ msgstr "AAAA 记录"
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/status/include/72_natmap.js:46
 msgid "Active NATMap Portmap"
 msgstr "活动的 NATMap 端口映射"
+
+#: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:105
+#: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:111
+msgid "Available server <a href=\"%s\" target=\"_blank\">references</a>"
+msgstr "可用的服务器<a href=\"%s\" target=\"_blank\">参考</a>"
 
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:304
 msgid "Bind port"
@@ -86,11 +96,6 @@ msgstr "启用"
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:234
 msgid "Expand/Collapse result"
 msgstr "展开/收起 结果"
-
-#: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:136
-#: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:341
-msgid "Expecting: non-empty value"
-msgstr ""
 
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:487
 msgid "External IP"
@@ -172,6 +177,10 @@ msgstr "IPv4"
 msgid "IPv6"
 msgstr "IPv6"
 
+#: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:304
+msgid "If you enable <b>Notify Scripts</b>, you will be bombarded with messages"
+msgstr "如果您开启了<b>通知脚本</b>, 将被大量消息轰炸"
+
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/status/include/72_natmap.js:61
 msgid "Inner Addr"
 msgstr "内部地址"
@@ -215,6 +224,14 @@ msgstr "名称"
 msgid "No"
 msgstr ""
 
+#: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:309
+msgid "Non-0 port"
+msgstr "非 0 端口"
+
+#: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:303
+msgid "Note: After using <code>portrange</code>, the public ports will be opened in rotation</br>"
+msgstr "注意: 使用 <code>portrange</code> 后, 会轮换打开公网端口</br>"
+
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:245
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:506
 msgid "Notify Scripts"
@@ -236,7 +253,7 @@ msgstr "密码"
 msgid ""
 "Please check <a href=\"%s\"><b>Firewall Rules</b></a> to avoid port "
 "conflicts.</br>"
-msgstr "请检查<a href=\"%s\"><b>防火墙规则</b></a>以避免端口冲突"
+msgstr "请检查<a href=\"%s\"><b>防火墙规则</b></a>以避免端口冲突</br>"
 
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:362
 msgid "Port forwarding session idle timeout in seconds"
@@ -331,11 +348,11 @@ msgstr "DNAT 方法不支持在 IPv6 下使用"
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/natmap.js:553
 msgid ""
 "The KEY required by the script above. See <a href=\"%s\" "
-"target=\"_blank\">%s*</a> for the format of KEY required by each script. Add "
+"target=\"_blank\">%s</a> for the format of KEY required by each script. Add "
 "multiple entries here in KEY=VAL shell variable format to supply multiple "
 "KEY variables."
 msgstr ""
-"上面脚本所需的 KEY。请查看 <a href=\"%s\" target=\"_blank\">%s*</a> 以获得对"
+"上面脚本所需的 KEY。请查看 <a href=\"%s\" target=\"_blank\">%s</a> 以获得对"
 "应脚本所需的 KEY 列表。请输入格式为 KEY=VAL 的多个 KEY 条目"
 
 #: applications/luci-app-natmapt/htdocs/luci-static/resources/view/status/include/72_natmap.js:83

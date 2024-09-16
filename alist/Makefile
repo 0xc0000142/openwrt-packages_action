@@ -7,13 +7,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=alist
-PKG_VERSION:=3.36.0
-PKG_WEB_VERSION:=3.36.0
+PKG_VERSION:=3.37.2
+PKG_WEB_VERSION:=3.37.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/alist-org/alist/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=809072becc16613755c33286c5b19539f81dcb2b40f0c4cd4838c4614946c874
+PKG_HASH:=e27a17b3ff57bf78bd612a92199c72449152e41d34da73f3576c25d4581bea45
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
@@ -23,7 +23,7 @@ define Download/$(PKG_NAME)-web
   FILE:=$(PKG_NAME)-web-$(PKG_WEB_VERSION).tar.gz
   URL_FILE:=dist.tar.gz
   URL:=https://github.com/alist-org/alist-web/releases/download/$(PKG_WEB_VERSION)/
-  HASH:=b997d3ecf92f447cc1daca9b1ae9b9dc3f28445589db3dc054174ecc15a600a9
+  HASH:=0ca1fceb5291c59d5b5dcc0f3e871eac96485d39abce8495f1eb510cc12bccf6
 endef
 
 PKG_BUILD_DEPENDS:=golang/host
@@ -32,10 +32,13 @@ PKG_USE_MIPS16:=0
 PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/alist-org/alist
-GO_PKG_LDFLAGS:=-w -s
-GO_PKG_LDFLAGS_X:= \
-	$(GO_PKG)/v3/internal/conf.Version=v$(PKG_VERSION)-$(ARCH) \
-	$(GO_PKG)/v3/internal/conf.WebVersion=$(PKG_WEB_VERSION)
+GO_PKG_LDFLAGS:= \
+	-X '$(GO_PKG)/v3/internal/conf.BuiltAt=$(shell date '+%Y-%m-%d %H:%M:%S %z')' \
+	-X '$(GO_PKG)/v3/internal/conf.GoVersion=$(shell $(STAGING_DIR_HOSTPKG)/bin/go version | sed 's/go version //')' \
+	-X '$(GO_PKG)/v3/internal/conf.GitAuthor=Xhofe <i@nn.ci>' \
+	-X '$(GO_PKG)/v3/internal/conf.GitCommit=tarball/$(shell echo $(PKG_HASH) | cut -c 1-7)' \
+	-X '$(GO_PKG)/v3/internal/conf.Version=v$(PKG_VERSION) (OpenWrt $(ARCH_PACKAGES))' \
+	-X '$(GO_PKG)/v3/internal/conf.WebVersion=$(PKG_WEB_VERSION)'
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
@@ -72,10 +75,10 @@ endif
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
-	$(eval $(call Download,$(PKG_NAME)-web))
 	$(TAR) --strip-components=1 -C $(PKG_BUILD_DIR)/public/dist -xzf $(DL_DIR)/$(PKG_NAME)-web-$(PKG_WEB_VERSION).tar.gz
+	$(SED) 's_https://jsd.nn.ci/gh/alist-org/logo@main/logo.png_/assets/logo.png_g' $(PKG_BUILD_DIR)/public/dist/index.html
 ifneq ($(CONFIG_ARCH_64BIT),y)
-	$(RM) -rf $(PKG_BUILD_DIR)/{drivers/lark.go,drivers/lark}
+	$(RM) -rf $(PKG_BUILD_DIR)/drivers/{lark,lark.go}
 endif
 endef
 
@@ -89,4 +92,5 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DATA) $(CURDIR)/files/data.db $(1)/etc/alist/data.db
 endef
 
+$(eval $(call Download,$(PKG_NAME)-web))
 $(eval $(call BuildPackage,$(PKG_NAME)))

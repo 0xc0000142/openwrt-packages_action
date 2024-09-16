@@ -286,11 +286,12 @@ return view.extend({
       form.Value,
       "forward_advanced_max_retries",
       _("Max Retries"),
-      _("max retries,default 0 means execute only once")
+      _("The maximum number of retries, the default is 10. 0 means unlimited retries, use with caution.")
     );
     o.datatype = "uinteger";
-    o.default = 0;
+    o.default = 10;
     o.modalonly = true;
+    o.rmempty = false;
     o.depends("forward_advanced_enable", "1");
 
     o = s.taboption(
@@ -298,11 +299,12 @@ return view.extend({
       form.Value,
       "forward_advanced_sleep_time",
       _("Retry Interval"),
-      _("Retry Interval, unit is seconds, default 0 is 3 seconds")
+      _("The retry interval is in seconds. The default value is 3 seconds. 0 means the interval is 0 seconds.")
     );
     o.datatype = "uinteger";
-    o.default = 0;
+    o.default = 3;
     o.modalonly = true;
+    o.rmempty = false;
     o.depends("forward_advanced_enable", "1");
 
     // **********************************************************************
@@ -480,11 +482,12 @@ return view.extend({
       form.Value,
       "notify_advanced_max_retries",
       _("Max Retries"),
-      _("max retries,default 0 means execute only once")
+      _("The maximum number of retries, the default is 10. 0 means unlimited retries, use with caution.")
     );
     o.datatype = "uinteger";
-    o.default = 0;
+    o.default = 10;
     o.modalonly = true;
+    o.rmempty = false;
     o.depends("notify_advanced_enable", "1");
 
     o = s.taboption(
@@ -492,11 +495,12 @@ return view.extend({
       form.Value,
       "notify_advanced_sleep_time",
       _("Retry Interval"),
-      _("Retry Interval, unit is seconds, default 0 is 3 seconds")
+      _("The retry interval is in seconds. The default value is 3 seconds. 0 means the interval is 0 seconds.")
     );
     o.datatype = "uinteger";
-    o.default = 0;
+    o.default = 3;
     o.modalonly = true;
+    o.rmempty = false;
     o.depends("notify_advanced_enable", "1");
 
     // **********************************************************************
@@ -810,11 +814,12 @@ return view.extend({
       form.Value,
       "link_advanced_max_retries",
       _("Max Retries"),
-      _("max retries,default 0 means execute only once")
+      _("The maximum number of retries, the default is 10. 0 means unlimited retries, use with caution.")
     );
     o.datatype = "uinteger";
-    o.default = 0;
+    o.default = 10;
     o.modalonly = true;
+    o.rmempty = false;
     o.depends("link_advanced_enable", "1");
 
     o = s.taboption(
@@ -822,11 +827,12 @@ return view.extend({
       form.Value,
       "link_advanced_sleep_time",
       _("Retry Interval"),
-      _("Retry Interval, unit is seconds, default 0 is 3 seconds")
+      _("The retry interval is in seconds. The default value is 3 seconds. 0 means the interval is 0 seconds.")
     );
     o.datatype = "uinteger";
-    o.default = 0;
+    o.default = 3;
     o.modalonly = true;
+    o.rmempty = false;
     o.depends("link_advanced_enable", "1");
 
     // **********************************************************************

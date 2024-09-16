@@ -24,6 +24,7 @@
 	<a href="#" class="closebtn" onclick="closenav();">&times;</a>
 	<a href="#" onclick="btn_pages('status');"><i data-feather="bar-chart-2" class="iconwithtext"></i>Status</a>
 	<a href="#" onclick="btn_pages('config');"><i data-feather="settings" class="iconwithtext"></i>Ustawienia</a>
+	<a href="#" onclick="btn_pages('networks');"><i data-feather="share-2" class="iconwithtext"></i>Sieci dodatkowe</a>
 	<a href="#" onclick="btn_pages('system');"><i data-feather="server" class="iconwithtext"></i>System</a>
 	<a href="#" onclick="btn_pages('watchdog');"><i data-feather="activity" class="iconwithtext"></i>Monitor połączenia</a>
 	<div id="menu_wlan">
@@ -192,7 +193,7 @@
 		<div class="row" id="div_vpn_up_status" style="display:none;">
 			<div class="col-xs-6 text-right">VPN</div>
 			<div class="col-xs-6">
-			<a href="#" class="click" onclick="btn_pages('vpn');"><p>aktywny</p></a>
+			<a href="#" class="click" onclick="btn_pages('vpn');"><p>aktywny &rarr;</p></a>
 			</div>
 		</div>
 		<div class="row" id="div_wan_lanto_status" style="display:none;">
@@ -296,39 +297,6 @@
 			<label for="wan_netmask" class="col-xs-4 col-sm-3 control-label">Maska</label>
 			<div class="col-xs-8 col-sm-9">
 			<select id="wan_netmask" class="form-control">
-			<option value="0.0.0.0">/0 (0.0.0.0)</option>
-			<option value="128.0.0.0">/1 (128.0.0.0)</option>
-			<option value="192.0.0.0">/2 (192.0.0.0)</option>
-			<option value="224.0.0.0">/3 (224.0.0.0)</option>
-			<option value="240.0.0.0">/4 (240.0.0.0)</option>
-			<option value="248.0.0.0">/5 (248.0.0.0)</option>
-			<option value="252.0.0.0">/6 (252.0.0.0)</option>
-			<option value="254.0.0.0">/7 (254.0.0.0)</option>
-			<option value="255.0.0.0">/8 (255.0.0.0)</option>
-			<option value="255.128.0.0">/9 (255.128.0.0)</option>
-			<option value="255.192.0.0">/10 (255.192.0.0)</option>
-			<option value="255.224.0.0">/11 (255.224.0.0)</option>
-			<option value="255.240.0.0">/12 (255.240.0.0)</option>
-			<option value="255.248.0.0">/13 (255.248.0.0)</option>
-			<option value="255.252.0.0">/14 (255.252.0.0)</option>
-			<option value="255.254.0.0">/15 (255.254.0.0)</option>
-			<option value="255.255.0.0">/16 (255.255.0.0)</option>
-			<option value="255.255.128.0">/17 (255.255.128.0)</option>
-			<option value="255.255.192.0">/18 (255.255.192.0)</option>
-			<option value="255.255.224.0">/19 (255.255.224.0)</option>
-			<option value="255.255.240.0">/20 (255.255.240.0)</option>
-			<option value="255.255.248.0">/21 (255.255.248.0)</option>
-			<option value="255.255.252.0">/22 (255.255.252.0)</option>
-			<option value="255.255.254.0">/23 (255.255.254.0)</option>
-			<option value="255.255.255.0">/24 (255.255.255.0)</option>
-			<option value="255.255.255.128">/25 (255.255.255.128)</option>
-			<option value="255.255.255.192">/26 (255.255.255.192)</option>
-			<option value="255.255.255.224">/27 (255.255.255.224)</option>
-			<option value="255.255.255.240">/28 (255.255.255.240)</option>
-			<option value="255.255.255.248">/29 (255.255.255.248)</option>
-			<option value="255.255.255.252">/30 (255.255.255.252)</option>
-			<option value="255.255.255.254">/31 (255.255.255.254)</option>
-			<option value="255.255.255.255">/32 (255.255.255.255)</option>
 			</select>
 			</div>
 		</div>
@@ -509,7 +477,7 @@
 					</label>
 					</div>
 					<div class="col-xs-6 control-label" id="div_wlan_copy_link_idx" style="display:none;">
-						<span class="click" onclick="copywireless('_idx');">kopiuj z poprzedniej sieci</span>
+						<span class="click" onclick="copywireless('', '_idx');">kopiuj z poprzedniej sieci</span>
 					</div>
 				</div>
 			</div>
@@ -546,7 +514,7 @@
 		<div class="form-group">
 			<label for="wlan_encryption_idx" class="col-xs-4 col-sm-3 control-label">Szyfrowanie</label>
 			<div class="col-xs-8 col-sm-9">
-			<select id="wlan_encryption_idx" class="form-control" onchange="enableWlanEncryption(this.value, '_idx');">
+			<select id="wlan_encryption_idx" class="form-control" onchange="enableWlanEncryption('', this.value, '_idx');">
 			</select>
 			</div>
 		</div>
@@ -563,6 +531,16 @@
 			<div class="col-xs-8 col-sm-9">
 			<label class="switch">
 				<input id="wlan_isolate_idx" type="checkbox">
+				<div class="slider round"></div>
+			</label>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="wlan_hidden_idx" class="col-xs-4 col-sm-3 control-label">Sieć ukryta</label>
+			<div class="col-xs-8 col-sm-9">
+			<label class="switch">
+				<input id="wlan_hidden_idx" type="checkbox">
 				<div class="slider round"></div>
 			</label>
 			</div>
@@ -666,6 +644,21 @@
 		<input type="button" class="btn btn-primary" onclick="saveconfig();" value="Zapisz zmiany">
 	</div>
 
+	</div>
+
+	<div id="div_networks" style="display:none;">
+
+		<h3 class="section">Sieci dodatkowe</h3>
+
+		<div id="div_networks_content">
+			<div class="alert alert-warning">Brak sieci dodatkowych</div>
+		</div>
+
+		<h3 class="section"></h3>
+		<div class="text-center">
+			<input id="btn_network_new" type="button" class="btn btn-default" value="Nowa">
+			<input type="button" class="btn btn-default" onclick="shownetworks();" value="Odśwież">
+		</div>
 	</div>
 
 	<div id="div_system" style="display:none;">
@@ -1322,10 +1315,20 @@
 	<div id="div_adblock_easyconfig" style="display:none;">
 	<form class="form-horizontal">
 		<div class="form-group">
-			<label for="adblock_enabled_easyconfig" class="col-xs-4 col-sm-3 control-label">Włączona</label>
-			<div class="col-xs-8 col-sm-9">
+			<label for="adblock_enabled_easyconfig" class="col-xs-6 control-label">Włączona</label>
+			<div class="col-xs-6">
 			<label class="switch">
 				<input id="adblock_enabled_easyconfig" type="checkbox">
+				<div class="slider round"></div>
+			</label>
+			</div>
+		</div>
+
+		<div class="form-group" id="div_adblock_forcedns_easyconfig">
+			<label for="adblock_forcedns_easyconfig" class="col-xs-6 control-label">Przechwytywanie zapytań DNS</label>
+			<div class="col-xs-6">
+			<label class="switch">
+				<input id="adblock_forcedns_easyconfig" type="checkbox">
 				<div class="slider round"></div>
 			</label>
 			</div>
@@ -1351,7 +1354,7 @@
 		<div class="text-center">
 			<input type="button" class="btn btn-default" onclick="whitelistdomain();" value="Zezwalaj">
 			<input type="button" class="btn btn-default" onclick="blacklistdomain();" value="Blokuj">
-			<input type="button" class="btn btn-default" onclick="checkdomain();" value="Sprawdź">
+			<input id="btn_adblock_checkdomain" type="button" class="btn btn-default" onclick="checkdomain();" value="Sprawdź">
 		</div>
 	</form>
 	<h3 class="section">Domeny blokowane (czarna lista)</h3>
@@ -2325,6 +2328,165 @@
 			<input type="button" class="btn btn-default" onclick="wolwakeupfromdetails();" value="Wybudź">
 			<input type="button" class="btn btn-default" onclick="removewol();" value="Usuń">
 			<input type="button" class="btn btn-primary" onclick="savewol();" value="Zapisz zmiany">
+		</div>
+		</form>
+	</div>
+</div>
+
+<div id="div_network_details" class="modal">
+	<div class="row modal-content">
+		<div class="text-center space">Sieć dodatkowa</div>
+		<input id="network_data" type="hidden">
+		<input id="network_ports" type="hidden">
+		<div class="error text-center space"><span id="network_error"></span></div>
+
+		<form class="form-horizontal">
+		<div class="form-group">
+			<label for="network_description" class="col-xs-4 col-sm-3 control-label">Opis</label>
+			<div class="col-xs-8 col-sm-9">
+			<input id="network_description" type="text" class="form-control">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="network_ipaddr" class="col-xs-4 col-sm-3 control-label">Adres IP</label>
+			<div class="col-xs-8 col-sm-9">
+			<input id="network_ipaddr" type="text" class="form-control" onkeyup="proofreadIp(this);">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="network_netmask" class="col-xs-4 col-sm-3 control-label">Maska</label>
+			<div class="col-xs-8 col-sm-9">
+			<select id="network_netmask" class="form-control">
+			</select>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="network_dhcp" class="col-xs-4 col-sm-3 control-label">Serwer DHCP włączony</label>
+			<div class="col-xs-8 col-sm-9">
+			<label class="switch">
+				<input id="network_dhcp" type="checkbox">
+				<div class="slider round"></div>
+			</label>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="network_towan" class="col-xs-4 col-sm-3 control-label">Dostęp do internetu</label>
+			<div class="col-xs-8 col-sm-9">
+			<label class="switch">
+				<input id="network_towan" type="checkbox">
+				<div class="slider round"></div>
+			</label>
+			</div>
+		</div>
+
+		<div id="div_network_wireless_template" style="display:none;">
+			<h3 class="section" id="network_radio_idx">Wi-Fi</h3>
+			<div class="form-group">
+				<label for="network_wlan_enabled_idx" class="col-xs-4 col-sm-3 control-label">Wi-Fi włączone</label>
+				<div class="col-xs-8 col-sm-9">
+					<div class="row">
+						<div class="col-xs-6">
+						<label class="switch">
+							<input id="network_wlan_enabled_idx" type="checkbox">
+							<div class="slider round"></div>
+						</label>
+						<span class="hidden-xs control-label labelleft"><em><small class="form-text text-muted"><span id="div_network_wlan_enabled_desc1_idx"></span></small></em></span>
+						<div class="visible-xs"><em><small class="form-text text-muted"><span id="div_network_wlan_enabled_desc2_idx"></span></small></em></div>
+						</div>
+						<div class="col-xs-6 control-label" id="div_network_wlan_copy_link_idx" style="display:none;">
+							<span class="click" onclick="copywireless('network_', '_idx');">kopiuj z poprzedniej sieci</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="network_wlan_ssid_idx" class="col-xs-4 col-sm-3 control-label">Nazwa sieci (SSID)</label>
+				<div class="col-xs-8 col-sm-9">
+				<input id="network_wlan_ssid_idx" type="text" class="form-control" onkeyup="proofreadLengthRange(this, 1, 32);">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="network_wlan_encryption_idx" class="col-xs-4 col-sm-3 control-label">Szyfrowanie</label>
+				<div class="col-xs-8 col-sm-9">
+				<select id="network_wlan_encryption_idx" class="form-control" onchange="enableWlanEncryption('network_', this.value, '_idx');">
+				</select>
+				</div>
+			</div>
+
+			<div class="form-group" id="div_network_wlan_key_idx">
+				<label for="network_wlan_key_idx" class="col-xs-4 col-sm-3 control-label click" onclick="showPassword('network_wlan_key_idx');">Hasło</label>
+				<div class="col-xs-8 col-sm-9">
+				<input id="network_wlan_key_idx" type="password" class="form-control">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="network_wlan_isolate_idx" class="col-xs-4 col-sm-3 control-label">Izolacja klientów</label>
+				<div class="col-xs-8 col-sm-9">
+				<label class="switch">
+					<input id="network_wlan_isolate_idx" type="checkbox">
+					<div class="slider round"></div>
+				</label>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="network_wlan_hidden_idx" class="col-xs-4 col-sm-3 control-label">Sieć ukryta</label>
+				<div class="col-xs-8 col-sm-9">
+				<label class="switch">
+					<input id="network_wlan_hidden_idx" type="checkbox">
+					<div class="slider round"></div>
+				</label>
+				</div>
+			</div>
+
+			<div class="form-group" id="div_network_wlan_macaddr_idx">
+				<label for="network_wlan_macaddr_idx" class="col-xs-4 col-sm-3 control-label">Losowy adres MAC</label>
+				<div class="col-xs-8 col-sm-9">
+				<label class="switch">
+					<input id="network_wlan_macaddr_idx" type="checkbox">
+					<div class="slider round"></div>
+				</label>
+				</div>
+			</div>
+		</div>
+
+		<div id="div_network_wire_header_template" style="display:none;">
+			<h3 class="section">Porty ethernet</h3>
+			<div class="row">
+				<div class="col-xs-4 col-sm-3 text-right"><p>Nazwa portu</p></div>
+				<div class="col-xs-8 col-sm-9"><p>Dołączony&nbsp;&nbsp;&nbsp;Przypisanie do sieci</p></div>
+				<input id="network_port_cnt" type="hidden">
+			</div>
+		</div>
+		<div id="div_network_wire_template" style="display:none;">
+			<div class="form-group">
+				<input id="network_port_data_idx" type="hidden">
+				<label for="network_port_idx" class="col-xs-4 col-sm-3 control-label"><span id="network_port_label_idx"></span></label>
+				<div class="col-xs-8 col-sm-9">
+				<label class="switch">
+					<input id="network_port_idx" type="checkbox">
+					<div class="slider round"></div>
+				</label>
+				<span class="hidden-xs control-label labelleft"><em><small class="form-text text-muted"><span id="network_port_desc1_idx"></span></small></em></span>
+				<div class="visible-xs"><em><small class="form-text text-muted"><span id="network_port_desc2_idx"></span></small></em></div>
+				</div>
+			</div>
+		</div>
+
+		<div id="div_network_interfaces_content"></div>
+
+		<h3 class="section"></h3>
+		<div class="text-center">
+			<input type="button" class="btn btn-default" onclick="cancelnetwork();" value="Anuluj">
+			<input type="button" class="btn btn-default" onclick="removenetwork();" value="Usuń">
+			<input type="button" class="btn btn-primary" onclick="savenetwork();" value="Zapisz zmiany">
 		</div>
 		</form>
 	</div>

@@ -198,8 +198,9 @@ echo '"vpn_up":'${VPN_UP:-false}','
 
 wlancurrentchannels
 
+BOARDNAME=$(cat /tmp/sysinfo/board_name)
 echo '"sensors":['
-case $(cat /tmp/sysinfo/board_name) in
+case "$BOARDNAME" in
 	"cellc,rtl30vw"|\
 	"zte,mf286d")
 		awk '{printf "{\"Temperatura Wi-Fi 2.4 GHz\":\"%d &deg;C\"},", $1/1000}'  /sys/class/hwmon/hwmon0/temp1_input 2>/dev/null
@@ -292,6 +293,14 @@ fi
 
 simslot
 
+echo ',"ports_mapping":['
+case "$BOARDNAME" in
+	"teltonika,rut955"*)
+		echo '{"eth1":"WAN"}'
+		;;
+esac
+echo ']'
+
 echo '}'
 }
 
@@ -383,7 +392,7 @@ fi
 
 [ -n "$WAN_DNS" ] && WAN_DNS='"'$(echo $WAN_DNS | sed 's/ /","/g')'"'
 
-if [ -e /etc/config/stubby ]; then
+if [ -e /etc/init.d/stubby ]; then
 	STUBBY="true"
 	T=$(uci -q get stubby.global.listen_address)
 	T1=$(uci -q get dhcp.@dnsmasq[0].server | sed 's/#/@/g')
@@ -463,7 +472,7 @@ echo '{'
 echo '"revision":"'$REVISION'",'
 echo '"devicesection":'$DEVICESECTION','
 echo '"system_hostname":"'$HOSTNAME'",'
-echo '"wan_proto":"'$WAN_PROTO'",'
+echo '"wan_proto":"'${WAN_PROTO:-none}'",'
 echo '"wan_ipaddr":"'$WAN_IPADDR'",'
 echo '"wan_netmask":"'${WAN_NETMASK:-255.255.255.0}'",'
 echo '"wan_gateway":"'$WAN_GATEWAY'",'
@@ -554,43 +563,46 @@ done
 echo "],"
 for R in $RADIOS; do
 	echo '"'$R'":{'
-	WLAN_DISABLED=$(uci -q get wireless.$R.disabled)
+	WLAN_RADIO_DISABLED=$(uci -q get wireless.$R.disabled)
 	WLAN_TXPOWER=$(uci -q get wireless.$R.txpower)
 	WLAN_CHANNEL=$(uci -q get wireless.$R.channel)
 	WLAN_BAND=$(uci -q get wireless.$R.band)
 	[ "x$WLAN_CHANNEL" = "xauto" ] && WLAN_CHANNEL=0
 	T=$(uci -q show wireless | awk -F. '/device='\'''${R}''\''$/{print $2}')
-	WLAN_SEC=""
+	WLAN_DISABLED=1
 	WLAN_SSID=""
 	WLAN_ENCRYPTION=""
 	WLAN_KEY=""
 	WLAN_ISOLATE=0
+	WLAN_HIDDEN=0
+	WLAN_MACADDR=""
+	WLAN_SEC=""
 	if [ -n "$T" ]; then
 		for T1 in $T; do
 			[ "x$(uci -q get wireless.$T1.network)" = "xlan" ] || continue
 			[ "x$(uci -q get wireless.$T1.mode)" = "xap" ] || continue
 			WLAN_SEC=$T1
+			WLAN_DISABLED=$(uci -q get wireless.$WLAN_SEC.disabled)
 			WLAN_SSID=$(uci -q get wireless.$WLAN_SEC.ssid)
 			WLAN_ENCRYPTION=$(uci -q get wireless.$WLAN_SEC.encryption)
 			WLAN_KEY=$(uci -q get wireless.$WLAN_SEC.key)
-			WLAN_DISABLED1=$(uci -q get wireless.$WLAN_SEC.disabled)
-			[ "x$WLAN_DISABLED1" = "x1" ] && WLAN_DISABLED=1
 			WLAN_ISOLATE=$(uci -q get wireless.$WLAN_SEC.isolate)
+			WLAN_HIDDEN=$(uci -q get wireless.$WLAN_SEC.hidden)
 			WLAN_MACADDR=$(uci -q get wireless.$WLAN_SEC.macaddr)
 			break
 		done
 		[ -z "$WLAN_SSID" ] && WLAN_DISABLED=1
-	else
-		WLAN_DISABLED=1
 	fi
+	[ "x$WLAN_RADIO_DISABLED" = "x1" ] && WLAN_DISABLED=1
 	echo '"wlan_disabled":'${WLAN_DISABLED:-0}','
 	echo '"wlan_txpower":"'$WLAN_TXPOWER'",'
-	echo '"wlan_ssid":"'$(escapeJSON "$WLAN_SSID")'",'
 	echo '"wlan_channel":"'$WLAN_CHANNEL'",'
 	echo '"wlan_band":"'$WLAN_BAND'",'
+	echo '"wlan_ssid":"'$(escapeJSON "$WLAN_SSID")'",'
 	echo '"wlan_encryption":"'$WLAN_ENCRYPTION'",'
 	echo '"wlan_key":"'$(escapeJSON "$WLAN_KEY")'",'
 	echo '"wlan_isolate":'${WLAN_ISOLATE:-0}','
+	echo '"wlan_hidden":'${WLAN_HIDDEN:-0}','
 	echo '"wlan_macaddr":"'$WLAN_MACADDR'",'
 	echo '"wlan_section":"'$WLAN_SEC'",'
 	O=$(iwinfo $R info 2>/dev/null)
@@ -710,17 +722,17 @@ VPN=""
 [ -f /usr/lib/pppd/*/pptp.so ] && VPN=${VPN}'"pptp",'
 [ -e /lib/netifd/proto/sstp.sh ] && VPN=${VPN}'"sstp",'
 [ -e /lib/netifd/proto/wireguard.sh ] && VPN=${VPN}'"wireguard",'
-[ -e /etc/config/openvpn ] && VPN=${VPN}'"openvpn",'
-[ -e /etc/config/zerotier ] && VPN=${VPN}'"zerotier",'
+[ -e /etc/init.d/openvpn ] && VPN=${VPN}'"openvpn",'
+[ -e /etc/init.d/zerotier ] && VPN=${VPN}'"zerotier",'
 echo '"vpn":['$VPN'],'
 
-if [ -e /etc/config/adblock ]; then
+if [ -e /etc/init.d/adblock ]; then
 	echo '"adblock":true,'
 else
 	echo '"adblock":false,'
 fi
 
-if [ -e /etc/config/nft-qos ]; then
+if [ -e /etc/init.d/nft-qos ]; then
 	echo '"nftqos":true,'
 else
 	echo '"nftqos":false,'
@@ -874,6 +886,7 @@ for M in $WLAN_MAC; do
 	grep -qi "^ht supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/ht_capa 2>/dev/null && CAPA=',"capa":4'
 	grep -qi "^vht supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/vht_capa 2>/dev/null && CAPA=',"capa":5'
 	grep -qi "^he supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/he_capa 2>/dev/null && CAPA=',"capa":6'
+	grep -qi "^eht supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/eht_capa 2>/dev/null && CAPA=',"capa":7'
 
 	echo "{${M}${IP}${CONNECTED_SINCE}${CAPA}$(client_data $MAC)},"
 done
@@ -1260,9 +1273,9 @@ show_wifiscan() {
 	if [ -e /sys/class/net/$BRIDGE/bridge ]; then
 		for I in /sys/class/net/$BRIDGE/lower_*; do
 			if [ -e $I/phy80211 ]; then
-				iw dev ${I##*lower_} scan -u 2>/dev/null | awk 'function abs(value){return (value<0?-value:value)}{gsub("(on","");
+				iw dev ${I##*lower_} scan -u 2>/dev/null | awk 'function abs(value){return (value<0?-value:value)}{gsub("\\(on","");
 					if($0 ~ /^BSS.*/) {MAC = $2; wifi_enc[MAC] = ""; wifi_psk[MAC] = 0; wifi_psk2[MAC] = 0; wifi_chan[MAC] = "?"; wifi_mode1[MAC] = ""; wifi_mode2[MAC] = ""; wifi_bssload[MAC] = -1}
-					if($1 == "SSID:") {t="";for(i=2;i<=NF-1;++i){t=t$i" "};if(NF<2){t=""}else{t=t$NF}; gsub(/\\/,"\\\\", t); gsub(/\"/, "\\\"", t); wifi_ssid[MAC]=t}
+					if($1 == "SSID:") {t="";for(i=2;i<=NF-1;++i){t=t$i" "};if(NF<2){t=""}else{t=t$NF}; gsub(/\\/,"\\\\", t); gsub(/"/, "\\\"", t); wifi_ssid[MAC]=t}
 					if($1 == "signal:") {wifi_sig[MAC] = $2}
 					if($1 == "freq:") {wifi_freq[MAC] = $2; if($2>=5160){wifi_mode1[MAC] = "a"}else{wifi_mode1[MAC] = "g"}}
 					if($0 ~ /primary channel:/) {wifi_chan[MAC] = $4}
@@ -1777,7 +1790,7 @@ show_vpn_status()
 
 	if [ "x$PROTO" = "xwireguard" ]; then
 		echo ',"peers":['
-		T=$(wg show $interface dump)
+		T=$(wg show $interface dump 2>/dev/null)
 		PEERS=$(uci show network | awk -F[.=] '/=wireguard_'$interface'/{print $2}')
 		for PEER in $PEERS; do
 			PUBKEY=$(uci -q get network.$PEER.public_key)
@@ -1963,9 +1976,12 @@ adblock_bwlist()
 
 show_adblock()
 {
-	if [ ! -e /etc/config/adblock ]; then
+	if [ ! -e /etc/init.d/adblock ]; then
 		json_init
 		/etc/init.d/easyconfig_adblock enabled && json_add_boolean "enabled" 1 || json_add_boolean "enabled" 0
+		T=$(uci -q get firewall.dns_53_redirect)
+		[ "x$T" = "xredirect" ] && FORCEDNS="1" || FORCEDNS="0"
+		json_add_boolean "forcedns" $FORCEDNS
 		adblock_bwlist
 		json_dump
 		exit 0
@@ -2126,11 +2142,144 @@ wolwakeup() {
 
 ##############################################################################
 
+show_networks() {
+	echo '{'
+
+	LANDEVICE=$(uci get network.lan.device)
+	LANBRIDGE=$(uci show network | awk -F. '/\.name='\'''$LANDEVICE''\''/{print $2}')
+
+	T=$(jsonfilter -i /etc/board.json -e '@.network.lan.ports' | jsonfilter -q -e '@.*')
+	[ -z "$T" ] && T=$(jsonfilter -i /etc/board.json -e '@.network.lan.device')
+	echo '"ports":['
+	if [ ! -e /sbin/swconfig ]; then
+		for PORT in $T; do
+			NETWORK=""
+			DESCRIPTION=""
+			BRIDGE=$(uci show network | awk -F. '/'\'''$PORT''\''/{print $2}')
+			if [ -n "$BRIDGE" ]; then
+				DEVICE=$(uci -q get network.$BRIDGE.name)
+				if [ -n "$DEVICE" ]; then
+					NETWORK=$(uci show network | awk -F. '/\.device='\'''$DEVICE''\''/{print $2}')
+					[ -n "$NETWORK" ] && DESCRIPTION=$(escapeJSON "$(uci -q get network.$NETWORK.description)")
+				fi
+			fi
+			echo '{"port":"'$PORT'","network":"'$NETWORK'","bridge":"'$BRIDGE'","description":"'$DESCRIPTION'","lanbridge":"'$LANBRIDGE'"},'
+		done
+	fi
+	echo '],'
+	echo '"networks":['
+	NETWORKS=$(uci show network | awk -F. '/\.proto='\''static'\''/{print $2}')
+	for SEC in $NETWORKS; do
+		[ "$SEC" = "lan" ] && continue
+		[ "$SEC" = "loopback" ] && continue
+		[ "$SEC" = "wan" ] && continue
+		[ "$SEC" = "wan6" ] && continue
+		echo '{"section":"'$SEC'",'
+		echo '"description":"'$(escapeJSON "$(uci -q get network.$SEC.description)")'",'
+		echo '"proto":"'$(uci -q get network.$SEC.proto)'",'
+		echo '"ipaddr":"'$(uci -q get network.$SEC.ipaddr)'",'
+		echo '"netmask":"'$(uci -q get network.$SEC.netmask)'",'
+		T=$(uci -q get network.$SEC.device)
+		echo '"device":"'$T'",'
+		BRIDGE=""
+		T1=$(uci show network | awk -F. '/\.name='\'''$T''\''$/{print $2}')
+		[ -n "$T1" ] && [ "x$(uci -q get network.$T1.type)" = "xbridge" ] && BRIDGE=$T1
+		echo '"bridge":"'$BRIDGE'",'
+		T=$(uci show firewall | awk -F. '/\.network='\'''$SEC''\''$/{print $2}')
+		echo '"zone":"'$T'",'
+		echo '"forwarding":['
+		RULES=$(uci show firewall | awk -F. '/\.src='\'''$SEC''\''$/{print $2}')
+		for RULE in $RULES; do
+			if [ "x$(uci -q get firewall.${RULE})" = "xforwarding" ]; then
+				echo '{"'$(uci -q get firewall.${RULE}.dest)'":"'${RULE}'"},'
+			fi
+		done
+		echo '],'
+		DHCP="1"
+		T=$(uci -q get dhcp.$SEC.ignore)
+		[ "x$T" = "x1" ] && DHCP=0
+		echo '"dhcp":'$DHCP','
+		echo '"wireless":['
+
+		RADIOS=$(uci -q show wireless | awk -F. '/type=/{print $2}')
+		for R in $RADIOS; do
+			echo '{"'$R'":{'
+			WLAN_DISABLED_RADIO=$(uci -q get wireless.$R.disabled)
+			T=$(uci -q show wireless | awk -F. '/device='\'''${R}''\''$/{print $2}')
+			WLAN_DISABLED=1
+			WLAN_SSID=""
+			WLAN_ENCRYPTION="psk2"
+			WLAN_KEY=""
+			WLAN_ISOLATE=0
+			WLAN_HIDDEN=0
+			WLAN_MACADDR=""
+			WLAN_SEC=""
+			if [ -n "$T" ]; then
+				for T1 in $T; do
+					[ "x$(uci -q get wireless.$T1.network)" = "x$SEC" ] || continue
+					[ "x$(uci -q get wireless.$T1.mode)" = "xap" ] || continue
+					WLAN_SEC=$T1
+					WLAN_SSID=$(uci -q get wireless.$WLAN_SEC.ssid)
+					WLAN_ENCRYPTION=$(uci -q get wireless.$WLAN_SEC.encryption)
+					WLAN_KEY=$(uci -q get wireless.$WLAN_SEC.key)
+					WLAN_DISABLED=$(uci -q get wireless.$WLAN_SEC.disabled)
+					WLAN_ISOLATE=$(uci -q get wireless.$WLAN_SEC.isolate)
+					WLAN_HIDDEN=$(uci -q get wireless.$WLAN_SEC.hidden)
+					WLAN_MACADDR=$(uci -q get wireless.$WLAN_SEC.macaddr)
+					break
+				done
+				[ -z "$WLAN_SSID" ] && WLAN_DISABLED=1
+			fi
+			echo '"radio_disabled":'${WLAN_DISABLED_RADIO:-0}','
+			echo '"disabled":'${WLAN_DISABLED:-0}','
+			echo '"ssid":"'$(escapeJSON "$WLAN_SSID")'",'
+			echo '"encryption":"'$WLAN_ENCRYPTION'",'
+			echo '"key":"'$(escapeJSON "$WLAN_KEY")'",'
+			echo '"isolate":'${WLAN_ISOLATE:-0}','
+			echo '"hidden":'${WLAN_HIDDEN:-0}','
+			echo '"macaddr":"'$WLAN_MACADDR'",'
+			echo '"section":"'$WLAN_SEC'"'
+			echo '}},'
+		done
+
+		echo '],'
+		WLAN_CLIENTS=0
+		LAN_CLIENTS=0
+		TPORTS=""
+		BRIDGE=$(ubus call network.interface.$SEC status | jsonfilter -e @.l3_device)
+		if [ -e /sys/class/net/$BRIDGE/bridge ]; then
+			T=$(brctl showmacs $BRIDGE 2>/dev/null)
+			for I in /sys/class/net/$BRIDGE/lower_*; do
+				IFNAME=${I##*lower_}
+				if [ -e $I/phy80211 ]; then
+					CNT=$(iw dev $IFNAME station dump | grep -c Station)
+					WLAN_CLIENTS=$((WLAN_CLIENTS+CNT))
+				else
+					if [ -e /sys/class/net/$BRIDGE/brif/$IFNAME/port_no ]; then
+						PORTID=$(printf "%d" $(cat /sys/class/net/$BRIDGE/brif/$IFNAME/port_no))
+						CNT=$(echo "$T" | awk '/^\s*'$PORTID'\s.*no/{print $2}' | wc -l)
+						LAN_CLIENTS=$((LAN_CLIENTS+CNT))
+						TPORTS='"'${IFNAME}'",'${TPORTS}
+					fi
+				fi
+			done
+		fi
+		echo '"wire":['${TPORTS}'],'
+		echo '"wlan_clients":'$WLAN_CLIENTS','
+		echo '"lan_clients":'$LAN_CLIENTS
+		echo '},'
+	done
+	echo ']}'
+}
+
+##############################################################################
+
 case "$1" in
 	list)
 		echo '{'
 		echo '"status":{},'
 		echo '"config":{},'
+		echo '"networks":{},'
 		echo '"system":{},'
 		echo '"watchdog":{},'
 		echo '"clients":{},'
@@ -2171,6 +2320,9 @@ case "$1" in
 				;;
 			config)
 				show_config
+				;;
+			networks)
+				show_networks
 				;;
 			system)
 				show_system

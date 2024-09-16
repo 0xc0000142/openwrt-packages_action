@@ -193,3 +193,55 @@ msgstr "通配符域名"
 
 msgid "The wildcard domain of the group."
 msgstr "组的通配符域名"
+
+msgid "Basic Settings"
+msgstr "基本设置"
+
+msgid "Device ID"
+msgstr "设备 ID"
+
+msgid "The ID of the device."
+msgstr "设备的 ID，每个设备都必须有一个唯一的 ID"
+
+msgid "Gateway Channel"
+msgstr "网关渠道"
+
+msgid "The channel of the gateway."
+msgstr "网关的渠道"
+
+msgid "Gateway Name"
+msgstr "网关名称"
+
+msgid "The name of the gateway."
+msgstr "开启认证的网关所属网络区域"
+
+
+msgid "Gateway Settings"
+msgstr "网关设置"
+
+msgid "Log Level"
+msgstr "日志级别"
+
+msgid "No Auth Server"
+msgstr "无认证服务器"
+
+msgid "Do not use authentication server."
+msgstr "不使用认证服务器"
+
+msgid "The offline page of the authentication server."
+msgstr "认证服务器离线用户展示页面"
+
+msgid "Upload offline Page"
+msgstr "上传离线页面"
+
+msgid "Offline Page Full Path"
+msgstr "离线页面完整路径"
+
+msgid "The full path of the uploaded offline page."
+msgstr "上传的离线页面的完整路径"
+
+msgid "Local Portal"
+msgstr "本地门户"
+
+msgid "The local portal url."
+msgstr "本地门户跳转URL"

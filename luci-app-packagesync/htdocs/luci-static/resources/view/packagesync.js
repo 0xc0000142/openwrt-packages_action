@@ -118,9 +118,6 @@ return view.extend({
 		o.placeholder = 'packagesync';
 		o.rmempty = false;
 		o.validate = function(section, value) {
-			if (value == null || value == '' || value == 'ignore')
-				return _('Expecting: non-empty value');
-        
 			if (usedname.length)
 				for (var i = 0; i < usedname.length; i++)
 					if (usedname[i] == value)
@@ -273,9 +270,6 @@ return view.extend({
 		o.datatype = 'uciname';
 		o.rmempty = false;
 		o.validate = function(section_id, value) {
-			if (value == null || value == '' || value == 'ignore')
-				return _('Expecting: non-empty value');
-
 			let ss = uci.sections(conf, release);
 			for (var i = 0; i < ss.length; i++) {
 				let sid = ss[i]['.name'];
@@ -304,11 +298,6 @@ return view.extend({
 
 		o = s.option(form.Value, 'version', _('Version'));
 		o.rmempty = false;
-		o.validate = function(section, value) {
-			if (value == null || value == '' || value == 'ignore')
-				return _('Expecting: non-empty value');
-			return true;
-		};
 
 		if (releaseslist.length) {
 			for (var i = 0; i < releaseslist.length; i++)
@@ -318,11 +307,6 @@ return view.extend({
 		o = s.option(form.Value, 'target', _('Target'));
 		o.placeholder = 'x86/64';
 		o.rmempty = false;
-		o.validate = function(section, value) {
-			if (value == null || value == '' || value == 'ignore')
-				return _('Expecting: non-empty value');
-			return true;
-		};
 
 		if (targetslist.length) {
 			for (var i = 0; i < targetslist.length; i++)
@@ -336,11 +320,6 @@ return view.extend({
 
 		o = s.option(form.Value, 'pkgarch', _('Arch'));
 		o.rmempty = false;
-		o.validate = function(section, value) {
-			if (value == null || value == '' || value == 'ignore')
-				return _('Expecting: non-empty value');
-			return true;
-		};
 
 		if (pkgarchslist.length) {
 			for (var i = 0; i < pkgarchslist.length; i++)

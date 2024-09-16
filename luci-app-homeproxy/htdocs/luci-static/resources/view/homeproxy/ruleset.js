@@ -13,9 +13,11 @@
 
 'require homeproxy as hp';
 
+const docdata = 'base64,' + 'cmxzdHBsYWNlaG9sZGVy'
+
 function parseRulesetLink(uri) {
 	var config,
-		format = new RegExp(/^(json|srs)$/),
+		filefmt = new RegExp(/^(json|srs)$/),
 		unuciname = new RegExp(/[^a-zA-Z0-9_]+/, "g");
 
 	uri = uri.split('://');
@@ -24,32 +26,34 @@ function parseRulesetLink(uri) {
 		case 'http':
 		case 'https':
 			var url = new URL('http://' + uri[1]);
-			var filename = decodeURIComponent(url.pathname.split('/').pop());
-			var label = filename.replace(/[\s\.-]/g, '_').replace(unuciname, '');
-			var suffix = filename.split('.').pop();
+			var file = url.searchParams.get('file');
+			var rawquery = url.searchParams.get('rawquery');
+			var name = decodeURIComponent(url.pathname.split('/').pop())
+				.replace(/[\s\.-]/g, '_').replace(unuciname, '');
 
-			if (format.test(suffix)) {
+			if (filefmt.test(file)) {
+				var fullpath = (url.username ? url.username + '@' : '') + url.host + url.pathname + (rawquery ? '?' + decodeURIComponent(rawquery) : '');
 				config = {
-					label: label ? label : null,
+					label: url.hash ? decodeURIComponent(url.hash.slice(1)) : name ? name : null,
 					type: 'remote',
-					format: suffix.match(/^json$/) ? 'source' : suffix.match(/^srs$/) ? 'binary' : null,
-					url: String.format('%s://%s%s%s', uri[0], url.username ? url.username + '@' : '', url.host, url.pathname),
-					href: String.format('http://%s%s%s', url.username ? url.username + '@' : '', url.host, url.pathname)
+					format: file.match(/^json$/) ? 'source' : file.match(/^srs$/) ? 'binary' : 'unknown',
+					url: String.format('%s://%s', uri[0], fullpath),
+					href: String.format('http://%s', fullpath)
 				};
 			}
 
 			break;
 		case 'file':
 			var url = new URL('file://' + uri[1]);
-			var filename = decodeURIComponent(url.pathname.split('/').pop());
-			var label = filename.replace(/[\s\.-]/g, '_').replace(unuciname, '');
-			var suffix = filename.split('.').pop();
+			var file = url.searchParams.get('file');
+			var name = decodeURIComponent(url.pathname.split('/').pop())
+							.replace(/[\s\.-]/g, '_').replace(unuciname, '');
 
-			if (format.test(suffix)) {
+			if (filefmt.test(file)) {
 				config = {
-					label: label ? label : null,
+					label: url.hash ? decodeURIComponent(url.hash.slice(1)) : name ? name : null,
 					type: 'local',
-					format: suffix.match(/^json$/) ? 'source' : suffix.match(/^srs$/) ? 'binary' : null,
+					format: file.match(/^json$/) ? 'source' : file.match(/^srs$/) ? 'binary' : 'unknown',
 					path: url.pathname,
 					href: String.format('file://%s%s', url.host, url.pathname)
 				};
@@ -60,7 +64,7 @@ function parseRulesetLink(uri) {
 	}
 
 	if (config) {
-		if (!config.type || !config.format || !config.href)
+		if (!config.type || !config.href)
 			return null;
 		else if (!config.label)
 			config.label = hp.calcStringMD5(config.href);
@@ -93,10 +97,13 @@ return view.extend({
 		/* Import rule-set links start */
 		s.handleLinkImport = function() {
 			var textarea = new ui.Textarea('', {
-				'placeholder': 'https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-hk.srs\nfile:///etc/homeproxy/ruleset/example.json'
+				'placeholder': 'http(s)://github.com/sagernet/sing-geoip/raw/rule-set/geoip-hk.srs?file=srs&rawquery=good%3Djob#GeoIP-HK\n' +
+							   'file:///etc/homeproxy/ruleset/example.json?file=json#Example%20file\n'
 			});
 			ui.showModal(_('Import rule-set links'), [
-				E('p', _('Supports rule-set links of type: <code>local, remote</code> and format: <code>source, binary</code>.')),
+				E('p', _('Supports rule-set links of type: <code>local, remote</code> and format: <code>source, binary</code>.</br>') +
+							_('Please refer to <a href="%s" target="_blank">%s</a> for link format standards.')
+								.format('data:text/html;' + docdata, _('Ruleset-URI-Scheme'))),
 				textarea.render(),
 				E('div', { class: 'right' }, [
 					E('button', {
@@ -118,6 +125,7 @@ return view.extend({
 									var config = parseRulesetLink(l);
 									if (config) {
 										var hrefHash = hp.calcStringMD5(config.href);
+										config.href = null;
 										var sid = uci.add(data[0], 'ruleset', hrefHash);
 										Object.keys(config).forEach((k) => {
 											uci.set(data[0], sid, k, config[k]);
@@ -249,6 +257,14 @@ return view.extend({
 		o.default = 'direct-out';
 		o.rmempty = false;
 		//o.editable = true;
+		o.textvalue = function(section_id) {
+			var cval = this.cfgvalue(section_id) || this.default;
+			var remote = L.bind(function() {
+				let cval = this.cfgvalue(section_id) || this.default;
+				return (cval === 'remote') ? true : false;
+			}, s.getOption('type'))
+			return remote() ? cval : _('none');
+		};
 		o.depends('type', 'remote');
 
 		o = s.option(form.Value, 'update_interval', _('Update interval'),

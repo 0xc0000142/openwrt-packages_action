@@ -53,6 +53,28 @@ function easyconfig_onload() {
 
 	var inittoken = '00000000000000000000000000000000';
 
+	function mask2Subnet(val) {
+		return [255, 255, 255, 255]
+			.map(() => [...Array(8).keys()]
+			.reduce((rst) => (rst * 2 + (val-- > 0)), 0))
+			.join('.')
+	}
+
+	var tmp;
+	var e1 = removeOptions('wan_netmask');
+	var e2 = removeOptions('network_netmask');
+	for (var idx = 0; idx <= 32; idx++) {
+		tmp = mask2Subnet(idx);
+		var opt = document.createElement('option');
+		opt.value = tmp;
+		opt.innerHTML = '/' + idx + ' (' + tmp + ')';
+		e1.appendChild(opt);
+		opt = document.createElement('option');
+		opt.value = tmp;
+		opt.innerHTML = '/' + idx + ' (' + tmp + ')';
+		e2.appendChild(opt);
+	}
+
 	token = getCookie('easyconfig_token');
 	if (token.length == 32) {
 		ubus('"session", "list", {}', function(data) {
@@ -132,6 +154,17 @@ function freq2band(freq) {
 	}
 	return 0;
 }
+
+String.prototype.escapeHTML = function() {
+       var tagsToReplace = {
+               '&': '&amp;',
+               '<': '&lt;',
+               '>': '&gt;'
+       };
+       return this.replace(/[&<>]/g, function(tag) {
+               return tagsToReplace[tag] || tag;
+       });
+};
 
 /*****************************************************************************/
 
@@ -351,6 +384,15 @@ function createRow9ColForModal(arr) {
 		'<div class="col-xs-1 text-left"><p>' + arr[7] + '</p></div>' +
 		'<div class="col-xs-1 text-left"><p>' + arr[8] + '</p></div>' +
 		'</div>';
+}
+
+function getRevision() {
+	var revision = 0;
+	var tmp = config.revision.match(/^r([0-9]*)-[0-9a-f]*/);
+	if (tmp.length > 0) {
+		revision = parseInt(tmp[1]) || 0;
+	}
+	return revision;
 }
 
 /*****************************************************************************/
@@ -638,8 +680,8 @@ function enableWan(proto) {
 	}
 }
 
-function enableWlanEncryption(encryption, idx) {
-	setElementEnabled('wlan_key' + idx, (encryption != 'none' && encryption != ''), false);
+function enableWlanEncryption(prefix, encryption, idx) {
+	setElementEnabled(prefix + 'wlan_key' + idx, (encryption != 'none' && encryption != ''), false);
 }
 
 function enableWlanTXPower(channel, idx) {
@@ -984,6 +1026,26 @@ wan['dhcp_hilink'] = 'Modem komórkowy (HiLink lub RNDIS)';
 wan['-'] = ' ';
 wan['detect'] = 'Wykryj...';
 
+function setEncryption(element, encryption) {
+	var enc = [];
+	enc['none'] = 'Brak';
+	enc['psk'] = 'WPA Personal';
+	enc['psk2'] = 'WPA2 Personal';
+	if (config.services.sae) {
+		enc['sae-mixed'] = 'WPA2/WPA3 Personal';
+		enc['sae'] = 'WPA3 Personal';
+	}
+
+	var select = removeOptions(element);
+	for (var propt in enc) {
+		var opt = document.createElement('option');
+		opt.value = propt;
+		opt.innerHTML = enc[propt];
+		select.appendChild(opt);
+	}
+	setValue(element, encryption);
+}
+
 function showconfig() {
 	ubus_call('"easyconfig", "config", {}', function(data) {
 		config = data;
@@ -1084,23 +1146,11 @@ function showconfig() {
 		// wlan
 		showChannelRange(config.wlan_current_channels);
 
-		var revision = 0;
-		var tmp = config.revision.match(/^r([0-9]*)-[0-9a-f]*/);
-		if (tmp.length > 0) {
-			revision = parseInt(tmp[1]) || 0;
-		}
+		var revision = getRevision();
 
 		var is_radio2 = false;
 		var is_radio5 = false;
 		var is_radio6 = false;
-		var enc = [];
-		enc['none'] = 'Brak';
-		enc['psk'] = 'WPA Personal';
-		enc['psk2'] = 'WPA2 Personal';
-		if (config.services.sae) {
-			enc['sae-mixed'] = 'WPA2/WPA3 Personal';
-			enc['sae'] = 'WPA3 Personal';
-		}
 
 		setValue('div_radio_content', '');
 		var radios = config.wlan_devices;
@@ -1148,6 +1198,7 @@ function showconfig() {
 			if (is_radio6) { wifidesc2 = ' 6 GHz'; }
 			if (is_radio2 && is_radio5 && is_radio6) { wifidesc2 = ' 2.4/5/6 GHz'; }
 			setValue('radio_' + i, 'Wi-Fi' + wifidesc1 + wifidesc2);
+			config[radios[i]]['description'] = 'Wi-Fi' + wifidesc1 + wifidesc2;
 
 			setValue('wlan_enabled_' + i, (config[radios[i]].wlan_disabled != 1));
 			setValue('wlan_channel_' + i, config[radios[i]].wlan_channel);
@@ -1157,36 +1208,51 @@ function showconfig() {
 				txpower = 100;
 			} else {
 				var maxtxpower = config[radios[i]].wlan_channels[config[radios[i]].wlan_channel][1];
-				var curtxpower = config[radios[i]].wlan_txpower * 100 / maxtxpower;
-				txpower = 20;
-				if (curtxpower > 20) { txpower = 40; }
-				if (curtxpower > 40) { txpower = 60; }
-				if (curtxpower > 60) { txpower = 80; }
-				if (curtxpower > 80) { txpower = 100; }
+				txpower = -1;
+				var power20 = Math.round(20 * maxtxpower / 100);
+				var power40 = Math.round(40 * maxtxpower / 100);
+				var power60 = Math.round(60 * maxtxpower / 100);
+				var power80 = Math.round(80 * maxtxpower / 100);
+				var power100 = Math.round(100 * maxtxpower / 100);
+				switch (parseInt(config[radios[i]].wlan_txpower)) {
+					case power20:
+						txpower = 20;
+						break;
+					case power40:
+						txpower = 40;
+						break;
+					case power60:
+						txpower = 60;
+						break;
+					case power80:
+						txpower = 80;
+						break;
+					case power100:
+						txpower = 100;
+						break;
+				}
+				if (txpower == -1) {
+					var curtxpower = config[radios[i]].wlan_txpower * 100 / maxtxpower;
+					txpower = 20;
+					if (curtxpower > 20) { txpower = 40; }
+					if (curtxpower > 40) { txpower = 60; }
+					if (curtxpower > 60) { txpower = 80; }
+					if (curtxpower > 80) { txpower = 100; }
+				}
 			}
 			setValue('wlan_txpower_' + i, txpower);
 			setValue('wlan_ssid_' + i, config[radios[i]].wlan_ssid);
-
-			var select = removeOptions('wlan_encryption_' + i);
-			for (var propt in enc) {
-				var opt = document.createElement('option');
-				opt.value = propt;
-				opt.innerHTML = enc[propt];
-				select.appendChild(opt);
-			}
-			setValue('wlan_encryption_' + i, config[radios[i]].wlan_encryption);
-
+			setEncryption('wlan_encryption_' + i, config[radios[i]].wlan_encryption);
 			setValue('wlan_key_' + i, config[radios[i]].wlan_key);
-			enableWlanEncryption(config[radios[i]].wlan_encryption, '_' + i);
+			enableWlanEncryption('', config[radios[i]].wlan_encryption, '_' + i);
 			setValue('wlan_isolate_' + i, config[radios[i]].wlan_isolate == 1);
-
+			setValue('wlan_hidden_' + i, config[radios[i]].wlan_hidden == 1);
 			if (revision > 20293 && (config[radios[i]].wlan_macaddr === 'random' || config[radios[i]].wlan_macaddr === '')) {
 				setValue('wlan_macaddr_' + i, config[radios[i]].wlan_macaddr === 'random');
 				setDisplay('div_wlan_macaddr_' + i, true);
 			} else {
 				setDisplay('div_wlan_macaddr_' + i, false);
 			}
-
 		}
 
 		if (!is_radio2 && !is_radio5 && !is_radio6) {
@@ -1275,15 +1341,16 @@ function showconfig() {
 	})
 }
 
-function copywireless(idx) {
+function copywireless(prefix, idx) {
 	var previdx = parseInt(idx.replace('_', '')) - 1;
-	setValue('wlan_enabled' + idx, getValue('wlan_enabled_' + previdx));
-	setValue('wlan_ssid' + idx, getValue('wlan_ssid_' + previdx));
-	setValue('wlan_encryption' + idx, getValue('wlan_encryption_' + previdx));
-	setValue('wlan_key' + idx, getValue('wlan_key_' + previdx));
-	setValue('wlan_isolate' + idx, getValue('wlan_isolate_' + previdx));
-	setValue('wlan_macaddr' + idx, getValue('wlan_macaddr_' + previdx));
-	enableWlanEncryption(getValue('wlan_encryption_' + previdx), idx);
+	setValue(prefix + 'wlan_enabled' + idx, getValue(prefix + 'wlan_enabled_' + previdx));
+	setValue(prefix + 'wlan_ssid' + idx, getValue(prefix + 'wlan_ssid_' + previdx));
+	setValue(prefix + 'wlan_encryption' + idx, getValue(prefix + 'wlan_encryption_' + previdx));
+	setValue(prefix + 'wlan_key' + idx, getValue(prefix + 'wlan_key_' + previdx));
+	setValue(prefix + 'wlan_isolate' + idx, getValue(prefix + 'wlan_isolate_' + previdx));
+	setValue(prefix + 'wlan_hidden' + idx, getValue(prefix + 'wlan_hidden_' + previdx));
+	setValue(prefix + 'wlan_macaddr' + idx, getValue(prefix + 'wlan_macaddr_' + previdx));
+	enableWlanEncryption(prefix, getValue(prefix + 'wlan_encryption_' + previdx), idx);
 }
 
 function saveconfig() {
@@ -1484,11 +1551,8 @@ function saveconfig() {
 	}
 
 	// wlan
-	var revision = 0;
-	var tmp = config.revision.match(/^r([0-9]*)-[0-9a-f]*/);
-	if (tmp.length > 0) {
-		 revision = parseInt(tmp[1]) || 0;
-	}
+	var revision = getRevision();
+
 	var wlan_restart_required = false;
 
 	var radios = config.wlan_devices;
@@ -1497,8 +1561,8 @@ function saveconfig() {
 
 		if (section == '') {
 			wlan_restart_required = true;
-			cmd.push('uci add wireless wifi-iface');
-			section = '@wifi-iface[-1]';
+			cmd.push('uci set wireless.lan_' + radios[i] + '=wifi-iface');
+			section = 'lan_' + radios[i];
 			config[radios[i]].wlan_section = section;
 			cmd.push('uci set wireless.' + section + '.device=' + radios[i]);
 		}
@@ -1506,26 +1570,26 @@ function saveconfig() {
 		if (getValue('wlan_enabled_' + i)) {
 			if (config[radios[i]].wlan_disabled == 1) {
 				wlan_restart_required = true;
-				cmd.push('uci -q del wireless.' + radios[i] + '.disabled');
 			}
+			cmd.push('uci -q del wireless.' + radios[i] + '.disabled');
 		} else {
 			if (config[radios[i]].wlan_disabled != 1) {
 				wlan_restart_required = true;
-				cmd.push('uci set wireless.' + radios[i] + '.disabled=1');
 			}
+			cmd.push('uci set wireless.' + radios[i] + '.disabled=1');
 		}
 
 		wlan_channel = getValue('wlan_channel_' + i);
 		if (config[radios[i]].wlan_channel != wlan_channel) {
 			wlan_restart_required = true;
-			cmd.push('uci set wireless.' + radios[i] + '.channel=' + wlan_channel);
-			if (wlan_channel > 0) {
-				var band = freq2band(config[radios[i]].wlan_channels[wlan_channel][0]);
-				if (config[radios[i]].wlan_band != '') {
-					cmd.push('uci set wireless.' + radios[i] + '.band=' + band + 'g');
-				} else {
-					cmd.push('uci set wireless.' + radios[i] + '.hwmode=11' + (band == 2 ? 'g' : 'a'));
-				}
+		}
+		cmd.push('uci set wireless.' + radios[i] + '.channel=' + wlan_channel);
+		if (wlan_channel > 0) {
+			var band = freq2band(config[radios[i]].wlan_channels[wlan_channel][0]);
+			if (config[radios[i]].wlan_band != '') {
+				cmd.push('uci set wireless.' + radios[i] + '.band=' + band + 'g');
+			} else {
+				cmd.push('uci set wireless.' + radios[i] + '.hwmode=11' + (band == 2 ? 'g' : 'a'));
 			}
 		}
 		if (wlan_channel > 0) {
@@ -1534,8 +1598,8 @@ function saveconfig() {
 			var curtxpower = Math.round(txpower * maxtxpower / 100);
 			if (config[radios[i]].wlan_txpower != curtxpower) {
 				wlan_restart_required = true;
-				cmd.push('uci set wireless.' + radios[i] + '.txpower=' + curtxpower);
 			}
+			cmd.push('uci set wireless.' + radios[i] + '.txpower=' + curtxpower);
 		} else {
 			cmd.push('uci -q del wireless.' + radios[i] + '.txpower');
 		}
@@ -1550,48 +1614,60 @@ function saveconfig() {
 		}
 		if (config[radios[i]].wlan_ssid != wlan_ssid) {
 			wlan_restart_required = true;
-			cmd.push('uci set wireless.' + section + '.ssid=\\\"' + escapeShell(wlan_ssid) + '\\\"');
 		}
+		cmd.push('uci set wireless.' + section + '.ssid=\\\"' + escapeShell(wlan_ssid) + '\\\"');
 		wlan_encryption = getValue('wlan_encryption_' + i);
 		if (config[radios[i]].wlan_encryption != wlan_encryption) {
 			wlan_restart_required = true;
-			cmd.push('uci set wireless.' + section + '.encryption=\\\"'+wlan_encryption+'\\\"');
 		}
+		cmd.push('uci set wireless.' + section + '.encryption=\\\"'+wlan_encryption+'\\\"');
 		wlan_key = getValue('wlan_key_' + i);
-		if (config[radios[i]].wlan_key != wlan_key) {
-			if (wlan_encryption != 'none') {
-				if (wlan_key.length < 8) {
-					showMsg('Błąd w polu ' + getLabelText('wlan_key_' + i) + ' dla ' + getValue('radio_' + i) + '<br><br>Hasło do Wi-Fi musi mieć co najmniej 8 znaków', true);
-					return;
-				}
+		if (wlan_encryption != 'none') {
+			if (wlan_key.length < 8) {
+				showMsg('Błąd w polu ' + getLabelText('wlan_key_' + i) + ' dla ' + getValue('radio_' + i) + '<br><br>Hasło do Wi-Fi musi mieć co najmniej 8 znaków', true);
+				return;
 			}
-			wlan_restart_required = true;
-			cmd.push('uci set wireless.' + section + '.key=\\\"' + escapeShell(wlan_key) + '\\\"');
 		}
+		if (config[radios[i]].wlan_key != wlan_key) {
+			wlan_restart_required = true;
+		}
+		cmd.push('uci set wireless.' + section + '.key=\\\"' + escapeShell(wlan_key) + '\\\"');
 
 		if (getValue('wlan_isolate_' + i)) {
 			if (config[radios[i]].wlan_isolate == 0) {
 				wlan_restart_required = true;
-				cmd.push('uci set wireless.' + section + '.isolate=1');
 			}
+			cmd.push('uci set wireless.' + section + '.isolate=1');
 		} else {
 			if (config[radios[i]].wlan_isolate != 0) {
 				wlan_restart_required = true;
-				cmd.push('uci -q del wireless.' + section + '.isolate');
 			}
+			cmd.push('uci -q del wireless.' + section + '.isolate');
+		}
+
+		if (getValue('wlan_hidden_' + i)) {
+			if (config[radios[i]].wlan_hidden == 0) {
+				wlan_restart_required = true;
+			}
+			cmd.push('uci set wireless.' + section + '.hidden=1');
+		} else {
+			if (config[radios[i]].wlan_hidden != 0) {
+				wlan_restart_required = true;
+			}
+			cmd.push('uci -q del wireless.' + section + '.hidden');
 		}
 
 		if (revision > 20293 && (config[radios[i]].wlan_macaddr === 'random' || config[radios[i]].wlan_macaddr === '')) {
 			if (getValue('wlan_macaddr_' + i)) {
 				if (config[radios[i]].wlan_macaddr != 'random') {
 					wlan_restart_required = true;
-					cmd.push('uci set wireless.' + section + '.macaddr=random');
 				}
+				cmd.push('uci set wireless.' + section + '.macaddr=random');
 			} else {
 				if (config[radios[i]].wlan_macaddr == 'random') {
 					wlan_restart_required = true;
-					cmd.push('uci -q del wireless.' + section + '.macaddr');
 				}
+				cmd.push('uci -q del wireless.' + section + '.macaddr');
 			}
 		}
 
@@ -1816,7 +1892,17 @@ function showbandwidth(mac) {
 }
 
 var physicalports = [];
+var portsmapping = [];
 var simslot = {};
+
+function portlabel(port) {
+	for (const map of portsmapping) {
+		if (map[port]) {
+			return map[port];
+		}
+	}
+	return port.toUpperCase();
+}
 
 function showstatus() {
 	ubus_call('"easyconfig", "status", {}', function(data) {
@@ -1859,17 +1945,18 @@ function showstatus() {
 			}
 			if ((data.ports).length > 0) {
 				physicalports = data.ports;
+				portsmapping = data.ports_mapping;
 				var sorted = naturalSortJSON(data.ports, 'port');
 				var html = '<center><table><tr>';
 				for (var idx = 0; idx < sorted.length; idx++) {
-					html += '<td style="padding:5px;text-align:center"' + (sorted[idx].macs > 0 ? ' title="Połączonych klientów: ' + sorted[idx].macs + '"' : '') + '><i data-feather="wire' + (sorted[idx].speed > 0 ? '2' : '1')  + '">x</i><br>' + (sorted[idx].port).toUpperCase();
+					html += '<td style="padding:5px;text-align:center"' + (sorted[idx].macs > 0 ? ' title="Połączonych klientów: ' + sorted[idx].macs + '"' : '') + '><i data-feather="wire' + (sorted[idx].speed > 0 ? '2' : '1')  + '">x</i><br>' + portlabel(sorted[idx].port);
 					html += '<br>' + networkspeed(sorted[idx].speed);
 					html += '</td>';
 					if (((idx + 1) % 5) == 0 && (idx + 1) < sorted.length) {
 						html += '</tr><tr>';
 					}
 				}
-				html += '</tr></table></center>'
+				html += '</tr></table></center>';
 				setValue('div_status_lan_ports', html);
 				feather.replace({'width':36, 'height':36});
 				setDisplay('div_status_lan_ports', true);
@@ -2923,7 +3010,7 @@ var wifiscanresults;
 
 function showsitesurvey() {
 	ubus_call('"easyconfig", "wifiscan", {}', function(data) {
-		var arr = [...new Map((data.result).map(v => [JSON.stringify([v.mac,v.ssid,v.freq,v.signal,v.channel,v.encryption,v.mode1,v.mode2,v.vhtch1,v.vhtch2]), v])).values()]
+		var arr = [...new Map((data.result).map(v => [JSON.stringify([v.mac,v.ssid,v.freq,v.signal,v.channel,v.encryption,v.mode1,v.mode2,v.vhtch1,v.vhtch2]), v])).values()];
 
 		var wlan_devices = config.wlan_devices;
 
@@ -3437,7 +3524,7 @@ wifigraph = {
 	},
 
 	plot: function (graph) {
-		var ctx = graph.context
+		var ctx = graph.context;
 		var data = sortJSON(graph.data, 'signal', 'desc');
 
 		ctx.textAlign = 'center';
@@ -3639,8 +3726,8 @@ function clientscallback(sortby) {
 				clients[idx].first_seen = '-';
 				clients[idx].last_seen = '-';
 				if (clients[idx].tx === undefined) {
-					clients[idx].tx = 0
-					clients[idx].rx = 0
+					clients[idx].tx = 0;
+					clients[idx].rx = 0;
 				}
 			}
 			total += clients[idx].tx + clients[idx].rx;
@@ -3685,7 +3772,7 @@ function clientscallback(sortby) {
 				}
 				html += '<hr><div class="row">';
 
-				html += '<div class="col-xs-9 visible-xs-block"><span style="color:' + string2color(sorted[idx].mac) + '">&#9608;</span>&nbsp;<span class="click" onclick="hostnameedit(' + sorted[idx].id + ');">' + sorted[idx].displayname + '</span></div>';
+				html += '<div class="col-xs-9 visible-xs-block"><span style="color:' + string2color(sorted[idx].mac) + '">&#9608;</span>&nbsp;<span class="click" onclick="hostnameedit(' + sorted[idx].id + ');">' + (sorted[idx].displayname).escapeHTML() + '</span></div>';
 				html += '<div class="col-xs-3 visible-xs-block text-right"><span class="click" title="menu" onclick="hostmenu(' + sorted[idx].id + ');"><i data-feather="more-vertical"></i></span></div>';
 				html += '<div class="col-xs-12 visible-xs-block">' + limitations;
 				html += 'MAC: ' + sorted[idx].mac + (sorted[idx].ip == '' ? '' : ', IP: ' + sorted[idx].ip) + ', ';
@@ -3693,7 +3780,7 @@ function clientscallback(sortby) {
 					html += 'przewodowo';
 					var obj = physicalports.find(o => o.port === sorted[idx].port);
 					if (obj) {
-						html += ' ' + (sorted[idx].port).toUpperCase();
+						html += ' ' + portlabel(sorted[idx].port);
 					}
 					html += '</div>';
 				} else {
@@ -3706,14 +3793,14 @@ function clientscallback(sortby) {
 					title1 = ' title="' + sorted[idx].percent + '% udziału w ruchu"';
 					title2 = ' title="połączony: ' + formatDuration(sorted[idx].connected, false) + '"';
 				}
-				html += '<div class="col-xs-3 hidden-xs"><span style="color:' + string2color(sorted[idx].mac) + '"' + title1 + '>&#9608;</span>&nbsp;<span class="click" onclick="hostnameedit(' + sorted[idx].id + ');"' + title2 + '>' + sorted[idx].displayname + '</span></div>';
+				html += '<div class="col-xs-3 hidden-xs"><span style="color:' + string2color(sorted[idx].mac) + '"' + title1 + '>&#9608;</span>&nbsp;<span class="click" onclick="hostnameedit(' + sorted[idx].id + ');"' + title2 + '>' + (sorted[idx].displayname).escapeHTML() + '</span></div>';
 				html += '<div class="col-xs-3 hidden-xs">' + limitations + '<span title="adres MAC">' + sorted[idx].mac + '</span><br><span title="adres IP">' + sorted[idx].ip + '</span></div>';
 				html += '<div class="col-xs-3 hidden-xs" title="sposób połączenia">';
 				if (sorted[idx].type == 1) {
 					html += 'przewodowo';
 					var obj = physicalports.find(o => o.port === sorted[idx].port);
 					if (obj) {
-						html += '<br>' + (sorted[idx].port).toUpperCase();
+						html += '<br>' + portlabel(sorted[idx].port);
 					}
 					html += '</div>';
 					html += '<div class="col-xs-2"></div>';
@@ -3728,7 +3815,7 @@ function clientscallback(sortby) {
 			} else {
 				if (sorted[idx].active) { continue; }
 				html += '<hr><div class="row">';
-				html += '<div class="col-xs-9"><span class="click" onclick="hostnameedit(' + sorted[idx].id + ');">' + (sorted[idx].active_id > -1 ? '<span title="aktywny" style="color:green">&#9679;</span>&nbsp;' : '') + sorted[idx].displayname + '</span></div>';
+				html += '<div class="col-xs-9"><span class="click" onclick="hostnameedit(' + sorted[idx].id + ');">' + (sorted[idx].active_id > -1 ? '<span title="aktywny" style="color:green">&#9679;</span>&nbsp;' : '') + (sorted[idx].displayname).escapeHTML() + '</span></div>';
 				html += '<div class="col-xs-3 text-right"><span class="click" title="menu" onclick="hostmenu(' + sorted[idx].id + ');"><i data-feather="more-vertical"></i></span></div>';
 				html += '<div class="col-xs-12">MAC: ' + sorted[idx].mac + ', pierwszy raz: ' + formatDateTime(sorted[idx].first_seen) +  (sorted[idx].active_id > -1 ? ', <span style="color:green">aktywny</span>' : ', ostatni raz: ' + formatDateTime(sorted[idx].last_seen)) + '</div>';
 				html += '</div>';
@@ -3822,7 +3909,7 @@ function clientscallback(sortby) {
 						var e1 = document.getElementById('div_clients_pie_tooltip');
 						e1.style.top = (e.pageY + 15) + 'px';
 						e1.style.left = (e.pageX + 15) + 'px';
-						setValue('div_clients_pie_tooltip', sorted[idx].displayname + ': ' + bytesToSize(sorted[idx].tx + sorted[idx].rx) + ' (' +  sorted[idx].percent + '%), połączony ' + formatDuration(sorted[idx].connected, false));
+						setValue('div_clients_pie_tooltip', (sorted[idx].displayname).escapeHTML() + ': ' + bytesToSize(sorted[idx].tx + sorted[idx].rx) + ' (' +  sorted[idx].percent + '%), połączony ' + formatDuration(sorted[idx].connected, false));
 						setDisplay('div_clients_pie_tooltip', true);
 						break;
 					}
@@ -3861,7 +3948,7 @@ function clientsstats() {
 			if (sorted[idx1].active) { continue; }
 			if ((sorted[idx1].first_seen).startsWith(toDate)) {
 				cnt += 1;
-				html1 += createRowForModal(sorted[idx1].displayname, formatDateTime(sorted[idx1].first_seen));
+				html1 += createRowForModal((sorted[idx1].displayname).escapeHTML(), formatDateTime(sorted[idx1].first_seen));
 			}
 		}
 		html += formatDateTime(toDate) + ' (' + toHumanReadableDate + '): ' + cnt  + '<br>';
@@ -3884,7 +3971,7 @@ function showclientslogs() {
 			var mac = logs[idx].mac;
 			if (!(mac in lookup)) {
 				lookup[mac] = 1;
-				hosts.push({'mac': mac, 'username': logs[idx].username != '' ? logs[idx].username : (logs[idx].dhcpname != '' ? logs[idx].dhcpname + ' / ' + logs[idx].mac : logs[idx].mac)});
+				hosts.push({'mac': mac, 'username': logs[idx].username != '' ? logs[idx].username : (logs[idx].dhcpname != '' ? logs[idx].dhcpname : logs[idx].mac)});
 			}
 		}
 		logs_hosts = sortJSON(hosts, 'username', 'asc');
@@ -3900,7 +3987,7 @@ function timestampToDate(ts) {
 }
 
 function clientslogscallback(first, last) {
-	var selected = 'all'
+	var selected = 'all';
 	var e = document.getElementById('clientslogs_hosts');
 	if (e != null) {
 		selected = e.options[e.selectedIndex].value;
@@ -3926,7 +4013,7 @@ function clientslogscallback(first, last) {
 		html += '<div class="col-xs-12 col-sm-offset-6 col-sm-6"><select id="clientslogs_hosts" class="form-control" onchange="clientslogscallback(0,9);">';
 		html += '<option value="all">Wszyscy</option>';
 		for (var idx = 0; idx < logs_hosts.length; idx++) {
-			html += '<option value="' + logs_hosts[idx].mac + '">' + logs_hosts[idx].username + '</option>';
+			html += '<option value="' + logs_hosts[idx].mac + '">' + (logs_hosts[idx].username).escapeHTML() + '</option>';
 		}
 		html += '</select></div></div>';
 
@@ -3944,7 +4031,7 @@ function clientslogscallback(first, last) {
 			html += '<div class="row space">';
 			html += '<div class="col-xs-6 col-sm-3">' + formatDateTime(timestampToDate(filtered[idx].id)) + '</div>';
 			html += '<div class="col-xs-6 col-sm-3" title="' + title + '">' + (filtered[idx].event == 'connect' ? 'połączenie' : 'rozłączenie') + '</div>';
-			html += '<div class="col-xs-12 col-sm-6">' + ((selected != 'all') ? title : (filtered[idx].username != '' ? filtered[idx].username : (filtered[idx].dhcpname != '' ? filtered[idx].dhcpname + ' / ' + filtered[idx].mac : filtered[idx].mac))) + '</div>';
+			html += '<div class="col-xs-12 col-sm-6">' + ((selected != 'all') ? title : (filtered[idx].username != '' ? (filtered[idx].username).escapeHTML() : (filtered[idx].dhcpname != '' ? filtered[idx].dhcpname : filtered[idx].mac))) + '</div>';
 			html += '</div>';
 		}
 		html += '<div class="row">';
@@ -3983,7 +4070,7 @@ function hostmenu(id) {
 			break;
 		}
 	}
-	var html = host.displayname + '<hr>';
+	var html = (host.displayname).escapeHTML() + '<hr>';
 
 	html += '<p><span class="click" onclick="closeMsg();hostinfo(' + (host.active_id > -1 ? host.active_id : host.id) + ');">informacje</span></p>';
 	html += '<p><span class="click" onclick="closeMsg();hostnameedit(' + host.id + ');">zmiana nazwy</span></p>';
@@ -4011,7 +4098,6 @@ function calculatedistance(frequency, signal) {
 
 function hostinfo(id) {
 	var html = '';
-	var vendor = '-';
 	var host;
 	for (var i = 0; i < clients.length; i++) {
 		if (clients[i].id == id) {
@@ -4020,7 +4106,7 @@ function hostinfo(id) {
 		}
 	}
 
-	html += createRowForModal('Nazwa', (host.username == '' ? '-' : host.username));
+	html += createRowForModal('Nazwa', (host.username == '' ? '-' : (host.username).escapeHTML()));
 	html += createRowForModal('MAC', host.mac);
 	html += createRowForModal('Producent', getmanuf(host.mac));
 	html += createRowForModal('Nazwa rzeczywista', (host.dhcpname == '' ? '-' : host.dhcpname));
@@ -4029,7 +4115,7 @@ function hostinfo(id) {
 		if (host.type == 1) {
 			var obj = physicalports.find(o => o.port === host.port);
 			if (obj) {
-				html += createRowForModal('Port', (host.port).toUpperCase());
+				html += createRowForModal('Port', portlabel(host.port));
 			}
 		}
 		if (host.type == 2) {
@@ -4044,6 +4130,9 @@ function hostinfo(id) {
 						break;
 					case 6:
 						html += createRowForModal('Standard', 'Wi-Fi 6' + (host.band == 6 ? 'E' : '') + ' (802.11ax)');
+						break;
+					case 7:
+						html += createRowForModal('Standard', 'Wi-Fi 7 (802.11be)');
 						break;
 				}
 			}
@@ -4077,7 +4166,7 @@ function hostblock(id) {
 		}
 	}
 	setValue('hostblock_mac', host.mac);
-	setValue('hostblock_name', host.displayname);
+	setValue('hostblock_name', (host.displayname).escapeHTML());
 
 	var days = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'];
 
@@ -4104,7 +4193,7 @@ function hostblock(id) {
 	if (host.block == 1) { setValue('hostblock_permanent', true); }
 	if (host.block == 2) {
 		setValue('hostblock_temporary', true);
-		var code = [64,32,16,8,4,2,1]
+		var code = [64,32,16,8,4,2,1];
 		var hours = (host.blockdata).match(/.{1,2}/g);
 		if (hours.length == 24) {
 			for (var i = 0; i < 24; i++) {
@@ -4152,7 +4241,7 @@ function okhostblock() {
 	}
 	if (action == 2) {
 		var bc = document.getElementById('hostblock_off').style.backgroundColor;
-		var code = [64,32,16,8,4,2,1]
+		var code = [64,32,16,8,4,2,1];
 		var hex = '';
 		for (var i = 0; i < 24; i++) {
 			var sum = 0;
@@ -4206,7 +4295,7 @@ function hostnameedit(id) {
 
 	setValue('hostname_mac', host.mac);
 	setValue('hostname_name', host.displayname);
-	setValue('hostname_name1', host.displayname);
+	setValue('hostname_name1', (host.displayname).escapeHTML());
 	setDisplay('div_hostname', true);
 	document.getElementById('hostname_name').focus();
 }
@@ -4241,7 +4330,7 @@ function hostip(id) {
 	}
 
 	setValue('hostip_mac', host.mac);
-	setValue('hostip_name', host.displayname);
+	setValue('hostip_name', (host.displayname).escapeHTML());
 	setValue('hostip_ip', (host.staticdhcp == '' ? host.ip : host.staticdhcp));
 	var e = document.getElementById('hostip_ip');
 	proofreadText(e, validateIP, 0);
@@ -4326,7 +4415,7 @@ function hostqos(id) {
 	}
 
 	setValue('hostqos_mac', host.mac);
-	setValue('hostqos_name', host.displayname);
+	setValue('hostqos_name', (host.displayname).escapeHTML());
 	setValue('hostqos_ip', host.ip);
 
 	// KB/s to Mb/s
@@ -4421,7 +4510,7 @@ function hoststatistics(id, type, limit) {
 			break;
 		}
 	}
-	hoststatisticsmodal(host.mac, 'Statystyka transferu dla "' + host.displayname + '"', type, limit);
+	hoststatisticsmodal(host.mac, 'Statystyka transferu dla "' + (host.displayname).escapeHTML() + '"', type, limit);
 }
 
 function hoststatisticsmodal(mac, title, type, limit) {
@@ -4507,7 +4596,7 @@ function hostremovedata(id) {
 	}
 
 	setValue('dialog_val', (host.mac).replace(/:/g, '_'));
-	showDialog('Usunąć dane dla "' + host.displayname + '"?', 'Anuluj', 'Usuń', okremovetraffic);
+	showDialog('Usunąć dane dla "' + (host.displayname).escapeHTML() + '"?', 'Anuluj', 'Usuń', okremovetraffic);
 }
 
 function hostlogs(id) {
@@ -4560,10 +4649,10 @@ function showqueries() {
 }
 
 function queriescallback(sortby, order) {
-	var selected = 'all'
+	var selected = 'all';
 	var e = document.getElementById('queries_hosts');
 	if (e != null) {
-		selected = e.options[e.selectedIndex].value;
+		selected = atob(e.options[e.selectedIndex].value);
 	}
 	var tmp = getValue('queries_host');
 	if (tmp != '') { selected = tmp; }
@@ -4591,13 +4680,13 @@ function queriescallback(sortby, order) {
 			}
 		}
 		html += '<div class="row"><div class="col-xs-6 text-right">Liczba zapytań o niedostępne domeny</div><div class="col-xs-6"><p>' + cnt + '<span class="visible-xs oneline"></span> (' + parseInt(cnt * 100 / filtered.length) + '%)</p></div></div>';
-		html += '<hr>'
+		html += '<hr>';
 
 		html += '<div class="form-group row" id="div_queries_hosts">';
 		html += '<div class="col-xs-offset-6 col-xs-6 col-sm-offset-4 col-sm-4"><select id="queries_hosts" class="form-control" onchange="queriescallback(\'id\', \'desc\');">';
-		html += '<option value="all">Wszyscy</option>';
+		html += '<option value="' + btoa('all') + '">Wszyscy</option>';
 		for (var idx = 0; idx < queries_hosts.length; idx++) {
-			html += '<option value="' + queries_hosts[idx].host + '">' + queries_hosts[idx].host + '</option>';
+			html += '<option value="' + btoa(queries_hosts[idx].host) + '">' + (queries_hosts[idx].host).escapeHTML() + '</option>';
 		}
 		html += '</select></div></div>';
 
@@ -4611,7 +4700,7 @@ function queriescallback(sortby, order) {
 		for (var idx = 0; idx < sorted.length; idx++) {
 			html += '<div class="row space">';
 			html += '<div class="col-xs-6 col-sm-4">' + formatDateTime(sorted[idx].time) + '</div>';
-			html += '<div class="col-xs-6 col-sm-4">' + sorted[idx].host + '</div>';
+			html += '<div class="col-xs-6 col-sm-4">' + (sorted[idx].host).escapeHTML() + '</div>';
 			if (sorted[idx].nxdomain) {
 				html += '<div class="col-xs-12 col-sm-4 text-muted" title="brak domeny">' + sorted[idx].query + '</div>';
 			} else {
@@ -4630,7 +4719,7 @@ function queriescallback(sortby, order) {
 			var e = document.getElementById('queries_sortby_' + all[idx]);
 			e.style.fontWeight = (sortby == all[idx]) ? 700 : 400;
 		}
-		setValue('queries_hosts', selected);
+		setValue('queries_hosts', btoa(selected));
 	}
 }
 
@@ -5234,8 +5323,8 @@ function savevpnkillswitch() {
 			cmd.push('uci set firewall.@forwarding[-1].dest=wan');
 		}
 	}
-	cmd.push('uci commit firewall')
-	cmd.push('/etc/init.d/firewall restart')
+	cmd.push('uci commit firewall');
+	cmd.push('/etc/init.d/firewall restart');
 	execute(cmd, showvpn);
 }
 
@@ -5246,13 +5335,13 @@ function showvpn() {
 		var sorted = sortJSON(data.result, 'name', 'asc');
 		if (sorted.length > 0) {
 			var html = '<div class="row space">';
-			html += '<div class="col-xs-12 col-sm-4">Nazwa</div>'
-			html += '<div class="col-xs-3 col-sm-3">Typ</div>'
-			html += '<div class="col-xs-7 col-sm-4">Status</div>'
-			html += '<div class="col-xs-2 col-sm-1"></div>'
+			html += '<div class="col-xs-12 col-sm-4">Nazwa</div>';
+			html += '<div class="col-xs-3 col-sm-3">Typ</div>';
+			html += '<div class="col-xs-7 col-sm-4">Status</div>';
+			html += '<div class="col-xs-2 col-sm-1"></div>';
 			html += '</div>';
 			for (var idx = 0; idx < sorted.length; idx++) {
-				html += '<hr><div class="row space"><div class="col-xs-12 col-sm-4 click" onclick="vpndetails(\'' + sorted[idx].proto + '\',\'' + sorted[idx].interface + '\',\'' + (sorted[idx].section ? sorted[idx].section : '') + '\');">' + (sorted[idx].name).replace(',', '<br>') + '</div>';
+				html += '<hr><div class="row space"><div class="col-xs-12 col-sm-4 click" onclick="vpndetails(\'' + sorted[idx].proto + '\',\'' + sorted[idx].interface + '\',\'' + (sorted[idx].section ? sorted[idx].section : '') + '\');">' + (sorted[idx].name).replace(',', '<br>').escapeHTML() + '</div>';
 				html += '<div class="col-xs-3 col-sm-3">' + vpntype(sorted[idx].proto) + '</div>';
 				if (sorted[idx].up) {
 					if (sorted[idx].proto == 'zerotier') {
@@ -6274,10 +6363,11 @@ var adblock_lists;
 function showadblock() {
 	ubus_call('"easyconfig", "adblock", {}', function(data) {
 		if (config.services.adblock) {
+			document.getElementById('btn_adblock_checkdomain').style.display = 'inline-block';
 			setDisplay('div_adblock_adblock', true);
-			var tmp = data.domains == '' ? '-' : data.domains
+			var tmp = (data.domains == '' ? '-' : data.domains);
 			if (data.domains == '0') {
-				if (data.status == 'running') { tmp += ' (trwa uruchamianie)' }
+				if (data.status == 'running') { tmp += ' (trwa uruchamianie)'; }
 			}
 			setValue('adblock_domains', tmp);
 			setValue('adblock_enabled', data.enabled);
@@ -6315,7 +6405,10 @@ function showadblock() {
 				setValue('adblock_' + adblock_lists[i].section, adblock_lists[i].enabled);
 			}
 		} else {
+			setDisplay('btn_adblock_checkdomain', false);
 			setDisplay('div_adblock_easyconfig', true);
+			setValue('adblock_enabled_easyconfig', data.enabled);
+			setValue('adblock_forcedns_easyconfig', data.forcedns);
 		}
 
 		html = '';
@@ -6382,6 +6475,20 @@ function saveadblock() {
 
 function saveadblock_easyconfig() {
 	var cmd = [];
+
+	if (getValue('adblock_forcedns_easyconfig')) {
+		cmd.push('uci set firewall.dns_53_redirect=redirect');
+		cmd.push('uci set firewall.dns_53_redirect.name=\\\"Adblock DNS, port 53\\\"');
+		cmd.push('uci set firewall.dns_53_redirect.src=lan');
+		cmd.push('uci set firewall.dns_53_redirect.proto=\\\"tcp udp\\\"');
+		cmd.push('uci set firewall.dns_53_redirect.src_dport=53');
+		cmd.push('uci set firewall.dns_53_redirect.dest_port=53');
+		cmd.push('uci set firewall.dns_53_redirect.target=DNAT');
+	} else {
+		cmd.push('uci -q del firewall.dns_53_redirect');
+	}
+	cmd.push('uci commit');
+	cmd.push('/etc/init.d/firewall restart');
 
 	if (getValue('adblock_enabled_easyconfig')) {
 		cmd.push('/etc/init.d/easyconfig_adblock enable');
@@ -6720,13 +6827,13 @@ function showwol() {
 		var sorted = sortJSON(data.result, 'description', 'asc');
 		if (sorted.length > 0) {
 			var html = '<div class="row space">';
-			html += '<div class="col-xs-6">Opis</div>'
-			html += '<div class="col-xs-4">Adres MAC</div>'
-			html += '<div class="col-xs-2">Wybudzanie</div>'
+			html += '<div class="col-xs-6">Opis</div>';
+			html += '<div class="col-xs-4">Adres MAC</div>';
+			html += '<div class="col-xs-2">Wybudzanie</div>';
 			html += '</div>';
 			for (var idx = 0; idx < sorted.length; idx++) {
 				html += '<hr><div class="row space">';
-				html += '<div class="col-xs-6 click" onclick="woldetails(\'' + btoa(JSON.stringify(sorted[idx])) + '\')">' + (sorted[idx].description == '' ? sorted[idx].mac : sorted[idx].description) + '</div>';
+				html += '<div class="col-xs-6 click" onclick="woldetails(\'' + btoa(JSON.stringify(sorted[idx])) + '\')">' + (sorted[idx].description == '' ? sorted[idx].mac : (sorted[idx].description).escapeHTML()) + '</div>';
 				html += '<div class="col-xs-4">' + sorted[idx].mac + '</div>';
 				html += '<div class="col-xs-2"><span class="click" onclick="wolwakeup(\'' + sorted[idx].section + '\');" title="wybudź"><i data-feather="power"></i></span></div>';
 				html += '</div>';
@@ -6821,6 +6928,470 @@ function wolwakeup(section) {
 
 /*****************************************************************************/
 
+function subnet2Mask(subnet) {
+	return subnet
+		.split('.')
+		.reduce((nbb, byte) => (
+			[...Array(8).reverse().keys()]
+				.reduce((nb, i) => (nb + ((byte >> i) & 1)), nbb)), 0)
+}
+
+function shownetworks() {
+	ubus_call('"easyconfig", "networks", {}', function(data) {
+		var ports = naturalSortJSON(data.ports, 'port');
+		var ipaddrs = [];
+
+		var sorted = sortJSON(data.networks, 'description', 'asc');
+		if (sorted.length > 0) {
+			var html = '<div class="row space">';
+			html += '<div class="col-xs-6">Opis</div>';
+			html += '<div class="hidden-xs col-xs-3">Klientów bezprzewodowych</div>';
+			html += '<div class="hidden-xs col-xs-3">Klientów przewodowych</div>';
+			html += '<div class="visible-xs col-xs-3">Klientów bezprzew.</div>';
+			html += '<div class="visible-xs col-xs-3">Klientów przew.</div>';
+			html += '</div>';
+			for (var idx = 0; idx < sorted.length; idx++) {
+				ipaddrs.push({ipaddr: sorted[idx].ipaddr, section: sorted[idx].section, description: sorted[idx].description});
+			}
+			for (var idx = 0; idx < sorted.length; idx++) {
+				sorted[idx].ipaddrs = ipaddrs;
+				if (sorted[idx].description == '') {
+					sorted[idx].description = sorted[idx].section;
+				}
+				html += '<hr><div class="row space">';
+				html += '<div class="col-xs-6 click" onclick="networkdetails(\'' + btoa(JSON.stringify(ports)) + '\',\'' + btoa(JSON.stringify(sorted[idx])) + '\')">' + (sorted[idx].description).escapeHTML() + '</div>';
+				html += '<div class="col-xs-3">' + sorted[idx].wlan_clients + '</div>';
+				html += '<div class="col-xs-3">' + sorted[idx].lan_clients + '</div>';
+				html += '</div>';
+			}
+			setValue('div_networks_content', html);
+			showicon();
+		} else {
+			setValue('div_networks_content', '<div class="alert alert-warning">Brak sieci dodatkowych</div>');
+		}
+
+		var newnetwork = {};
+		newnetwork['section'] = '';
+		newnetwork['description'] = '';
+		newnetwork['proto'] = 'static';
+		newnetwork['ipaddr'] = '172.16.0.1';
+		newnetwork['ipaddrs'] = ipaddrs;
+		newnetwork['netmask'] = '255.255.255.0';
+		newnetwork['device'] = '';
+		newnetwork['bridge'] = '';
+		newnetwork['zone'] = '';
+		newnetwork['forwarding'] = [];
+		newnetwork['dhcp'] = 1;
+		newnetwork['wireless'] = [];
+		newnetwork['wire'] = [];
+		var radios = config.wlan_devices;
+		for (var i = 0; i < radios.length; i++) {
+			var obj = {};
+			obj[radios[i]] = {};
+			obj[radios[i]]['disabled'] = 1;
+			obj[radios[i]]['ssid'] = '';
+			obj[radios[i]]['encryption'] = 'psk2';
+			obj[radios[i]]['key'] = '';
+			obj[radios[i]]['isolate'] = 0;
+			obj[radios[i]]['hidden'] = 0;
+			obj[radios[i]]['macaddr'] = '';
+			obj[radios[i]]['section'] = '';
+			newnetwork['wireless'][i] = obj;
+		}
+
+		document.getElementById('btn_network_new').addEventListener('click', function() {
+			networkdetails(btoa(JSON.stringify(ports)), btoa(JSON.stringify(newnetwork)));
+		});
+	})
+}
+
+function networkdetails(ports, data) {
+	var physicalports = JSON.parse(atob(ports));
+	var json = JSON.parse(atob(data));
+
+	setValue('network_data', data);
+	setValue('network_ports', ports);
+	setValue('network_error', '');
+	setValue('network_description', json.description);
+	setValue('network_ipaddr', json.ipaddr);
+	setValue('network_netmask', json.netmask);
+	setValue('network_dhcp', json.dhcp);
+	setValue('network_towan', false);
+	(json.forwarding).forEach(function(f) {
+		if (f.hasOwnProperty('wan')) {
+			setValue('network_towan', true);
+		}
+	});
+
+	setValue('div_network_interfaces_content', '');
+
+	var revision = getRevision();
+
+	var radios = config.wlan_devices;
+	for (var i = 0; i < radios.length; i++) {
+		var vap = null;
+		(json.wireless).forEach(function(obj) {
+			if (obj.hasOwnProperty(radios[i])) {
+				vap = obj[radios[i]];
+			}
+		})
+		if (!vap) {
+			continue;
+		}
+
+		var html = ('<div>' + document.getElementById('div_network_wireless_template').innerHTML + '</div>').replaceAll('_idx', '_' + i);
+		document.getElementById('div_network_interfaces_content').insertAdjacentHTML('beforeend', html);
+		if (i > 0) { setDisplay('div_network_wlan_copy_link_' + i, true); }
+		setValue('network_radio_' + i, config[radios[i]].description);
+
+		setValue('network_wlan_enabled_' + i, vap.disabled != 1);
+		var msg = '';
+		if (vap.radio_disabled == 1) {
+			msg = 'UWAGA: interfejs radiowy jest wyłączony!';
+		}
+		setValue('div_network_wlan_enabled_desc1_' + i, msg);
+		setValue('div_network_wlan_enabled_desc2_' + i, msg);
+		setValue('network_wlan_ssid_' + i, vap.ssid);
+		setEncryption('network_wlan_encryption_' + i, vap.encryption);
+		setValue('network_wlan_key_' + i, vap.key);
+		enableWlanEncryption('network_', vap.encryption, '_' + i);
+		setValue('network_wlan_isolate_' + i, vap.isolate == 1);
+		setValue('network_wlan_hidden_' + i, vap.hidden == 1);
+
+		if (revision > 20293 && (vap.macaddr === 'random' || vap.macaddr === '')) {
+			setValue('network_wlan_macaddr_' + i, vap.macaddr === 'random');
+			setDisplay('div_network_wlan_macaddr_' + i, true);
+		} else {
+			setDisplay('div_network_wlan_macaddr_' + i, false);
+		}
+	}
+
+	var cnt = physicalports.length;
+	if (cnt > 0) {
+		var html = '<div>' + document.getElementById('div_network_wire_header_template').innerHTML + '</div>';
+		document.getElementById('div_network_interfaces_content').insertAdjacentHTML('beforeend', html);
+		setValue('network_port_cnt', cnt);
+		for (var i = 0; i < cnt; i++) {
+			html = ('<div>' + document.getElementById('div_network_wire_template').innerHTML + '</div>').replaceAll('_idx', '_' + i);
+			document.getElementById('div_network_interfaces_content').insertAdjacentHTML('beforeend', html);
+			setValue('network_port_data_' + i, btoa(JSON.stringify(physicalports[i])));
+			setValue('network_port_label_' + i, physicalports[i].port.toUpperCase());
+			setValue('network_port_' + i, json.wire.indexOf(physicalports[i].port) > -1);
+			var desc = physicalports[i].description == '' ? physicalports[i].network : physicalports[i].description;
+			if (desc == 'lan') { desc = 'Sieć lokalna'; }
+			setValue('network_port_desc1_' + i, desc);
+			setValue('network_port_desc2_' + i, desc);
+		}
+	}
+
+	setDisplay('div_network_details', true);
+}
+
+function cancelnetwork() {
+	setDisplay('div_network_details', false);
+}
+
+function removenetwork() {
+	cancelnetwork();
+	setValue('dialog_val', getValue('network_data'));
+	setValue('dialog_val1', getValue('network_ports'));
+	showDialog('Usunąć sieć dodatkową "' + getValue('network_description') + '"?', 'Anuluj', 'Usuń', okremovenetwork);
+}
+
+function okremovenetwork() {
+	var json = JSON.parse(atob(getValue('dialog_val')));
+	var physicalports = JSON.parse(atob(getValue('dialog_val1')));
+
+	var cmd = [];
+	if (json.section) {
+		cmd.push('uci -q del network.' + json.section);
+	}
+	if (json.bridge) {
+		for (var idx = 0; idx < physicalports.length; idx++) {
+			if (physicalports[idx].bridge == json.bridge) {
+				cmd.push('uci -q del_list network.' + physicalports[idx].lanbridge + '.ports=' + physicalports[idx].port);
+				cmd.push('uci add_list network.' + physicalports[idx].lanbridge + '.ports=' + physicalports[idx].port);
+			}
+		}
+		cmd.push('uci -q del network.' + json.bridge);
+	}
+	cmd.push('uci -q del dhcp.' + json.section);
+	if (json.zone) {
+		cmd.push('uci -q del firewall.' + json.zone);
+	}
+	cmd.push('uci -q del firewall.' + json.section + '_dhcp');
+	cmd.push('uci -q del firewall.' + json.section + '_dns');
+	var t = '';
+	(json.forwarding).forEach(function(f) {
+		if (f.hasOwnProperty('wan')) {
+			t = f['wan'];
+		}
+	});
+	if (t != '') {
+		cmd.push('uci -q del firewall.' + t);
+	}
+	for (var i = 0; i < json.wireless.length; i++) {
+		for (var key in json.wireless[i]) {
+			t = json.wireless[i][key];
+			if (t.section != '') {
+				cmd.push('uci -q del wireless.' + t.section);
+			}
+		}
+	}
+	cmd.push('uci commit');
+	cmd.push('reload_config');
+	cmd.push('wifi');
+	cmd.push('/etc/init.d/dnsmasq restart');
+	cmd.push('/etc/init.d/firewall restart');
+	execute(cmd, shownetworks);
+}
+
+function savenetwork() {
+	var cmd = [];
+
+	if (getValue('network_description') == '') {
+		setValue('network_error', 'Błąd w polu ' + getLabelText('network_description'));
+		return;
+	}
+	var ipaddr = getValue('network_ipaddr');
+	if (validateIP(ipaddr) != 0) {
+		setValue('network_error', 'Błąd w polu ' + getLabelText('network_ipaddr'));
+		return;
+	}
+
+	var json = JSON.parse(atob(getValue('network_data')));
+	if (json.section == '') {
+		json.section = Math.random().toString(36).substring(2, 10);
+		cmd.push('uci set network.' + json.section + '=interface');
+		json.device = 'br-' + json.section;
+		cmd.push('uci add network device');
+		json.bridge = '@device[-1]'
+		cmd.push('uci set network.' + json.bridge + '.name=' + json.device);
+		cmd.push('uci set network.' + json.bridge + '.type=bridge');
+		cmd.push('uci set network.' + json.bridge + '.bridge_empty=1');
+	}
+	var usedinnetwork = '';
+	if (config.lan_ipaddr == ipaddr) { usedinnetwork = 'Sieć lokalna'; }
+	for (var idx = 0; idx < json.ipaddrs.length; idx++) {
+		if (json.ipaddrs[idx].ipaddr == ipaddr && json.ipaddrs[idx].section != json.section) { usedinnetwork = json.ipaddrs[idx].description; }
+	}
+	if (usedinnetwork) {
+		setValue('network_error', 'Błąd w polu ' + getLabelText('network_ipaddr') + '<br>adres jest już wykorzystywany w sieci "' + usedinnetwork.escapeHTML() + '"');
+		return;
+	}
+
+	cmd.push('uci set network.' + json.section + '.description=\\\"' + escapeShell(getValue('network_description')) + '\\\"');
+	cmd.push('uci set network.' + json.section + '.proto=static');
+	cmd.push('uci set network.' + json.section + '.device=' + json.device);
+	if (json.bridge != '') {
+		cmd.push('uci set network.' + json.bridge + '.name=' + json.device);
+	}
+	cmd.push('uci set network.' + json.section + '.ipaddr=' + ipaddr);
+	cmd.push('uci set network.' + json.section + '.netmask=' + getValue('network_netmask'));
+	cmd.push('uci set dhcp.' + json.section + '=dhcp');
+	cmd.push('uci set dhcp.' + json.section + '.interface=' + json.section);
+	if (getValue('network_dhcp')) {
+		cmd.push('uci set dhcp.' + json.section + '.start=100');
+		cmd.push('uci set dhcp.' + json.section + '.limit=150');
+		cmd.push('uci set dhcp.' + json.section + '.leasetime=2h');
+	} else {
+		cmd.push('uci -q del dhcp.' + json.section + '.start');
+		cmd.push('uci -q del dhcp.' + json.section + '.limit');
+		cmd.push('uci -q del dhcp.' + json.section + '.leasetime');
+		cmd.push('uci set dhcp.' + json.section + '.ignore=1');
+	}
+	if (json.zone == '') {
+		cmd.push('uci add firewall zone');
+		json.zone = '@zone[-1]';
+	}
+	cmd.push('uci set firewall.' + json.zone + '.name=' + json.section);
+	cmd.push('uci -q del_list firewall.' + json.zone + '.network=' + json.section);
+	cmd.push('uci add_list firewall.' + json.zone + '.network=' + json.section);
+	cmd.push('uci set firewall.' + json.zone + '.input=REJECT');
+	cmd.push('uci set firewall.' + json.zone + '.output=ACCEPT');
+	cmd.push('uci set firewall.' + json.zone + '.forward=REJECT');
+
+	cmd.push('uci set firewall.' + json.section + '_dhcp=rule');
+	cmd.push('uci set firewall.' + json.section + '_dhcp.name=\\\"' + json.section + ' DHCP, ports 67-68\\\"');
+	cmd.push('uci set firewall.' + json.section + '_dhcp.src=' + json.section);
+	cmd.push('uci set firewall.' + json.section + '_dhcp.proto=udp');
+	cmd.push('uci set firewall.' + json.section + '_dhcp.src_port=67-68');
+	cmd.push('uci set firewall.' + json.section + '_dhcp.dest_port=67-68');
+	cmd.push('uci set firewall.' + json.section + '_dhcp.target=ACCEPT');
+	cmd.push('uci set firewall.' + json.section + '_dhcp.family=ipv4');
+
+	cmd.push('uci set firewall.' + json.section + '_dns=rule');
+	cmd.push('uci set firewall.' + json.section + '_dns.name=\\\"' + json.section + ' DNS, port 53\\\"');
+	cmd.push('uci set firewall.' + json.section + '_dns.src=' + json.section);
+	cmd.push('uci set firewall.' + json.section + '_dns.dest_port=53');
+	cmd.push('uci set firewall.' + json.section + '_dns.target=ACCEPT');
+	cmd.push('uci set firewall.' + json.section + '_dns.family=ipv4');
+	cmd.push('uci set firewall.' + json.section + '_dns.proto=tcpudp');
+
+	var t = '';
+	(json.forwarding).forEach(function(f) {
+		if (f.hasOwnProperty('wan')) {
+			t = f['wan'];
+		}
+	});
+	if (getValue('network_towan')) {
+		if (t == '') {
+			cmd.push('uci add firewall forwarding');
+			t = '@forwarding[-1]';
+		}
+		cmd.push('uci set firewall.' + t + '.src=' + json.section);
+		cmd.push('uci set firewall.' + t + '.dest=wan');
+	} else {
+		if (t != '') {
+			cmd.push('uci -q del firewall.' + t);
+		}
+	}
+
+	// wlan
+	var revision = getRevision();
+
+	var wlan_restart_required = false;
+
+	var radios = config.wlan_devices;
+	for (var i = 0; i < radios.length; i++) {
+		var vap = null;
+		(json.wireless).forEach(function(obj) {
+			if (obj.hasOwnProperty(radios[i])) {
+				vap = obj[radios[i]];
+			}
+		})
+		if (!vap) {
+			continue;
+		}
+
+		var section = vap.section;
+
+		if (section == '') {
+			wlan_restart_required = true;
+			section = json.section + '_' + radios[i];
+			cmd.push('uci set wireless.' + section + '=wifi-iface');
+			cmd.push('uci set wireless.' + section + '.device=' + radios[i]);
+			cmd.push('uci set wireless.' + section + '.mode=ap');
+			cmd.push('uci set wireless.' + section + '.network=' + json.section);
+		}
+
+		var wlan_enabled = getValue('network_wlan_enabled_' + i);
+		if (wlan_enabled) {
+			if (vap.disabled == 1) {
+				wlan_restart_required = true;
+			}
+			cmd.push('uci -q del wireless.' + section + '.disabled');
+		} else {
+			if (vap.disabled != 1) {
+				wlan_restart_required = true;
+			}
+			cmd.push('uci set wireless.' + section + '.disabled=1');
+		}
+
+		var wlan_ssid = getValue('network_wlan_ssid_' + i);
+		if (wlan_ssid == '') {
+			setValue('network_error', 'Błąd w polu ' + getLabelText('network_wlan_ssid_' + i) + ' dla ' + getValue('radio_' + i));
+			return;
+		}
+		if (validateLengthRange(wlan_ssid, 1, 32) != 0) {
+			setValue('network_error', 'Błąd w polu ' + getLabelText('network_wlan_ssid_' + i) + ' dla ' + getValue('radio_' + i) + '<br><br>Nazwa Wi-Fi nie może być dłuższa niż 32 znaki');
+			return;
+		}
+		if (vap.ssid != wlan_ssid) {
+			wlan_restart_required = true;
+		}
+		cmd.push('uci set wireless.' + section + '.ssid=\\\"' + escapeShell(wlan_ssid) + '\\\"');
+		var wlan_encryption = getValue('network_wlan_encryption_' + i);
+		if (vap.encryption != wlan_encryption) {
+			wlan_restart_required = true;
+		}
+		cmd.push('uci set wireless.' + section + '.encryption=' + wlan_encryption);
+
+		wlan_key = getValue('network_wlan_key_' + i);
+		if (wlan_encryption != 'none') {
+			if (wlan_key.length < 8) {
+				setValue('network_error', 'Błąd w polu ' + getLabelText('network_wlan_key_' + i) + ' dla ' + getValue('radio_' + i) + '<br><br>Hasło do Wi-Fi musi mieć co najmniej 8 znaków');
+				return;
+			}
+		}
+		if (vap.key != wlan_key) {
+			wlan_restart_required = true;
+		}
+		cmd.push('uci set wireless.' + section + '.key=\\\"' + escapeShell(wlan_key) + '\\\"');
+
+		if (getValue('network_wlan_isolate_' + i)) {
+			if (vap.isolate == 0) {
+				wlan_restart_required = true;
+			}
+			cmd.push('uci set wireless.' + section + '.isolate=1');
+		} else {
+			if (vap.isolate != 0) {
+				wlan_restart_required = true;
+			}
+			cmd.push('uci -q del wireless.' + section + '.isolate');
+		}
+
+		if (getValue('network_wlan_hidden_' + i)) {
+			if (vap.hidden == 0) {
+				wlan_restart_required = true;
+			}
+			cmd.push('uci set wireless.' + section + '.hidden=1');
+		} else {
+			if (vap.hidden != 0) {
+				wlan_restart_required = true;
+			}
+			cmd.push('uci -q del wireless.' + section + '.hidden');
+		}
+
+		if (revision > 20293 && (vap.macaddr === 'random' || vap.macaddr === '')) {
+			if (getValue('network_wlan_macaddr_' + i)) {
+				if (vap.macaddr != 'random') {
+					wlan_restart_required = true;
+				}
+				cmd.push('uci set wireless.' + section + '.macaddr=random');
+			} else {
+				if (vap.macaddr == 'random') {
+					wlan_restart_required = true;
+				}
+				cmd.push('uci -q del wireless.' + section + '.macaddr');
+			}
+		}
+	}
+
+	// lan
+	var cnt = getValue('network_port_cnt');
+	var portdata;
+	for (var idx = 0; idx < cnt; idx++) {
+		portdata = JSON.parse(atob(getValue('network_port_data_' + idx)));
+		if (getValue('network_port_' + idx)) {
+			cmd.push('uci -q del_list network.' + portdata.bridge + '.ports=' + portdata.port);
+			cmd.push('uci add_list network.' + json.bridge + '.ports=' + portdata.port);
+		} else {
+			if (portdata.bridge == json.bridge) {
+				cmd.push('uci -q del_list network.' + json.bridge + '.ports=' + portdata.port);
+				cmd.push('uci -q del_list network.' + portdata.lanbridge + '.ports=' + portdata.port);
+				cmd.push('uci add_list network.' + portdata.lanbridge + '.ports=' + portdata.port);
+			}
+		}
+	}
+	if (cnt > 0) {
+		cmd.push('uci set network.' + portdata.lanbridge + '.bridge_empty=1');
+	}
+
+	cancelnetwork();
+
+	cmd.push('uci commit');
+	cmd.push('reload_config');
+	if (wlan_restart_required) {
+		cmd.push('wifi');
+	}
+	cmd.push('/etc/init.d/dnsmasq restart');
+	cmd.push('/etc/init.d/firewall restart');
+	execute(cmd, shownetworks);
+}
+
+/*****************************************************************************/
+
 function opennav() {
 	document.getElementById("menu").style.width = '250px';
 }
@@ -6833,6 +7404,7 @@ function btn_pages(page) {
 	closenav();
 	setDisplay('div_status', (page == 'status'));
 	setDisplay('div_config', (page == 'config'));
+	setDisplay('div_networks', (page == 'networks'));
 	setDisplay('div_system', (page == 'system'));
 	setDisplay('div_watchdog', (page == 'watchdog'));
 	setDisplay('div_sitesurvey', (page == 'sitesurvey'));
@@ -6876,6 +7448,10 @@ function btn_pages(page) {
 			showmodeminfo();
 		}
 		waitForData(readyDataSystem);
+	}
+
+	if (page == 'networks') {
+		shownetworks();
 	}
 
 	if (page == 'watchdog') {

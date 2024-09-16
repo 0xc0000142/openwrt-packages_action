@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=einat-ebpf
 PKG_VERSION:=0.1.2
-PKG_RELEASE:=7
+PKG_RELEASE:=8
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/EHfive/einat-ebpf/tar.gz/refs/tags/v$(PKG_VERSION)?
@@ -15,6 +15,9 @@ PKG_LICENSE_FILES:=LICENSE
 PKG_BUILD_DEPENDS:=rust/host
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
+
+PKG_CONFIG_DEPENDS+= \
+	CONFIG_EINAT_EBPF_IPV6
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/bpf.mk
@@ -51,9 +54,6 @@ define Package/$(PKG_NAME)/config
 			  about 4 times.
 	endmenu
 endef
-
-PKG_CONFIG_DEPENDS+= \
-	CONFIG_EINAT_EBPF_IPV6
 
 RUST_PKG_FEATURES:=$(subst $(space),$(comma),$(strip \
 	$(if $(CONFIG_EINAT_EBPF_IPV6),ipv6) \
