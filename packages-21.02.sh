@@ -9,6 +9,7 @@
 #svn co https://github.com/kenzok8/openwrt-packages/trunk/
 #svn co https://github.com/cnsilvan/luci-app-unblockneteasemusic/trunk/UnblockNeteaseMusic ./UnblockNeteaseMusic-Go
 #svn co https://github.com/cnsilvan/luci-app-unblockneteasemusic/trunk/luci-app-unblockneteasemusic ./luci-app-UnblockNeteaseMusicGo
+
 git clone --depth 1 https://github.com/cnsilvan/luci-app-unblockneteasemusic/ ./luci-app-UnblockNeteaseMusicGo 
 git clone --depth 1  https://github.com/cnsilvan/luci-app-unblockneteasemusic ./UnblockNeteaseMusic-Go 
 
@@ -17,6 +18,9 @@ git clone --depth 1 https://github.com/Lienol/openwrt-package ./package136461651
 git clone --depth 1 https://github.com/obsy/packages/ ./package165456316486
 git clone --depth 1 https://github.com/sirpdboy/sirpdboy-package ./package4577867
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall-packages.git ./package15486786
+git clone --depth 1 https://github.com/CCnut/feed-netkeeper.git
+
+git clone --depth 1 https://github.com/Zxilly/UA2F.git
 
 git clone --depth 1 https://github.com/0xc0000142/openwrt-r8168.git
 git clone --depth 1 https://github.com/fw876/helloworld
@@ -56,6 +60,7 @@ git clone --depth 1 https://github.com/sirpdboy/luci-app-partexp
 git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status.git
 git clone --depth 1 https://github.com/gSpotx2f/luci-app-cpu-status-mini
 git clone --depth 1 https://github.com/asvow/luci-app-tailscale
+git clone --depth 1 https://github.com/lucikap/luci-app-ua2f
 
 git clone --depth 1 https://github.com/zhengmz/luci-app-zerotier
 git clone --depth 1 https://github.com/Ardentwheel/luci-app-cifs
@@ -211,6 +216,8 @@ git clone --depth 1 https://github.com/padre-lacroix/bandwidthd-openwrt ./bandwi
 git clone --depth 1 https://github.com/qiuweichao/luci-app-modem-info
 git clone --depth 1 https://github.com/gSpotx2f/luci-app-disks-info
 
+
+
 remove_packages=(
 base-files
 dnsmasq
@@ -234,8 +241,9 @@ mv package136461651/* ./ -n
 mv package165456316486/* ./ -n
 mv package4577867/* ./ -n
 mv package15486786/* ./ -n 
+mv -f feed-netkeeper/* ./
 rm -rf ./*/.git ./*/.gitattributes ./*/.svn ./*/.github ./*/.gitignore README.md ./*/README.md ./*/*/README.md
-rm -rf ./package48748641 ./package136461651 ./package4577867 ./package165456316486 ./package15486786
+rm -rf ./package48748641 ./package136461651 ./package4577867 ./package165456316486 ./package15486786 ./feed-netkeeper
 rm -rf plugin-gargoyle*
 rm -rf luci-app-vssr-plus
 #sed -i 's|egrep|grep -E|g' luci-app-advanced/luasrc/controller/fileassistant.lua luci-app-fileassistant/luasrc/controller/fileassistant.lua
