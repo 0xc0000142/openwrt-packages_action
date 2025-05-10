@@ -4,6 +4,7 @@ local sys = api.sys
 local datatypes = api.datatypes
 
 m = Map(appname)
+api.set_apply_on_parse(m)
 
 -- [[ Other Settings ]]--
 s = m:section(TypedSection, "global_other")
@@ -61,15 +62,15 @@ function s.remove(e, t)
 		end
 	end)
 	TypedSection.remove(e, t)
-	local new_node = "nil"
+	local new_node = ""
 	local node0 = m:get("@nodes[0]") or nil
 	if node0 then
 		new_node = node0[".name"]
 	end
-	if (m:get("@global[0]", "tcp_node") or "nil") == t then
+	if (m:get("@global[0]", "tcp_node") or "") == t then
 		m:set('@global[0]', "tcp_node", new_node)
 	end
-	if (m:get("@global[0]", "udp_node") or "nil") == t then
+	if (m:get("@global[0]", "udp_node") or "") == t then
 		m:set('@global[0]', "udp_node", new_node)
 	end
 end
@@ -102,6 +103,8 @@ o.cfgvalue = function(t, n)
 		local protocol = m:get(n, "protocol")
 		if protocol == "_balancing" then
 			protocol = translate("Balancing")
+		elseif protocol == "_urltest" then
+			protocol = "URLTest"
 		elseif protocol == "_shunt" then
 			protocol = translate("Shunt")
 		elseif protocol == "vmess" then
@@ -118,6 +121,8 @@ o.cfgvalue = function(t, n)
 			protocol = "HY"
 		elseif protocol == "hysteria2" then
 			protocol = "HY2"
+		elseif protocol == "anytls" then
+			protocol = "AnyTLS"
 		else
 			protocol = protocol:gsub("^%l",string.upper)
 		end

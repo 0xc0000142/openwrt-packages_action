@@ -9,7 +9,7 @@ sed -i "s/op.supes.top/dl.openwrt.ai/" /etc/opkg/distfeeds.conf
 version=`uci -q get base_config.@status[0].version`
 
 hostname=`uci -q get system.@system[0].hostname`
-[ -n "${hostname}" ] || hostname="KWrt"
+[ -n "${hostname}" ] || hostname="Kwrt"
 
 if [ "$(uci -q get dhcp.@dnsmasq[0].port)" != "53" ]; then
 	uci -q set dhcp.@dnsmasq[0].port='53'
@@ -205,7 +205,7 @@ grep -q "uwsgi_read_timeout" /etc/nginx/conf.d/luci.locations 2>/dev/null || {
 	sed -i "s/include uwsgi_params;/include uwsgi_params;\n\t\tuwsgi_read_timeout 300s;/" /etc/nginx/conf.d/luci.locations
 	sed -i '/ubus_parallel_req/a\        ubus_script_timeout 600;' /etc/nginx/conf.d/luci.locations
 }
-grep -q "client_max_body_size" /etc/nginx/conf.d/luci.locations || sed -i '/client_max_body_size/a\\tclient_body_buffer_size 512k;' /etc/nginx/uci.conf.template
+
 sed -i "s/client_max_body_size 128M/client_max_body_size 3072M/" /etc/nginx/uci.conf.template
 sed -i "s/large_client_header_buffers 2 1k/large_client_header_buffers 4 512k/" /etc/nginx/uci.conf.template
 fi
@@ -214,10 +214,12 @@ rm -rf /tmp/luci-*
 uci -q set base_config.@status[0].version=$version
 uci commit base_config
 
+grep -q "cgi-timeout" /etc/uwsgi/vassals/luci-*.ini 2>/dev/null || sed -i '$a cgi-timeout = 500' /etc/uwsgi/vassals/luci-*.ini
+sed -i "s/limit-as = 1000/limit-as = 5000/g" /etc/uwsgi/vassals/luci-webui.ini
+
 modprobe xt_FULLCONENAT || {
 [ "$(iptables -L -t nat | grep "FULLCONENAT")" ] || {
 uci -q set firewall.@defaults[0].fullcone='0'
 uci commit firewall
 }
 }
-

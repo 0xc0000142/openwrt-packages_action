@@ -1,17 +1,18 @@
 # Copyright (C) 2018-2020 L-WRT Team
-# Copyright (C) 2021-2023 xiaorouji
+# Copyright (C) 2021-2025 xiaorouji
 #
 # This is free software, licensed under the GNU General Public License v3.
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-passwall
-PKG_VERSION:=4.78-2
-PKG_RELEASE:=
+PKG_VERSION:=25.5.8
+PKG_RELEASE:=1
 
 PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_$(PKG_NAME)_Iptables_Transparent_Proxy \
 	CONFIG_PACKAGE_$(PKG_NAME)_Nftables_Transparent_Proxy \
+	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Geoview \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Haproxy \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Hysteria \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_NaiveProxy \
@@ -33,7 +34,7 @@ PKG_CONFIG_DEPENDS:= \
 LUCI_TITLE:=LuCI support for PassWall
 LUCI_PKGARCH:=all
 LUCI_DEPENDS:=+coreutils +coreutils-base64 +coreutils-nohup +curl \
-	+chinadns-ng +dns2socks +dns2tcp +dnsmasq-full +ip-full \
+	+chinadns-ng +dns2socks +dnsmasq-full +ip-full \
 	+libuci-lua +lua +luci-compat +luci-lib-jsonc \
 	+microsocks +resolveip +tcping
 
@@ -62,6 +63,11 @@ config PACKAGE_$(PKG_NAME)_Nftables_Transparent_Proxy
 	select PACKAGE_kmod-nft-tproxy
 	select PACKAGE_kmod-nft-nat
 	default y if PACKAGE_firewall4
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_Geoview
+	bool "Include Geoview"
+	select PACKAGE_geoview
+	default y if aarch64||arm||i386||x86_64
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_Haproxy
 	bool "Include Haproxy"
@@ -172,6 +178,12 @@ define Package/$(PKG_NAME)/conffiles
 /usr/share/passwall/rules/lanlist_ipv6
 /usr/share/passwall/rules/domains_excluded
 /www/luci-static/resources/qrcode.min.js
+endef
+
+define Package/$(PKG_NAME)/postrm
+#!/bin/sh
+rm -f $${IPKG_INSTROOT}/usr/share/passwall/rules/*.nft
+exit 0
 endef
 
 include $(TOPDIR)/feeds/luci/luci.mk
