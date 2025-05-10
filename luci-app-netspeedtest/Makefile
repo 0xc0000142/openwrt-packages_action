@@ -1,8 +1,7 @@
-# Copyright (C) 2023 muink <https://github.com/muink>
+# SPDX-License-Identifier: MIT
 #
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2023-2025 muink <https://github.com/muink>
+
 include $(TOPDIR)/rules.mk
 
 LUCI_NAME:=luci-app-netspeedtest
@@ -11,6 +10,9 @@ LUCI_TITLE:=LuCI Net Speedtest
 LUCI_DEPENDS:=+iperf3 +librespeed-go +python3-speedtest-cli +ca-certificates
 
 LUCI_DESCRIPTION:=Test Net speed
+
+PKG_MAINTAINER:=Anya Lin <hukk1996@gmail.com>
+PKG_LICENSE:=MIT
 
 PKG_UNPACK=$(CURDIR)/.prepare.sh $(PKG_NAME) $(CURDIR) $(PKG_BUILD_DIR)
 

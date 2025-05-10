@@ -11,18 +11,18 @@ return view.extend({
 //	handleSave: null,
 //	handleReset: null,
 
-	load: function() {
+	load() {
 	return Promise.all([
 		uci.load('netspeedtest'),
 		uci.load('librespeed-go')
 	]);
 	},
 
-	render: function(res) {
-		var port = uci.get('librespeed-go', 'config', 'listen_port') || '8989',
-			ssl = uci.get('librespeed-go', 'config', 'enable_tls') || '0';
+	render(res) {
+		const port = uci.get('librespeed-go', 'config', 'listen_port') || '8989';
+		const ssl = uci.get('librespeed-go', 'config', 'enable_tls') || '0';
 
-		var m, s, o;
+		let m, s, o;
 
 		m = new form.Map('netspeedtest', _('librespeed Site Speed Test'));
 

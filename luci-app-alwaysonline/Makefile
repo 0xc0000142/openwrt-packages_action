@@ -1,19 +1,19 @@
-# alwaysonline by Jamesits <https://github.com/Jamesits/alwaysonline>
-# Copyright (C) 2023-2024 muink <https://github.com/muink>
+# SPDX-License-Identifier: MIT
 #
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2023-2025 muink <https://github.com/muink>
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-alwaysonline
-PKG_VERSION:=20240803
 
 LUCI_TITLE:=LuCI Support for alwaysonline
 LUCI_PKGARCH:=all
 LUCI_DEPENDS:=+uci-alwaysonline
 
 LUCI_DESCRIPTION:=Hijack/bypass Windows NCSI and iOS portal detection
+
+PKG_MAINTAINER:=Anya Lin <hukk1996@gmail.com>
+PKG_LICENSE:=MIT
 
 define Package/$(LUCI_NAME)/conffiles
 endef

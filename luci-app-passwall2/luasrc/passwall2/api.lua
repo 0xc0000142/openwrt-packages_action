@@ -17,6 +17,8 @@ DISTRIB_ARCH = nil
 
 LOG_FILE = "/tmp/log/passwall2.log"
 CACHE_PATH = "/tmp/etc/passwall2_tmp"
+TMP_PATH = "/tmp/etc/" .. appname
+TMP_IFACE_PATH = TMP_PATH .. "/iface"
 
 function log(...)
 	local result = os.date("%Y-%m-%d %H:%M:%S: ") .. table.concat({...}, " ")
@@ -25,6 +27,64 @@ function log(...)
 		f:write(result .. "\n")
 		f:close()
 	end
+end
+
+function is_old_uci()
+	return sys.call("grep -E 'require[ \t]*\"uci\"' /usr/lib/lua/luci/model/uci.lua >/dev/null 2>&1") == 0
+end
+
+function uci_save(cursor, config, commit, apply)
+	if is_old_uci() then
+		cursor:save(config)
+		if commit then
+			cursor:commit(config)
+			if apply then
+				sys.call("/etc/init.d/" .. config .. " reload > /dev/null 2>&1 &")
+			end
+		end
+	else
+		commit = true
+		if commit then
+			if apply then
+				cursor:commit(config)
+			else
+				sh_uci_commit(config)
+			end
+		end
+	end
+end
+
+function sh_uci_get(config, section, option)
+	exec_call(string.format("uci -q get %s.%s.%s", config, section, option))
+end
+
+function sh_uci_set(config, section, option, val, commit)
+	exec_call(string.format("uci -q set %s.%s.%s=\"%s\"", config, section, option, val))
+	if commit then sh_uci_commit(config) end
+end
+
+function sh_uci_del(config, section, option, commit)
+	exec_call(string.format("uci -q delete %s.%s.%s", config, section, option))
+	if commit then sh_uci_commit(config) end
+end
+
+function sh_uci_add_list(config, section, option, val, commit)
+	exec_call(string.format("uci -q del_list %s.%s.%s=\"%s\"", config, section, option, val))
+	exec_call(string.format("uci -q add_list %s.%s.%s=\"%s\"", config, section, option, val))
+	if commit then sh_uci_commit(config) end
+end
+
+function sh_uci_commit(config)
+	exec_call(string.format("uci -q commit %s", config))
+end
+
+function set_cache_var(key, val)
+	sys.call(string.format('/usr/share/passwall2/app.sh set_cache_var %s "%s"', key, val))
+end
+function get_cache_var(key)
+	local val = sys.exec(string.format('echo -n $(/usr/share/passwall2/app.sh get_cache_var %s)', key))
+	if val == "" then val = nil end
+	return val
 end
 
 function exec_call(cmd)
@@ -62,6 +122,34 @@ function base64Decode(text)
 	end
 end
 
+function base64Encode(text)
+	local result = nixio.bin.b64encode(text)
+	return result
+end
+
+--提取URL中的域名和端口(no ip)
+function get_domain_port_from_url(url)
+	local scheme, domain, port = string.match(url, "^(https?)://([%w%.%-]+):?(%d*)")
+	if not domain then
+		scheme, domain, port = string.match(url, "^(https?)://(%b[])([^:/]*)/?")
+	end
+	if not domain then return nil, nil end
+	if domain:sub(1, 1) == "[" then domain = domain:sub(2, -2) end
+	port = port ~= "" and tonumber(port) or (scheme == "https" and 443 or 80)
+	if datatypes.ipaddr(domain) or datatypes.ip6addr(domain) then return nil, nil end
+	return domain, port
+end
+
+--解析域名
+function domainToIPv4(domain, dns)
+	local Dns = dns or "223.5.5.5"
+	local IPs = luci.sys.exec('nslookup %s %s | awk \'/^Name:/{getline; if ($1 == "Address:") print $2}\'' % { domain, Dns })
+	for IP in string.gmatch(IPs, "%S+") do
+		if datatypes.ipaddr(IP) and not datatypes.ip6addr(IP) then return IP end
+	end
+	return nil
+end
+
 function curl_base(url, file, args)
 	if not args then args = {} end
 	if file then
@@ -73,8 +161,8 @@ end
 
 function curl_proxy(url, file, args)
 	--使用代理
-	local socks_server = luci.sys.exec("[ -f /tmp/etc/passwall2/acl/default/SOCKS_server ] && echo -n $(cat /tmp/etc/passwall2/acl/default/SOCKS_server) || echo -n ''")
-	if socks_server ~= "" then
+	local socks_server = get_cache_var("GLOBAL_SOCKS_server")
+	if socks_server and socks_server ~= "" then
 		if not args then args = {} end
 		local tmp_args = clone(args)
 		tmp_args[#tmp_args + 1] = "-x socks5h://" .. socks_server
@@ -87,6 +175,28 @@ function curl_logic(url, file, args)
 	local return_code, result = curl_proxy(url, file, args)
 	if not return_code or return_code ~= 0 then
 		return_code, result = curl_base(url, file, args)
+	end
+	return return_code, result
+end
+
+function curl_direct(url, file, args)
+	--直连访问
+	if not args then args = {} end
+	local tmp_args = clone(args)
+	local domain, port = get_domain_port_from_url(url)
+	if domain then
+		local ip = domainToIPv4(domain)
+		if ip then
+			tmp_args[#tmp_args + 1] = "--resolve " .. domain .. ":" .. port .. ":" .. ip
+		end
+	end
+	return curl_base(url, file, tmp_args)
+end
+
+function curl_auto(url, file, args)
+	local return_code, result = curl_proxy(url, file, args)
+	if not return_code or return_code ~= 0 then
+		return_code, result = curl_direct(url, file, args)
 	end
 	return return_code, result
 end
@@ -151,6 +261,28 @@ function repeat_exist(table, value)
 	return false
 end
 
+function remove(...)
+	for index, value in ipairs({...}) do
+		if value and #value > 0 and value ~= "/" then
+			sys.call(string.format("rm -rf %s", value))
+		end
+	end
+end
+
+function is_install(package)
+	if package and #package > 0 then
+		local file_path = "/usr/lib/opkg/info"
+		local file_ext = ".control"
+		local has = sys.call("[ -d " .. file_path .. " ]")
+		if has ~= 0 then
+			file_path = "/lib/apk/packages"
+			file_ext = ".list"
+		end
+		return sys.call(string.format('[ -s "%s/%s%s" ]', file_path, package, file_ext)) == 0
+	end
+	return false
+end
+
 function get_args(arg)
 	local var = {}
 	for i, arg_k in pairs(arg) do
@@ -187,7 +319,7 @@ function strToTable(str)
 end
 
 function is_normal_node(e)
-	if e and e.type and e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt" or e.protocol == "_iface") then
+	if e and e.type and e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt" or e.protocol == "_iface" or e.protocol == "_urltest") then
 		return false
 	end
 	return true
@@ -291,13 +423,33 @@ function get_domain_from_url(url)
 	return url
 end
 
+function get_node_name(node_id)
+	local e
+	if type(node_id) == "table" then
+		e = node_id
+	else
+		e = uci:get_all(appname, node_id)
+	end
+	if e then
+		if e.type and e.remarks then
+			if e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt" or e.protocol == "_iface") then
+				local type = e.type
+				if type == "sing-box" then type = "Sing-Box" end
+				local remark = "%s：[%s] " % {type .. " " .. i18n.translatef(e.protocol), e.remarks}
+				return remark
+			end
+		end
+	end
+	return ""
+end
+
 function get_valid_nodes()
 	local show_node_info = uci_get_type("global_other", "show_node_info") or "0"
 	local nodes = {}
 	uci:foreach(appname, "nodes", function(e)
 		e.id = e[".name"]
 		if e.type and e.remarks then
-			if e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt" or e.protocol == "_iface") then
+			if e.protocol and (e.protocol == "_balancing" or e.protocol == "_shunt" or e.protocol == "_iface" or e.protocol == "_urltest") then
 				local type = e.type
 				if type == "sing-box" then type = "Sing-Box" end
 				e["remark"] = "%s：[%s] " % {type .. " " .. i18n.translatef(e.protocol), e.remarks}
@@ -324,6 +476,8 @@ function get_valid_nodes()
 							protocol = "HY"
 						elseif protocol == "hysteria2" then
 							protocol = "HY2"
+						elseif protocol == "anytls" then
+							protocol = "AnyTLS"
 						else
 							protocol = protocol:gsub("^%l",string.upper)
 						end
@@ -347,7 +501,7 @@ end
 function get_node_remarks(n)
 	local remarks = ""
 	if n then
-		if n.protocol and (n.protocol == "_balancing" or n.protocol == "_shunt" or n.protocol == "_iface") then
+		if n.protocol and (n.protocol == "_balancing" or n.protocol == "_shunt" or n.protocol == "_iface" or n.protocol == "_urltest") then
 			remarks = "%s：[%s] " % {n.type .. " " .. i18n.translatef(n.protocol), n.remarks}
 		else
 			local type2 = n.type
@@ -357,9 +511,22 @@ function get_node_remarks(n)
 					protocol = "VMess"
 				elseif protocol == "vless" then
 					protocol = "VLESS"
+				elseif protocol == "shadowsocks" then
+					protocol = "SS"
+				elseif protocol == "shadowsocksr" then
+					protocol = "SSR"
+				elseif protocol == "wireguard" then
+					protocol = "WG"
+				elseif protocol == "hysteria" then
+					protocol = "HY"
+				elseif protocol == "hysteria2" then
+					protocol = "HY2"
+				elseif protocol == "anytls" then
+					protocol = "AnyTLS"
 				else
 					protocol = protocol:gsub("^%l",string.upper)
 				end
+				if type2 == "sing-box" then type2 = "Sing-Box" end
 				type2 = type2 .. " " .. protocol
 			end
 			remarks = "%s：[%s]" % {type2, n.remarks}
@@ -694,12 +861,16 @@ local default_file_tree = {
 	x86_64  = "amd64",
 	x86     = "386",
 	aarch64 = "arm64",
+	rockchip = "arm64",
 	mips    = "mips",
-	mipsel  = "mipsle",
+	mips64  = "mips64",
+	mipsel  = "mipsel",
+	mips64el = "mips64el",
 	armv5   = "arm.*5",
 	armv6   = "arm.*6[^4]*",
 	armv7   = "arm.*7",
-	armv8   = "arm64"
+	armv8   = "arm64",
+	riscv64 = "riscv64"
 }
 
 function get_api_json(url)
@@ -961,6 +1132,47 @@ function to_move(app_name,file)
 	return {code = 0}
 end
 
+function get_version()
+	local version = sys.exec("opkg list-installed luci-app-passwall2 2>/dev/null | awk '{print $3}'")
+	if not version or #version == 0 then
+		version = sys.exec("apk list luci-app-passwall2 2>/dev/null | awk '/installed/ {print $1}' | cut -d'-' -f4-")
+	end
+	return version or ""
+end
+
+function to_check_self()
+	local url = "https://raw.githubusercontent.com/xiaorouji/openwrt-passwall2/main/luci-app-passwall2/Makefile"
+	local tmp_file = "/tmp/passwall2_makefile"
+	local return_code, result = curl_logic(url, tmp_file, curl_args)
+	result = return_code == 0
+	if not result then
+		exec("/bin/rm", {"-f", tmp_file})
+		return {
+			code = 1,
+			error = i18n.translatef("Failed")
+		}
+	end
+	local local_version  = get_version()
+	local remote_version = sys.exec("echo -n $(grep 'PKG_VERSION' /tmp/passwall2_makefile|awk -F '=' '{print $2}')")
+				.. "-" ..  sys.exec("echo -n $(grep 'PKG_RELEASE' /tmp/passwall2_makefile|awk -F '=' '{print $2}')")
+
+	local has_update = compare_versions(local_version, "<", remote_version)
+	if not has_update then
+		return {
+			code = 0,
+			local_version = local_version,
+			remote_version = remote_version
+		}
+	end
+	return {
+		code = 1,
+		has_update = true,
+		local_version = local_version,
+		remote_version = remote_version,
+		error = i18n.translatef("The latest version: %s, currently does not support automatic update, if you need to update, please compile or download the ipk and then manually install.", remote_version)
+	}
+end
+
 function cacheFileCompareToLogic(file, str)
 	local result = nil
 	if file and str then
@@ -1015,32 +1227,47 @@ function luci_types(id, m, s, type_name, option_prefix)
 				end
 
 				s.fields[key].cfgvalue = function(self, section)
-					if self.rewrite_option then
-						return m:get(section, self.rewrite_option)
+					-- 添加自定义 custom_cfgvalue 属性，如果有自定义的 custom_cfgvalue 函数，则使用自定义的 cfgvalue 逻辑
+					if self.custom_cfgvalue then
+						return self:custom_cfgvalue(section)
 					else
-						if self.option:find(option_prefix) == 1 then
-							return m:get(section, self.option:sub(1 + #option_prefix))
+						if self.rewrite_option then
+							return m:get(section, self.rewrite_option)
+						else
+							if self.option:find(option_prefix) == 1 then
+								return m:get(section, self.option:sub(1 + #option_prefix))
+							end
 						end
 					end
 				end
 				s.fields[key].write = function(self, section, value)
 					if s.fields["type"]:formvalue(id) == type_name then
-						if self.rewrite_option then
-							m:set(section, self.rewrite_option, value)
+						-- 添加自定义 custom_write 属性，如果有自定义的 custom_write 函数，则使用自定义的 write 逻辑
+						if self.custom_write then
+							self:custom_write(section, value)
 						else
-							if self.option:find(option_prefix) == 1 then
-								m:set(section, self.option:sub(1 + #option_prefix), value)
+							if self.rewrite_option then
+								m:set(section, self.rewrite_option, value)
+							else
+								if self.option:find(option_prefix) == 1 then
+									m:set(section, self.option:sub(1 + #option_prefix), value)
+								end
 							end
 						end
 					end
 				end
 				s.fields[key].remove = function(self, section)
 					if s.fields["type"]:formvalue(id) == type_name then
-						if self.rewrite_option and rewrite_option_table[self.rewrite_option] == 1 then
-							m:del(section, self.rewrite_option)
+						-- 添加自定义 custom_remove 属性，如果有自定义的 custom_remove 函数，则使用自定义的 remove 逻辑
+						if self.custom_remove then
+							self:custom_remove(section)
 						else
-							if self.option:find(option_prefix) == 1 then
-								m:del(section, self.option:sub(1 + #option_prefix))
+							if self.rewrite_option and rewrite_option_table[self.rewrite_option] == 1 then
+								m:del(section, self.rewrite_option)
+							else
+								if self.option:find(option_prefix) == 1 then
+									m:del(section, self.option:sub(1 + #option_prefix))
+								end
 							end
 						end
 					end

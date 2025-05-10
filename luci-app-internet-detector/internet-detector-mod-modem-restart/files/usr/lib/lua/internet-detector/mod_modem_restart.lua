@@ -19,7 +19,7 @@ local Module = {
 	status       = nil,
 	_enabled     = false,
 	_deadCounter = 0,
-	_restarted   = false,
+	_restarted   = true,
 }
 
 function Module:toggleIface(flag)
@@ -80,7 +80,7 @@ function Module:init(t)
 	end
 end
 
-function Module:run(currentStatus, lastStatus, timeDiff)
+function Module:run(currentStatus, lastStatus, timeDiff, timeNow, inetChecked)
 	if not self._enabled then
 		return
 	end
@@ -97,6 +97,10 @@ function Module:run(currentStatus, lastStatus, timeDiff)
 		self._deadCounter = 0
 		self._restarted   = false
 	end
+end
+
+function Module:onExit()
+	return true
 end
 
 return Module

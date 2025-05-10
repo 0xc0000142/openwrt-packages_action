@@ -283,11 +283,17 @@ function showmodemparams() {
 				case "5":
 					setValue('registration' + idx, _t('registered5', 'Registered, roaming'));
 					break;
+				case "6":
+					setValue('registration' + idx, _t('registered6', 'Registered for SMS only, home network'));
+					break;
+				case "7":
+					setValue('registration' + idx, _t('registered7', 'Registered for SMS only, roaming'));
+					break;
 				default:
 					setValue('registration' + idx, data.registration == '' ? '-' : data.registration);
 			}
 
-			if (data.registration == '1' || data.registration == '5') {
+			if (data.registration == '1' || data.registration == '5' || data.registration == '6' || data.registration == '7') {
 				setValue('signal' + idx, data.signal == '' ? '-' : data.signal + '%');
 
 				if (data.signal) {
@@ -414,6 +420,7 @@ function modemaddon(idx) {
 	var scc2 = [];
 	var scc3 = [];
 	var scc4 = [];
+	var ulscc = [];
 	var sorted = sortJSON(arrmodemaddon[idx], 'idx', 'asc');
 	sorted.forEach(function(e) {
 		var description = '';
@@ -437,9 +444,15 @@ function modemaddon(idx) {
 				}
 				htmlxs += createRowForModal(_t(e.key), e.value);
 				break;
+			case 31:
+				pcc[2] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
 			case 32:
-				if ((e.key).toLowerCase().includes('bandwidth dl') || (e.key).toLowerCase() == 'bandwidth') {
+				if (typeof pcc[2] === 'undefined') {
 					pcc[2] = e.value;
+				} else {
+					pcc[2] = e.value + ' DL<br>' + pcc[2] + ' UL'
 				}
 				htmlxs += createRowForModal(_t(e.key), e.value);
 				break;
@@ -448,10 +461,18 @@ function modemaddon(idx) {
 				htmlxs += createRowForModal(_t(e.key), e.value);
 				break;
 			case 34:
-				if (!(e.key).toLowerCase().includes('earfcn ul')) {
-					pcc[4] = e.value;
+				if ((e.key).toLowerCase().includes('earfcn ul')) {
+					if (typeof pcc[4] === 'undefined') {
+						pcc[4] = e.value + ' UL';
+					} else {
+						pcc[4] = pcc[4] + ' DL<br>' + e.value + ' UL';
+					}
 				} else {
-					html += createRowForModal(_t(e.key), e.value);
+					if (typeof pcc[4] === 'undefined') {
+						pcc[4] = e.value;
+					} else {
+						pcc[4] = e.value + ' DL<br>' + pcc[4];
+					}
 				}
 				htmlxs += createRowForModal(_t(e.key), e.value);
 				break;
@@ -674,6 +695,22 @@ function modemaddon(idx) {
 				}
 				htmlxs += createRowForModal(_t(e.key), e.value);
 				break;
+			case 150:
+				ulscc[1] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
+			case 152:
+				ulscc[2] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
+			case 153:
+				ulscc[3] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
+			case 154:
+				ulscc[4] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
 			default:
 				if (e.idx < 30) {
 					htmlco += createRowForModal(_t(e.key), e.value);
@@ -721,6 +758,13 @@ function modemaddon(idx) {
 				if (typeof scc4[idx] === 'undefined') { scc4[idx] = '-'; }
 			}
 			htmlco += createRow9ColForModal(scc4);
+		}
+		if (ulscc.length > 0) {
+			ulscc[0] = 'UL SCC';
+			for (var idx = 0; idx <= 9; idx++) {
+				if (typeof ulscc[idx] === 'undefined') { ulscc[idx] = '-'; }
+			}
+			htmlco += createRow9ColForModal(ulscc);
 		}
 		htmlco += '</div>';
 	}

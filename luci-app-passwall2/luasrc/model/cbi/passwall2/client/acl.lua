@@ -1,7 +1,6 @@
 local api = require "luci.passwall2.api"
 local appname = api.appname
 local sys = api.sys
-local has_chnlist = api.fs.access("/usr/share/passwall2/rules/chnlist")
 
 m = Map(appname)
 api.set_apply_on_parse(m)
@@ -46,7 +45,7 @@ o = s:option(DummyValue, "sources", translate("Source"))
 o.rawhtml = true
 o.cfgvalue = function(t, n)
 	local e = ''
-	local v = Value.cfgvalue(t, n) or ''
+	local v = Value.cfgvalue(t, n) or '-'
 	string.gsub(v, '[^' .. " " .. ']+', function(w)
 		local a = w
 		if mac_t[w] then
@@ -58,6 +57,12 @@ o.cfgvalue = function(t, n)
 		e = e .. a
 	end)
 	return e
+end
+
+i = s:option(DummyValue, "interface", translate("Source Interface"))
+i.cfgvalue = function(t, n)
+	local v = Value.cfgvalue(t, n) or '-'
+	return v
 end
 
 return m

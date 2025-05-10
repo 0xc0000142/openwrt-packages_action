@@ -177,9 +177,9 @@ else
    e[t].mtime=os.date("%Y-%m-%d %H:%M:%S",a.mtime)
 end
 if uci:get("openclash", "config", "config_path") and string.sub(uci:get("openclash", "config", "config_path"), 23, -1) == e[t].name then
-   e[t].state=translate("Enable")
+   e[t].state=translate("Enabled")
 else
-   e[t].state=translate("Disable")
+   e[t].state=translate("Disabled")
 end
 e[t].size=fs.filesize(a.size)
 e[t].check=translate(config_check(o))
@@ -201,7 +201,7 @@ st.template="openclash/cfg_check"
 ck.template="openclash/cfg_check"
 sb.template="openclash/sub_info_show"
 
-btnis=tb:option(Button,"switch",translate("Switch Config"))
+btnis=tb:option(Button,"switch",translate("SwiTch"))
 btnis.template="openclash/other_button"
 btnis.render=function(o,t,a)
 if not e[t] then return false end
@@ -259,7 +259,7 @@ btnrn.template="openclash/input_rename"
 btnrn.rawhtml = true
 btnrn.render=function(c,t,a)
 c.value = e[t].name
-Button.render(c,t,a)
+DummyValue.render(c,t,a)
 end
 
 btndl = tb:option(Button,"download",translate("Download Config"))

@@ -13,28 +13,28 @@ msgstr ""
 "Language: zh_Hans\n"
 
 msgid "All CPUs"
-msgstr ""
+msgstr "所有 CPUs"
 
 msgid "Calculating"
-msgstr ""
+msgstr "计算中"
 
 msgid "CPU"
-msgstr "处理器"
+msgstr "CPU"
 
 msgid "CPU Load"
-msgstr ""
+msgstr "CPU 负载"
 
 msgid "Detailed load"
-msgstr ""
+msgstr "详细负载"
 
 msgid "Detailed load of each CPU"
-msgstr ""
+msgstr "详细负载 (每个 CPU)"
 
 msgid "Load"
-msgstr "负荷"
+msgstr "负载"
 
 msgid "Load of each CPU"
-msgstr ""
+msgstr "负载 (每个 CPU)"
 
 msgid "Total load"
-msgstr ""
+msgstr "总负载"

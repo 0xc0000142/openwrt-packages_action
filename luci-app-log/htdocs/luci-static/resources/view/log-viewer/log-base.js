@@ -10,6 +10,7 @@ document.head.append(E('style', {'type': 'text/css'},
 	--app-log-dark-font-color: #2e2e2e;
 	--app-log-light-font-color: #fff;
 	--app-log-debug-font-color: #737373;
+	--app-log-raw-font-color: #737373;
 	--app-log-emerg-color: #a93734;
 	--app-log-alert: #ff7968;
 	--app-log-crit: #fcc3bf;
@@ -18,20 +19,23 @@ document.head.append(E('style', {'type': 'text/css'},
 	--app-log-notice: #e3ffec;
 	--app-log-info: rgba(0,0,0,0);
 	--app-log-debug: #ebf6ff;
+	--app-log-raw: #eee;
 	--app-log-entries-count-border: #ccc;
 }
 :root[data-darkmode="true"] {
 	--app-log-dark-font-color: #fff;
 	--app-log-light-font-color: #fff;
 	--app-log-debug-font-color: #e7e7e7;
-	--app-log-emerg-color: #a93734;
+	--app-log-raw-font-color: #aaa;
+	--app-log-emerg-color: #960909;
 	--app-log-alert: #eb5050;
 	--app-log-crit: #dc7f79;
-	--app-log-err: #c89593;
+	--app-log-err: #9a5954;
 	--app-log-warn: #8d7000;
 	--app-log-notice: #007627;
 	--app-log-info: rgba(0,0,0,0);
 	--app-log-debug: #5986b1;
+	--app-log-raw: #353535;
 	--app-log-entries-count-border: #555;
 }
 #logWrapper {
@@ -103,7 +107,6 @@ log-emerg td {
 }
 .log-info {
 	background-color: var(--app-log-info) !important;
-	/*color: var(--app-log-dark-font-color) !important;*/
 }
 .log-debug {
 	background-color: var(--app-log-debug) !important;
@@ -114,6 +117,16 @@ log-emerg td {
 }
 .log-debug td {
 	color: var(--app-log-debug-font-color) !important;
+}
+.log-raw {
+	background-color: var(--app-log-raw) !important;
+	color: var(--app-log-raw-font-color) !important;
+}
+.log-raw .td {
+	color: var(--app-log-raw-font-color) !important;
+}
+.log-raw td {
+	color: var(--app-log-raw-font-color) !important;
 }
 .log-highlight-item {
 	background-color: #ffef00;
@@ -137,6 +150,13 @@ log-emerg td {
 .log-host-dropdown-item {
 }
 .log-facility-dropdown-item {
+}
+#moreEntriesBar {
+	opacity: 0.7;
+}
+#moreEntriesBar > button {
+	margin: 1em 0 1em 0 !important;
+	min-width: 100%;
 }
 .log-side-block {
 	position: fixed;
@@ -162,25 +182,32 @@ return baseclass.extend({
 		 *
 		 * @property {string} viewName
 		 */
-		viewName         : null,
+		viewName             : null,
 
 		/**
 		 * Page title.
 		 *
 		 * @property {string} title
 		 */
-		title            : null,
+		title                : null,
 
 		/**
 		 * Enable auto refresh log.
 		 *
-		 * @property {bool} autoRefresh
+		 * @property {bool} enableAutoRefresh
 		 */
-		autoRefresh      : false,
+		enableAutoRefresh    : false,
 
-		pollInterval     : L.env.pollinterval,
+		/**
+		 * Enable timestamp conversion.
+		 *
+		 * @property {bool} enableConvertTimestamp
+		 */
+		enableConvertTimestamp: false,
 
-		logFacilities    : {
+		pollInterval         : L.env.pollinterval,
+
+		logFacilities        : {
 			'kern'    : E('span', { 'class': 'zonebadge log-facility-dropdown-item' }, E('strong', 'kern')),
 			'user'    : E('span', { 'class': 'zonebadge log-facility-dropdown-item' }, E('strong', 'user')),
 			'mail'    : E('span', { 'class': 'zonebadge log-facility-dropdown-item' }, E('strong', 'mail')),
@@ -205,15 +232,15 @@ return baseclass.extend({
 			'local7'  : E('span', { 'class': 'zonebadge log-facility-dropdown-item' }, E('strong', 'local7')),
 		},
 
-		logLevels        : {
-			'emerg' : E('span', { 'class': 'zonebadge log-emerg' }, E('strong', _('Emergency'))),
-			'alert' : E('span', { 'class': 'zonebadge log-alert' }, E('strong', _('Alert'))),
-			'crit'  : E('span', { 'class': 'zonebadge log-crit' }, E('strong', _('Critical'))),
-			'err'   : E('span', { 'class': 'zonebadge log-err' }, E('strong', _('Error'))),
-			'warn'  : E('span', { 'class': 'zonebadge log-warn' }, E('strong', _('Warning'))),
-			'notice': E('span', { 'class': 'zonebadge log-notice' }, E('strong', _('Notice'))),
-			'info'  : E('span', { 'class': 'zonebadge log-info' }, E('strong', _('Info'))),
-			'debug' : E('span', { 'class': 'zonebadge log-debug' }, E('strong', _('Debug'))),
+		logLevels            : {
+			'emerg' : E('span', { 'class': 'zonebadge log-emerg' }, E('strong', 'Emergency')),
+			'alert' : E('span', { 'class': 'zonebadge log-alert' }, E('strong', 'Alert')),
+			'crit'  : E('span', { 'class': 'zonebadge log-crit' }, E('strong', 'Critical')),
+			'err'   : E('span', { 'class': 'zonebadge log-err' }, E('strong', 'Error')),
+			'warn'  : E('span', { 'class': 'zonebadge log-warn' }, E('strong', 'Warning')),
+			'notice': E('span', { 'class': 'zonebadge log-notice' }, E('strong', 'Notice')),
+			'info'  : E('span', { 'class': 'zonebadge log-info' }, E('strong', 'Info')),
+			'debug' : E('span', { 'class': 'zonebadge log-debug' }, E('strong', 'Debug')),
 		},
 
 		tailValue            : 25,
@@ -240,13 +267,15 @@ return baseclass.extend({
 
 		autoRefreshValue     : true,
 
-		isAutorefresh        : true,
+		autorefreshOn        : true,
 
-		isHosts              : false,
+		logTimestampFlag     : false,
 
-		isFacilities         : false,
+		logHostsFlag         : false,
 
-		isLevels             : false,
+		logFacilitiesFlag    : false,
+
+		logLevelsFlag        : false,
 
 		logHosts             : {},
 
@@ -260,7 +289,13 @@ return baseclass.extend({
 
 		totalLogLines        : 0,
 
-		lastHash            : null,
+		logCols              : [ '#', null, null, null, null, _('Message') ],
+
+		convertTimestampValue: false,
+
+		convertTimestampOn   : false,
+
+		lastHash             : null,
 
 		actionButtons        : [],
 
@@ -275,6 +310,68 @@ return baseclass.extend({
 
 		checkZeroValue(value) {
 			return (/^[0-9]+$/.test(value)) ? value : 0
+		},
+
+		makeLogConvertTimestampSection() {
+			if(!this.enableConvertTimestamp) {
+				return '';
+			};
+			return E('div', { 'class': 'cbi-value' }, [
+				E('label', {
+					'class': 'cbi-value-title',
+					'for'  : 'convertTimestamp',
+				}, _('Date')),
+				E('div', { 'class': 'cbi-value-field' }, [
+					E('div', { 'class': 'cbi-checkbox' }, [
+						this.convertTimestamp,
+						E('label', {}),
+					]),
+					E('div', { 'class': 'cbi-value-description' },
+						_('Convert timestamps to a human readable date')
+					),
+				]),
+			]);
+		},
+
+		makeLogTimeFilterSection() {
+			return E('div', { 'class': 'cbi-value' }, [
+				E('label', {
+					'class': 'cbi-value-title',
+					'for'  : 'timeFilter',
+				}, _('Timestamp filter')),
+				E('div', { 'class': 'cbi-value-field' },
+					E('span', { 'class': 'control-group' }, [
+						this.timeFilter,
+						E('button', {
+							'class': 'cbi-button btn',
+							'click': L.bind(ev => {
+								ev.target.blur();
+								ev.preventDefault();
+								this.timeFilter.value = null;
+								this.timeFilter.focus();
+							}, this),
+						}, '&#9003;'),
+					])
+				),
+			]);
+		},
+
+		makeLogtimeFilterReSection() {
+			return E('div', { 'class': 'cbi-value' }, [
+				E('label', {
+					'class': 'cbi-value-title',
+					'for'  : 'timeFilterRe',
+				}, _('Filter is regexp')),
+				E('div', { 'class': 'cbi-value-field' }, [
+					E('div', { 'class': 'cbi-checkbox' }, [
+						this.timeFilterRe,
+						E('label', {}),
+					]),
+					E('div', { 'class': 'cbi-value-description' },
+						_('Apply timestamp filter as regular expression')
+					),
+				]),
+			]);
 		},
 
 		makeLogHostsDropdownItem(host) {
@@ -379,23 +476,28 @@ return baseclass.extend({
 		},
 
 		setFilterSettings() {
-			this.tailValue         = this.checkZeroValue(this.tailInput.value);
-			this.timeFilterValue   = this.timeFilter.value;
-			this.timeFilterReValue = this.timeFilterRe.checked;
-			if(this.isHosts) {
+			this.tailValue = this.checkZeroValue(this.tailInput.value);
+			if(this.logTimestampFlag) {
+				if(this.enableConvertTimestamp) {
+					this.convertTimestampValue = this.convertTimestamp.checked;
+				};
+				this.timeFilterValue   = this.timeFilter.value;
+				this.timeFilterReValue = this.timeFilterRe.checked;
+			};
+			if(this.logHostsFlag) {
 				this.hostFilterValue = this.logHostsDropdown.getValue();
 			};
-			if(this.isFacilities) {
+			if(this.logFacilitiesFlag) {
 				this.facilityFilterValue = this.logFacilitiesDropdown.getValue();
 			};
-			if(this.isLevels) {
+			if(this.logLevelsFlag) {
 				this.levelFilterValue = this.logLevelsDropdown.getValue();
 			};
-			this.msgFilterValue      = this.msgFilter.value;
-			this.msgFilterReValue    = this.msgFilterRe.checked;
-			this.logSortingValue     = this.logSorting.value;
-			this.autoRefreshValue    = this.autoRefresh.checked;
-			if(this.isAutorefresh) {
+			this.msgFilterValue   = this.msgFilter.value;
+			this.msgFilterReValue = this.msgFilterRe.checked;
+			this.logSortingValue  = this.logSorting.value;
+			this.autoRefreshValue = this.autoRefresh.checked;
+			if(this.autorefreshOn) {
 				if(this.autoRefreshValue) {
 					poll.add(this.pollFuncWrapper, this.pollInterval);
 					this.refreshBtn.style.visibility = 'hidden';
@@ -407,16 +509,21 @@ return baseclass.extend({
 		},
 
 		resetFormValues() {
-			this.tailInput.value      = this.tailValue;
-			this.timeFilter.value     = this.timeFilterValue;
-			this.timeFilterRe.checked = this.timeFilterReValue;
-			if(this.isHosts) {
+			this.tailInput.value = this.tailValue;
+			if(this.logTimestampFlag) {
+				if(this.enableConvertTimestamp) {
+					this.convertTimestamp.checked = this.convertTimestampValue;
+				};
+				this.timeFilter.value     = this.timeFilterValue;
+				this.timeFilterRe.checked = this.timeFilterReValue;
+			};
+			if(this.logHostsFlag) {
 				this.logHostsDropdown.setValue(this.hostFilterValue);
 			};
-			if(this.isFacilities) {
+			if(this.logFacilitiesFlag) {
 				this.logFacilitiesDropdown.setValue(this.facilityFilterValue);
 			};
-			if(this.isLevels) {
+			if(this.logLevelsFlag) {
 				this.logLevelsDropdown.setValue(this.levelFilterValue);
 			};
 			this.msgFilter.value     = this.msgFilterValue;
@@ -502,7 +609,7 @@ return baseclass.extend({
 					regExp.lastIndex = 0;
 				});
 			} catch(err) {
-				if(err.name === 'SyntaxError') {
+				if(err.name == 'SyntaxError') {
 					ui.addNotification(null,
 						E('p', {}, _('Invalid regular expression') + ': ' + err.message));
 					return entriesArray;
@@ -527,7 +634,7 @@ return baseclass.extend({
 			let logHostsKeys = Object.keys(this.logHosts);
 			if(logHostsKeys.length > 0 && this.logHostsDropdown) {
 				this.logHostsDropdown.addChoices(logHostsKeys, this.logHosts);
-				if(this.hostFilterValue.length === 0 || logHostsKeys.length === this.hostFilterValue.length) {
+				if(this.hostFilterValue.length == 0) {
 					return entriesArray;
 				};
 				return entriesArray.filter(e => this.hostFilterValue.includes(e[2]));
@@ -538,7 +645,7 @@ return baseclass.extend({
 		setFacilityFilter(entriesArray) {
 			let logFacilitiesKeys = Object.keys(this.logFacilities);
 			if(logFacilitiesKeys.length > 0 && this.logFacilitiesDropdown) {
-				if(this.facilityFilterValue.length === 0 || logFacilitiesKeys.length === this.facilityFilterValue.length) {
+				if(this.facilityFilterValue.length == 0) {
 					return entriesArray;
 				};
 				return entriesArray.filter(e => this.facilityFilterValue.includes(e[3]));
@@ -549,7 +656,7 @@ return baseclass.extend({
 		setLevelFilter(entriesArray) {
 			let logLevelsKeys = Object.keys(this.logLevels);
 			if(logLevelsKeys.length > 0 && this.logLevelsDropdown) {
-				if(this.levelFilterValue.length === 0 || logLevelsKeys.length === this.levelFilterValue.length) {
+				if(this.levelFilterValue.length == 0) {
 					return entriesArray;
 				};
 				return entriesArray.filter(e => this.levelFilterValue.includes(e[4]));
@@ -624,7 +731,13 @@ return baseclass.extend({
 			if(logSortingLocal) {
 				this.logSortingValue = logSortingLocal;
 			};
-			if(this.isAutorefresh) {
+			if(this.enableConvertTimestamp) {
+				let convertTimestampLocal = localStorage.getItem(`luci-app-${this.viewName}-convertTimestampValue`);
+				if(convertTimestampLocal) {
+					this.convertTimestampValue = Boolean(Number(convertTimestampLocal));
+				};
+			};
+			if(this.enableAutoRefresh) {
 				let autoRefreshLocal = localStorage.getItem(`luci-app-${this.viewName}-autoRefreshValue`);
 				if(autoRefreshLocal) {
 					this.autoRefreshValue = Boolean(Number(autoRefreshLocal));
@@ -632,7 +745,7 @@ return baseclass.extend({
 			};
 		},
 
-		saveSettingsToLocalStorage(tailValue, logSortingValue, autoRefreshValue) {
+		saveSettingsToLocalStorage(tailValue, logSortingValue, autoRefreshValue, convertTimestampValue) {
 			tailValue = this.checkZeroValue(tailValue);
 			if(this.tailValue != tailValue) {
 				localStorage.setItem(
@@ -642,7 +755,13 @@ return baseclass.extend({
 				localStorage.setItem(
 					`luci-app-${this.viewName}-logSortingValue`, logSortingValue);
 			};
-			if(this.isAutorefresh) {
+			if(this.convertTimestampOn) {
+				if(this.convertTimestampValue != convertTimestampValue) {
+					localStorage.setItem(
+						`luci-app-${this.viewName}-convertTimestampValue`, String(Number(convertTimestampValue)));
+				};
+			};
+			if(this.autorefreshOn) {
 				if(this.autoRefreshValue != autoRefreshValue) {
 					localStorage.setItem(
 						`luci-app-${this.viewName}-autoRefreshValue`, String(Number(autoRefreshValue)));
@@ -675,13 +794,23 @@ return baseclass.extend({
 					)
 				);
 				if(logdata && logdata !== '') {
-					if(this.isFacilities && !this.logFacilitiesDropdown) {
+					if(this.enableConvertTimestamp && !this.logConvertTimestampElem) {
+						this.logConvertTimestampElem = this.makeLogConvertTimestampSection();
+					};
+					if(this.logTimestampFlag && !this.logTimeFilterElem) {
+						this.logTimeFilterElem = this.makeLogTimeFilterSection();
+					};
+					if(this.logTimestampFlag && !this.logtimeFilterReElem) {
+						this.logtimeFilterReElem = this.makeLogtimeFilterReSection();
+					};
+
+					if(this.logFacilitiesFlag && !this.logFacilitiesDropdown) {
 						this.logFacilitiesDropdownElem = this.makeLogFacilitiesDropdownSection();
 					};
-					if(this.isLevels && !this.logLevelsDropdown) {
+					if(this.logLevelsFlag && !this.logLevelsDropdown) {
 						this.logLevelsDropdownElem = this.makeLogLevelsDropdownSection();
 					};
-					if(this.isHosts && !this.logHostsDropdown) {
+					if(this.logHostsFlag && !this.logHostsDropdown) {
 						this.logHostsDropdownElem = this.makeLogHostsDropdownSection();
 					};
 				};
@@ -701,7 +830,7 @@ return baseclass.extend({
 
 		filterSettingsModal() {
 			return ui.showModal(_('Filter settings'), [
-				E('div', { 'class': 'cbi-map' }, [
+				E('div', { 'class': 'cbi-map' },
 					E('div', { 'class': 'cbi-section' }, [
 						E('div', { 'class': 'cbi-section-node' }, [
 							E('div', { 'class': 'cbi-value' }, [
@@ -709,52 +838,24 @@ return baseclass.extend({
 									'class': 'cbi-value-title',
 									'for'  : 'tailInput',
 								}, _('Last entries')),
-								E('div', { 'class': 'cbi-value-field' }, [
-									this.tailInput,
-									E('button', {
-										'class': 'cbi-button btn',
-										'click': L.bind(ev => {
-											ev.target.blur();
-											ev.preventDefault();
-											this.tailInput.value = 0;
-											this.tailInput.focus();
-										}, this),
-									}, '&#9003;'),
-								]),
+								E('div', { 'class': 'cbi-value-field' },
+									E('span', { 'class': 'control-group' }, [
+										this.tailInput,
+										E('button', {
+											'class': 'cbi-button btn',
+											'click': L.bind(ev => {
+												ev.target.blur();
+												ev.preventDefault();
+												this.tailInput.value = 0;
+												this.tailInput.focus();
+											}, this),
+										}, '&#9003;'),
+									])
+								),
 							]),
-							E('div', { 'class': 'cbi-value' }, [
-								E('label', {
-									'class': 'cbi-value-title',
-									'for'  : 'timeFilter',
-								}, _('Timestamp filter')),
-								E('div', { 'class': 'cbi-value-field' }, [
-									this.timeFilter,
-									E('button', {
-										'class': 'cbi-button btn',
-										'click': L.bind(ev => {
-											ev.target.blur();
-											ev.preventDefault();
-											this.timeFilter.value = null;
-											this.timeFilter.focus();
-										}, this),
-									}, '&#9003;'),
-								]),
-							]),
-							E('div', { 'class': 'cbi-value' }, [
-								E('label', {
-									'class': 'cbi-value-title',
-									'for'  : 'timeFilterRe',
-								}, _('Filter is regexp')),
-								E('div', { 'class': 'cbi-value-field' }, [
-									E('div', { 'class': 'cbi-checkbox' }, [
-										this.timeFilterRe,
-										E('label', {}),
-									]),
-									E('div', { 'class': 'cbi-value-description' },
-										_('Apply timestamp filter as regular expression')
-									),
-								]),
-							]),
+							this.logConvertTimestampElem,
+							this.logTimeFilterElem,
+							this.logtimeFilterReElem,
 							this.logHostsDropdownElem,
 							this.logFacilitiesDropdownElem,
 							this.logLevelsDropdownElem,
@@ -763,18 +864,20 @@ return baseclass.extend({
 									'class': 'cbi-value-title',
 									'for'  : 'msgFilter',
 								}, _('Message filter')),
-								E('div', { 'class': 'cbi-value-field' }, [
-									this.msgFilter,
-									E('button', {
-										'class': 'cbi-button btn',
-										'click': L.bind(ev => {
-											ev.target.blur();
-											ev.preventDefault();
-											this.msgFilter.value = null;
-											this.msgFilter.focus();
-										}, this),
-									}, '&#9003;'),
-								]),
+								E('div', { 'class': 'cbi-value-field' },
+									E('span', { 'class': 'control-group' }, [
+										this.msgFilter,
+										E('button', {
+											'class': 'cbi-button btn',
+											'click': L.bind(ev => {
+												ev.target.blur();
+												ev.preventDefault();
+												this.msgFilter.value = null;
+												this.msgFilter.focus();
+											}, this),
+										}, '&#9003;'),
+									])
+								)
 							]),
 							E('div', { 'class': 'cbi-value' }, [
 								E('label', {
@@ -798,7 +901,7 @@ return baseclass.extend({
 								}, _('Sorting entries')),
 								E('div', { 'class': 'cbi-value-field' }, this.logSorting),
 							]),
-							((this.isAutorefresh) ?
+							((this.autorefreshOn) ?
 								E('div', { 'class': 'cbi-value' }, [
 									E('label', {
 										'class': 'cbi-value-title',
@@ -813,9 +916,9 @@ return baseclass.extend({
 								]) : ''),
 						]),
 					]),
-				]),
-				E('div', { 'class': 'right' }, [
-					this.logFilterForm,
+				),
+				this.logFilterForm,
+				E('div', { 'class': 'right button-row' }, [
 					E('button', {
 						'class': 'btn',
 						'click': ev => {
@@ -865,6 +968,25 @@ return baseclass.extend({
 			throw new Error('getLogHash must be overridden by a subclass');
 		},
 
+		/**
+		 * Converts the timestamp format.
+		 * Abstract method, must be overridden by a subclass!
+		 *
+		 * To completely disable the convert timrstamp option, views extending
+		 * this base class should overwrite the `convertTimestampFunc` function
+		 * with `null`.
+		 *
+		 * @instance
+		 * @abstract
+		 *
+		 * @param {string} t
+		 * @returns {String}
+		 * Returns the converted timestamp string.
+		 */
+		convertTimestampFunc(t) {
+			throw new Error('convertTimestampFunc must be overridden by a subclass');
+		},
+
 		async pollFunc() {
 			await this.getLogHash().then(async hash => {
 				if(this.lastHash !== hash) {
@@ -875,8 +997,16 @@ return baseclass.extend({
 		},
 
 		onSubmitFilter() {
+			if(this.logSorting.value != this.logSortingValue) {
+				if(this.logSorting.value == 'desc') {
+					this.logWrapper.after(this.moreEntriesBar);
+				} else {
+					this.logWrapper.before(this.moreEntriesBar);
+				};
+			};
 			this.saveSettingsToLocalStorage(
-				this.tailInput.value, this.logSorting.value, this.autoRefresh.checked);
+				this.tailInput.value, this.logSorting.value,
+				this.autoRefresh.checked, this.convertTimestamp.checked);
 			this.setFilterSettings();
 			this.fastTailValue = Number(this.tailValue);
 			return this.reloadLog(Number(this.tailValue), true);
@@ -892,9 +1022,12 @@ return baseclass.extend({
 
 		load() {
 			this.restoreSettingsFromLocalStorage();
-			if(!this.autoRefresh || typeof(this.getLogHash) != 'function') {
-				this.isAutorefresh    = false;
+			if(!this.enableAutoRefresh || typeof(this.getLogHash) != 'function') {
+				this.autorefreshOn    = false;
 				this.autoRefreshValue = false;
+			};
+			if(this.enableConvertTimestamp && typeof(this.convertTimestampFunc) == 'function') {
+				this.convertTimestampOn = true;
 			};
 			return this.getLogData(this.tailValue);
 		},
@@ -920,18 +1053,13 @@ return baseclass.extend({
 			this.tailInput.value = this.tailValue;
 			ui.addValidator(this.tailInput, 'uinteger', true);
 
-			this.logHostsDropdownElem      = '';
-			this.logFacilitiesDropdownElem = '';
-			this.logLevelsDropdownElem     = '';
-			if(this.isLevels) {
-				this.logLevelsDropdownElem = this.makeLogLevelsDropdownSection();
-			};
-			if(this.isFacilities) {
-				this.logFacilitiesDropdownElem = this.makeLogFacilitiesDropdownSection();
-			};
-			if(this.isHosts) {
-				this.logHostsDropdownElem = this.makeLogHostsDropdownSection();
-			};
+			this.convertTimestamp = E('input', {
+				'id'   : 'convertTimestamp',
+				'name' : 'convertTimestamp',
+				'type' : 'checkbox',
+				'form' : 'logFilterForm',
+			});
+			this.convertTimestamp.checked = this.convertTimestampValue;
 
 			this.timeFilter = E('input', {
 				'id'         : 'timeFilter',
@@ -951,6 +1079,28 @@ return baseclass.extend({
 			});
 
 			this.setRegexpValidator(this.timeFilter, this.timeFilterRe);
+
+			this.logConvertTimestampElem   = '';
+			this.logTimeFilterElem         = '';
+			this.logtimeFilterReElem       = '';
+			this.logHostsDropdownElem      = '';
+			this.logFacilitiesDropdownElem = '';
+			this.logLevelsDropdownElem     = '';
+
+			if(this.logTimestampFlag) {
+				this.logConvertTimestampElem = this.makeLogConvertTimestampSection();
+				this.logTimeFilterElem       = this.makeLogTimeFilterSection();
+				this.logtimeFilterReElem     = this.makeLogtimeFilterReSection();
+			};
+			if(this.logLevelsFlag) {
+				this.logLevelsDropdownElem = this.makeLogLevelsDropdownSection();
+			};
+			if(this.logFacilitiesFlag) {
+				this.logFacilitiesDropdownElem = this.makeLogFacilitiesDropdownSection();
+			};
+			if(this.logHostsFlag) {
+				this.logHostsDropdownElem = this.makeLogHostsDropdownSection();
+			};
 
 			this.msgFilter = E('input', {
 				'id'         : 'msgFilter',
@@ -998,6 +1148,7 @@ return baseclass.extend({
 			this.logFilterForm = E('form', {
 				'id'    : 'logFilterForm',
 				'name'  : 'logFilterForm',
+				'style' : 'display:none',
 				'submit': ev => {
 					ev.preventDefault();
 					return this.onSubmitFilter();
@@ -1021,24 +1172,36 @@ return baseclass.extend({
 				}),
 			}, '&#10227;');
 
+			function getMoreEntries(ev) {
+				ev.target.blur();
+				if(this.fastTailValue === null) {
+					this.fastTailValue = Number(this.tailValue);
+				};
+				if(this.fastTailValue > 0) {
+					this.fastTailValue += this.fastTailIncrement;
+				};
+				return this.reloadLog(this.fastTailValue);
+			}
+
 			this.moreEntriesBtn = E('button', {
-				'title': _('Get more entries'),
+				'title': _('More entries'),
 				'class': 'cbi-button btn log-side-btn',
 				'style': 'margin-top:1px !important',
-				'click': ui.createHandlerFn(this, function(ev) {
-					ev.target.blur();
-					if(this.fastTailValue === null) {
-						this.fastTailValue = Number(this.tailValue);
-					}
-					if(this.fastTailValue > 0) {
-						this.fastTailValue += this.fastTailIncrement;
-					};
-					return this.reloadLog(this.fastTailValue);
-				}),
+				'click': ui.createHandlerFn(this, getMoreEntries),
 			}, `+${this.fastTailIncrement}`);
 
+			this.moreEntriesRowBtn = E('button', {
+				'class': 'cbi-button btn',
+				'click': ui.createHandlerFn(this, getMoreEntries),
+			}, _('More entries'));
+
+			this.moreEntriesBar = E('div', {
+				'id'   : 'moreEntriesBar',
+				'class': 'center',
+			}, this.moreEntriesRowBtn);
+
 			this.allEntriesBtn = E('button', {
-				'title': _('Get all entries'),
+				'title': _('All entries'),
 				'class': 'cbi-button btn log-side-btn',
 				'style': 'margin-top:1px !important',
 				'click': ui.createHandlerFn(this, function(ev) {
@@ -1059,7 +1222,8 @@ return baseclass.extend({
 			}, '&#9634;');
 
 			this.actionButtons.push(this.filterEditsBtn, this.logDownloadBtn,
-									this.refreshBtn,this.moreEntriesBtn,
+									this.refreshBtn, this.moreEntriesBtn,
+									this.moreEntriesRowBtn,
 									this.allEntriesBtn, this.filterModalBtn);
 
 			document.body.append(
@@ -1090,8 +1254,13 @@ return baseclass.extend({
 				])
 			);
 
-			if(this.isAutorefresh && this.autoRefreshValue) {
+			if(this.autorefreshOn && this.autoRefreshValue) {
 				poll.add(this.pollFuncWrapper, this.pollInterval);
+			};
+
+			let logArea = [ this.moreEntriesBar, this.logWrapper ];
+			if(this.logSortingValue == 'desc') {
+				logArea.reverse();
 			};
 
 			return E([
@@ -1115,9 +1284,7 @@ return baseclass.extend({
 					])
 				),
 				E('div', { 'class': 'cbi-section fade-in' },
-					E('div', { 'class': 'cbi-section-node' },
-						this.logWrapper
-					)
+					E('div', { 'class': 'cbi-section-node' }, logArea)
 				),
 				E('div', { 'class': 'cbi-section fade-in' },
 					E('div', { 'class': 'cbi-section-node' },

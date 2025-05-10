@@ -1,7 +1,17 @@
 include $(TOPDIR)/rules.mk
 
+define findrev
+	 $(shell \
+		if git log -1 >/dev/null 2>/dev/null; then \
+			git log -1 --format=%ad --date=format:'%Y%m%d' -- .; \
+		else \
+			find . -type f -printf '%T@\n' 2>/dev/null | sort -rn | head -n1 | cut -d. -f1 | awk '{print strftime("%Y%m%d", $1)}'; \
+		fi \
+	)
+endef
+
 PKG_NAME:=easyconfig
-PKG_VERSION:=20240329
+PKG_VERSION:=$(strip $(call findrev))
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -9,7 +19,7 @@ define Package/easyconfig
 	SECTION:=admin
 	CATEGORY:=Administration
 	TITLE:=Easyconfig - prosty system konfiguracji
-	DEPENDS:=+iw +iwinfo +jshn +jsonfilter +rpcd +rpcd-mod-file +uhttpd +uhttpd-mod-ubus
+	DEPENDS:=+iw +iwinfo +jshn +jsonfilter +rpcd +rpcd-mod-file +uhttpd +uhttpd-mod-ubus +@BUSYBOX_DEFAULT_AWK
 	MAINTAINER:=Cezary Jackiewicz <cezary@eko.one.pl>
 	PKGARCH:=all
 endef
@@ -57,12 +67,12 @@ define Package/easyconfig/install
 
 	$(SED) 's/^\t*//g;s/^\s*//g;/^$$$$/d' $(1)/www/easyconfig.html
 
-	$(FIND) $(1) -type f -name '*.js' | while read src; do \
+	for src in $(1)/www/easyconfig/dns.js $(1)/www/easyconfig/easyconfig.js; do \
 		uglifyjs "$$$$src" -o "$$$$src".1 && \
 		mv "$$$$src".1 "$$$$src" || true; \
 	done
 
-	$(FIND) $(1) -type f -name '*.css' | while read src; do \
+	for src in $(1)/www/easyconfig/easyconfig.css; do \
 		cleancss "$$$$src" -o "$$$$src".1 && \
 		mv "$$$$src".1 "$$$$src" || true; \
 	done

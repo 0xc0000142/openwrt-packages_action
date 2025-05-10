@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/syslog.h>
+#include <unistd.h>
 
 #include "cli.h"
 
@@ -27,6 +27,7 @@ void try_print_info(const int argc, char *argv[]) {
         printf("Git commit: %s\n", UA2F_GIT_COMMIT);
         printf("Git branch: %s\n", UA2F_GIT_BRANCH);
         printf("Git tag: %s\n", UA2F_GIT_TAG);
+        printf("Git dirty: %s\n", UA2F_GIT_DIRTY);
 #ifdef UA2F_CUSTOM_UA
         printf("Embed UA: %s\n", UA2F_CUSTOM_UA);
 #else
@@ -47,7 +48,13 @@ void try_print_info(const int argc, char *argv[]) {
         }
 #else
         printf("UCI support disabled\n");
+#ifdef UA2F_NO_CACHE
+        printf("Conntrack cache: disabled\n");
+#else
+        printf("Conntrack cache: auto\n");
 #endif
+#endif
+
         exit(EXIT_SUCCESS);
     }
 

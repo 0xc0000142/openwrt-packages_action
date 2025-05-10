@@ -5,13 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=daed
-PKG_VERSION:=0.7.0
+PKG_VERSION:=0.9.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/daeuniverse/daed.git
 PKG_SOURCE_VERSION:=v$(PKG_VERSION)
-PKG_MIRROR_HASH:=d1d867e15e3abae1993260b3728c285ce0cd5bcce98f2ba79e0026a7dc544dd1
+PKG_MIRROR_HASH:=741181e21990c689f756be632edb9cfe7af2a9607f70d6a60248d8b77b8eaff4
 
 PKG_LICENSE:=AGPL-3.0-only MIT
 PKG_LICENSE_FILES:=LICENSE wing/LICENSE
@@ -81,7 +81,7 @@ define Download/daed-web
 	URL:=https://github.com/daeuniverse/daed/releases/download/v$(PKG_VERSION)
 	URL_FILE:=web.zip
 	FILE:=$(WEB_FILE)
-	HASH:=571ae9b49873f30640b71321f16a9a8ba11523356ad06bf381d44b307a8fa07a
+	HASH:=74a591946e9d550beac329836d5bff832999703f2b72361f899971600b80b1f1
 endef
 
 define Build/Prepare
@@ -103,7 +103,7 @@ endef
 
 DAE_CFLAGS:= \
 	-O2 -Wall -Werror \
-	-DMAX_MATCH_SET_LEN=64 \
+	-DMAX_MATCH_SET_LEN=1024 \
 	-I$(BPF_HEADERS_DIR)/tools/lib \
 	-I$(BPF_HEADERS_DIR)/arch/$(BPF_KARCH)/include/asm/mach-generic
 

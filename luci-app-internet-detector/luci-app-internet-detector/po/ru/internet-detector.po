@@ -44,6 +44,9 @@ msgstr "Сообщение будет отправлено при подключ
 msgid "An error has occurred"
 msgstr "Произошла ошибка"
 
+msgid "Attempts"
+msgstr "Попытки"
+
 msgid "Big: 248 bytes"
 msgstr "Большой: 248 байт"
 
@@ -83,6 +86,9 @@ msgstr "Период после отключения"
 msgid "Default port value for TCP connections."
 msgstr "Стандартное значение порта для TCP-подключений."
 
+msgid "Device"
+msgstr "Устройство"
+
 msgid "Device will be rebooted when the Internet is disconnected."
 msgstr "Устройство будет перезагружено при отключении Интернет."
 
@@ -112,6 +118,9 @@ msgstr "Изменить"
 
 msgid "Edit down-script"
 msgstr "Изменить down-script"
+
+msgid "Edit regular-script"
+msgstr "Изменить regular-script"
 
 msgid "Edit public-ip-script"
 msgstr "Изменить public-ip-script"
@@ -143,11 +152,8 @@ msgstr "Включен"
 msgid "Expecting:"
 msgstr "Ожидается:"
 
-msgid "Public IP"
-msgstr "Публичный IP"
-
-msgid "Public IP address"
-msgstr "Публичный IP адрес"
+msgid "Failed interval"
+msgstr "Интервал при неудаче"
 
 msgid "Failed to get %s init status: %s"
 msgstr "Не удалось получить статус инициализации %s: %s"
@@ -210,6 +216,9 @@ msgstr "Статус Интернет"
 msgid "Interval between IP address requests."
 msgstr "Интервал между запросами IP адреса."
 
+msgid "Interval between IP address requests if the IP address is not defined."
+msgstr "Интервал между запросами IP адреса, если IP адрес не определён."
+
 msgid "Jumbo: 9000 bytes"
 msgstr "Гигантский: 9000 байт"
 
@@ -252,23 +261,32 @@ msgstr ""
 "ModemManger."
 
 msgid ""
-"Network interface for Internet access. If not specified, the default "
-"interface is used."
+"Network device for Internet access. If not specified, the default "
+"device is used."
 msgstr ""
-"Сетевой интерфейс для доступа в Интернет. Если не указан, используется "
-"интерфейс по умолчанию."
+"Сетевое устройство для доступа в Интернет. Если не указано, используется "
+"устройство по умолчанию."
 
 msgid ""
-"Network interface to restart. If not specified, then the network service is restarted."
+"Network device or interface to restart. If not specified, then the network service is restarted."
 msgstr ""
-"Сетевой интерфейс для перезапуска. Если не задан, то будет перезапущена сетевая "
+"Сетевое устройство или интерфейс для перезапуска. Если не задано, то будет перезапущена сетевая "
 "служба."
 
 msgid "Network will be restarted when the Internet is disconnected."
 msgstr "Сеть будет перезапущена при отключении Интернет."
 
+msgid "Next run"
+msgstr "Следующий запуск"
+
 msgid "No <abbr title=\"Light Emitting Diode\">LED</abbr>s available..."
 msgstr "Нет доступных <abbr title=\"Светодиод\">LED</abbr>..."
+
+msgid "Not scheduled"
+msgstr "Не запланирован"
+
+msgid "Number of attempts to request an IP address."
+msgstr "Количество попыток запроса IP адреса"
 
 msgid "Off"
 msgstr "Выключить"
@@ -314,8 +332,17 @@ msgid ""
 msgstr ""
 "Период времени отсутствия доступа в Интренет перед перезагрузкой устройства."
 
+msgid "Regular script"
+msgstr "Регулярный скрипт"
+
 msgid "Polling interval"
 msgstr "Интервал опроса"
+
+msgid "Public IP"
+msgstr "Публичный IP"
+
+msgid "Public IP address"
+msgstr "Публичный IP адрес"
 
 msgid "Reboot device"
 msgstr "Перезагрузка устройства"
@@ -340,6 +367,12 @@ msgstr "Перезапуск службы"
 
 msgid "Restart timeout"
 msgstr "Таймаут перезапуска"
+
+msgid "Run interval"
+msgstr "Интервал запуска"
+
+msgid "Run if Internet state is"
+msgstr "Выполнять если статус Интернет"
 
 msgid "Run service at startup"
 msgstr "Запуск службы при старте"
@@ -389,8 +422,14 @@ msgstr "Экземпляры службы"
 msgid "Set the modem to be allowed to use any band."
 msgstr "Разрешить модему использование любой частоты."
 
+msgid "Shell commands that are run regularly."
+msgstr "Команды shell выполняемые регулярно."
+
 msgid "Shell commands that run when connected to the Internet."
 msgstr "Команды shell выполняемые при подключении к Интернет."
+
+msgid "Shell commands that run regularly at a specified interval. Current state of the Internet is available as value of the <code>$INET_STATE</code> variable (<code>0</code> - connected, <code>1</code> - disconnected)."
+msgstr "Команды shell выполняемые регулярно с заданным интервалом. Текущее состояние Интернет доступно как значение переменной <code>$INET_STATE</code> (<code>0</code> - подключен, <code>1</code> - отключен)."
 
 msgid "Shell commands that run when the public IP address changes. New IP is available as value of the <code>$PUBLIC_IP</code> variable (empty string if undefined)."
 msgstr "Команды shell выполняемые при изменении публичного IP адреса. Новый IP доступен как значение переменной <code>$PUBLIC_IP</code> (пустая строка если не определён)."
@@ -422,8 +461,8 @@ msgstr "Тип записи запрашиваемой в DNS-запросе (е
 msgid "TLS: use STARTTLS if the server supports it."
 msgstr "TLS: использовать STARTTLS если сервер поддерживает."
 
-msgid "Timeout between stopping and starting the interface."
-msgstr "Таймаут между остановкой и запуском интерфейса."
+msgid "Timeout between stopping and starting a network device."
+msgstr "Таймаут между остановкой и запуском сетевого устройства."
 
 msgid "Type a time string"
 msgstr "Введите строку времени"
@@ -474,11 +513,23 @@ msgstr "Записывать сообщения в системный журна
 msgid "after connection"
 msgstr "после подключения"
 
+msgid "after connection or disconnection"
+msgstr "после подключения или отключения"
+
 msgid "after disconnection"
 msgstr "после отключения"
 
-msgid "after connection or disconnection"
-msgstr "после подключения или отключения"
+msgid "connected"
+msgstr "подключен"
+
+msgid "connected or disconnected"
+msgstr "подключен или отключен"
+
+msgid "days"
+msgstr "дни"
+
+msgid "disconnected"
+msgstr "отключен"
 
 msgid "down-script"
 msgstr "down-script"

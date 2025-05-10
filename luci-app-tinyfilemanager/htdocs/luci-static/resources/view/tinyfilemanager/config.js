@@ -10,7 +10,7 @@ return view.extend({
 //	handleSave: null,
 //	handleReset: null,
 
-	load: function() {
+	load() {
 	return Promise.all([
 		L.resolveDefault(fs.read('/var/tinyfilemanager/releaseslist'), null),
 		L.resolveDefault(fs.stat('/usr/libexec/tinyfilemanager-update'), {}),
@@ -19,12 +19,12 @@ return view.extend({
 	]);
 	},
 
-	render: function(res) {
-		var releaseslist = res[0] ? res[0].trim().split("\n") : [],
-			has_location = res[2].path,
-			pkgversion = '2.5.3';
+	render(res) {
+		const releaseslist = res[0] ? res[0].trim().split("\n") : [];
+		const has_location = res[2].path;
+		const pkgversion = '2.6';
 
-		var m, s, o;
+		let m, s, o;
 
 		m = new form.Map('tinyfilemanager');
 
@@ -36,7 +36,7 @@ return view.extend({
 		o.inputstyle = 'apply';
 		o.onclick = function() {
 			return fs.exec('/etc/init.d/tinyfilemanager', ['reload'])
-				.catch(function(e) { ui.addNotification(null, E('p', e.message), 'error') });
+				.catch((e) => { ui.addNotification(null, E('p', e.message), 'error') });
 		};
 		if (! has_location)
 			o.description = _('To enable SSL support, you may need to install <b>%s</b><br/>').format(['php-nginx']);
@@ -103,11 +103,7 @@ return view.extend({
 		o.rmempty = false;
 
 		o = s.option(form.Value, 'favicon_path', _('Favicon path'));
-		o.datatype = 'file';
-		o.placeholder = '/etc/tinyfilemanager/favicon.png';
-		o.optional = true;
-		o.rmempty = false;
-		o.retain = true;
+		o.placeholder = '/tinyfilemanager/rootfs/etc/tinyfilemanager/favicon.png';
 
 		o = s.option(form.DynamicList, 'exclude_items', _('Exclude Files/Folders'));
 		o.datatype = "list(string)";
@@ -154,15 +150,15 @@ return view.extend({
 		o.inputstyle = 'apply';
 		o.onclick = function() {
 			return fs.exec('/etc/init.d/tinyfilemanager', ['check'])
-				.then(function(res) { return window.location.reload() })
-				.catch(function(e) { ui.addNotification(null, E('p', e.message), 'error') });
+				.then((res) => { return window.location.reload() })
+				.catch((e) => { ui.addNotification(null, E('p', e.message), 'error') });
 		};
 
 		if (releaseslist.length) {
 			o = s.option(form.ListValue, '_releaseslist', _('Releases list'));
 			//o.value(pkgversion);
 			o.default = pkgversion;
-			for (var i = 0; i < releaseslist.length; i++)
+			for (let i = 0; i < releaseslist.length; i++)
 				o.value(releaseslist[i]);
 			o.write = function() {};
 
@@ -170,10 +166,10 @@ return view.extend({
 			o.inputtitle = _('Uprgade');
 			o.inputstyle = 'apply';
 			o.onclick = function(ev, section_id) {
-				var releasestag=this.section.getOption('_releaseslist').formvalue(section_id);
+				const releasestag=this.section.getOption('_releaseslist').formvalue(section_id);
 				//alert(releasestag);
 				return fs.exec_direct('/usr/libexec/tinyfilemanager-update', [releasestag])
-					.catch(function(e) { ui.addNotification(null, E('p', e.message), 'error') });
+					.catch((e) => { ui.addNotification(null, E('p', e.message), 'error') });
 			}
 		};
 

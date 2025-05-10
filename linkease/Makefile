@@ -10,11 +10,11 @@ include $(TOPDIR)/rules.mk
 PKG_ARCH_LINKEASE:=$(ARCH)
 
 PKG_NAME:=linkease
-PKG_VERSION:=1.6.6
+PKG_VERSION:=1.7.0
 PKG_RELEASE:=$(PKG_ARCH_LINKEASE)-3
 PKG_SOURCE:=$(PKG_NAME)-binary-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://fw0.koolcenter.com/binary/LinkEase/LinuxStorage/
-PKG_HASH:=4c8b3f8be2429938db51d7df297d8f64209008c350e6800bfb7dd24b92a34e10
+PKG_SOURCE_URL:=http://dl.istoreos.com/binary/LinkEase/LinuxStorage/
+PKG_HASH:=61aec39bd1977020150ee02726288c9718181324d1e27159bfb84adb9318e933
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-binary-$(PKG_VERSION)
 
@@ -45,6 +45,7 @@ define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
 	[ -f /etc/uci-defaults/linkease ] && /etc/uci-defaults/linkease && rm -f /etc/uci-defaults/linkease
+	exit 0
 fi
 endef
 

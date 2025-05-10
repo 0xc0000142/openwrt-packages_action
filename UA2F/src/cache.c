@@ -1,5 +1,5 @@
 #include "cache.h"
-#include "third/uthash.h"
+#include "third/uthash/uthash.h"
 
 #include <pthread.h>
 #include <stdbool.h>
@@ -22,7 +22,7 @@ _Noreturn static void* check_cache(void* arg __attribute__((unused))) {
         struct cache *cur, *tmp;
 
         HASH_ITER(hh, not_http_dst_cache, cur, tmp) {
-            if (difftime(now, cur->last_time) > check_interval * 2) {
+            if (difftime(now, cur->last_time) > check_interval) {
                 HASH_DEL(not_http_dst_cache, cur);
                 free(cur);
             }
@@ -55,29 +55,17 @@ void init_not_http_cache(const int interval) {
 }
 
 bool cache_contains(struct addr_port target) {
-    pthread_rwlock_rdlock(&cacheLock);
+    pthread_rwlock_wrlock(&cacheLock);
 
     struct cache *s;
     HASH_FIND(hh, not_http_dst_cache, &target, sizeof(struct addr_port), s);
+    if (s != NULL) {
+        s->last_time = time(NULL);
+    }
 
     pthread_rwlock_unlock(&cacheLock);
 
-    if (s != NULL) {
-        bool ret;
-        pthread_rwlock_wrlock(&cacheLock);
-        if (difftime(time(NULL), s->last_time) > check_interval * 2) {
-            HASH_DEL(not_http_dst_cache, s);
-            free(s);
-            ret = false;
-        } else {
-            s->last_time = time(NULL);
-            ret = true;
-        }
-        pthread_rwlock_unlock(&cacheLock);
-        return ret;
-    }
-
-    return false;
+    return s != NULL;
 }
 
 void cache_add(struct addr_port addr_port) {

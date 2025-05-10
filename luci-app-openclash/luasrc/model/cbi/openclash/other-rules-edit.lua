@@ -72,12 +72,9 @@ if groupnames ~= nil and filename ~= nil then
 o = s:option(ListValue, "rule_name", translate("Other Rules Name"))
 o.rmempty = true
 o:value("lhie1", translate("lhie1 Rules"))
-o:value("ConnersHua", translate("ConnersHua(Provider-type) Rules"))
-o:value("ConnersHua_return", translate("ConnersHua Return Rules"))
 
 o = s:option(ListValue, "GlobalTV", translate("GlobalTV"))
 o:depends("rule_name", "lhie1")
-o:depends("rule_name", "ConnersHua")
 o.rmempty = true
 for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
   if groupname ~= nil and groupname ~= "" then
@@ -86,10 +83,12 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "AsianTV", translate("AsianTV"))
 o:depends("rule_name", "lhie1")
-o:depends("rule_name", "ConnersHua")
 o.rmempty = true
 for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
   if groupname ~= nil and groupname ~= "" then
@@ -98,11 +97,26 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
+
+o = s:option(ListValue, "MainlandTV", translate("CN Mainland TV"))
+o:depends("rule_name", "lhie1")
+o.rmempty = true
+for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
+  if groupname ~= nil and groupname ~= "" then
+    o:value(groupname)
+  end
+end
+o:value("DIRECT")
+o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Proxy", translate("Proxy"))
 o:depends("rule_name", "lhie1")
-o:depends("rule_name", "ConnersHua")
-o:depends("rule_name", "ConnersHua_return")
 o.rmempty = true
 for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
   if groupname ~= nil and groupname ~= "" then
@@ -111,6 +125,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Youtube", translate("Youtube"))
 o:depends("rule_name", "lhie1")
@@ -122,6 +139,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Bilibili", translate("Bilibili"))
 o:depends("rule_name", "lhie1")
@@ -133,6 +153,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Bahamut", translate("Bahamut"))
 o:depends("rule_name", "lhie1")
@@ -144,6 +167,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "HBOMax", translate("HBO Max"))
 o:depends("rule_name", "lhie1")
@@ -155,17 +181,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
-
-o = s:option(ListValue, "HBOGo", translate("HBO Go"))
-o:depends("rule_name", "lhie1")
-o.rmempty = true
-for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
-  if groupname ~= nil and groupname ~= "" then
-    o:value(groupname)
-  end
-end
-o:value("DIRECT")
-o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Pornhub", translate("Pornhub"))
 o:depends("rule_name", "lhie1")
@@ -177,6 +195,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Apple", translate("Apple"))
 o:depends("rule_name", "lhie1")
@@ -188,6 +209,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "AppleTV", translate("Apple TV"))
 o:depends("rule_name", "lhie1")
@@ -199,6 +223,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "GoogleFCM", translate("Google FCM"))
 o:depends("rule_name", "lhie1")
@@ -210,6 +237,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Scholar", translate("Scholar"))
 o:depends("rule_name", "lhie1")
@@ -221,6 +251,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Microsoft", translate("Microsoft"))
 o:depends("rule_name", "lhie1")
@@ -232,8 +265,11 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
-o = s:option(ListValue, "OpenAI", translate("OpenAI"))
+o = s:option(ListValue, "AI_Suite", translate("AI Suite"))
 o:depends("rule_name", "lhie1")
 o.rmempty = true
 for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
@@ -243,6 +279,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Netflix", translate("Netflix"))
 o:depends("rule_name", "lhie1")
@@ -254,6 +293,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Disney", translate("Disney Plus"))
 o:depends("rule_name", "lhie1")
@@ -265,6 +307,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Discovery", translate("Discovery Plus"))
 o:depends("rule_name", "lhie1")
@@ -276,6 +321,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "DAZN", translate("DAZN"))
 o:depends("rule_name", "lhie1")
@@ -287,6 +335,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Spotify", translate("Spotify"))
 o:depends("rule_name", "lhie1")
@@ -298,6 +349,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Steam", translate("Steam"))
 o:depends("rule_name", "lhie1")
@@ -309,6 +363,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "miHoYo", translate("miHoYo"))
 o:depends("rule_name", "lhie1")
@@ -320,6 +377,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Speedtest", translate("Speedtest"))
 o:depends("rule_name", "lhie1")
@@ -331,6 +391,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Telegram", translate("Telegram"))
 o:depends("rule_name", "lhie1")
@@ -342,6 +405,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Crypto", translate("Crypto"))
 o:depends("rule_name", "lhie1")
@@ -353,6 +419,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Discord", translate("Discord"))
 o:depends("rule_name", "lhie1")
@@ -364,6 +433,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "PayPal", translate("PayPal"))
 o:depends("rule_name", "lhie1")
@@ -375,6 +447,9 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "AdBlock", translate("AdBlock"))
 o:depends("rule_name", "lhie1")
@@ -386,10 +461,12 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
-o = s:option(ListValue, "Domestic", translate("Domestic"))
+o = s:option(ListValue, "HTTPDNS", translate("HTTPDNS"))
 o:depends("rule_name", "lhie1")
-o:depends("rule_name", "ConnersHua")
 o.rmempty = true
 for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
   if groupname ~= nil and groupname ~= "" then
@@ -398,11 +475,26 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
+
+o = s:option(ListValue, "Domestic", translate("Domestic"))
+o:depends("rule_name", "lhie1")
+o.rmempty = true
+for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
+  if groupname ~= nil and groupname ~= "" then
+    o:value(groupname)
+  end
+end
+o:value("DIRECT")
+o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 o = s:option(ListValue, "Others", translate("Others"))
 o:depends("rule_name", "lhie1")
-o:depends("rule_name", "ConnersHua")
-o:depends("rule_name", "ConnersHua_return")
 o.rmempty = true
 o.description = translate("Choose Proxy Groups, Base On Your Config File").." ( "..font_green..bold_on..filename..bold_off..font_off.." )"
 for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
@@ -412,11 +504,14 @@ for groupname in string.gmatch(groupnames, "([^'##\n']+)##") do
 end
 o:value("DIRECT")
 o:value("REJECT")
+o:value("REJECT-DROP")
+o:value("PASS")
+o:value("GLOBAL")
 
 end
 
 local t = {
-    {Commit, Back}
+  {Commit, Back}
 }
 a = m:section(Table, t)
 
@@ -424,16 +519,16 @@ o = a:option(Button,"Commit", " ")
 o.inputtitle = translate("Commit Settings")
 o.inputstyle = "apply"
 o.write = function()
-   m.uci:commit(openclash)
-   --luci.http.redirect(m.redirect)
+  m.uci:commit(openclash)
+  --luci.http.redirect(m.redirect)
 end
 
 o = a:option(Button,"Back", " ")
 o.inputtitle = translate("Back Settings")
 o.inputstyle = "reset"
 o.write = function()
-   m.uci:revert(openclash, sid)
-   luci.http.redirect(m.redirect)
+  m.uci:revert(openclash, sid)
+  luci.http.redirect(m.redirect)
 end
 
 m:append(Template("openclash/toolbar_show"))

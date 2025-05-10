@@ -1,15 +1,13 @@
 local api = require "luci.passwall.api"
 local appname = "passwall"
-local uci = api.uci
-local fs = require "nixio.fs"
-local types_dir = "/usr/lib/lua/luci/model/cbi/passwall/client/type/"
-
-if not arg[1] or not uci:get(appname, arg[1]) then
-	luci.http.redirect(api.url("node_list"))
-end
 
 m = Map(appname, translate("Node Config"))
-m.redirect = api.url()
+m.redirect = api.url("node_list")
+api.set_apply_on_parse(m)
+
+if not arg[1] or not m:get(arg[1]) then
+	luci.http.redirect(m.redirect)
+end
 
 s = m:section(NamedSection, arg[1], "nodes", "")
 s.addremove = false
@@ -27,46 +25,31 @@ o.rmempty = false
 o = s:option(ListValue, "type", translate("Type"))
 
 if api.is_finded("ipt2socks") then
+	local function _n(name)
+		return "socks_" .. name
+	end
+
 	s.fields["type"]:value("Socks", translate("Socks"))
 
-	o = s:option(Value, "socks_address", translate("Address (Support Domain Name)"))
-	o:depends("type", "Socks")
-	function o.cfgvalue(self, section)
-		return m:get(section, "address")
-	end
-	function o.write(self, section, value)
-		m:set(section, "address", value)
-	end
+	o = s:option(ListValue, _n("del_protocol")) --始终隐藏，用于删除 protocol
+	o:depends({ [_n("__hide")] = "1" })
+	o.rewrite_option = "protocol"
 
-	o = s:option(Value, "socks_port", translate("Port"))
+	o = s:option(Value, _n("address"), translate("Address (Support Domain Name)"))
+
+	o = s:option(Value, _n("port"), translate("Port"))
 	o.datatype = "port"
-	o:depends("type", "Socks")
-	function o.cfgvalue(self, section)
-		return m:get(section, "port")
-	end
-	function o.write(self, section, value)
-		m:set(section, "port", value)
-	end
 
-	o = s:option(Value, "socks_username", translate("Username"))
-	o:depends("type", "Socks")
-	function o.cfgvalue(self, section)
-		return m:get(section, "username")
-	end
-	function o.write(self, section, value)
-		m:set(section, "username", value)
-	end
+	o = s:option(Value, _n("username"), translate("Username"))
 	
-	o = s:option(Value, "socks_password", translate("Password"))
+	o = s:option(Value, _n("password"), translate("Password"))
 	o.password = true
-	o:depends("type", "Socks")
-	function o.cfgvalue(self, section)
-		return m:get(section, "password")
-	end
-	function o.write(self, section, value)
-		m:set(section, "password", value)
-	end
+
+	api.luci_types(arg[1], m, s, "Socks", "socks_")
 end
+
+local fs = api.fs
+local types_dir = "/usr/lib/lua/luci/model/cbi/passwall/client/type/"
 
 local type_table = {}
 for filename in fs.dir(types_dir) do

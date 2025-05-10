@@ -1,51 +1,65 @@
 import atexit
 import http.server
+import json
+import logging
 import os
+import socket
 import socketserver
 import subprocess
 import sys
 import threading
 import time
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
 import requests
+from fake_useragent import UserAgent
+from tqdm import tqdm
+from fastapi import FastAPI, Request
+from fastapi.responses import Response
+from fastapi.staticfiles import StaticFiles
+from uvicorn import Config, Server
+
+ua = UserAgent()
 
 PORT = 37491
 
 
-class MyHandler(http.server.SimpleHTTPRequestHandler):
-    def do_GET(self):
-        user_agent = self.headers.get('User-Agent')
+app = FastAPI()
 
-        # assert user_agent only contains F
-        if not all([c == 'F' for c in user_agent]):
-            print("UA2F does not work!")
-            exit(1)
-        else:
-            print("Got a full F user agent with length", len(user_agent))
+@app.get("/")
+async def root(request: Request):
+    user_agent = request.headers.get("user-agent")
 
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Hello, world!")
+    if not all(c == 'F' for c in user_agent):
+        return Response(status_code=400)
 
+    return Response(content=str(len(user_agent)).encode())
 
 def start_server():
-    with socketserver.TCPServer(("", PORT), MyHandler, True) as httpd:
-        httpd.serve_forever()
-        atexit.register(httpd.shutdown)
-
+    config4 = Config(app=app, host="127.0.0.1", port=PORT, access_log=False)
+    config6 = Config(app=app, host="::1", port=PORT, access_log=False)
+    server4 = Server(config4)
+    server6 = Server(config6)
+    t4 = threading.Thread(target=server4.run)
+    t4.daemon = True
+    t6 = threading.Thread(target=server6.run)
+    t6.daemon = True
+    t4.start()
+    t6.start()
 
 def start_ua2f(u: str):
     p = subprocess.Popen([u])
     atexit.register(lambda: p.kill())
 
 
-# iptables 设置函数
 def setup_iptables():
     os.system(f"sudo iptables -A OUTPUT -p tcp --dport {PORT} -j NFQUEUE --queue-num 10010")
+    os.system(f"sudo ip6tables -A OUTPUT -p tcp --dport {PORT} -j NFQUEUE --queue-num 10010")
 
 
 def cleanup_iptables():
     os.system(f"sudo iptables -D OUTPUT -p tcp --dport {PORT} -j NFQUEUE --queue-num 10010")
+    os.system(f"sudo ip6tables -D OUTPUT -p tcp --dport {PORT} -j NFQUEUE --queue-num 10010")
 
 
 if __name__ == "__main__":
@@ -59,11 +73,7 @@ if __name__ == "__main__":
 
     setup_iptables()
 
-    server_thread = threading.Thread(target=start_server)
-    server_thread.daemon = True
-    server_thread.start()
-
-    print(f"Starting server on port {PORT}")
+    start_server()
 
     ua2f_thread = threading.Thread(target=start_ua2f, args=(ua2f,))
     ua2f_thread.daemon = True
@@ -71,27 +81,23 @@ if __name__ == "__main__":
 
     print(f"Starting UA2F: {ua2f}")
 
-    time.sleep(2)
+    time.sleep(3)
 
-    normal_ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0"
+    for i in tqdm(range(1024)):
+        nxt = ua.random
+        response = requests.get(f"http://127.0.0.1:{PORT}", headers={
+            "User-Agent": nxt
+        })
+        assert response.ok
+        assert response.text == str(len(nxt))
 
-    response = requests.get(f"http://localhost:{PORT}", headers={
-        "User-Agent": normal_ua
-    })
-    assert response.ok
-    print("Tested with a normal user agent with length", len(normal_ua))
-
-    time.sleep(1)
-
-    random_ua = "Some random user agent"
-    response = requests.get(f"http://localhost:{PORT}", headers={
-        "User-Agent": random_ua
-    })
-    assert response.ok
-    print("Tested with a random user agent with length", len(random_ua))
-
-    time.sleep(1)  # wait for process
+    for i in tqdm(range(4096)):
+        nxt = ua.random
+        response = requests.get(f"http://[::1]:{PORT}", headers={
+            "User-Agent": nxt
+        })
+        assert response.ok
+        assert response.text == str(len(nxt))
 
     # clean
     cleanup_iptables()

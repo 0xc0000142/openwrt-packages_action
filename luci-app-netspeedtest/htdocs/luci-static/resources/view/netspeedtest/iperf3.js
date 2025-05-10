@@ -7,10 +7,10 @@
 'require ui';
 'require form';
 
-var conf = 'netspeedtest';
-var instance = 'iperf3';
+const conf = 'netspeedtest';
+const instance = 'iperf3';
 
-var callServiceList = rpc.declare({
+const callServiceList = rpc.declare({
 	object: 'service',
 	method: 'list',
 	params: ['name'],
@@ -19,8 +19,8 @@ var callServiceList = rpc.declare({
 
 function getServiceStatus() {
 	return L.resolveDefault(callServiceList(conf), {})
-		.then(function (res) {
-			var isrunning = false;
+		.then((res) => {
+			let isrunning = false;
 			try {
 				isrunning = res[conf]['instances'][instance]['running'];
 			} catch (e) { }
@@ -33,16 +33,16 @@ return view.extend({
 //	handleSave: null,
 //	handleReset: null,
 
-	load: function() {
+	load() {
 	return Promise.all([
 		getServiceStatus(),
 		uci.load('netspeedtest')
 	]);
 	},
 
-	poll_status: function(nodes, stat) {
-		var isRunning = stat[0],
-			view = nodes.querySelector('#service_status');
+	poll_status(nodes, stat) {
+		const isRunning = stat[0];
+		let view = nodes.querySelector('#service_status');
 
 		if (isRunning) {
 			view.innerHTML = "<span style=\"color:green;font-weight:bold\">" + instance + " - " + _("SERVER RUNNING") + "</span>";
@@ -52,10 +52,10 @@ return view.extend({
 		return;
 	},
 
-	render: function(res) {
-		var isRunning = res[0];
+	render(res) {
+		const isRunning = res[0];
 
-		var m, s, o;
+		let m, s, o;
 
 		m = new form.Map('netspeedtest', _('iperf3 Bandwidth Performance Test'));
 

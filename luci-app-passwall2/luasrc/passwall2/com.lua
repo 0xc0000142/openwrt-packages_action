@@ -23,7 +23,7 @@ _M.hysteria = {
 	}
 }
 
-_M.singbox = {
+_M["sing-box"] = {
 	name = "Sing-Box",
 	repo = "SagerNet/sing-box",
 	get_url = gh_release_url,
@@ -33,7 +33,8 @@ _M.singbox = {
 	default_path = "/usr/bin/sing-box",
 	match_fmt_str = "linux%%-%s",
 	file_tree = {
-		x86_64 = "amd64"
+		x86_64 = "amd64",
+		mips64el = "mips64le"
 	}
 }
 
@@ -49,7 +50,8 @@ _M.xray = {
 		x86_64 = "64",
 		x86    = "32",
 		mips   = "mips32",
-		mipsel = "mips32le"
+		mipsel = "mips32le",
+		mips64el = "mips64le"
 	}
 }
 

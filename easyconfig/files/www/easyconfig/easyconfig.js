@@ -22,6 +22,10 @@ function getCookie(cname) {
 	return '';
 }
 
+function getRandomString() {
+	return '' + String.fromCharCode(0|Math.random()*26+97) + Math.random().toString(36).substring(2, 9);
+}
+
 function setTheme(mode) {
 	switch (mode) {
 		case '0':
@@ -476,6 +480,12 @@ function removeClasses(element, classes) {
 	}
 }
 
+function showError(element, input, msg) {
+	setValue(element, msg);
+	setDisplay(element, msg != '');
+	if (input && msg != '') { document.getElementById(input).focus(); }
+}
+
 /*****************************************************************************/
 
 function enableDns(value) {
@@ -587,6 +597,9 @@ function enableWan(proto) {
 	if (proto == 'static') {
 		fields = ['wan_ipaddr', 'wan_netmask', 'wan_gateway', 'wan_dns1', 'wan_dns2'];
 	}
+	if (proto == 'pppoe') {
+		fields = ['wan_username', 'wan_password', 'wan_lcpef', 'wan_lcpei'];
+	}
 	if (proto == 'mbim') {
 		fields = ['wan_apn', 'wan_device', 'wan_pincode'];
 	}
@@ -628,7 +641,7 @@ function enableWan(proto) {
 		setValue('wan_lanto_interface2', tmp);
 	}
 
-	var all = ['wan_ipaddr', 'wan_netmask', 'wan_gateway', 'wan_dns', 'wan_dns_url', 'wan_dns1', 'wan_dns2', 'wan_pincode', 'wan_device', 'wan_device_mm', 'wan_apn', 'wan_dashboard_url', 'wan_modem_mode', 'wan_waninlan', 'wan_metered', 'wan_lanto', 'firewall_dmz'];
+	var all = ['wan_ipaddr', 'wan_netmask', 'wan_gateway', 'wan_dns', 'wan_dns_url', 'wan_dns1', 'wan_dns2', 'wan_pincode', 'wan_device', 'wan_device_mm', 'wan_apn', 'wan_dashboard_url', 'wan_modem_mode', 'wan_username', 'wan_password', 'wan_lcpef', 'wan_lcpei', 'wan_waninlan', 'wan_metered', 'wan_lanto', 'firewall_dmz'];
 	for (var idx = 0; idx < all.length; idx++) {
 		setElementEnabled(all[idx], false, false);
 	}
@@ -671,12 +684,21 @@ function enableWan(proto) {
 		setDisplay('div_status_modem', true);
 		setDisplay('div_system_modem', true);
 		setCookie('easyconfig_status_modem', '1');
+		setDisplay('div_modem_modemat', true);
+	} else if (proto == 'modemmanager') {
+		modem = 1;
+		setDisplay('menu_ussdsms', false);
+		setDisplay('div_status_modem', true);
+		setDisplay('div_system_modem', true);
+		setCookie('easyconfig_status_modem', '1');
+		setDisplay('div_modem_modemat', false);
 	} else {
 		modem = 0;
 		setDisplay('menu_ussdsms', false);
 		setDisplay('div_status_modem', false);
 		setDisplay('div_system_modem', false);
 		setCookie('easyconfig_status_modem', '0');
+		setDisplay('div_modem_modemat', false);
 	}
 }
 
@@ -869,7 +891,7 @@ function execute(cmd, callback) {
 	cmd.push('exit 0');
 	cmd.push('');
 
-	var filename = '/tmp/' + Math.random().toString(36).substring(2, 10) + '-' + Math.random().toString(36).substring(2, 10);
+	var filename = '/tmp/' + getRandomString();
 	ubus_call('"file", "write", {"path":"' + filename + '","data":"' + cmd.join('\n') + '"}', function(data) {
 		ubus_call('"file", "exec", {"command":"sh", "params":["' + filename + '"]}', function(data1) {
 			callback();
@@ -888,7 +910,7 @@ function login() {
 			ubus_error(data.error.code);
 		} else {
 			if (data.result[0] === 0) {
-				setDisplay('div_security', (system_pass == '12345678'));
+				if (system_pass == '12345678') { showError('div_security', '', '<strong>UWAGA!</strong> Wymagana jest zmiana domyślnego hasła do routera!'); }
 				loginok(data.result[1], false);
 			} else {
 				showMsg('Błąd logowania!', true);
@@ -1017,6 +1039,7 @@ var wan = [];
 wan['none'] = 'Brak';
 wan['dhcp'] = 'Port WAN (DHCP)';
 wan['static'] = 'Port WAN (Statyczny IP)';
+wan['pppoe'] = 'PPPoE';
 wan['3g'] = 'Modem komórkowy (RAS)';
 wan['mbim'] = 'Modem komórkowy (MBIM)';
 wan['modemmanager'] = 'Modem komórkowy';
@@ -1049,6 +1072,8 @@ function setEncryption(element, encryption) {
 function showconfig() {
 	ubus_call('"easyconfig", "config", {}', function(data) {
 		config = data;
+
+		setDisplay('menu_networks', config.devicesection);
 
 		// wan
 		var e = removeOptions('wan_proto');
@@ -1101,10 +1126,10 @@ function showconfig() {
 
 		e = removeOptions('wan_dns');
 		var sorteddns = [];
-		sorteddns = sortJSON(dns, 'name', 'asc');
-		sorteddns = [{"ip":["isp"],"name":"Otrzymane od dostawcy","url":""},{"ip":["custom"],"name":"Inne","url":""}].concat(sorteddns);
+		sorteddns = sortJSON(dns, 'id', 'asc');
+		sorteddns = [{"id":1,"ip":["isp"],"name":"Otrzymane od dostawcy","url":""},{"id":2,"ip":["custom"],"name":"Inne","url":""}].concat(sorteddns);
 		if (config.services.stubby) {
-			sorteddns = [{"ip":["stubby"],"name":"DNS over TLS","url":""}].concat(sorteddns);
+			sorteddns = [{"id":3,"ip":["stubby"],"name":"DNS over TLS","url":""}].concat(sorteddns);
 		}
 		for (var idx = 0; idx < sorteddns.length; idx++) {
 			var opt = document.createElement('option');
@@ -1124,6 +1149,13 @@ function showconfig() {
 		setValue('wan_dns1', (config.wan_dns.length > 0 ? config.wan_dns[0] : ''));
 		setValue('wan_dns2', (config.wan_dns.length > 1 ? config.wan_dns[1] : ''));
 		setValue('wan_proto', (config.wan_proto in wan) ? config.wan_proto : 'unknown');
+		setValue('wan_username', config.wan_username);
+		setValue('wan_password', config.wan_password);
+		var keepalive = (config.wan_keepalive).split(' ');
+		if (keepalive.length == 2) {
+			setValue('wan_lcpef', parseInt(keepalive[0]));
+			setValue('wan_lcpei', parseInt(keepalive[1]));
+		}
 		setValue('wan_waninlan', config.wan_waninlan);
 		if (config.wan_proto == 'dhcp') {
 			if (config.wan_ifname == config.wan_ifname_hilink) {
@@ -1293,6 +1325,11 @@ function showconfig() {
 		// wol
 		setDisplay('menu_wol', config.services.wol);
 
+		// luci
+		setDisplay('menu_luci', config.services.luci);
+
+		setDisplay('div_wan_diagnostics', config.services.pingraw);
+
 		// button
 		if (config.button.code != '') {
 			select = removeOptions('system_button');
@@ -1308,6 +1345,10 @@ function showconfig() {
 				opt = document.createElement('option');
 				opt.value = 'rfkill';
 				opt.innerHTML = 'Włącz/wyłącz Wi-Fi';
+				select.appendChild(opt);
+				opt = document.createElement('option');
+				opt.value = 'wifitoggle';
+				opt.innerHTML = 'Włącz/wyłącz Wi-Fi sieci dodatkowych';
 				select.appendChild(opt);
 			}
 			if (config.services.wol) {
@@ -1338,6 +1379,7 @@ function showconfig() {
 		setDisplay('div_button_reset', (config.button_reset != -1));
 
 		setValue('datarec_period', config.datarec_period);
+		setValue('firewall_flowoffloading', config.services.flowoffloading);
 	})
 }
 
@@ -1372,6 +1414,9 @@ function saveconfig() {
 		cmd.push('uci -q del network.wan.service');
 		cmd.push('uci -q del network.wan.modes');
 		cmd.push('uci -q del network.wan.mode');
+		cmd.push('uci -q del network.wan.username');
+		cmd.push('uci -q del network.wan.password');
+		cmd.push('uci -q del network.wan.keepalive');
 
 		var use_dns = getValue('wan_dns');
 		var use_wanport = true;
@@ -1392,6 +1437,29 @@ function saveconfig() {
 			cmd.push('uci set network.wan.netmask=' + getValue('wan_netmask'));
 			cmd.push('uci set network.wan.gateway=' + getValue('wan_gateway'));
 			use_dns = 'custom';
+			use_wanport = false;
+		}
+		if (wan_type == 'pppoe') {
+			if (config.devicesection) {
+				cmd.push('uci set network.wan.device=' + config.wan_ifname_default);
+			} else {
+				cmd.push('uci set network.wan.ifname=' + config.wan_ifname_default);
+			}
+			cmd.push('uci set network.wan.username=\\\"' + escapeShell(getValue('wan_username')) + '\\\"');
+			cmd.push('uci set network.wan.password=\\\"' + escapeShell(getValue('wan_password')) + '\\\"');
+			var lcpef = getValue('wan_lcpef');
+			if (validateNumericRange(lcpef, 0, 999) > 1) {
+				showMsg('Błąd w polu ' + getLabelText('wan_lcpef'), true);
+				return;
+			}
+			var lcpei = getValue('wan_lcpei');
+			if (validateNumericRange(lcpei, 1, 999) > 1) {
+				showMsg('Błąd w polu ' + getLabelText('wan_lcpei'), true);
+				return;
+			}
+			if (lcpef && lcpei) {
+				cmd.push('uci set network.wan.keepalive=\\\"' + lcpef + ' ' + lcpei + '\\\"');
+			}
 			use_wanport = false;
 		}
 		if (wan_type == '3g' || wan_type == 'mbim' || wan_type == 'modemmanager' || wan_type == 'ncm' || wan_type == 'qmi') {
@@ -1538,6 +1606,7 @@ function saveconfig() {
 		cmd.push('uci set firewall.dns_53_redirect.src_dport=53');
 		cmd.push('uci set firewall.dns_53_redirect.dest_port=53');
 		cmd.push('uci set firewall.dns_53_redirect.target=DNAT');
+		cmd.push('uci set firewall.dns_53_redirect.family=any');
 	} else {
 		cmd.push('uci -q del firewall.dns_53_redirect');
 	}
@@ -1718,6 +1787,12 @@ function saveconfig() {
 
 	cmd.push('uci set easyconfig.global.datarec_period=' + getValue('datarec_period'));
 
+	var flow = '0';
+	if (getValue('firewall_flowoffloading')) { flow = '1'; }
+	cmd.push('T=$(uci show firewall | awk -F[.=] \'/=defaults$/{print $2}\')');
+	cmd.push('uci set firewall.$T.flow_offloading=' + flow);
+	cmd.push('uci set firewall.$T.flow_offloading_hw=' + flow);
+
 	// commit & restart services
 	cmd.push('uci commit');
 	cmd.push('reload_config');
@@ -1743,7 +1818,7 @@ function saveconfig() {
 	execute(cmd, function(){
 		cleanField('password1');
 		cleanField('password2');
-		setDisplay('div_security', (pass1 == '12345678'));
+		if (pass1 == '12345678') { showError('div_security', '', '<strong>UWAGA!</strong> Wymagana jest zmiana domyślnego hasła do routera!'); }
 		showconfig();
 	});
 }
@@ -1801,7 +1876,7 @@ function bandwidthcallback(val) {
 	document.getElementById('bandwidth_bytes').style.fontWeight = val ? 700 : 400;
 }
 
-function showbandwidth(mac) {
+function showbandwidth(mac, section) {
 	var html = '';
 	html += '<div class="row"><div class="col-xs-5 col-sm-6 text-right">Wysłano</div><div class="col-xs-7 col-sm-6 text-left"><p id="bandwidth_all_tx">-</p></div></div>';
 	html += '<div class="row"><div class="col-xs-5 col-sm-6 text-right">Pobrano</div><div class="col-xs-7 col-sm-6 text-left"><p id="bandwidth_all_rx">-</p></div></div>';
@@ -1827,8 +1902,8 @@ function showbandwidth(mac) {
 				clearInterval(bandwidthID);
 				if (mac == '') {
 					if (bandwidth_old['tx'] > -1) {
-						setValue('wan_tx', '<span class="click" onclick="showbandwidth(\'\');">' + bytesToSize(bandwidth_old['tx']) + '</span>');
-						setValue('wan_rx', '<span class="click" onclick="showbandwidth(\'\');">' + bytesToSize(bandwidth_old['rx']) + '</span>');
+						setValue('wan_tx', '<span class="click" onclick="showbandwidth(\'\',\'\');">' + bytesToSize(bandwidth_old['tx']) + '</span>');
+						setValue('wan_rx', '<span class="click" onclick="showbandwidth(\'\',\'\');">' + bytesToSize(bandwidth_old['rx']) + '</span>');
 					}
 				} else {
 					for (var idx = 0; idx < clients.length; idx++) {
@@ -1848,7 +1923,7 @@ function showbandwidth(mac) {
 			if (mac == '') {
 				source = '"network.device", "status", {"name":"' + config.wan_ifname + '"}';
 			} else {
-				source = '"easyconfig", "clientbandwidth", {"mac":"' + mac + '"}';
+				source = '"easyconfig", "clientbandwidth", {"mac":"' + mac + '", "section":"' + section + '"}';
 			}
 			ubus_call_nomsg(source, function(data) {
 				var tx = 0;
@@ -1913,12 +1988,16 @@ function showstatus() {
 		setValue('system_time', data.system_time == '' ? '-' : formatDateTime(data.system_time));
 		setValue('wlan_clients', data.wlan_clients + ' &rarr;');
 		setValue('lan_clients', data.lan_clients + ' &rarr;');
-		setValue('wan_rx', data.wan_rx == '' ? '-' : '<span class="click" onclick="showbandwidth(\'\');">' + bytesToSize(data.wan_rx) + '</span>');
-		setValue('wan_tx', data.wan_tx == '' ? '-' : '<span class="click" onclick="showbandwidth(\'\');">' + bytesToSize(data.wan_tx) + '</span>');
+		setValue('wan_rx', data.wan_rx == '' ? '-' : '<span class="click" onclick="showbandwidth(\'\',\'\');">' + bytesToSize(data.wan_rx) + '</span>');
+		setValue('wan_tx', data.wan_tx == '' ? '-' : '<span class="click" onclick="showbandwidth(\'\',\'\');">' + bytesToSize(data.wan_tx) + '</span>');
 		setValue('wan_uptime', formatDuration(data.wan_uptime, false));
 		setValue('wan_uptime_since', data.wan_uptime_since == '' ? '' : ' (od ' + formatDateTime(data.wan_uptime_since) + ')');
 		setValue('wan_up_cnt', (data.wan_up_cnt == '') ? '0' : '<span class="click" onclick="showwanup(\'' + (JSON.stringify(data.wan_up_since)).replace(/\"/g,"$") + '\');">' + data.wan_up_cnt + '</span>');
 		setValue('wan_ipaddr_status', (data.wan_ipaddr == '') ? '-' : '<span class="click" onclick="showgeolocation();">' + data.wan_ipaddr + '</span>');
+		setValue('wan_netmask_status', (data.wan_netmask == '') ? '-' : data.wan_netmask);
+		setValue('wan_gateway_status', (data.wan_gateway == '') ? '-' : data.wan_gateway);
+		var t = (data.wan_dns).slice(0,2).sort().join('<br>');
+		setValue('wan_dns_status', t != '' ? t : '-');
 		setDisplay('div_vpn_up_status', data.vpn_up);
 		if ((data.sensors).length > 0) {
 			var html = '';
@@ -2132,6 +2211,7 @@ function savemodemsettings() {
 	cmd.push('uci set easyconfig.modem.force_qmi=' + (getValue('modemsettings_modem_force_qmi') ? '1' : '0'));
 	cmd.push('uci set easyconfig.modem.force_plmn=' + (getValue('modemsettings_modem_force_plmn') ? '1' : '0'));
 	cmd.push('uci set easyconfig.sms.storage=' + getValue('modemsettings_sms_storage'));
+	cmd.push('uci set easyconfig.sms.join=' + (getValue('modemsettings_sms_join') ? '1' : '0'));
 	cmd.push('uci set easyconfig.ussd.raw_input=' + (getValue('modemsettings_ussd_raw_input') ? '1' : '0'));
 	cmd.push('uci set easyconfig.ussd.raw_output=' + getValue('modemsettings_ussd_raw_output'));
 	cmd.push('uci commit easyconfig');
@@ -2144,6 +2224,7 @@ function modemsettings() {
 		setValue('modemsettings_modem_force_qmi', data.modem_force_qmi == 1);
 		setValue('modemsettings_modem_force_plmn', data.modem_force_plmn == 1);
 		setValue('modemsettings_sms_storage', data.sms_storage);
+		setValue('modemsettings_sms_join', data.sms_join);
 		setValue('modemsettings_ussd_raw_input', data.ussd_raw_input == 1);
 		setValue('modemsettings_ussd_raw_output', data.ussd_raw_output);
 		setDisplay('div_modemsettings', true);
@@ -2178,7 +2259,7 @@ function sendmodemat() {
 	cmd.push('rm -- \\\"$0\\\"');
 	cmd.push('exit $RET');
 	cmd.push('');
-	var filename = '/tmp/' + Math.random().toString(36).substring(2, 10) + '-' + Math.random().toString(36).substring(2, 10);
+	var filename = '/tmp/' + getRandomString();
 	ubus_call('"file", "write", {"path":"' + filename + '","data":"' + cmd.join('\n') + '"}', function(data) {
 		ubus_call('"file", "exec", {"command":"sh", "params":["' + filename + '"]}', function(data1) {
 			if (!data1.stderr) {
@@ -2429,7 +2510,7 @@ function showmodem() {
 				setValue('modem_registration', data.registration == '' ? '-' : data.registration);
 		}
 
-		if (data.registration == '1' || data.registration == '5') {
+		if (data.registration == '1' || data.registration == '5' || data.registration == '6' || data.registration == '7') {
 			setValue('modem_signal', data.signal == '' ? '-' : data.signal + '%');
 
 			if (data.signal) {
@@ -2564,6 +2645,7 @@ function modemaddon() {
 	var scc2 = [];
 	var scc3 = [];
 	var scc4 = [];
+	var ulscc = [];
 	var sorted = sortJSON(arrmodemaddon, 'idx', 'asc');
 	sorted.forEach(function(e) {
 		var description = '';
@@ -2587,9 +2669,15 @@ function modemaddon() {
 				}
 				htmlxs += createRowForModal(e.key, e.value);
 				break;
+			case 31:
+				pcc[2] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
 			case 32:
-				if ((e.key).toLowerCase().includes('bandwidth dl') || (e.key).toLowerCase() == 'bandwidth') {
+				if (typeof pcc[2] === 'undefined') {
 					pcc[2] = e.value;
+				} else {
+					pcc[2] = e.value + ' DL<br>' + pcc[2] + ' UL'
 				}
 				htmlxs += createRowForModal(e.key, e.value);
 				break;
@@ -2598,10 +2686,18 @@ function modemaddon() {
 				htmlxs += createRowForModal(e.key, e.value);
 				break;
 			case 34:
-				if (!(e.key).toLowerCase().includes('earfcn ul')) {
-					pcc[4] = e.value;
+				if ((e.key).toLowerCase().includes('earfcn ul')) {
+					if (typeof pcc[4] === 'undefined') {
+						pcc[4] = e.value + ' UL';
+					} else {
+						pcc[4] = pcc[4] + ' DL<br>' + e.value + ' UL';
+					}
 				} else {
-					html += createRowForModal(e.key, e.value);
+					if (typeof pcc[4] === 'undefined') {
+						pcc[4] = e.value;
+					} else {
+						pcc[4] = e.value + ' DL<br>' + pcc[4];
+					}
 				}
 				htmlxs += createRowForModal(e.key, e.value);
 				break;
@@ -2824,6 +2920,22 @@ function modemaddon() {
 				}
 				htmlxs += createRowForModal(e.key, e.value);
 				break;
+			case 150:
+				ulscc[1] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
+			case 152:
+				ulscc[2] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
+			case 153:
+				ulscc[3] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
+			case 154:
+				ulscc[4] = e.value;
+				htmlxs += createRowForModal(e.key, e.value);
+				break;
 			default:
 				if (e.idx < 30) {
 					htmlco += createRowForModal((e.key == 'Temperature' ? 'Temperatura' : e.key), e.value);
@@ -2871,6 +2983,13 @@ function modemaddon() {
 				if (typeof scc4[idx] === 'undefined') { scc4[idx] = '-'; }
 			}
 			htmlco += createRow9ColForModal(scc4);
+		}
+		if (ulscc.length > 0) {
+			ulscc[0] = 'UL SCC';
+			for (var idx = 0; idx <= 9; idx++) {
+				if (typeof ulscc[idx] === 'undefined') { ulscc[idx] = '-'; }
+			}
+			htmlco += createRow9ColForModal(ulscc);
 		}
 		htmlco += '</div>';
 	}
@@ -2988,6 +3107,13 @@ function naturalSortJSON(data, key) {
 	return data.sort((a, b) => a[key].localeCompare(b[key], undefined, { numeric: true, sensitivity: 'base' }));
 }
 
+function sortByIP(data) {
+	return data.sort((a, b) => {
+		const ipToNum = ip => ip.split('.').reduce((acc, octet) => acc * 256 + Number(octet), 0);
+		return ipToNum(a.ip) - ipToNum(b.ip);
+	});
+}
+
 function formatDuration(s, showsec) {
 	if (s === '-') {return '-';}
 	if (s === '') {return '-';}
@@ -3009,52 +3135,56 @@ function formatDuration(s, showsec) {
 var wifiscanresults;
 
 function showsitesurvey() {
-	ubus_call('"easyconfig", "wifiscan", {}', function(data) {
-		var arr = [...new Map((data.result).map(v => [JSON.stringify([v.mac,v.ssid,v.freq,v.signal,v.channel,v.encryption,v.mode1,v.mode2,v.vhtch1,v.vhtch2]), v])).values()];
+	for (var idx = 0, n = config.wlan_current_channels.length; idx < n; idx++) {
+		ubus_call('"easyconfig", "wifiscan", {"interface":"' + config.wlan_current_channels[idx].interface + '"}', showsitesurvey_praser);
+	}
+}
 
-		var wlan_devices = config.wlan_devices;
+function showsitesurvey_praser(data) {
+	var arr = [...new Map((data.result).map(v => [JSON.stringify([v.mac,v.ssid,v.freq,v.signal,v.channel,v.encryption,v.mode1,v.mode2,v.vhtch1,v.vhtch2]), v])).values()];
 
-		var ts = Date.now()/1000;
-		var l = arr.length;
-		for (var idx1 = 0; idx1 < l; idx1++) {
-			arr[idx1].timestamp = parseInt(ts).toString();
-			arr[idx1].ssid = (arr[idx1].ssid).replace(/(?:\\x[\da-fA-F]{2})+/g, function (val) {return decodeURIComponent(val.replace(/\\x/g, '%'))});
-			if (arr[idx1].ssid == '') { arr[idx1].ssid = '<bez nazwy>'; }
-			arr[idx1].signal = parseInt(arr[idx1].signal);
-			if (isNaN(arr[idx1].signal)) { arr[idx1].signal = -100; }
+	var wlan_devices = config.wlan_devices;
 
-			if (arr[idx1].channel == "?") {
-				for (var i = 0; i < wlan_devices.length; i++) {
-					obj = config[wlan_devices[i]].wlan_channels;
-					for (var propt in obj) {
-						if (obj[propt][0] == arr[idx1].freq) {
-							arr[idx1].channel = propt;
-							break;
-						}
+	var ts = Date.now()/1000;
+	var l = arr.length;
+	for (var idx1 = 0; idx1 < l; idx1++) {
+		arr[idx1].timestamp = parseInt(ts).toString();
+		arr[idx1].ssid = (arr[idx1].ssid).replace(/(?:\\x[\da-fA-F]{2})+/g, function (val) {return decodeURIComponent(val.replace(/\\x/g, '%'))});
+		if (arr[idx1].ssid == '') { arr[idx1].ssid = '<bez nazwy>'; }
+		arr[idx1].signal = parseInt(arr[idx1].signal);
+		if (isNaN(arr[idx1].signal)) { arr[idx1].signal = -100; }
+
+		if (arr[idx1].channel == "?") {
+			for (var i = 0; i < wlan_devices.length; i++) {
+				obj = config[wlan_devices[i]].wlan_channels;
+				for (var propt in obj) {
+					if (obj[propt][0] == arr[idx1].freq) {
+						arr[idx1].channel = propt;
+						break;
 					}
 				}
 			}
-
 		}
-		if (wifiscanresults) {
-			for (var idx = wifiscanresults.length - 1; idx >= 0; idx--) {
-				if ((ts - wifiscanresults[idx].timestamp) > 180) {
-					wifiscanresults.splice(idx, 1);
-				} else {
-					for (var idx1 = 0; idx1 < l; idx1++) {
-						if (wifiscanresults[idx].mac == arr[idx1].mac) {
-							wifiscanresults.splice(idx, 1);
-							break;
-						}
+
+	}
+	if (wifiscanresults) {
+		for (var idx = wifiscanresults.length - 1; idx >= 0; idx--) {
+			if ((ts - wifiscanresults[idx].timestamp) > 180) {
+				wifiscanresults.splice(idx, 1);
+			} else {
+				for (var idx1 = 0; idx1 < l; idx1++) {
+					if (wifiscanresults[idx].mac == arr[idx1].mac) {
+						wifiscanresults.splice(idx, 1);
+						break;
 					}
 				}
 			}
-			wifiscanresults = wifiscanresults.concat(arr);
-		} else {
-			wifiscanresults = arr;
 		}
-		sitesurveycallback('');
-	});
+		wifiscanresults = wifiscanresults.concat(arr);
+	} else {
+		wifiscanresults = arr;
+	}
+	sitesurveycallback('');
 }
 
 function sitesurveycallbackfilter(filterby) {
@@ -3065,37 +3195,19 @@ function sitesurveycallbackfilter(filterby) {
 			e.style.fontWeight = (filterby == all[idx]) ? 700 : 400;
 		}
 	}
+	setCookie('easyconfig_sitesurvey_filterby', filterby);
 }
 
 function sitesurveycallback(sortby) {
-
 	var all;
-	var filterby = 'all';
-	all = ['all', '2', '5', '6'];
-	for (var idx = 0; idx < all.length; idx++) {
-		var e = document.getElementById('sitesurvey_filter_' + all[idx]);
-		if (e === null) {
-			break;
-		}
-		if (e.style.fontWeight == 700) {
-			filterby = all[idx];
-			break;
-		}
-	}
+	var filterby = getCookie('easyconfig_sitesurvey_filterby');
+	if (filterby == '') { filterby = 'all'; }
 
 	if (sortby == '') {
-		sortby = 'ssid';
-		all = ['ssid', 'mac', 'signal', 'freq', 'timestamp'];
-		for (var idx = 0; idx < all.length; idx++) {
-			var e = document.getElementById('sitesurvey_sortby_' + all[idx]);
-			if (e === null) {
-				break;
-			}
-			if (e.style.fontWeight == 700) {
-				sortby = all[idx];
-				break;
-			}
-		}
+		sortby = getCookie('easyconfig_sitesurvey_sortby');
+		if (sortby == '') { sortby = 'ssid'; }
+	} else {
+		setCookie('easyconfig_sitesurvey_sortby', sortby);
 	}
 
 	var html = '';
@@ -3602,7 +3714,7 @@ wifigraph = {
 			return;
 		}
 
-		var ctx = canvas.getContext('2d');
+		var ctx = canvas.getContext('2d', { willReadFrequently: true });
 		if (ctx == null) {
 			return;
 		}
@@ -3625,7 +3737,7 @@ wifigraph = {
 /*****************************************************************************/
 
 function bytesToSize(bytes) {
-	var sizes = ['', 'KiB', 'MiB', 'GiB', 'TiB'];
+	var sizes = ['', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 	if (bytes == 0) return '0';
 	var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
 	var dm = 0;
@@ -3634,10 +3746,51 @@ function bytesToSize(bytes) {
 	return parseFloat((bytes / Math.pow(1024, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+function clientspie_toggle() {
+	var showclientspie = getCookie('easyconfig_clients_pie');
+	if (showclientspie === '0') {
+		setDisplay('div_clients_pie', true);
+		setCookie('easyconfig_clients_pie', '1');
+		setValue('div_clients_showpie', '<span class="click" title="ukryj wykres" onclick="clientspie_toggle();"><i data-feather="eye-off"></i></span>');
+	} else {
+		setDisplay('div_clients_pie', false);
+		setCookie('easyconfig_clients_pie', '0');
+		setValue('div_clients_showpie', '<span class="click" title="pokaż wykres" onclick="clientspie_toggle();"><i data-feather="eye"></i></span>');
+	}
+	showicon();
+}
+
+function clientspie_show() {
+	var showclientspie = getCookie('easyconfig_clients_pie');
+	if (showclientspie === '0') {
+		setDisplay('div_clients_pie', false);
+		setValue('div_clients_showpie', '<span class="click" title="pokaż wykres" onclick="clientspie_toggle();"><i data-feather="eye"></i></span>');
+	} else {
+		setDisplay('div_clients_pie', true);
+		setValue('div_clients_showpie', '<span class="click" title="ukryj wykres" onclick="clientspie_toggle();"><i data-feather="eye-off"></i></span>');
+	}
+	showicon();
+}
+
 var clients;
 
 function showclients() {
 	ubus_call('"easyconfig", "clients", {}', function(data) {
+
+		if ((data.ports).length > 0) {
+			for (var idx = 0, n = (data.ports_swconfig).length; idx < n; idx++) {
+				var idx1 = (data.ports).findIndex(x => x.port === data.ports_swconfig[idx].port);
+				if (idx1 > -1) {
+					(data.ports).splice(idx1, 1);
+				}
+				(data.ports).push({'port': ((data.ports_swconfig[idx]).role == 'wan' ? 'wan' : (data.ports_swconfig[idx]).role + (data.ports_swconfig[idx]).id), 'speed': (data.ports_swconfig[idx]).speed, 'macs': -1});
+			}
+			if ((data.ports).length > 0) {
+				physicalports = data.ports;
+				portsmapping = data.ports_mapping;
+			}
+		}
+
 		clients = data.result;
 		clientscallback('');
 	});
@@ -3649,45 +3802,59 @@ function clientscallbackfilter(filterby) {
 		var e = document.getElementById('clients_filter_' + all[idx]);
 		e.style.fontWeight = (filterby == all[idx]) ? 700 : 400;
 	}
+	setCookie('easyconfig_clients_filterby', filterby);
+}
+
+function clientscallbackfilterall(filterbyall) {
+	var all = ['all', 'day', 'week', 'month', 'year'];
+	for (var idx = 0; idx < all.length; idx++) {
+		var e = document.getElementById('clients_filterall_' + all[idx]);
+		e.style.fontWeight = (filterbyall == all[idx]) ? 700 : 400;
+	}
+	setCookie('easyconfig_clients_filterbyall', filterbyall);
 }
 
 function clientscallback(sortby) {
-
 	var all;
-	var filterby = 'active';
-	all = ['active', 'all'];
-	for (var idx = 0; idx < all.length; idx++) {
-		var e = document.getElementById('clients_filter_' + all[idx]);
-		if (e === null) {
-			break;
-		}
-		if (e.style.fontWeight == 700) {
-			filterby = all[idx];
-			break;
-		}
-	}
+	var filterby = getCookie('easyconfig_clients_filterby');
+	if (filterby == '') { filterby = 'active'; }
+
+	var filterbyall = getCookie('easyconfig_clients_filterbyall');
+	if (filterbyall == '') { filterbyall = 'all'; }
 
 	if (sortby == '') {
-		sortby = 'displayname';
 		if (filterby == 'active') {
-			all = ['displayname', 'tx', 'rx', 'percent', 'connected', 'type'];
+			sortby = getCookie('easyconfig_clients_act_sortby');
 		} else {
-			all = ['displayname', 'mac', 'last_seen'];
+			sortby = getCookie('easyconfig_clients_all_sortby');
 		}
-		for (var idx = 0; idx < all.length; idx++) {
-			var e = document.getElementById('clients_sortby_' + all[idx]);
-			if (e === null) {
-				break;
-			}
-			if (e.style.fontWeight == 700) {
-				sortby = all[idx];
-				break;
-			}
+		if (sortby == '') { sortby = 'displayname'; }
+	} else {
+		if (filterby == 'active') {
+			setCookie('easyconfig_clients_act_sortby', sortby);
+		} else {
+			setCookie('easyconfig_clients_all_sortby', sortby);
 		}
 	}
-
 	var counter_active = 0;
 	var counter_all = 0;
+	var counter_all_all = 0;
+	var counter_all_day = 0;
+	var counter_all_week = 0;
+	var counter_all_month = 0;
+	var counter_all_year = 0;
+
+	function tformatDate(ts) {
+		function z(n) { return (n < 10 ? '0' : '' ) + n;}
+		var d = new Date(ts);
+		return '' + d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + z(d.getHours()) + z(d.getMinutes());
+	}
+
+	var now = new Date();
+	var sdayago = tformatDate(new Date(now.getTime() - (60*60*24*1*1000)));
+	var sweekago = tformatDate(new Date(now.getTime() - (60*60*24*7*1000)));
+	var smonthago = tformatDate(new Date(now.getTime() - (60*60*24*30*1000)));
+	var syearago = tformatDate(new Date(now.getTime() - (60*60*24*365*1000)));
 
 	var html = '';
 	if (clients.length > 0) {
@@ -3697,6 +3864,16 @@ function clientscallback(sortby) {
 		html += '<span class="click" onclick="clientscallbackfilter(\'all\');clientscallback(\'\');"><span id="clients_filter_all"> wszyscy (0) </span></span>';
 		html += '</div>';
 		html += '<div class="col-xs-3 text-right"><span class="click" title="nowi klienci" onclick="clientsstats();"><i data-feather="bar-chart-2"></i></span></div>';
+		if (filterby == 'all') {
+			html += '<div class="col-xs-12 space">';
+			html += '<span>Pokaż</span>';
+			html += '<span class="click" onclick="clientscallbackfilterall(\'day\');clientscallback(\'\');"><span id="clients_filterall_day"> z ostatniego dnia (0) </span></span>|';
+			html += '<span class="click" onclick="clientscallbackfilterall(\'week\');clientscallback(\'\');"><span id="clients_filterall_week"> z ostatniego tygodnia (0) </span></span>|';
+			html += '<span class="click" onclick="clientscallbackfilterall(\'month\');clientscallback(\'\');"><span id="clients_filterall_month"> z ostatnich 30 dni (0) </span></span>|';
+			html += '<span class="click" onclick="clientscallbackfilterall(\'year\');clientscallback(\'\');"><span id="clients_filterall_year"> z ostatniego roku (0) </span></span>|';
+			html += '<span class="click" onclick="clientscallbackfilterall(\'all\');clientscallback(\'\');"><span id="clients_filterall_all"> wszystko (0) </span></span>';
+			html += '</div>'
+		}
 		html += '<div class="col-xs-12">';
 		html += '<span>Sortowanie po</span>';
 		html += '<span class="click" onclick="clientscallback(\'displayname\');"><span id="clients_sortby_displayname"> nazwie </span></span>|';
@@ -3705,7 +3882,8 @@ function clientscallback(sortby) {
 			html += '<span class="click" onclick="clientscallback(\'rx\');"><span id="clients_sortby_rx"> pobrano </span></span>|';
 			html += '<span class="click" onclick="clientscallback(\'percent\');"><span id="clients_sortby_percent"> udziale w ruchu </span></span>|';
 			html += '<span class="click" onclick="clientscallback(\'connected\');"><span id="clients_sortby_connected"> czasie połączenia </span></span>|';
-			html += '<span class="click" onclick="clientscallback(\'type\');"><span id="clients_sortby_type"> typie połączenia </span></span>';
+			html += '<span class="click" onclick="clientscallback(\'type\');"><span id="clients_sortby_type"> typie połączenia </span></span>|';
+			html += '<span class="click" onclick="clientscallback(\'ip\');"><span id="clients_sortby_ip"> adresie IP </span></span>';
 		} else {
 			html += '<span class="click" onclick="clientscallback(\'mac\');"><span id="clients_sortby_mac"> MAC </span></span>|';
 			html += '<span class="click" onclick="clientscallback(\'last_seen\');"><span id="clients_sortby_last_seen"> ostatniej widoczności </span></span>';
@@ -3713,7 +3891,7 @@ function clientscallback(sortby) {
 		html += '</div></div>';
 
 		var total = 0;
-		for (var idx = 0; idx < clients.length; idx++) {
+		for (var idx = 0, n = clients.length; idx < n; idx++) {
 			if (!clients[idx].active) {
 				clients[idx].active_id = -1;
 				clients[idx].ip = '';
@@ -3725,7 +3903,7 @@ function clientscallback(sortby) {
 			} else {
 				clients[idx].first_seen = '-';
 				clients[idx].last_seen = '-';
-				if (clients[idx].tx === undefined) {
+				if (typeof clients[idx].tx === 'undefined') {
 					clients[idx].tx = 0;
 					clients[idx].rx = 0;
 				}
@@ -3734,12 +3912,13 @@ function clientscallback(sortby) {
 		}
 
 		if (filterby == 'active' && total > 0) {
+			html += '<div class="row"><div id="div_clients_showpie" class="col-xs-12 text-right click"><span class="click" title="ukryj wykres" onclick="clientspie_toggle();"><i data-feather="eye-off"></i></span></div></div>';
 			html += '<div id="div_clients_pie"><canvas id="clients_pie" height="400"></canvas><div class="text-center text-muted"><em><small>podział wg udziału w ruchu dla klientów bezprzewodowych</em></small></div></div>';
 			html += '<div id="div_clients_pie_tooltip" class="tooltip"></div>';
 		}
 
-		for (var idx = 0; idx < clients.length; idx++) {
-			clients[idx].percent = parseInt((clients[idx].tx + clients[idx].rx) * 100 / total);
+		for (var idx = 0, n = clients.length; idx < n; idx++) {
+			clients[idx].percent = Math.round((clients[idx].tx + clients[idx].rx) * 100 / total);
 			if (clients[idx].dhcpname == '*') { clients[idx].dhcpname = ''; }
 			clients[idx].displayname = (clients[idx].username != '' ? clients[idx].username : (clients[idx].dhcpname != '' ? clients[idx].dhcpname : clients[idx].mac ));
 			clients[idx].id = idx;
@@ -3758,12 +3937,22 @@ function clientscallback(sortby) {
 				}
 			} else {
 				counter_all ++;
+				counter_all_all = counter_all;
+				if (clients[idx].last_seen >= sdayago) { counter_all_day ++; }
+				if (clients[idx].last_seen >= sweekago) { counter_all_week ++; }
+				if (clients[idx].last_seen >= smonthago) { counter_all_month ++; }
+				if (clients[idx].last_seen >= syearago) { counter_all_year ++; }
 			}
 		}
 		var any_active = false;
 		var any_all = false;
-		var sorted = sortJSON(clients, sortby, 'asc');
-		for (var idx = 0; idx < sorted.length; idx++) {
+		var sorted;
+		if (sortby == 'ip') {
+			sorted = sortByIP(clients);
+		} else {
+			sorted = sortJSON(clients, sortby, 'asc');
+		}
+		for (var idx = 0, n = sorted.length; idx < n; idx++) {
 			if (filterby == 'active') {
 				if (!sorted[idx].active) { continue; }
 				var limitations = '';
@@ -3782,9 +3971,9 @@ function clientscallback(sortby) {
 					if (obj) {
 						html += ' ' + portlabel(sorted[idx].port);
 					}
-					html += '</div>';
+					html += ', ' + (sorted[idx].network).escapeHTML() + '</div>';
 				} else {
-					html += 'bezprzewodowo ' + (sorted[idx].band == 2 ? '2.4' : sorted[idx].band) + ' GHz, wysłano: ' + bytesToSize(sorted[idx].tx) + ', pobrano: ' + bytesToSize(sorted[idx].rx) + ', ' + sorted[idx].percent + '% udziału w ruchu, połączony ' + formatDuration(sorted[idx].connected, false) + '</div>';
+					html += 'bezprzewodowo ' + (sorted[idx].band == 2 ? '2.4' : sorted[idx].band) + ' GHz, ' + (sorted[idx].network).escapeHTML() + ', wysłano: ' + bytesToSize(sorted[idx].tx) + ', pobrano: ' + bytesToSize(sorted[idx].rx) + ', ' + sorted[idx].percent + '% udziału w ruchu, połączony ' + formatDuration(sorted[idx].connected, false) + '</div>';
 				}
 
 				var title1 = '';
@@ -3793,7 +3982,7 @@ function clientscallback(sortby) {
 					title1 = ' title="' + sorted[idx].percent + '% udziału w ruchu"';
 					title2 = ' title="połączony: ' + formatDuration(sorted[idx].connected, false) + '"';
 				}
-				html += '<div class="col-xs-3 hidden-xs"><span style="color:' + string2color(sorted[idx].mac) + '"' + title1 + '>&#9608;</span>&nbsp;<span class="click" onclick="hostnameedit(' + sorted[idx].id + ');"' + title2 + '>' + (sorted[idx].displayname).escapeHTML() + '</span></div>';
+				html += '<div class="col-xs-3 hidden-xs"><span style="color:' + string2color(sorted[idx].mac) + '"' + title1 + '>&#9608;</span>&nbsp;<span class="click" onclick="hostnameedit(' + sorted[idx].id + ');"' + title2 + '>' + (sorted[idx].displayname).escapeHTML() + '</span><br>' + (sorted[idx].network).escapeHTML() + '</div>';
 				html += '<div class="col-xs-3 hidden-xs">' + limitations + '<span title="adres MAC">' + sorted[idx].mac + '</span><br><span title="adres IP">' + sorted[idx].ip + '</span></div>';
 				html += '<div class="col-xs-3 hidden-xs" title="sposób połączenia">';
 				if (sorted[idx].type == 1) {
@@ -3806,7 +3995,7 @@ function clientscallback(sortby) {
 					html += '<div class="col-xs-2"></div>';
 				} else {
 					html += 'bezprzewodowo<br>' + (sorted[idx].band == 2 ? '2.4' : sorted[idx].band) + ' GHz</div>';
-					html += '<div class="col-xs-2 hidden-xs"><span class="click" onclick="showbandwidth(\'' + sorted[idx].mac + '\');" title="wysłano">&uarr;&nbsp;' + bytesToSize(sorted[idx].tx) + '</span><br><span class="click" onclick="showbandwidth(\'' + sorted[idx].mac + '\');" title="pobrano">&darr;&nbsp;' + bytesToSize(sorted[idx].rx) + '</span></div>';
+					html += '<div class="col-xs-2 hidden-xs"><span class="click" onclick="showbandwidth(\'' + sorted[idx].mac + '\',\'' + sorted[idx].section + '\');" title="wysłano">&uarr;&nbsp;' + bytesToSize(sorted[idx].tx) + '</span><br><span class="click" onclick="showbandwidth(\'' + sorted[idx].mac + '\',\'' + sorted[idx].section + '\');" title="pobrano">&darr;&nbsp;' + bytesToSize(sorted[idx].rx) + '</span></div>';
 				}
 				html += '<div class="col-xs-1 hidden-xs text-right"><span class="click" title="menu" onclick="hostmenu(' + sorted[idx].id + ');"><i data-feather="more-vertical"></i></span></div>';
 
@@ -3814,11 +4003,30 @@ function clientscallback(sortby) {
 				any_active = true;
 			} else {
 				if (sorted[idx].active) { continue; }
-				html += '<hr><div class="row">';
-				html += '<div class="col-xs-9"><span class="click" onclick="hostnameedit(' + sorted[idx].id + ');">' + (sorted[idx].active_id > -1 ? '<span title="aktywny" style="color:green">&#9679;</span>&nbsp;' : '') + (sorted[idx].displayname).escapeHTML() + '</span></div>';
-				html += '<div class="col-xs-3 text-right"><span class="click" title="menu" onclick="hostmenu(' + sorted[idx].id + ');"><i data-feather="more-vertical"></i></span></div>';
-				html += '<div class="col-xs-12">MAC: ' + sorted[idx].mac + ', pierwszy raz: ' + formatDateTime(sorted[idx].first_seen) +  (sorted[idx].active_id > -1 ? ', <span style="color:green">aktywny</span>' : ', ostatni raz: ' + formatDateTime(sorted[idx].last_seen)) + '</div>';
-				html += '</div>';
+				var show = false;
+				switch (filterbyall) {
+					case 'day':
+						if (sorted[idx].last_seen >= sdayago) { show = true; }
+						break;
+					case 'week':
+						if (sorted[idx].last_seen >= sweekago) { show = true; }
+						break;
+					case 'month':
+						if (sorted[idx].last_seen >= smonthago) { show = true; }
+						break;
+					case 'year':
+						if (sorted[idx].last_seen >= syearago) { show = true; }
+						break;
+					default:
+						show = true;
+				}
+				if (show) {
+					html += '<hr><div class="row">';
+					html += '<div class="col-xs-9"><span class="click" onclick="hostnameedit(' + sorted[idx].id + ');">' + (sorted[idx].active_id > -1 ? '<span title="aktywny" style="color:green">&#9679;</span>&nbsp;' : '') + (sorted[idx].displayname).escapeHTML() + '</span></div>';
+					html += '<div class="col-xs-3 text-right"><span class="click" title="menu" onclick="hostmenu(' + sorted[idx].id + ');"><i data-feather="more-vertical"></i></span></div>';
+					html += '<div class="col-xs-12">MAC: ' + sorted[idx].mac + ', pierwszy raz: ' + formatDateTime(sorted[idx].first_seen) +  (sorted[idx].active_id > -1 ? ', <span style="color:green">aktywny</span>' : ', ostatni raz: ' + formatDateTime(sorted[idx].last_seen)) + '</div>';
+					html += '</div>';
+				}
 				any_all = true;
 			}
 		}
@@ -3835,23 +4043,34 @@ function clientscallback(sortby) {
 	setValue('div_clients_content', html);
 
 	if (clients.length > 0) {
-		all = ['displayname', 'tx', 'rx', 'percent', 'connected', 'type', 'mac', 'last_seen'];
+		all = ['displayname', 'tx', 'rx', 'percent', 'connected', 'type', 'ip', 'mac', 'last_seen'];
 		for (var idx = 0; idx < all.length; idx++) {
 			var e = document.getElementById('clients_sortby_' + all[idx]);
-			if (e === null) {
-				continue;
-			}
+			if (e === null) { continue; }
 			e.style.fontWeight = (sortby == all[idx]) ? 700 : 400;
+		}
+		all = ['all', 'day', 'week', 'month', 'year'];
+		for (var idx = 0; idx < all.length; idx++) {
+			var e = document.getElementById('clients_filterall_' + all[idx]);
+			if (e === null) { continue; }
+			e.style.fontWeight = (filterbyall == all[idx]) ? 700 : 400;
 		}
 		showicon();
 
 		setValue('clients_filter_active', ' aktywni (' + counter_active + ') ');
 		setValue('clients_filter_all', ' wszyscy (' + counter_all + ') ');
+		if (filterby == 'all') {
+			setValue('clients_filterall_day', ' z ostatniego dnia (' + counter_all_day + ') ');
+			setValue('clients_filterall_week', ' z ostatniego tygodnia (' + counter_all_week + ') ');
+			setValue('clients_filterall_month', ' z ostatnich 30 dni (' + counter_all_month + ') ');
+			setValue('clients_filterall_year', ' z ostatniego roku (' + counter_all_year + ') ');
+			setValue('clients_filterall_all', ' wszystko (' + counter_all_all + ') ');
+		}
 		clientscallbackfilter(filterby);
 
 		if (filterby == 'active' && total > 0) {
 			var canvas = document.getElementById('clients_pie');
-			var ctx = canvas.getContext('2d');
+			var ctx = canvas.getContext('2d', { willReadFrequently: true });
 			var previousRadian = 1.5 * Math.PI;
 			var positionInfo = document.getElementById('div_clients_pie').getBoundingClientRect();
 			canvas.width = positionInfo.width;
@@ -3899,11 +4118,11 @@ function clientscallback(sortby) {
 				const rect = this.getBoundingClientRect();
 				const x = e.clientX - rect.left;
 				const y = e.clientY - rect.top;
-				var c = this.getContext('2d');
+				var c = this.getContext('2d', { willReadFrequently: true });
 				var p = c.getImageData(x, y, 1, 1).data;
 				var hex = rgb2hex('rgb(' + p[0] + ',' + p[1] + ',' + p[2] + ')');
 				setDisplay('div_clients_pie_tooltip', false);
-				for (var idx = 0; idx < sorted.length; idx++) {
+				for (var idx = 0, n = sorted.length; idx < n; idx++) {
 					if (!sorted[idx].active) { continue; }
 					if (string2color(sorted[idx].mac) == hex) {
 						var e1 = document.getElementById('div_clients_pie_tooltip');
@@ -3917,6 +4136,7 @@ function clientscallback(sortby) {
 			};
 
 			document.getElementById('clients_pie').addEventListener('mousemove', clients_pie_tooltip, false);
+			clientspie_show();
 		}
 	}
 }
@@ -3981,7 +4201,7 @@ function showclientslogs() {
 }
 
 function timestampToDate(ts) {
-	function z(n){return (n<10?'0':'')+ +n;}
+	function z(n) { return (n < 10 ? '0' : '' ) + n;}
 	var d = new Date(ts * 1000);
 	return '' + d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + z(d.getHours()) + z(d.getMinutes()) + z(d.getSeconds());
 }
@@ -4144,8 +4364,8 @@ function hostinfo(id) {
 				}
 			}
 			html += createRowForModal('Poziom sygnału', (host.signal + ' dBm' + distance));
-			html += createRowForModal('Wysłano', '<span class="click" onclick="showbandwidth(\'' + host.mac + '\');">' + bytesToSize(host.tx) + '</span>');
-			html += createRowForModal('Pobrano', '<span class="click" onclick="showbandwidth(\'' + host.mac + '\');">' + bytesToSize(host.rx) + '</span>');
+			html += createRowForModal('Wysłano', '<span class="click" onclick="showbandwidth(\'' + host.mac + '\',\'' + host.section + '\');">' + bytesToSize(host.tx) + '</span>');
+			html += createRowForModal('Pobrano', '<span class="click" onclick="showbandwidth(\'' + host.mac + '\',\'' + host.section + '\');">' + bytesToSize(host.rx) + '</span>');
 			html += createRowForModal('Połączony', '<span>' + formatDuration(host.connected, false) + '</span><span class="visible-xs oneline"></span><span>' + (host.connected_since == '' ? '' : ' (od ' + formatDateTime(host.connected_since) + ')') + '</span>');
 		}
 		html += createRowForModal('Adres IP', (host.ip == '' ? '-' : host.ip));
@@ -4154,6 +4374,7 @@ function hostinfo(id) {
 	if (!host.active) {
 		html += createRowForModal('Ostatni raz widziany', formatDateTime(host.last_seen) + '</span><span class="visible-xs oneline"></span><span>' + ' (' + formatDuration(parseInt((new Date() - new Date((host.last_seen).substring(0,4), (host.last_seen).substring(4,6) - 1, (host.last_seen).substring(6,8), (host.last_seen).substring(8,10), (host.last_seen).substring(10,12), (host.last_seen).substring(12,14)))/1000), false) + ' temu)' + '</span>');
 	}
+	html += createRowForModal('Sieć', host.network == '' ? '-' : (host.network).escapeHTML());
 	showMsg(html, false);
 }
 
@@ -4236,7 +4457,8 @@ function okhostblock() {
 		cmd.push('uci set firewall.m' + nmac + '.dest=wan');
 		cmd.push('uci set firewall.m' + nmac + '.src_mac=' + mac);
 		cmd.push('uci set firewall.m' + nmac + '.target=REJECT');
-		cmd.push('uci set firewall.m' + nmac + '.proto=\\\"tcp udp\\\"');
+		cmd.push('uci set firewall.m' + nmac + '.proto=all');
+		cmd.push('uci set firewall.m' + nmac + '.family=any');
 		cmd.push('uci set firewall.m' + nmac + '.name=\\\"' + name + '\\\"');
 	}
 	if (action == 2) {
@@ -4335,7 +4557,7 @@ function hostip(id) {
 	var e = document.getElementById('hostip_ip');
 	proofreadText(e, validateIP, 0);
 	setValue('hostip_disconnect', false);
-
+	setDisplay('div_hostip_disconnect', host.type == 2)
 	setValue('hostip_ipaddr', (host.staticdhcp == '' ? 'brak' : host.staticdhcp));
 	setDisplay('div_hostip', true);
 	e.focus();
@@ -4357,8 +4579,8 @@ function removehostip() {
 	cmd.push('/etc/init.d/dnsmasq restart');
 
 	if (config.services.nftqos) {
-		cmd.push('uci -q del nft-qos.m' + nmac + 'up');
-		cmd.push('uci -q del nft-qos.m' + nmac + 'down');
+		cmd.push('uci -q del nft-qos.m' + nmac + 'up.ipaddr');
+		cmd.push('uci -q del nft-qos.m' + nmac + 'down.ipaddr');
 		cmd.push('uci commit nft-qos');
 		cmd.push('/etc/init.d/nft-qos restart');
 	}
@@ -4416,11 +4638,14 @@ function hostqos(id) {
 
 	setValue('hostqos_mac', host.mac);
 	setValue('hostqos_name', (host.displayname).escapeHTML());
-	setValue('hostqos_ip', host.ip);
+	setValue('hostqos_ip', host.ip ? host.ip : host.staticdhcp);
 
 	// KB/s to Mb/s
 	setValue('hostqos_upload', parseInt(host.qos.bwup * 8 / 1024));
 	setValue('hostqos_download', parseInt(host.qos.bwdown * 8 / 1024));
+
+	setDisplay('div_hostqos_flowoffloading', config.services.flowoffloading);
+	setDisplay('div_hostqos_ip', !host.ip && !host.staticdhcp);
 
 	setDisplay('div_hostqos', true);
 	document.getElementById('hostqos_upload').focus();
@@ -4909,7 +5134,7 @@ function showtraffic() {
 				if (traffic_warning_cycle == 'd') {
 					if (traffic_today >= traffic_warning_limit) {color = 'red';}
 
-					var percent = parseInt((traffic_today * 100) / traffic_warning_limit);
+					var percent = Math.round((traffic_today * 100) / traffic_warning_limit);
 					setValue('traffic_today_progress', ' (' + percent + '% z ' + bytesToSize(traffic_warning_limit) + ')');
 					if (percent > 100) {percent = 100;}
 					document.getElementById('div_traffic_today_progress1').style.width = percent + '%';
@@ -4919,7 +5144,7 @@ function showtraffic() {
 				if (traffic_warning_cycle == 'p') {
 					if (traffic_currentperiod >= traffic_warning_limit) { e2.style.color = "red"; }
 
-					var percent = parseInt((traffic_currentperiod * 100) / traffic_warning_limit);
+					var percent = Math.round((traffic_currentperiod * 100) / traffic_warning_limit);
 					setValue('traffic_currentperiod_progress', ' (' + percent + '% z ' + bytesToSize(traffic_warning_limit) + ')');
 					if (percent > 100) {percent = 100;}
 					document.getElementById('div_traffic_currentperiod_progress1').style.width = percent + '%';
@@ -5060,18 +5285,46 @@ function readsms() {
 	ubus_call('"easyconfig", "sms", {"action":"read","arg1":"","arg2":""}', function(data) {
 		var html = '';
 		var arr = data.msg;
+
+		var disabled = [];
+		for (var idx = 0, n = arr.length; idx < n; idx++) {
+			arr[idx].joined = [];
+			arr[idx].joined.push(arr[idx].index);
+			if (data.join && arr[idx].part && arr[idx].reference) {
+				if (arr[idx].part == 1) {
+					for (var part = 2; part <= arr[idx].total; part++) {
+						var obj = arr.find(o => o.part == part && o.reference == arr[idx].reference);
+						if (obj) {
+							arr[idx].content += obj.content;
+							arr[idx].joined.push(obj.index);
+							disabled.push(obj.index);
+						} else {
+							arr[idx].content += ' (...) ';
+						}
+					}
+				}
+			}
+		}
+
 		if (arr.length > 0) {
 			var sorted = sortJSON(arr, 'timestamp', 'asc');
-			for (var idx = 0; idx < sorted.length; idx++) {
-				html += '<hr><div class="row">';
-				html += '<div class="col-xs-10">Od: ' + sorted[idx].sender + ', odebrano: ' + formatDateTime(sorted[idx].timestamp);
-				if (sorted[idx].part) {
-					html += ' (' + sorted[idx].part + '/' + sorted[idx].total + ')';
+			for (var idx = 0, n = sorted.length; idx < n; idx++) {
+				var found = disabled.find((e) => e == arr[idx].index);
+				if (!found) {
+					html += '<hr><div class="row">';
+					html += '<div class="col-xs-10">Od: ' + sorted[idx].sender + ', odebrano: ' + formatDateTime(sorted[idx].timestamp);
+					if (sorted[idx].part) {
+						if (data.join) {
+							html += ' (' + sorted[idx].joined.length + ' z ' + sorted[idx].total + ')';
+						} else {
+							html += ' (' + sorted[idx].part + '/' + sorted[idx].total + ')';
+						}
+					}
+					html += '</div>';
+					html += '<div class="col-xs-2 text-right"><span class="click" title="usuń" onclick="removesms(\'' + (sorted[idx].joined).join(' ') + '\',\'' + sorted[idx].sender + '\',\'' + sorted[idx].timestamp + '\');"><i data-feather="trash-2"></i></span></div>';
+					html += '<div class="col-xs-12">' + (sorted[idx].content).replace(/\n/g,"<br>") + '</div>';
+					html += '</div>';
 				}
-				html += '</div>';
-				html += '<div class="col-xs-2 text-right"><span class="click" title="usuń" onclick="removesms(\'' + sorted[idx].index + '\',\'' + sorted[idx].sender + '\',\'' + sorted[idx].timestamp + '\');"><i data-feather="trash-2"></i></span></div>';
-				html += '<div class="col-xs-12">' + (sorted[idx].content).replace(/\n/g,"<br>") + '</div>';
-				html += '</div>';
 			}
 			html += '<hr><p>Liczba wiadomości: ' + arr.length + '</p>';
 		} else {
@@ -5082,15 +5335,15 @@ function readsms() {
 	});
 }
 
-function removesms(index, sender, timestamp) {
-	setValue('dialog_val', index);
+function removesms(ids, sender, timestamp) {
+	setValue('dialog_val', ids);
 	showDialog('Usunąć wiadomość od "' + sender + '" otrzymaną ' + formatDateTime(timestamp) + '?', 'Anuluj', 'Usuń', okremovesms);
 }
 
 function okremovesms() {
-	var index = getValue('dialog_val');
+	var ids = getValue('dialog_val');
 
-	ubus_call('"easyconfig", "sms", {"action":"delete","arg1":"' + index + '","arg2":""}', function(data) {
+	ubus_call('"easyconfig", "sms", {"action":"delete","arg1":"' + ids + '","arg2":""}', function(data) {
 		if ((data.response).match(/Deleted message/) == null) {
 			showMsg('Wystąpił problem z usunięciem wiadomości');
 		} else {
@@ -5276,7 +5529,7 @@ function upvpn(proto, interface, section) {
 		execute(cmd, showvpn);
 	} else if (proto == 'zerotier') {
 		var cmd = [];
-		cmd.push('uci set zerotier.' + section + '.enabled=1');
+		cmd.push('uci set zerotier.global.enabled=1');
 		cmd.push('/etc/init.d/zerotier reload');
 		cmd.push('uci revert zerotier');
 		execute(cmd, showvpn);
@@ -5296,7 +5549,7 @@ function downvpn(proto, interface, section) {
 		execute(cmd, showvpn);
 	} else if (proto == 'zerotier') {
 		var cmd = [];
-		cmd.push('uci set zerotier.' + section + '.enabled=0');
+		cmd.push('uci set zerotier.global.enabled=0');
 		cmd.push('/etc/init.d/zerotier reload');
 		cmd.push('uci revert zerotier');
 		execute(cmd, showvpn);
@@ -5341,7 +5594,7 @@ function showvpn() {
 			html += '<div class="col-xs-2 col-sm-1"></div>';
 			html += '</div>';
 			for (var idx = 0; idx < sorted.length; idx++) {
-				html += '<hr><div class="row space"><div class="col-xs-12 col-sm-4 click" onclick="vpndetails(\'' + sorted[idx].proto + '\',\'' + sorted[idx].interface + '\',\'' + (sorted[idx].section ? sorted[idx].section : '') + '\');">' + (sorted[idx].name).replace(',', '<br>').escapeHTML() + '</div>';
+				html += '<hr><div class="row space"><div class="col-xs-12 col-sm-4 click" onclick="vpndetails(\'' + sorted[idx].proto + '\',\'' + sorted[idx].interface + '\',\'' + (sorted[idx].section ? sorted[idx].section : '') + '\');">' + (sorted[idx].name).escapeHTML().replace(',', '<br>') + '</div>';
 				html += '<div class="col-xs-3 col-sm-3">' + vpntype(sorted[idx].proto) + '</div>';
 				if (sorted[idx].up) {
 					if (sorted[idx].proto == 'zerotier') {
@@ -5393,7 +5646,7 @@ function vpnstatus(interface) {
 		if (data.proto == 'wireguard') {
 			for (var idx = 0; idx < data.peers.length; idx++) {
 				html += '<br>';
-				html += createRowForModal('Nazwa połączenia', data.peers[idx].name);
+				html += createRowForModal('Nazwa połączenia', (data.peers[idx].name).escapeHTML());
 				html += createRowForModal('Wysłano', bytesToSize(data.peers[idx].tx));
 				html += createRowForModal('Pobrano', bytesToSize(data.peers[idx].rx));
 				t = '-';
@@ -5410,14 +5663,11 @@ function vpnstatus(interface) {
 function vpnstatuszerotier(section) {
 	ubus_call('"easyconfig", "vpnstatuszerotier", {"section":"' + section + '"}', function(data) {
 		var html = '';
-		for (var idx = 0; idx < data.networks.length; idx++) {
-			if (idx > 0) { html += '<br>'; }
-			html += createRowForModal('Adres IP', '<span class="click" onclick="showgeolocation();">' + data.networks[idx].ipaddr + '</span>');
-			html += createRowForModal('Sieć', data.networks[idx].id);
-			html += createRowForModal('Nazwa', data.networks[idx].name);
-			html += createRowForModal('Typ', data.networks[idx].type);
-			html += createRowForModal('Status', data.networks[idx].status);
-		}
+		html += createRowForModal('Adres IP', '<span class="click" onclick="showgeolocation();">' + data.network.ipaddr + '</span>');
+		html += createRowForModal('Sieć', data.network.id);
+		html += createRowForModal('Nazwa', (data.network.name).escapeHTML());
+		html += createRowForModal('Typ', data.network.type);
+		html += createRowForModal('Status', data.network.status);
 		showMsg(html);
 	});
 }
@@ -5425,7 +5675,7 @@ function vpnstatuszerotier(section) {
 function vpndetails(proto, interface, section) {
 	ubus_call('"easyconfig", "vpndetails", {"proto":"' + proto + '","interface":"' + interface + '","section":"' + section + '"}', function(data) {
 		if (data.proto == 'openvpn') {
-			setValue('vpn_openvpn_error', '');
+			showError('vpn_openvpn_error', '', '');
 			setValue('vpn_openvpn_interface', interface);
 			setValue('vpn_openvpn_section', data.section);
 			setValue('vpn_openvpn_name', data.name);
@@ -5440,7 +5690,7 @@ function vpndetails(proto, interface, section) {
 			setDisplay('div_vpn_openvpn', true);
 		}
 		if (data.proto == 'pptp') {
-			setValue('vpn_pptp_error', '');
+			showError('vpn_pptp_error', '', '');
 			setValue('vpn_pptp_interface', interface);
 			setValue('vpn_pptp_name', data.name);
 			setValue('vpn_pptp_auto', data.autostart);
@@ -5455,7 +5705,7 @@ function vpndetails(proto, interface, section) {
 			setDisplay('div_vpn_pptp', true);
 		}
 		if (data.proto == 'sstp') {
-			setValue('vpn_sstp_error', '');
+			showError('vpn_sstp_error', '', '');
 			setValue('vpn_sstp_interface', interface);
 			setValue('vpn_sstp_name', data.name);
 			setValue('vpn_sstp_auto', data.autostart);
@@ -5469,7 +5719,7 @@ function vpndetails(proto, interface, section) {
 			setDisplay('div_vpn_sstp', true);
 		}
 		if (data.proto == 'wireguard') {
-			setValue('vpn_wireguard_error', '');
+			showError('vpn_wireguard_error', '', '');
 			setValue('vpn_wireguard_interface', interface);
 			setValue('vpn_wireguard_auto', data.autostart);
 			if (data.trigger == 'wan') { setValue('vpn_wireguard_auto', 2); }
@@ -5507,18 +5757,11 @@ function vpndetails(proto, interface, section) {
 			setDisplay('div_vpn_wireguard', true);
 		}
 		if (data.proto == 'zerotier') {
-			setValue('vpn_zerotier_error', '');
+			showError('vpn_zerotier_error', '', '');
 			setValue('vpn_zerotier_section', section);
 			setValue('vpn_zerotier_name', data.name);
 			setValue('vpn_zerotier_enabled', data.enabled);
-
-			setValue('vpn_zerotier_network_content', '');
-			setValue('vpn_zerotier_network', 0);
-			for (var idx = 0; idx < data.join.length; idx++) {
-				addzerotiernetwork();
-				setValue('vpn_zerotier_network_' + idx, data.join[idx]);
-			}
-
+			setValue('vpn_zerotier_network', data.id);
 			setDisplay('div_vpn_zerotier', true);
 		}
 	})
@@ -5557,8 +5800,8 @@ function savevpnnew() {
 	setDisplay('div_vpn_new', false);
 
 	if (getValue('vpn_new') == 'openvpn') {
-		setValue('vpn_openvpn_error', '');
-		var interface = Math.random().toString(36).substring(2, 10);
+		showError('vpn_openvpn_error', '', '');
+		var interface = getRandomString();
 		setValue('vpn_openvpn_interface', interface);
 		setValue('vpn_openvpn_section', interface);
 		setValue('vpn_openvpn_name', '');
@@ -5572,8 +5815,8 @@ function savevpnnew() {
 		setDisplay('div_vpn_openvpn', true);
 	}
 	if (getValue('vpn_new') == 'pptp') {
-		setValue('vpn_pptp_error', '');
-		setValue('vpn_pptp_interface', Math.random().toString(36).substring(2, 10));
+		showError('vpn_pptp_error', '', '');
+		setValue('vpn_pptp_interface', getRandomString());
 		setValue('vpn_pptp_name', '');
 		setValue('vpn_pptp_auto', 0);
 		setValue('vpn_pptp_button', false);
@@ -5586,8 +5829,8 @@ function savevpnnew() {
 		setDisplay('div_vpn_pptp', true);
 	}
 	if (getValue('vpn_new') == 'sstp') {
-		setValue('vpn_sstp_error', '');
-		setValue('vpn_sstp_interface', Math.random().toString(36).substring(2, 10));
+		showError('vpn_sstp_error', '', '');
+		setValue('vpn_sstp_interface', getRandomString());
 		setValue('vpn_sstp_name', '');
 		setValue('vpn_sstp_auto', 0);
 		setValue('vpn_sstp_button', false);
@@ -5599,8 +5842,8 @@ function savevpnnew() {
 		setDisplay('div_vpn_sstp', true);
 	}
 	if (getValue('vpn_new') == 'wireguard') {
-		setValue('vpn_wireguard_error', '');
-		setValue('vpn_wireguard_interface', Math.random().toString(36).substring(2, 10));
+		showError('vpn_wireguard_error', '', '');
+		setValue('vpn_wireguard_interface', getRandomString());
 		setValue('vpn_wireguard_auto', 0);
 		setValue('vpn_wireguard_button', false);
 		setDisplay('div_vpn_wireguard_button', config.button.code != '');
@@ -5620,15 +5863,11 @@ function savevpnnew() {
 		setDisplay('div_vpn_wireguard', true);
 	}
 	if (getValue('vpn_new') == 'zerotier') {
-		setValue('vpn_zerotier_error', '');
-		setValue('vpn_zerotier_section', Math.random().toString(36).substring(2, 10));
-		setValue('vpn_zerotier_name', '');
+		showError('vpn_zerotier_error', '', '');
+		setValue('vpn_zerotier_section', getRandomString());
 		setValue('vpn_zerotier_enabled', true);
-
-		setValue('vpn_zerotier_network_content', '');
-		setValue('vpn_zerotier_network', 0);
-		addzerotiernetwork();
-
+		setValue('vpn_zerotier_name', '');
+		setValue('vpn_zerotier_network', '');
 		setDisplay('div_vpn_zerotier', true);
 	}
 }
@@ -5645,7 +5884,7 @@ function removeopenvpn() {
 	cancelopenvpn();
 	setValue('dialog_val', getValue('vpn_openvpn_interface'));
 	setValue('dialog_val1', getValue('vpn_openvpn_section'));
-	showDialog('Usunąć VPN "' + getValue('vpn_openvpn_name') + '" (typu ' + vpntype('openvpn') + ')?', 'Anuluj', 'Usuń', okremoveopenvpn);
+	showDialog('Usunąć VPN "' + getValue('vpn_openvpn_name').escapeHTML() + '" (typu ' + vpntype('openvpn') + ')?', 'Anuluj', 'Usuń', okremoveopenvpn);
 }
 
 function okremoveopenvpn() {
@@ -5671,32 +5910,32 @@ function okremoveopenvpn() {
 function saveopenvpn() {
 	var cmd = [];
 
-	setValue('vpn_openvpn_error', '');
+	showError('vpn_openvpn_error', '', '');
 	if (getValue('vpn_openvpn_name') == '') {
-		setValue('vpn_openvpn_error', 'Błąd w polu ' + getLabelText('vpn_openvpn_name'));
+		showError('vpn_openvpn_error', 'vpn_openvpn_name', 'Błąd w polu ' + getLabelText('vpn_openvpn_name'));
 		return;
 	}
 	if (getValue('vpn_openvpn_username') != '') {
 		if (getValue('vpn_openvpn_password') == '') {
-			setValue('vpn_openvpn_error', 'Błąd w polu ' + getLabelText('vpn_openvpn_password'));
+			showError('vpn_openvpn_error', 'vpn_openvpn_password', 'Błąd w polu ' + getLabelText('vpn_openvpn_password'));
 			return;
 		}
 	}
 	var configtext = getValue('vpn_openvpn_configtext');
 	if (configtext == '') {
-		setValue('vpn_openvpn_error', 'Błąd w polu ' + getLabelText('vpn_openvpn_configtext'));
+		showError('vpn_openvpn_error', 'vpn_openvpn_configtext', 'Błąd w polu ' + getLabelText('vpn_openvpn_configtext'));
 		return;
 	} else {
 		if (configtext.indexOf('client') == -1) {
-			setValue('vpn_openvpn_error', 'Plik konfiguracyjny nie zawiera opcji "client"');
+			showError('vpn_openvpn_error', 'vpn_openvpn_configtext', 'Plik konfiguracyjny nie zawiera opcji "client"');
 			return;
 		}
 		if (configtext.indexOf('remote') == -1) {
-			setValue('vpn_openvpn_error', 'Plik konfiguracyjny nie zawiera opcji "remote"');
+			showError('vpn_openvpn_error', 'vpn_openvpn_configtext', 'Plik konfiguracyjny nie zawiera opcji "remote"');
 			return;
 		}
 		if (configtext.indexOf('dev') == -1) {
-			setValue('vpn_openvpn_error', 'Plik konfiguracyjny nie zawiera opcji "dev"');
+			showError('vpn_openvpn_error', 'vpn_openvpn_configtext', 'Plik konfiguracyjny nie zawiera opcji "dev"');
 			return;
 		}
 	}
@@ -5706,7 +5945,7 @@ function saveopenvpn() {
 	var interface = getValue('vpn_openvpn_interface');
 	var section = getValue('vpn_openvpn_section');
 	if (interface == '') {
-		interface = Math.random().toString(36).substring(2, 10);
+		interface = getRandomString();
 	}
 
 	ubus_call('"file", "write", {"path":"/tmp/' + interface + '","data":"' + configtext.replace(/\\/g,'\\\\').replace(/"/g, '\\"') + '"}', function(data) {
@@ -5796,7 +6035,7 @@ function cancelpptp() {
 function removepptp() {
 	cancelpptp();
 	setValue('dialog_val', getValue('vpn_pptp_interface'));
-	showDialog('Usunąć VPN "' + getValue('vpn_pptp_name') + '" (typu ' + vpntype('pptp') + ')?', 'Anuluj', 'Usuń', okremovevpn);
+	showDialog('Usunąć VPN "' + getValue('vpn_pptp_name').escapeHTML() + '" (typu ' + vpntype('pptp') + ')?', 'Anuluj', 'Usuń', okremovevpn);
 }
 
 function okremovevpn() {
@@ -5817,13 +6056,13 @@ function okremovevpn() {
 function savepptp() {
 	var cmd = [];
 
-	setValue('vpn_pptp_error', '');
+	showError('vpn_pptp_error', '', '');
 	if (getValue('vpn_pptp_name') == '') {
-		setValue('vpn_pptp_error', 'Błąd w polu ' + getLabelText('vpn_pptp_name'));
+		showError('vpn_pptp_error', 'vpn_pptp_name', 'Błąd w polu ' + getLabelText('vpn_pptp_name'));
 		return;
 	}
 	if (validateHost(getValue('vpn_pptp_server')) != 0) {
-		setValue('vpn_pptp_error', 'Błąd w polu ' + getLabelText('vpn_pptp_server'));
+		showError('vpn_pptp_error', 'vpn_pptp_server', 'Błąd w polu ' + getLabelText('vpn_pptp_server'));
 		return;
 	}
 
@@ -5908,19 +6147,19 @@ function cancelsstp() {
 function removesstp() {
 	cancelsstp();
 	setValue('dialog_val', getValue('vpn_sstp_interface'));
-	showDialog('Usunąć VPN "' + getValue('vpn_sstp_name') + '" (typu ' + vpntype('sstp') + ')?', 'Anuluj', 'Usuń', okremovevpn);
+	showDialog('Usunąć VPN "' + getValue('vpn_sstp_name').escapeHTML() + '" (typu ' + vpntype('sstp') + ')?', 'Anuluj', 'Usuń', okremovevpn);
 }
 
 function savesstp() {
 	var cmd = [];
 
-	setValue('vpn_sstp_error', '');
+	showError('vpn_sstp_error', '', '');
 	if (getValue('vpn_sstp_name') == '') {
-		setValue('vpn_sstp_error', 'Błąd w polu ' + getLabelText('vpn_sstp_name'));
+		showError('vpn_sstp_error', 'vpn_sstp_name', 'Błąd w polu ' + getLabelText('vpn_sstp_name'));
 		return;
 	}
 	if (validateHost(getValue('vpn_sstp_server')) != 0) {
-		setValue('vpn_sstp_error', 'Błąd w polu ' + getLabelText('vpn_sstp_server'));
+		showError('vpn_sstp_error', 'vpn_sstp_server', 'Błąd w polu ' + getLabelText('vpn_sstp_server'));
 		return;
 	}
 
@@ -6074,19 +6313,19 @@ function okremovewireguard() {
 function savewireguard() {
 	var cmd = [];
 
-	setValue('vpn_wireguard_error', '');
+	showError('vpn_wireguard_error', '', '');
 	if (validateLengthRange(getValue('vpn_wireguard_privkey'), 44, 44) != 0) {
-		setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_privkey'));
+		showError('vpn_wireguard_error', 'vpn_wireguard_privkey', 'Błąd w polu ' + getLabelText('vpn_wireguard_privkey'));
 		return;
 	}
 	if (validateLengthRange(getValue('vpn_wireguard_pubkey'), 44, 44) != 0) {
-		setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_pubkey') + '<br>Klucz prywatny ma nieprawidłową długość lub format');
+		showError('vpn_wireguard_error', 'vpn_wireguard_pubkey', 'Błąd w polu ' + getLabelText('vpn_wireguard_pubkey') + '<br><br>Klucz prywatny ma nieprawidłową długość lub format');
 		return;
 	}
 	var tmp = getValue('vpn_wireguard_port');
 	if (tmp != '') {
 		if (validateNumericRange(tmp, 0, 65535) != 0) {
-			setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_port'));
+			showError('vpn_wireguard_error', 'vpn_wireguard_port', 'Błąd w polu ' + getLabelText('vpn_wireguard_port'));
 			return;
 		}
 	}
@@ -6096,7 +6335,7 @@ function savewireguard() {
 		e = document.getElementById('vpn_wireguard_ips_' + idx);
 		if (e) {
 			if (validateIPWithMask(e.value) != 0) {
-				setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_ips_' + idx));
+				showError('vpn_wireguard_error', 'vpn_wireguard_ips_' + idx, 'Błąd w polu ' + getLabelText('vpn_wireguard_ips_' + idx));
 				return;
 			}
 		}
@@ -6108,31 +6347,31 @@ function savewireguard() {
 		if (!e) { continue; }
 
 		if (validateLengthRange(e.value, 1, 255) != 0) {
-			setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_description_' + idx));
+			showError('vpn_wireguard_error', 'vpn_wireguard_description_' + idx, 'Błąd w polu ' + getLabelText('vpn_wireguard_description_' + idx));
 			return;
 		}
 		if (validateLengthRange(getValue('vpn_wireguard_pubkey_' + idx), 44, 44) != 0) {
-			setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_pubkey_' + idx));
+			showError('vpn_wireguard_error', 'vpn_wireguard_pubkey_' + idx, 'Błąd w polu ' + getLabelText('vpn_wireguard_pubkey_' + idx));
 			return;
 		}
 		tmp = getValue('vpn_wireguard_pskey_' + idx);
 		if (tmp != '') {
 			if (validateLengthRange(tmp, 44, 44) != 0) {
-				setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_pskey_' + idx));
+				showError('vpn_wireguard_error', 'vpn_wireguard_pskey_' + idx, 'Błąd w polu ' + getLabelText('vpn_wireguard_pskey_' + idx));
 				return;
 			}
 		}
 		tmp = getValue('vpn_wireguard_endpoint_host_' + idx);
 		if (tmp != '') {
 			if (validateHost(tmp) != 0) {
-				setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_endpoint_host_' + idx));
+				showError('vpn_wireguard_error', 'vpn_wireguard_endpoint_host_' + idx, 'Błąd w polu ' + getLabelText('vpn_wireguard_endpoint_host_' + idx));
 				return;
 			}
 		}
 		tmp = getValue('vpn_wireguard_endpoint_port_' + idx);
 		if (tmp != '') {
 			if (validateNumericRange(tmp, 0, 65535) != 0) {
-				setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_endpoint_port_' + idx));
+				showError('vpn_wireguard_error', 'vpn_wireguard_endpoint_port_' + idx, 'Błąd w polu ' + getLabelText('vpn_wireguard_endpoint_port_' + idx));
 				return;
 			}
 		}
@@ -6141,7 +6380,7 @@ function savewireguard() {
 			e = document.getElementById('vpn_wireguard_allowed_ips_' + idx + '_' + idy);
 			if (e) {
 				if (validateIPWithMask(e.value) != 0) {
-					setValue('vpn_wireguard_error', 'Błąd w polu ' + getLabelText('vpn_wireguard_allowed_ips_' + idx + '_' + idy));
+					showError('vpn_wireguard_error', 'vpn_wireguard_allowed_ips_' + idx + '_' + idy, 'Błąd w polu ' + getLabelText('vpn_wireguard_allowed_ips_' + idx + '_' + idy));
 					return;
 				}
 			}
@@ -6268,29 +6507,21 @@ function cancelzerotier() {
 	setDisplay('div_vpn_zerotier', false);
 }
 
-function addzerotiernetwork() {
-	var idx = getValue('vpn_zerotier_network');
-	if (idx == '') { idx = 0; }
-	var html = ('<div id="div_vpn_zerotier_network_idx">' + document.getElementById('div_vpn_zerotier_network_template').innerHTML + '</div>').replaceAll('_idx', '_' + idx);
-	document.getElementById('vpn_zerotier_network_content').insertAdjacentHTML('beforeend', html);
-	idx++;
-	setValue('vpn_zerotier_network', idx);
-}
-
-function removezerotiernetwork(idx) {
-	document.getElementById('div_vpn_zerotier_network' + idx).remove();
-}
-
 function removezerotier() {
 	cancelzerotier();
 	setValue('dialog_val', getValue('vpn_zerotier_section'));
-	showDialog('Usunąć VPN "' + getValue('vpn_zerotier_name') + '" (typu ' + vpntype('zerotier') + ')?', 'Anuluj', 'Usuń', okremovezerotier);
+	showDialog('Usunąć VPN "' + getValue('vpn_zerotier_name').escapeHTML() + '" (typu ' + vpntype('zerotier') + ')?', 'Anuluj', 'Usuń', okremovezerotier);
 }
 
 function okremovezerotier() {
 	var cmd = [];
 
 	cmd.push('uci -q del zerotier.' + getValue('dialog_val'));
+	cmd.push('T=$(uci show zerotier | awk \'/=network$/\' | wc -l)');
+	cmd.push('if [ \\\"$T\\\" = \\\"0\\\" ]; then');
+	cmd.push(' uci set zerotier.global.enabled=0');
+	cmd.push(' uci del zerotier.global.secret');
+	cmd.push('fi');
 	cmd.push('uci commit');
 	cmd.push('/etc/init.d/zerotier restart');
 
@@ -6300,38 +6531,23 @@ function okremovezerotier() {
 function savezerotier() {
 	var cmd = [];
 
-	setValue('vpn_zerotier_error', '');
+	showError('vpn_zerotier_error', '', '');
 	if (getValue('vpn_zerotier_name') == '') {
-		setValue('vpn_zerotier_error', 'Błąd w polu ' + getLabelText('vpn_zerotier_name'));
+		showError('vpn_zerotier_error', 'vpn_zerotier_name', 'Błąd w polu ' + getLabelText('vpn_zerotier_name'));
 		return;
 	}
-	var cnt = getValue('vpn_zerotier_network');
-	for (var idx = 0; idx < cnt; idx++) {
-		e = document.getElementById('vpn_zerotier_network_' + idx);
-		if (e) {
-				if (validateLengthRange(getValue('vpn_zerotier_network_' + idx), 16, 16) != 0) {
-					setValue('vpn_zerotier_error', 'Błąd w polu ' + getLabelText('vpn_zerotier_network_' + idx));
-					return;
-				}
-		}
+	if (validateLengthRange(getValue('vpn_zerotier_network'), 16, 16) != 0) {
+		showError('vpn_zerotier_error', 'vpn_zerotier_network', 'Błąd w polu ' + getLabelText('vpn_zerotier_network'));
+		return;
 	}
 
 	cancelzerotier();
 
+	cmd.push('uci set zerotier.global.enabled=' + (getValue('vpn_zerotier_enabled') ? '1' : '0'));
 	var section = getValue('vpn_zerotier_section');
-	cmd.push('uci set zerotier.' + section + '=zerotier');
+	cmd.push('uci set zerotier.' + section + '=network');
 	cmd.push('uci set zerotier.' + section + '.name=\\\"' + escapeShell(getValue('vpn_zerotier_name')) + '\\\"');
-	cmd.push('uci set zerotier.' + section + '.enabled=' + (getValue('vpn_zerotier_enabled') ? '1' : '0'));
-
-	cmd.push('uci -q del zerotier.' + section + '.join');
-	var cnt = getValue('vpn_zerotier_network');
-	for (var idx = 0; idx < cnt; idx++) {
-		e = document.getElementById('vpn_zerotier_network_' + idx);
-		if (e) {
-			cmd.push('uci add_list zerotier.' + section + '.join=' + getValue('vpn_zerotier_network_' + idx));
-		}
-	}
-
+	cmd.push('uci set zerotier.' + section + '.id=' + getValue('vpn_zerotier_network'));
 	cmd.push('uci commit');
 	cmd.push('/etc/init.d/zerotier restart');
 
@@ -6386,17 +6602,13 @@ function showadblock() {
 				html += '<input id="adblock_' + adblock_lists[i].section + '" type="checkbox">';
 				html += '<div class="slider round"></div>';
 				html += '</label>';
-				html += '<span class="hidden-xs control-label labelleft">Kategoria: ' + adblock_lists[i].focus + ', wielkość: ' + adblock_lists[i].size + ', <a href="' + adblock_lists[i].descurl + '" class="click" target="_blank">opis &rarr;</a></span>';
-				html += '<div class="visible-xs">Kategoria: ' + adblock_lists[i].focus + ', wielkość: ' + adblock_lists[i].size + ', <a href="' + adblock_lists[i].descurl + '" class="click" target="_blank">opis &rarr;</a></div>';
-				html += '</div>';
-				if (adblock_lists[i].section == 'blacklist') {
-					if (!adblock_lists[i].enabled) {
-						if ((data.blacklist).length > 0) {
-							html += '<div class="col-xs-4 col-sm-3 control-label">&nbsp;</div>';
-							html += '<div class="col-xs-8 col-sm-9 alert alert-warning" style="margin-bottom:-5px !important;">UWAGA: lista jest wyłączona, ręcznie dodane domeny nie będą blokowane</div>';
-						}
-					}
+				if (adblock_lists[i].focus && adblock_lists[i].descurl) {
+					html += '<span class="hidden-xs control-label labelleft">Kategoria: ' + adblock_lists[i].focus + ', wielkość: ' + adblock_lists[i].size + ', <a href="' + adblock_lists[i].descurl + '" class="click" target="_blank">opis &rarr;</a></span>';
+					html += '<div class="visible-xs">Kategoria: ' + adblock_lists[i].focus + ', wielkość: ' + adblock_lists[i].size + ', <a href="' + adblock_lists[i].descurl + '" class="click" target="_blank">opis &rarr;</a></div>';
+				} else {
+					html += '<span class="hidden-xs control-label labelleft">Wielkość: ' + adblock_lists[i].size + '</span>';
 				}
+				html += '</div>';
 				html += '</div>';
 			}
 			setValue('div_adblock_lists', html);
@@ -6412,32 +6624,32 @@ function showadblock() {
 		}
 
 		html = '';
-		var blacklist = data.blacklist;
-		if (blacklist.length > 0) {
-			for (var idx = 0; idx < blacklist.length; idx++) {
+		var blocklist = data.blocklist;
+		if (blocklist.length > 0) {
+			for (var idx = 0; idx < blocklist.length; idx++) {
 				html += '<div class="row">';
-				html += '<div class="col-xs-9">' + blacklist[idx] + '</div>';
-				html += '<div class="col-xs-3 text-right"><span class="click" title="usuń" onclick="removefromblacklist(\'' + blacklist[idx] + '\');"><i data-feather="trash-2"></i></span></div>';
+				html += '<div class="col-xs-9">' + blocklist[idx] + '</div>';
+				html += '<div class="col-xs-3 text-right"><span class="click" title="usuń ' + blocklist[idx] + '" onclick="removefromblocklist(\'' + blocklist[idx] + '\');"><i data-feather="trash-2"></i></span></div>';
 				html += '</div>';
 			}
 			html += '<hr>';
 		}
-		html += '<p>Liczba domen: ' + blacklist.length + '</p>';
-		setValue('div_adblock_list_blacklist', html);
+		html += '<p>Liczba domen: ' + blocklist.length + '</p>';
+		setValue('div_adblock_list_blocklist', html);
 
 		html = '';
-		var whitelist = data.whitelist;
-		if (whitelist.length > 0) {
-			for (var idx = 0; idx < whitelist.length; idx++) {
+		var allowlist = data.allowlist;
+		if (allowlist.length > 0) {
+			for (var idx = 0; idx < allowlist.length; idx++) {
 				html += '<div class="row">';
-				html += '<div class="col-xs-9">' + whitelist[idx] + '</div>';
-				html += '<div class="col-xs-3 text-right"><span class="click" title="usuń" onclick="removefromwhitelist(\'' + whitelist[idx] + '\');"><i data-feather="trash-2"></i></span></div>';
+				html += '<div class="col-xs-9">' + allowlist[idx] + '</div>';
+				html += '<div class="col-xs-3 text-right"><span class="click" title="usuń ' + allowlist[idx] + '" onclick="removefromallowlist(\'' + allowlist[idx] + '\');"><i data-feather="trash-2"></i></span></div>';
 				html += '</div>';
 			}
 			html += '<hr>';
 		}
-		html += '<p>Liczba domen: ' + whitelist.length + '</p>';
-		setValue('div_adblock_list_whitelist', html);
+		html += '<p>Liczba domen: ' + allowlist.length + '</p>';
+		setValue('div_adblock_list_allowlist', html);
 
 		showicon();
 	});
@@ -6447,12 +6659,21 @@ function saveadblock() {
 	var cmd = [];
 
 	cmd.push('uci set adblock.global.adb_enabled=' + (getValue('adblock_enabled') ? '1' : '0'));
+	cmd.push('if [ -e /etc/adblock/adblock.feeds ]; then');
+	cmd.push('uci -q del adblock.global.adb_feed');
+	for (var idx in adblock_lists) {
+		if (getValue('adblock_' + adblock_lists[idx].section)) {
+			cmd.push('uci add_list adblock.global.adb_feed=' + adblock_lists[idx].section);
+		}
+	}
+	cmd.push('else');
 	cmd.push('uci -q del adblock.global.adb_sources');
 	for (var idx in adblock_lists) {
 		if (getValue('adblock_' + adblock_lists[idx].section)) {
 			cmd.push('uci add_list adblock.global.adb_sources=' + adblock_lists[idx].section);
 		}
 	}
+	cmd.push('fi');
 
 	if (getValue('adblock_forcedns')) {
 		cmd.push('uci set firewall.dns_53_redirect=redirect');
@@ -6462,6 +6683,7 @@ function saveadblock() {
 		cmd.push('uci set firewall.dns_53_redirect.src_dport=53');
 		cmd.push('uci set firewall.dns_53_redirect.dest_port=53');
 		cmd.push('uci set firewall.dns_53_redirect.target=DNAT');
+		cmd.push('uci set firewall.dns_53_redirect.family=any');
 	} else {
 		cmd.push('uci -q del firewall.dns_53_redirect');
 	}
@@ -6484,6 +6706,7 @@ function saveadblock_easyconfig() {
 		cmd.push('uci set firewall.dns_53_redirect.src_dport=53');
 		cmd.push('uci set firewall.dns_53_redirect.dest_port=53');
 		cmd.push('uci set firewall.dns_53_redirect.target=DNAT');
+		cmd.push('uci set firewall.dns_53_redirect.family=any');
 	} else {
 		cmd.push('uci -q del firewall.dns_53_redirect');
 	}
@@ -6516,14 +6739,13 @@ function checkdomain() {
 	});
 }
 
-function blacklistdomain() {
+function blocklistdomain() {
 	if (checkField('adblock_domain', validateHost)) { return; }
 
 	var domain = getValue('adblock_domain');
 
 	var cmd = [];
-	cmd.push('F=$(uci -q get adblock.blacklist.adb_src)');
-	cmd.push('[ -z \\\"$F\\\" ] && F=/etc/adblock/adblock.blacklist');
+	cmd.push('F=/etc/adblock/adblock.blocklist');
 	cmd.push('mkdir -p $(dirname $F)');
 	cmd.push('echo \\\"' + domain + '\\\" >> $F');
 	if (config.services.adblock) {
@@ -6540,17 +6762,16 @@ function blacklistdomain() {
 	});
 }
 
-function removefromblacklist(domain) {
+function removefromblocklist(domain) {
 	setValue('dialog_val', domain);
-	showDialog('Usunąć domenę "' + domain + '" z listy blokowanych?', 'Anuluj', 'Usuń', okremovefromblacklist);
+	showDialog('Usunąć domenę "' + domain + '" z listy blokowanych?', 'Anuluj', 'Usuń', okremovefromblocklist);
 }
 
-function okremovefromblacklist() {
+function okremovefromblocklist() {
 	var domain = getValue('dialog_val');
 
 	var cmd = [];
-	cmd.push('F=$(uci -q get adblock.blacklist.adb_src)');
-	cmd.push('[ -z \\\"$F\\\" ] && F=/etc/adblock/adblock.blacklist');
+	cmd.push('F=/etc/adblock/adblock.blocklist');
 	cmd.push('sed -i \\\"/^' + domain + '$/d\\\" \\\"$F\\\"');
 	if (config.services.adblock) {
 		cmd.push('/etc/init.d/adblock restart');
@@ -6563,13 +6784,13 @@ function okremovefromblacklist() {
 	execute(cmd, showadblock);
 }
 
-function whitelistdomain() {
+function allowlistdomain() {
 	if (checkField('adblock_domain', validateHost)) { return; }
 
 	var domain = getValue('adblock_domain');
 
 	var cmd = [];
-	cmd.push('F=/etc/adblock/adblock.whitelist');
+	cmd.push('F=/etc/adblock/adblock.allowlist');
 	cmd.push('mkdir -p $(dirname $F)');
 	cmd.push('echo \\\"' + domain + '\\\" >> $F');
 	if (config.services.adblock) {
@@ -6586,16 +6807,16 @@ function whitelistdomain() {
 	});
 }
 
-function removefromwhitelist(domain) {
+function removefromallowlist(domain) {
 	setValue('dialog_val', domain);
-	showDialog('Usunąć domenę "' + domain + '" z listy dozwolonych?', 'Anuluj', 'Usuń', okremovefromwhitelist);
+	showDialog('Usunąć domenę "' + domain + '" z listy dozwolonych?', 'Anuluj', 'Usuń', okremovefromallowlist);
 }
 
-function okremovefromwhitelist() {
+function okremovefromallowlist() {
 	var domain = getValue('dialog_val');
 
 	var cmd = [];
-	cmd.push('F=/etc/adblock/adblock.whitelist');
+	cmd.push('F=/etc/adblock/adblock.allowlist');
 	cmd.push('sed -i \\\"/^' + domain + '$/d\\\" \\\"$F\\\"');
 	if (config.services.adblock) {
 		cmd.push('/etc/init.d/adblock restart');
@@ -6639,7 +6860,7 @@ function savenightmode() {
 		cmd.push('/usr/bin/easyconfig_nightmode.sh >/dev/null 2>&1');
 	} else {
 		cmd.push('killall sunwait >/dev/null 2>&1');
-		cmd.push('ubus call easyconfig leds \'{\\\"action\\\":\\\"on\\\"}\'');
+		cmd.push('ubus call easyconfig leds \'{\\\"action\\\":\\\"on\\\"}\' >/dev/null');
 	}
 	cmd.push('/etc/init.d/cron restart');
 
@@ -6655,6 +6876,40 @@ function btn_nightmode_wifi_on() {
 function btn_nightmode_wifi_off() {
 	var cmd = ['wifi down'];
 
+	execute(cmd, function() {});
+}
+
+function btn_nightmode_wifi_scheduler() {
+	setValue('cron_title', 'Harmonogram wyłączenia Wi-Fi');
+	setValue('cron_off_info', 'Wi-Fi wyłączone');
+	cron_display('wifi', btn_nightmode_wifi_setcron);
+}
+
+function btn_nightmode_wifi_setcron() {
+	var timetable = cron_encode();
+	if (timetable == '7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F7F') {
+		setValue('dialog_val', timetable);
+		showDialog('Zaznaczono całkowite wyłączenie Wi-Fi<br><br>Wybierz "Wyłącz" żeby usunąć harmonogram i wyłączyć Wi-Fi lub "Anuluj" aby zignorować zmiany.', 'Anuluj', 'Wyłącz', okbtn_nightmode_wifi_off);
+	} else {
+		var cmd  = [];
+		cmd.push('easyconfig_cron_helper.sh set wifi ' + timetable);
+		if (cron_check()) {
+			cmd.push('[ -n \\\"$(iw dev)\\\" ] && wifi down');
+		} else {
+			cmd.push('[ -z \\\"$(iw dev)\\\" ] && wifi up');
+		}
+		execute(cmd, function() {});
+	}
+}
+
+function okbtn_nightmode_wifi_off() {
+	var cmd = [];
+	for (var idx = 0, n = config.wlan_devices.length; idx < n; idx++) {
+		cmd.push('uci -q set wireless.' + config.wlan_devices[idx] + '.disabled=1')
+	}
+	cmd.push('uci commit wireless')
+	cmd.push('wifi down')
+	cmd.push('easyconfig_cron_helper.sh set wifi ' + getValue('dialog_val'));
 	execute(cmd, function() {});
 }
 
@@ -6679,7 +6934,7 @@ function btn_nightmode_getlocation() {
 
 function btn_nightmode_getlocationfromgps() {
 	ubus_call('"gps", "info", {}', function(data) {
-		if (data.age == undefined) {
+		if (typeof data.age === 'undefined') {
 			showMsg('Błąd odczytu lokalizacji', true);
 		} else {
 			setValue('nightmode_led_auto_latitude', data.latitude);
@@ -6736,7 +6991,7 @@ function readgps() {
 			return;
 		}
 		ubus_call_nomsg('"gps", "info", {}', function(data) {
-			if (data.age == undefined) {
+			if (typeof data.age === 'undefined') {
 				setValue('gps_fixtime', 'brak sygnału GPS');
 				setValue('gps_latitude', '-');
 				setValue('gps_latitudedms', '-');
@@ -6859,7 +7114,7 @@ function woldetails(data) {
 		json.broadcast = 0;
 		json.button = 0;
 	}
-	setValue('wol_error', '');
+	showError('wol_error', '', '');
 	setValue('wol_section', json.section);
 	setValue('wol_description', json.description);
 	setValue('wol_mac', json.mac);
@@ -6872,11 +7127,10 @@ function woldetails(data) {
 function savewol() {
 	var cmd = [];
 
-	setValue('wol_error', '');
-
+	showError('wol_error', '', '');
 	var mac = getValue('wol_mac');
 	if (validateMAC(mac) != 0) {
-		setValue('wol_error', 'Błąd w polu ' + getLabelText('wol_mac'));
+		showError('wol_error', 'wol_mac', 'Błąd w polu ' + getLabelText('wol_mac'));
 		return;
 	}
 
@@ -6940,28 +7194,46 @@ function shownetworks() {
 	ubus_call('"easyconfig", "networks", {}', function(data) {
 		var ports = naturalSortJSON(data.ports, 'port');
 		var ipaddrs = [];
+		var has_wireless = config.wlan_devices.length;
 
 		var sorted = sortJSON(data.networks, 'description', 'asc');
 		if (sorted.length > 0) {
 			var html = '<div class="row space">';
-			html += '<div class="col-xs-6">Opis</div>';
-			html += '<div class="hidden-xs col-xs-3">Klientów bezprzewodowych</div>';
+			html += '<div class="col-xs-5">Opis</div>';
+			if (has_wireless) {
+				html += '<div class="hidden-xs col-xs-3">Klientów bezprzewodowych</div>';
+				html += '<div class="visible-xs col-xs-3">Klientów bezprzew.</div>';
+			}
 			html += '<div class="hidden-xs col-xs-3">Klientów przewodowych</div>';
-			html += '<div class="visible-xs col-xs-3">Klientów bezprzew.</div>';
 			html += '<div class="visible-xs col-xs-3">Klientów przew.</div>';
+			html += '<div class="col-xs-1"></div>';
 			html += '</div>';
 			for (var idx = 0; idx < sorted.length; idx++) {
 				ipaddrs.push({ipaddr: sorted[idx].ipaddr, section: sorted[idx].section, description: sorted[idx].description});
 			}
 			for (var idx = 0; idx < sorted.length; idx++) {
 				sorted[idx].ipaddrs = ipaddrs;
+				sorted[idx].ports = ports;
 				if (sorted[idx].description == '') {
 					sorted[idx].description = sorted[idx].section;
 				}
 				html += '<hr><div class="row space">';
-				html += '<div class="col-xs-6 click" onclick="networkdetails(\'' + btoa(JSON.stringify(ports)) + '\',\'' + btoa(JSON.stringify(sorted[idx])) + '\')">' + (sorted[idx].description).escapeHTML() + '</div>';
-				html += '<div class="col-xs-3">' + sorted[idx].wlan_clients + '</div>';
-				html += '<div class="col-xs-3">' + sorted[idx].lan_clients + '</div>';
+				html += '<div class="col-xs-5 click" onclick="networkdetails(\'' + btoa(JSON.stringify(sorted[idx])) + '\')">' + (sorted[idx].description).escapeHTML() + '</div>';
+				if (has_wireless) {
+					if (sorted[idx].wlan_clients == 0) {
+						html += '<div class="col-xs-3">0</div>';
+					} else {
+						html += '<div class="col-xs-3"><a href="#" class="click" onclick="btn_pages(\'clients\');">' + sorted[idx].wlan_clients + ' &rarr;</a></div>';
+					}
+				}
+				if (sorted[idx].lan_clients == 0) {
+					html += '<div class="col-xs-3">0</div>';
+				} else {
+					html += '<div class="col-xs-3"><a href="#" class="click" onclick="btn_pages(\'clients\');">' + sorted[idx].lan_clients + ' &rarr;</a></div>';
+				}
+				if (has_wireless) {
+					html += '<div class="col-xs-1"><span class="click" onclick="networkswifitoggle(\'' + sorted[idx].section + '\');"><span title="zmień stan Wi-Fi"><i data-feather="power"></i></span></div>';
+				}
 				html += '</div>';
 			}
 			setValue('div_networks_content', html);
@@ -6971,6 +7243,7 @@ function shownetworks() {
 		}
 
 		var newnetwork = {};
+		newnetwork['ports'] = ports;
 		newnetwork['section'] = '';
 		newnetwork['description'] = '';
 		newnetwork['proto'] = 'static';
@@ -7000,18 +7273,32 @@ function shownetworks() {
 		}
 
 		document.getElementById('btn_network_new').addEventListener('click', function() {
-			networkdetails(btoa(JSON.stringify(ports)), btoa(JSON.stringify(newnetwork)));
+			networkdetails(btoa(JSON.stringify(newnetwork)));
 		});
 	})
 }
 
-function networkdetails(ports, data) {
-	var physicalports = JSON.parse(atob(ports));
+function networkswifitoggle(section) {
+	var cmd = [];
+	cmd.push('SECTIONS=$(uci -q show wireless | awk -F. \'/\\\\\.network=\'\\\\\'\'\'' + section + '\'\'\\\\\'\'$/{print $2}\')');
+	cmd.push('for SEC in $SECTIONS; do');
+    cmd.push(' T1=1');
+	cmd.push(' T2=$(uci -q get wireless.${SEC}.disabled)');
+	cmd.push(' [ \\\"x$T2\\\" = \\\"x1\\\" ] && T1=0');
+	cmd.push(' uci set wireless.${SEC}.disabled=$T1');
+	cmd.push('done');
+	cmd.push('if [ -n \\\"$SECTIONS\\\" ]; then');
+	cmd.push(' uci commit wireless');
+	cmd.push(' wifi reload');
+	cmd.push('fi');
+	execute(cmd, shownetworks);
+}
+
+function networkdetails(data) {
 	var json = JSON.parse(atob(data));
 
 	setValue('network_data', data);
-	setValue('network_ports', ports);
-	setValue('network_error', '');
+	showError('network_error', '', '');
 	setValue('network_description', json.description);
 	setValue('network_ipaddr', json.ipaddr);
 	setValue('network_netmask', json.netmask);
@@ -7065,8 +7352,10 @@ function networkdetails(ports, data) {
 			setDisplay('div_network_wlan_macaddr_' + i, false);
 		}
 	}
+	setValue('network_wifitoggle', json.button);
+	setDisplay('div_network_wifitoggle', (radios.length > 0) && (config.button.code != ''));
 
-	var cnt = physicalports.length;
+	var cnt = json.ports.length;
 	if (cnt > 0) {
 		var html = '<div>' + document.getElementById('div_network_wire_header_template').innerHTML + '</div>';
 		document.getElementById('div_network_interfaces_content').insertAdjacentHTML('beforeend', html);
@@ -7074,10 +7363,10 @@ function networkdetails(ports, data) {
 		for (var i = 0; i < cnt; i++) {
 			html = ('<div>' + document.getElementById('div_network_wire_template').innerHTML + '</div>').replaceAll('_idx', '_' + i);
 			document.getElementById('div_network_interfaces_content').insertAdjacentHTML('beforeend', html);
-			setValue('network_port_data_' + i, btoa(JSON.stringify(physicalports[i])));
-			setValue('network_port_label_' + i, physicalports[i].port.toUpperCase());
-			setValue('network_port_' + i, json.wire.indexOf(physicalports[i].port) > -1);
-			var desc = physicalports[i].description == '' ? physicalports[i].network : physicalports[i].description;
+			setValue('network_port_data_' + i, btoa(JSON.stringify(json.ports[i])));
+			setValue('network_port_label_' + i, json.ports[i].port.toUpperCase());
+			setValue('network_port_' + i, json.wire.indexOf(json.ports[i].port) > -1);
+			var desc = json.ports[i].description == '' ? json.ports[i].network : (json.ports[i].description).escapeHTML();
 			if (desc == 'lan') { desc = 'Sieć lokalna'; }
 			setValue('network_port_desc1_' + i, desc);
 			setValue('network_port_desc2_' + i, desc);
@@ -7094,23 +7383,21 @@ function cancelnetwork() {
 function removenetwork() {
 	cancelnetwork();
 	setValue('dialog_val', getValue('network_data'));
-	setValue('dialog_val1', getValue('network_ports'));
-	showDialog('Usunąć sieć dodatkową "' + getValue('network_description') + '"?', 'Anuluj', 'Usuń', okremovenetwork);
+	showDialog('Usunąć sieć dodatkową "' + getValue('network_description').escapeHTML() + '"?', 'Anuluj', 'Usuń', okremovenetwork);
 }
 
 function okremovenetwork() {
 	var json = JSON.parse(atob(getValue('dialog_val')));
-	var physicalports = JSON.parse(atob(getValue('dialog_val1')));
 
 	var cmd = [];
 	if (json.section) {
 		cmd.push('uci -q del network.' + json.section);
 	}
 	if (json.bridge) {
-		for (var idx = 0; idx < physicalports.length; idx++) {
-			if (physicalports[idx].bridge == json.bridge) {
-				cmd.push('uci -q del_list network.' + physicalports[idx].lanbridge + '.ports=' + physicalports[idx].port);
-				cmd.push('uci add_list network.' + physicalports[idx].lanbridge + '.ports=' + physicalports[idx].port);
+		for (var idx = 0; idx < json.ports.length; idx++) {
+			if (json.ports[idx].bridge == json.bridge) {
+				cmd.push('uci -q del_list network.' + json.ports[idx].lanbridge + '.ports=' + json.ports[idx].port);
+				cmd.push('uci add_list network.' + json.ports[idx].lanbridge + '.ports=' + json.ports[idx].port);
 			}
 		}
 		cmd.push('uci -q del network.' + json.bridge);
@@ -7141,27 +7428,26 @@ function okremovenetwork() {
 	cmd.push('uci commit');
 	cmd.push('reload_config');
 	cmd.push('wifi');
-	cmd.push('/etc/init.d/dnsmasq restart');
-	cmd.push('/etc/init.d/firewall restart');
 	execute(cmd, shownetworks);
 }
 
 function savenetwork() {
 	var cmd = [];
 
+	showError('network_error', '', '');
 	if (getValue('network_description') == '') {
-		setValue('network_error', 'Błąd w polu ' + getLabelText('network_description'));
+		showError('network_error', 'network_description', 'Błąd w polu ' + getLabelText('network_description'));
 		return;
 	}
 	var ipaddr = getValue('network_ipaddr');
 	if (validateIP(ipaddr) != 0) {
-		setValue('network_error', 'Błąd w polu ' + getLabelText('network_ipaddr'));
+		showError('network_error', 'network_ipaddr', 'Błąd w polu ' + getLabelText('network_ipaddr'));
 		return;
 	}
 
 	var json = JSON.parse(atob(getValue('network_data')));
 	if (json.section == '') {
-		json.section = Math.random().toString(36).substring(2, 10);
+		json.section = getRandomString();
 		cmd.push('uci set network.' + json.section + '=interface');
 		json.device = 'br-' + json.section;
 		cmd.push('uci add network device');
@@ -7176,7 +7462,7 @@ function savenetwork() {
 		if (json.ipaddrs[idx].ipaddr == ipaddr && json.ipaddrs[idx].section != json.section) { usedinnetwork = json.ipaddrs[idx].description; }
 	}
 	if (usedinnetwork) {
-		setValue('network_error', 'Błąd w polu ' + getLabelText('network_ipaddr') + '<br>adres jest już wykorzystywany w sieci "' + usedinnetwork.escapeHTML() + '"');
+		showError('network_error', 'network_ipaddr', 'Błąd w polu ' + getLabelText('network_ipaddr') + '<br><br>adres jest już wykorzystywany w sieci "' + usedinnetwork.escapeHTML() + '"');
 		return;
 	}
 
@@ -7226,7 +7512,7 @@ function savenetwork() {
 	cmd.push('uci set firewall.' + json.section + '_dns.dest_port=53');
 	cmd.push('uci set firewall.' + json.section + '_dns.target=ACCEPT');
 	cmd.push('uci set firewall.' + json.section + '_dns.family=ipv4');
-	cmd.push('uci set firewall.' + json.section + '_dns.proto=tcpudp');
+	cmd.push('uci set firewall.' + json.section + '_dns.proto=\\\"tcp udp\\\"');
 
 	var t = '';
 	(json.forwarding).forEach(function(f) {
@@ -7290,11 +7576,11 @@ function savenetwork() {
 
 		var wlan_ssid = getValue('network_wlan_ssid_' + i);
 		if (wlan_ssid == '') {
-			setValue('network_error', 'Błąd w polu ' + getLabelText('network_wlan_ssid_' + i) + ' dla ' + getValue('radio_' + i));
+			showError('network_error', 'network_wlan_ssid_' + i, 'Błąd w polu ' + getLabelText('network_wlan_ssid_' + i) + ' dla ' + getValue('radio_' + i));
 			return;
 		}
 		if (validateLengthRange(wlan_ssid, 1, 32) != 0) {
-			setValue('network_error', 'Błąd w polu ' + getLabelText('network_wlan_ssid_' + i) + ' dla ' + getValue('radio_' + i) + '<br><br>Nazwa Wi-Fi nie może być dłuższa niż 32 znaki');
+			showError('network_error', 'network_wlan_ssid_' + i, 'Błąd w polu ' + getLabelText('network_wlan_ssid_' + i) + ' dla ' + getValue('radio_' + i) + '<br><br>Nazwa Wi-Fi nie może być dłuższa niż 32 znaki');
 			return;
 		}
 		if (vap.ssid != wlan_ssid) {
@@ -7310,7 +7596,7 @@ function savenetwork() {
 		wlan_key = getValue('network_wlan_key_' + i);
 		if (wlan_encryption != 'none') {
 			if (wlan_key.length < 8) {
-				setValue('network_error', 'Błąd w polu ' + getLabelText('network_wlan_key_' + i) + ' dla ' + getValue('radio_' + i) + '<br><br>Hasło do Wi-Fi musi mieć co najmniej 8 znaków');
+				showError('network_error', 'network_wlan_key_' + i, 'Błąd w polu ' + getLabelText('network_wlan_key_' + i) + ' dla ' + getValue('radio_' + i) + '<br><br>Hasło do Wi-Fi musi mieć co najmniej 8 znaków');
 				return;
 			}
 		}
@@ -7356,6 +7642,13 @@ function savenetwork() {
 				cmd.push('uci -q del wireless.' + section + '.macaddr');
 			}
 		}
+		if (config.button.code != '') {
+			if (getValue('network_wifitoggle') == 1) {
+				cmd.push('uci set wireless.' + section + '.button=1');
+			} else {
+				cmd.push('uci set wireless.' + section + '.button');
+			}
+		}
 	}
 
 	// lan
@@ -7385,9 +7678,175 @@ function savenetwork() {
 	if (wlan_restart_required) {
 		cmd.push('wifi');
 	}
-	cmd.push('/etc/init.d/dnsmasq restart');
-	cmd.push('/etc/init.d/firewall restart');
 	execute(cmd, shownetworks);
+}
+/*****************************************************************************/
+
+function cron_cancel() {
+	setDisplay('div_cron', false);
+}
+
+function cron_checkall() {
+	for (var i = 0; i < 24; i++) {
+		for (var j = 0; j < 7; j++) {
+			document.getElementById('cront' + i + j).style.backgroundColor = '#337ab7';
+		}
+	}
+}
+
+function cron_uncheckall() {
+	for (var i = 0; i < 24; i++) {
+		for (var j = 0; j < 7; j++) {
+			document.getElementById('cront' + i + j).style.backgroundColor = document.body.style.backgroundColor;
+		}
+	}
+}
+
+function cron_toggle(evt) {
+	var e = evt.target;
+	e.style.backgroundColor = (e.style.backgroundColor == document.getElementById('cron_off').style.backgroundColor) ? document.body.style.backgroundColor : '#337ab7';
+}
+
+function cron_display(action, onclickprimary) {
+	var days = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'];
+
+	var html = '';
+	if (action == 'wifi') {
+		var wifi_disabled = true;
+		for (var idx = 0, n = config.wlan_devices.length; idx < n; idx++) {
+			if (!config[config.wlan_devices[idx]].wlan_disabled) {
+				wifi_disabled = false;
+			}
+		}
+		if (wifi_disabled) {
+			html += '<div class="alert alert-danger text-center">Wi-Fi jest wyłączone. Harmonogram nie będzie działał dopóki Wi-Fi nie zostanie włączone.</div>';
+		}
+	}
+
+	html += '<table class="table"><tr><td>Dzień / Godzina</td><td>Po</td><td>Wt</td><td>Śr</td><td>Cz</td><td>Pi</td><td>So</td><td>Ni</td></tr>';
+	for (var i = 0; i < 24; i++) {
+		html += '<tr><td>' + i + '-' + (i + 1) + '</td>';
+		for (var j = 0; j < 7; j++) {
+			html += '<td id="cront' + i + j + '" title="' + days[j] + ', ' + i + ':00 - ' + i + ':59"></td>';
+		}
+		html += '</tr>';
+	}
+	html += '</table>';
+
+	setValue('div_cron_scheduler', html);
+	for (var i = 0; i < 24; i++) {
+		for (var j = 0; j < 7; j++) {
+			document.getElementById('cront' + i + j).addEventListener('click', cron_toggle);
+		}
+	}
+	document.getElementById('cron_off').style.backgroundColor = '#337ab7';
+
+	var e = document.getElementById('cron_btn_primary');
+	e.onclick = function(){ cron_cancel(); onclickprimary(); }
+
+	ubus_call('"file", "exec", {"command":"easyconfig_cron_helper.sh","params":["get", "wifi"]}', function(data) {
+		cron_decode(data.stdout);
+		setDisplay('div_cron', true);
+	})
+}
+
+function cron_decode(data) {
+	var bc = document.getElementById('cron_off').style.backgroundColor;
+	var code = [64,32,16,8,4,2,1];
+	var hours = data.match(/.{1,2}/g);
+	if (hours.length == 24) {
+		for (var i = 0; i < 24; i++) {
+			var t = parseInt(hours[i], 16);
+			for (var j = 0; j < 7; j++) {
+				if ((t & code[j]) == code[j]) {
+					document.getElementById('cront' + i + j).style.backgroundColor = bc;
+				}
+			}
+		}
+	}
+}
+
+function cron_encode() {
+	var bc = document.getElementById('cron_off').style.backgroundColor;
+	var code = [64,32,16,8,4,2,1];
+	var hex = '';
+	for (var i = 0; i < 24; i++) {
+		var sum = 0;
+		for (var j = 0; j < 7; j++) {
+			if (document.getElementById('cront' + i + j).style.backgroundColor == bc) {
+				sum += code[j];
+			}
+		}
+		hex += ('0' + (Number(sum).toString(16))).slice(-2).toUpperCase();
+	}
+	return hex;
+}
+
+function cron_check() {
+	var now = new Date();
+	var hour = now.getHours();
+	var day = (now.getDay()) - 1;
+	if (day == -1) { day = 6; }
+	if (document.getElementById('cront' + hour + day).style.backgroundColor == document.getElementById('cron_off').style.backgroundColor) {
+		return true;
+	}
+	return false;
+}
+
+/*****************************************************************************/
+
+function diagnostics() {
+	var info = '';
+	var resok = '<span style="color:green">OK</span>';
+	var resnotok = '<span style="color:red">źle</span>';
+	ubus_call('"network.interface.wan", "status", {}', function(data) {
+		if (data.up) {
+			var hosts = ['8.8.8.8'];
+			if (config.wan_dns[0]) { hosts.push(config.wan_dns[0]); }
+			if (config.wan_dns[1]) { hosts.push(config.wan_dns[1]); }
+			var hosts1 = ['google.com', 'facebook.com', 'x.com'];
+			hosts.push(...hosts1);
+			ubus_call('"file", "exec", {"command":"/usr/bin/pingraw","params":[' + hosts.map(h => `"${h}"`).join(',') + ']}', function(data1) {
+				var result = JSON.parse(data1.stdout);
+
+				info += createRowForModal('Status połączenia z internetem', resok);
+
+				var hostObj = result.find(obj => obj.host === '8.8.8.8');
+				var status = hostObj ? hostObj.status : undefined;
+				info += createRowForModal('Działanie trasy domyślnej', status == 'success' ? resok : resnotok);
+
+				hostObj = result.find(obj => obj.host === 'google.com');
+				status = hostObj ? hostObj.status : undefined;
+				info += createRowForModal('Działanie DNSów', status == 'success' ? resok : resnotok);
+
+				if (config.wan_dns[0]) {
+					hostObj = result.find(obj => obj.host === config.wan_dns[0]);
+					status = hostObj ? hostObj.status : undefined;
+					info += createRowForModal('Ping do DNS1 (' + config.wan_dns[0] + ')', status == 'success' ? resok + ', ' + hostObj.time_ms + ' ms' : resnotok);
+				}
+
+				if (config.wan_dns[1]) {
+					hostObj = result.find(obj => obj.host === config.wan_dns[1]);
+					status = hostObj ? hostObj.status : undefined;
+					info += createRowForModal('Ping do DNS2 (' + config.wan_dns[1] + ')', status == 'success' ? resok + ', ' + hostObj.time_ms + ' ms' : resnotok);
+				}
+
+				info += '<hr>';
+
+				hosts1.forEach(function(host2, index) {
+					hostObj = result.find(obj => obj.host === host2);
+					status = hostObj ? hostObj.status : undefined;
+					info += createRowForModal('Ping do ' + host2, status == 'success' ? resok + ', ' + hostObj.time_ms + ' ms' : resnotok);
+				});
+
+				showMsg(info);
+			})
+		} else {
+			info += createRowForModal('Status połączenia z internetem', resnotok);
+
+			showMsg(info);
+		}
+	})
 }
 
 /*****************************************************************************/
@@ -7632,7 +8091,7 @@ livegraph = {
 			return;
 		}
 
-		var ctx = canvas.getContext('2d');
+		var ctx = canvas.getContext('2d', { willReadFrequently: true });
 		if (ctx == null) {
 			return;
 		}
@@ -7742,7 +8201,7 @@ staticgraph = {
 			return;
 		}
 
-		var ctx = canvas.getContext('2d');
+		var ctx = canvas.getContext('2d', { willReadFrequently: true });
 		if (ctx == null) {
 			return;
 		}

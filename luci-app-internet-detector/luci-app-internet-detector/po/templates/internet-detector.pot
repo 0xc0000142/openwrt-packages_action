@@ -32,6 +32,9 @@ msgstr ""
 msgid "An error has occurred"
 msgstr ""
 
+msgid "Attempts"
+msgstr ""
+
 msgid "Big: 248 bytes"
 msgstr ""
 
@@ -71,6 +74,9 @@ msgstr ""
 msgid "Default port value for TCP connections."
 msgstr ""
 
+msgid "Device"
+msgstr ""
+
 msgid "Device will be rebooted when the Internet is disconnected."
 msgstr ""
 
@@ -99,6 +105,9 @@ msgid "Edit"
 msgstr ""
 
 msgid "Edit down-script"
+msgstr ""
+
+msgid "Edit regular-script"
 msgstr ""
 
 msgid "Edit public-ip-script"
@@ -131,10 +140,7 @@ msgstr ""
 msgid "Expecting:"
 msgstr ""
 
-msgid "Public IP"
-msgstr ""
-
-msgid "Public IP address"
+msgid "Failed interval"
 msgstr ""
 
 msgid "Failed to get %s init status: %s"
@@ -196,6 +202,9 @@ msgstr ""
 msgid "Interval between IP address requests."
 msgstr ""
 
+msgid "Interval between IP address requests if the IP address is not defined."
+msgstr ""
+
 msgid "Jumbo: 9000 bytes"
 msgstr ""
 
@@ -234,18 +243,27 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Network interface for Internet access. If not specified, the default "
+"Network device for Internet access. If not specified, the default "
 "interface is used."
 msgstr ""
 
 msgid ""
-"Network interface to restart. If not specified, then the network service is restarted."
+"Network device or interface to restart. If not specified, then the network service is restarted."
 msgstr ""
 
 msgid "Network will be restarted when the Internet is disconnected."
 msgstr ""
 
+msgid "Next run"
+msgstr ""
+
 msgid "No <abbr title=\"Light Emitting Diode\">LED</abbr>s available..."
+msgstr ""
+
+msgid "Not scheduled"
+msgstr ""
+
+msgid "Number of attempts to request an IP address."
 msgstr ""
 
 msgid "Off"
@@ -289,7 +307,16 @@ msgid ""
 "Period of time without Internet access until the device is rebooted."
 msgstr ""
 
+msgid "Regular script"
+msgstr ""
+
 msgid "Polling interval"
+msgstr ""
+
+msgid "Public IP"
+msgstr ""
+
+msgid "Public IP address"
 msgstr ""
 
 msgid "Reboot device"
@@ -314,6 +341,12 @@ msgid "Restart service"
 msgstr ""
 
 msgid "Restart timeout"
+msgstr ""
+
+msgid "Run interval"
+msgstr ""
+
+msgid "Run if Internet state is"
 msgstr ""
 
 msgid "Run service at startup"
@@ -364,7 +397,13 @@ msgstr ""
 msgid "Set the modem to be allowed to use any band."
 msgstr ""
 
+msgid "Shell commands that are run regularly."
+msgstr ""
+
 msgid "Shell commands that run when connected to the Internet."
+msgstr ""
+
+msgid "Shell commands that run regularly at a specified interval. Current state of the Internet is available as value of the <code>$INET_STATE</code> variable (<code>0</code> - connected, <code>1</code> - disconnected)."
 msgstr ""
 
 msgid "Shell commands that run when the public IP address changes. New IP is available as value of the <code>$PUBLIC_IP</code> variable (empty string if undefined)."
@@ -397,7 +436,7 @@ msgstr ""
 msgid "TLS: use STARTTLS if the server supports it."
 msgstr ""
 
-msgid "Timeout between stopping and starting the interface."
+msgid "Timeout between stopping and starting a network device."
 msgstr ""
 
 msgid "Type a time string"
@@ -448,7 +487,16 @@ msgstr ""
 msgid "after disconnection"
 msgstr ""
 
-msgid "both"
+msgid "connected"
+msgstr ""
+
+msgid "connected or disconnected"
+msgstr ""
+
+msgid "days"
+msgstr ""
+
+msgid "disconnected"
 msgstr ""
 
 msgid "down-script"

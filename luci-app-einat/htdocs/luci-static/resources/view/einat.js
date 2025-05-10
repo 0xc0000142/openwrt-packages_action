@@ -9,26 +9,32 @@
 'require network';
 'require tools.widgets as widgets';
 
-var conf = 'einat';
-var instance = 'einat';
+const conf = 'einat';
+const instance = 'einat';
 
-var callServiceList = rpc.declare({
+const callServiceList = rpc.declare({
 	object: 'service',
 	method: 'list',
 	params: ['name'],
 	expect: { '': {} }
 });
 
-var callRcInit = rpc.declare({
+const callRcInit = rpc.declare({
 	object: 'rc',
 	method: 'init',
 	params: ['name', 'action']
 });
 
+const callGetFeatures = rpc.declare({
+	object: 'luci.einat',
+	method: 'get_features',
+	expect: { '': {} }
+});
+
 function getServiceStatus() {
 	return L.resolveDefault(callServiceList(conf), {})
-		.then(function (res) {
-			var isrunning = false;
+		.then((res) => {
+			let isrunning = false;
 			try {
 				isrunning = res[conf]['instances'][instance]['running'];
 			} catch (e) { }
@@ -48,17 +54,18 @@ function handleAction(action, ev) {
 }
 
 return view.extend({
-	load: function() {
+	load() {
 	return Promise.all([
 		getServiceStatus(),
 		L.resolveDefault(fs.stat('/usr/bin/einat'), null),
+		callGetFeatures(),
 		uci.load('einat')
 	]);
 	},
 
-	poll_status: function(nodes, stat) {
-		var isRunning = stat[0],
-			view = nodes.querySelector('#service_status');
+	poll_status(nodes, stat) {
+		const isRunning = stat[0];
+		let view = nodes.querySelector('#service_status');
 
 		if (isRunning) {
 			view.innerHTML = "<span style=\"color:green;font-weight:bold\">" + instance + " - " + _("SERVER RUNNING") + "</span>";
@@ -68,17 +75,18 @@ return view.extend({
 		return;
 	},
 
-	render: function(res) {
-		var isRunning = res[0],
-			has_einat = res[1] ? res[1].path : null
+	render(res) {
+		const isRunning = res[0];
+		const has_einat = res[1] ? res[1].path : null;
+		const features = res[2];
 
-		var m, s, o;
+		let m, s, o;
 
 		m = new form.Map('einat', _('einat-ebpf'), _('eBPF-based Endpoint-Independent NAT'));
 
 		s = m.section(form.NamedSection, '_status');
 		s.anonymous = true;
-		s.render = function (section_id) {
+		s.render = function(section_id) {
 			return E('div', { class: 'cbi-section' }, [
 				E('div', { id: 'service_status' }, _('Collecting data ...'))
 			]);
@@ -110,7 +118,13 @@ return view.extend({
 		o.value('3', 'info - ' + _('Info'));
 		o.value('4', 'debug - ' + _('Debug'));
 		o.value('5', 'trace - ' + _('Trace'));
-		o.rmempty = true;
+
+		o = s.option(form.ListValue, 'bpf_loader', _('BPF loading backend'));
+		o.value('', _('Default'));
+		if (features.features.includes('aya'))
+			o.value('aya', _('aya'));
+		if (features.features.includes('libbpf'))
+			o.value('libbpf', _('libbpf'));
 
 		o = s.option(form.Flag, 'nat44', _('NAT44'));
 		o.default = o.disabled;
@@ -125,13 +139,22 @@ return view.extend({
 		o.noaliases = true;
 		o.nobridges = true;
 		o.nocreate = true;
-		o.rmempty = true;
 
 		o = s.option(form.Value, 'ports', _('External TCP/UDP port ranges'),
 			_('Please avoid conflicts with external ports used by other applications'));
 		o.datatype = 'portrange';
 		o.placeholder = '20000-29999';
 		o.rmempty = true;
+
+		o = s.option(widgets.NetworkSelect, 'internal_ifaces', _('Internal interfaces'),
+			_('Perform source NAT for these internal networks only.'));
+		o.multiple = true;
+		o.nocreate = true;
+
+		o = s.option(form.DynamicList, 'internal_subnets', _('Internal subnets'),
+			_('Perform source NAT for these internal networks only.'));
+		o.datatype = 'cidr';
+		o.placeholder = '192.168.0.0/16';
 
 		o = s.option(form.Flag, 'hairpin_enabled', _('Enable hairpin'),
 			_('May conflict with other policy routing-based applications'));

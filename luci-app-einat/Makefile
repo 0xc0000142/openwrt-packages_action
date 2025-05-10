@@ -1,7 +1,6 @@
-# NATMap by EHfive <https://github.com/EHfive/einat-ebpf>
-# Copyright (C) 2024 Anya Lin <https://github.com/muink>
+# SPDX-License-Identifier: MIT
 #
-# This is free software, licensed under the MIT license
+# Copyright (C) 2024-2025 Anya Lin <https://github.com/muink>
 
 include $(TOPDIR)/rules.mk
 
@@ -9,7 +8,7 @@ LUCI_NAME:=luci-app-einat
 
 LUCI_TITLE:=LuCI Support for einat
 LUCI_PKGARCH:=all
-LUCI_DEPENDS:=
+LUCI_DEPENDS:=+einat-ebpf
 
 LUCI_DESCRIPTION:=eBPF-based Endpoint-Independent NAT
 

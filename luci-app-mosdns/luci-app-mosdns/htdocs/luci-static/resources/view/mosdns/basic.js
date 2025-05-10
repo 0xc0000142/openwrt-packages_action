@@ -223,7 +223,7 @@ return view.extend({
 		o.default = 'tls://8.8.8.8';
 		o.depends('custom_stream_media_dns', '1');
 
-		o = s.taboption('basic', form.ListValue, 'bootstrap_dns', _('Bootstrap DNS servers'),
+		o = s.taboption('basic', form.Value, 'bootstrap_dns', _('Bootstrap DNS servers'),
 			_('Bootstrap DNS servers are used to resolve IP addresses of the DoH/DoT resolvers you specify as upstreams'));
 		o.value('119.29.29.29', _('Tencent Public DNS (119.29.29.29)'));
 		o.value('119.28.28.28', _('Tencent Public DNS (119.28.28.28)'));
@@ -411,7 +411,7 @@ return view.extend({
 			if (configeditor) {
 				var editorContent = configeditor.getValue();
 				if (editorContent === formvalue) {
-					return window.location.reload();
+					return;
 				}
 				return fs.write('/etc/mosdns/config_custom.yaml', editorContent.trim().replace(/\r\n/g, '\n') + '\n')
 					.then(function (i) {

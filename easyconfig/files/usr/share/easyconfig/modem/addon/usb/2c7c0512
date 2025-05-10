@@ -79,8 +79,9 @@ if [ "x$MODE_NUM" = "x7" ]; then
 		addon 36 "RSRP" "$T dBm"
 		T=$(echo "$O" | awk -F[,:] '/^\+QENG:/ {print $16}')
 		addon 37 "RSRQ" "$T dB"
-		T=$(echo "$O" | awk -F[,:] '/^\+QENG:/ {printf "%.1f\n", $18/5-20}' | xargs)
-		addon 38 "SINR" "$T dB"
+#		T=$(echo "$O" | awk -F[,:] '/^\+QENG:/ {printf "%.1f\n", $18/5-20}' | xargs)
+		T=$(echo "$O" | awk -F[,:] '/^\+QENG:/ {print $18}' | xargs)
+		addon 38 "SINR" "$T"
 	else
 		B=$(echo $T | sed 's/"LTE BAND \(.*\)"/\1/')
 		T=$(band4g ${B})
@@ -109,8 +110,9 @@ if [ "x$MODE_NUM" = "x7" ]; then
 		addon 36 "RSRP" "$T dBm"
 		T=$(echo "$O" | awk -F[,:] '/^\+QCAINFO: "(pcc|PCC)"/{print $9}')
 		addon 37 "RSRQ" "$T dB"
-		T=$(echo "$O" | awk -F[,:] '/^\+QCAINFO: "(pcc|PCC)"/{printf "%.1f\n", $11/5-20}' | xargs)
-		addon 38 "SINR" "$T dB"
+#		T=$(echo "$O" | awk -F[,:] '/^\+QCAINFO: "(pcc|PCC)"/{printf "%.1f\n", $11/5-20}' | xargs)
+		T=$(echo "$O" | awk -F[,:] '/^\+QCAINFO: "(pcc|PCC)"/{print $11}' | xargs)
+		addon 38 "SINR" "$T"
 
 IFS="
 "
@@ -146,8 +148,9 @@ IFS="
 			addon $((POS + 6)) "(S${IDX}) RSRP" "$T dBm"
 			T=$(echo "$LINE" | awk -F[,:] '/^\+QCAINFO: "(scc|SCC)"/{print $9}')
 			addon $((POS + 7)) "(S${IDX}) RSRQ" "$T dB"
-			T=$(echo "$LINE" | awk -F[,:] '/^\+QCAINFO: "(scc|SCC)"/{printf "%.1f\n", $11/5-20}' | xargs)
-			addon $((POS + 8)) "(S${IDX}) SINR" "$T dB"
+#			T=$(echo "$LINE" | awk -F[,:] '/^\+QCAINFO: "(scc|SCC)"/{printf "%.1f\n", $11/5-20}' | xargs)
+			T=$(echo "$LINE" | awk -F[,:] '/^\+QCAINFO: "(scc|SCC)"/{print $11}' | xargs)
+			addon $((POS + 8)) "(S${IDX}) SINR" "$T"
 
 			IDX=$((IDX + 1))
 		done

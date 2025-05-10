@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# (c) 2016-2024 Cezary Jackiewicz <cezary@eko.one.pl>
+# (c) 2016-2025 Cezary Jackiewicz <cezary@eko.one.pl>
 #
 
 . /usr/share/libubox/jshn.sh
@@ -61,13 +61,13 @@ wlancurrentchannels() {
 	echo '"wlan_current_channels":['
 	T=$(ubus call network.interface.lan status | jsonfilter -e @.l3_device)
 	if [ -e /sys/class/net/$T/bridge ]; then
-		for I in /sys/class/net/$T/lower_*; do
+		for I in $(find /sys/class/net/$T/ -type l -name lower_*); do
 			if [ -e $I/phy80211 ]; then
 				iw dev ${I##*lower_} info 2>/dev/null | \
-					awk -v PHY=$(cat $I/phy80211/name) '/channel/{
-					if($9 >= 5955){printf "{\"phy\":\"%s\",\"channel\":%d,\"min\":%d,\"max\":%d, \"freq\":%d},\n", PHY, $2, ($9-$6/2-5955)/5+1, ($9+$6/2-5955)/5+1, $9}else
-					if($9 >= 5160){printf "{\"phy\":\"%s\",\"channel\":%d,\"min\":%d,\"max\":%d, \"freq\":%d},\n", PHY, $2, ($9-$6/2-5160)/5+32, ($9+$6/2-5160)/5+32, $9}else
-					{printf "{\"phy\":\"%s\",\"channel\":%d,\"min\":%d,\"max\":%d, \"freq\":%d},\n", PHY, $2, ($9-$6/2-2412)/5+1, ($9+$6/2-2412)/5+1, $9}
+					awk -v PHY=$(cat $I/phy80211/name) -v INTERFACE=${I##*lower_} '/channel/{
+					if($9 >= 5955){printf "{\"phy\":\"%s\",\"interface\":\"%s\",\"channel\":%d,\"min\":%d,\"max\":%d, \"freq\":%d},\n", PHY, INTERFACE, $2, ($9-$6/2-5955)/5+1, ($9+$6/2-5955)/5+1, $9}else
+					if($9 >= 5160){printf "{\"phy\":\"%s\",\"interface\":\"%s\",\"channel\":%d,\"min\":%d,\"max\":%d, \"freq\":%d},\n", PHY, INTERFACE, $2, ($9-$6/2-5160)/5+32, ($9+$6/2-5160)/5+32, $9}else
+					{printf "{\"phy\":\"%s\",\"interface\":\"%s\",\"channel\":%d,\"min\":%d,\"max\":%d, \"freq\":%d},\n", PHY, INTERFACE, $2, ($9-$6/2-2412)/5+1, ($9+$6/2-2412)/5+1, $9}
 					}'
 			fi
 		done
@@ -75,71 +75,8 @@ wlancurrentchannels() {
 	echo '],'
 }
 
-show_status() {
-SYSTEM_UPTIME=$(awk '{printf "%d\n", $1}' /proc/uptime)
-if $TIMEISVALID; then
-	SYSTEM_UPTIME_SINCE=$(date "+%Y%m%d%H%M" -d "@$(($(date +%s) - SYSTEM_UPTIME))")
-	SYSTEM_TIME=$(date "+%Y%m%d%H%M")
-fi
-
-SYSTEM_LOAD=$(awk '{printf "%s %s %s\n", $1, $2, $3}' /proc/loadavg)
-
-json_load "$(ubus call network.interface.wan status)"
-json_get_var WAN_UPTIME uptime
-json_get_var IFNAME l3_device
-
-. /lib/functions/network.sh
-if [ -n "$(ubus list network.interface.wan_4 2>/dev/null)" ]; then
-	network_get_ipaddr WAN_IPADDR wan_4
-else
-	network_get_ipaddr WAN_IPADDR wan
-fi
-
-if [ -n "$WAN_UPTIME" ]; then
-	if $TIMEISVALID; then
-		WAN_UPTIME_SINCE=$(date "+%Y%m%d%H%M" -d "@$(($(date +%s) - WAN_UPTIME))")
-	fi
-fi
-
-F=/tmp/easyconfig_wan_up
-if [ -e $F ]; then
-	WAN_UP_CNT=$(wc -l < $F)
-	for i in $(tail -n 10 $F); do
-		SINCE=$((SYSTEM_UPTIME - i))
-		WAN_UP_SINCE="$WAN_UP_SINCE{\"up\":$SINCE,"
-		if $TIMEISVALID; then
-			WAN_UP_SINCE="${WAN_UP_SINCE}\"since\":\""$(date "+%Y%m%d%H%M%S" -d "@$(($(date +%s) - SINCE))")"\"},"
-		else
-			WAN_UP_SINCE="${WAN_UP_SINCE}\"since\":\"\"},"
-		fi
-	done
-fi
-
-if [ -n "$IFNAME" ]; then
-	WAN_RX=$(cat /sys/class/net/$IFNAME/statistics/rx_bytes)
-	WAN_TX=$(cat /sys/class/net/$IFNAME/statistics/tx_bytes)
-fi
-
-WLAN_CLIENTS=0
-LAN_CLIENTS=0
-TPORTS1=""
-BRIDGE=$(ubus call network.interface.lan status | jsonfilter -e @.l3_device)
-if [ -e /sys/class/net/$BRIDGE/bridge ]; then
-	T=$(brctl showmacs $BRIDGE 2>/dev/null)
-	for I in /sys/class/net/$BRIDGE/lower_*; do
-		IFNAME=${I##*lower_}
-		if [ -e $I/phy80211 ]; then
-			CNT=$(iw dev $IFNAME station dump | grep -c Station)
-			WLAN_CLIENTS=$((WLAN_CLIENTS+CNT))
-		else
-			PORTID=$(printf "%d" $(cat /sys/class/net/$BRIDGE/brif/$IFNAME/port_no))
-			CNT=$(echo "$T" | awk '/^\s*'$PORTID'\s.*no/{print $2}' | wc -l)
-			TPORTS1="${TPORTS1} ${IFNAME};${CNT}"
-			LAN_CLIENTS=$((LAN_CLIENTS+CNT))
-		fi
-	done
-fi
-
+show_ports() {
+TPORTS1=$1
 PORTS=""
 PORTS_SWCONFIG=""
 for IFNAME in $TPORTS1; do
@@ -175,6 +112,95 @@ for IFNAME in $TPORTS1; do
 		PORTS_SWCONFIG="${PORTS_SWCONFIG}{\"port\":\"$IFNAME\",\"id\":${INDEX:-$T},\"role\":\"$ROLE\",\"speed\":$SPEED},"
 	done
 done
+echo '"ports":['$PORTS'],'
+echo '"ports_swconfig":['$PORTS_SWCONFIG'],'
+echo '"ports_mapping":['
+case "$(cat /tmp/sysinfo/board_name)" in
+	"teltonika,rut955"*)
+		echo '{"eth1":"WAN"}'
+		;;
+esac
+echo '],'
+}
+
+show_status() {
+SYSTEM_UPTIME=$(awk '{printf "%d\n", $1}' /proc/uptime)
+if $TIMEISVALID; then
+	SYSTEM_UPTIME_SINCE=$(date "+%Y%m%d%H%M" -d "@$(($(date +%s) - SYSTEM_UPTIME))")
+	SYSTEM_TIME=$(date "+%Y%m%d%H%M")
+fi
+
+SYSTEM_LOAD=$(awk '{printf "%s %s %s\n", $1, $2, $3}' /proc/loadavg)
+
+json_load "$(ubus call network.interface.wan status)"
+json_get_var WAN_UPTIME uptime
+json_get_var IFNAME l3_device
+
+. /lib/functions/network.sh
+if [ -n "$(ubus list network.interface.wan_4 2>/dev/null)" ]; then
+	network_get_ipaddr WAN_IPADDR wan_4
+	network_get_subnet WAN_NETMASK wan_4
+	network_get_gateway WAN_GATEWAY wan_4
+	network_get_dnsserver WAN_DNS wan_4
+	[ -z "$WAN_DNS" ] && network_get_dnsserver WAN_DNS wan
+else
+	network_get_ipaddr WAN_IPADDR wan
+	network_get_subnet WAN_NETMASK wan
+	network_get_gateway WAN_GATEWAY wan
+	network_get_dnsserver WAN_DNS wan
+fi
+
+WAN_NETMASK=${WAN_NETMASK##*/}
+if [ -n "$WAN_NETMASK" ]; then
+	WAN_NETMASK=$(ipcalc.sh ${WAN_IPADDR}/${WAN_NETMASK} | awk -F= '/NETMASK/{print $2}')
+fi
+
+[ -n "$WAN_DNS" ] && WAN_DNS='"'$(echo $WAN_DNS | sed 's/ /","/g')'"'
+
+if [ -n "$WAN_UPTIME" ]; then
+	if $TIMEISVALID; then
+		WAN_UPTIME_SINCE=$(date "+%Y%m%d%H%M" -d "@$(($(date +%s) - WAN_UPTIME))")
+	fi
+fi
+
+F=/tmp/easyconfig_wan_up
+if [ -e $F ]; then
+	WAN_UP_CNT=$(wc -l < $F)
+	for i in $(tail -n 10 $F); do
+		SINCE=$((SYSTEM_UPTIME - i))
+		WAN_UP_SINCE="$WAN_UP_SINCE{\"up\":$SINCE,"
+		if $TIMEISVALID; then
+			WAN_UP_SINCE="${WAN_UP_SINCE}\"since\":\""$(date "+%Y%m%d%H%M%S" -d "@$(($(date +%s) - SINCE))")"\"},"
+		else
+			WAN_UP_SINCE="${WAN_UP_SINCE}\"since\":\"\"},"
+		fi
+	done
+fi
+
+if [ -n "$IFNAME" ]; then
+	WAN_RX=$(cat /sys/class/net/$IFNAME/statistics/rx_bytes)
+	WAN_TX=$(cat /sys/class/net/$IFNAME/statistics/tx_bytes)
+fi
+
+WLAN_CLIENTS=0
+LAN_CLIENTS=0
+TPORTS1=""
+BRIDGE=$(ubus call network.interface.lan status | jsonfilter -e @.l3_device)
+if [ -e /sys/class/net/$BRIDGE/bridge ]; then
+	T=$(brctl showmacs $BRIDGE 2>/dev/null)
+	for I in $(find /sys/class/net/$BRIDGE/ -type l -name lower_*); do
+		IFNAME=${I##*lower_}
+		if [ -e $I/phy80211 ]; then
+			CNT=$(iw dev $IFNAME station dump 2>/dev/null | grep -c Station)
+			WLAN_CLIENTS=$((WLAN_CLIENTS+CNT))
+		else
+			PORTID=$(printf "%d" $(cat /sys/class/net/$BRIDGE/brif/$IFNAME/port_no))
+			CNT=$(echo "$T" | awk '/^\s*'$PORTID'\s.*no/{print $2}' | sort -u | wc -l)
+			TPORTS1="${TPORTS1} ${IFNAME};${CNT}"
+			LAN_CLIENTS=$((LAN_CLIENTS+CNT))
+		fi
+	done
+fi
 
 show_vpn_up | jsonfilter -q -e '@.result[*].up' | grep -q "true" && VPN_UP="true"
 
@@ -185,8 +211,9 @@ echo '"system_load":"'$SYSTEM_LOAD'",'
 echo '"system_time":"'$SYSTEM_TIME'",'
 echo '"wlan_clients":'$WLAN_CLIENTS','
 echo '"lan_clients":'$LAN_CLIENTS','
-echo '"ports":['$PORTS'],'
-echo '"ports_swconfig":['$PORTS_SWCONFIG'],'
+
+show_ports "$TPORTS1"
+
 echo '"wan_rx":"'$WAN_RX'",'
 echo '"wan_tx":"'$WAN_TX'",'
 echo '"wan_uptime_since":"'$WAN_UPTIME_SINCE'",'
@@ -194,6 +221,9 @@ echo '"wan_uptime":"'$WAN_UPTIME'",'
 echo '"wan_up_cnt":"'$WAN_UP_CNT'",'
 echo '"wan_up_since":['$WAN_UP_SINCE'],'
 echo '"wan_ipaddr":"'$WAN_IPADDR'",'
+echo '"wan_netmask":"'$WAN_NETMASK'",'
+echo '"wan_gateway":"'$WAN_GATEWAY'",'
+echo '"wan_dns":['$WAN_DNS'],'
 echo '"vpn_up":'${VPN_UP:-false}','
 
 wlancurrentchannels
@@ -202,6 +232,7 @@ BOARDNAME=$(cat /tmp/sysinfo/board_name)
 echo '"sensors":['
 case "$BOARDNAME" in
 	"cellc,rtl30vw"|\
+	"mikrotik,chateau-lte12"|\
 	"zte,mf286d")
 		awk '{printf "{\"Temperatura Wi-Fi 2.4 GHz\":\"%d &deg;C\"},", $1/1000}'  /sys/class/hwmon/hwmon0/temp1_input 2>/dev/null
 		awk '{printf "{\"Temperatura Wi-Fi 5 GHz\":\"%d &deg;C\"},", $1/1000}'  /sys/class/hwmon/hwmon1/temp1_input 2>/dev/null
@@ -277,12 +308,19 @@ case "$BOARDNAME" in
 		;;
 	*)
 		T=0
-		FILES=$(grep -s -l "ath10k_hwmon\|ath11k_hwmon" /sys/class/hwmon/hwmon*/name)
+		FILES=$(grep -s -l "ath10k_hwmon\|ath11k_hwmon\|mt7.*_phy" /sys/class/hwmon/hwmon*/name)
 		for FILE in $FILES; do
 			T1=$(awk '{printf "%d\n", $0/1000}' $(dirname $FILE)/temp1_input 2>/dev/null)
 			[ -n "$T1" ] && [ $T1 -gt $T ] && T=$T1
 		done
 		[ $T -gt 0 ] && printf '{"Temperatura Wi-Fi":"%d &deg;C"},' $T
+		T=0
+		FILES=$(grep -s -l "k10temp\|coretemp\|armada_thermal\|cpu_thermal\|f10e4078.thermal" /sys/class/hwmon/hwmon*/name)
+		for FILE in $FILES; do
+			T1=$(awk '{printf "%d\n", $0/1000}' $(dirname $FILE)/temp1_input 2>/dev/null)
+			[ -n "$T1" ] && [ $T1 -gt $T ] && T=$T1
+		done
+		[ $T -gt 0 ] && printf '{"Temperatura CPU":"%d &deg;C"},' $T
 		;;
 esac
 echo ']'
@@ -292,14 +330,6 @@ if [ -e /etc/config/mwan3 ]; then
 fi
 
 simslot
-
-echo ',"ports_mapping":['
-case "$BOARDNAME" in
-	"teltonika,rut955"*)
-		echo '{"eth1":"WAN"}'
-		;;
-esac
-echo ']'
 
 echo '}'
 }
@@ -378,7 +408,7 @@ if [ "x$WAN_PROTO" = "xdhcp" ]; then
 	network_get_subnet WAN_NETMASK wan
 	WAN_NETMASK=${WAN_NETMASK##*/}
 	if [ -n "$WAN_NETMASK" ]; then
-		WAN_NETMASK=$(ipcalc.sh $WAN_IPADDR $WAN_NETMASK | awk -F= '/NETMASK/{print $2}')
+		WAN_NETMASK=$(ipcalc.sh ${WAN_IPADDR}/${WAN_NETMASK} | awk -F= '/NETMASK/{print $2}')
 	fi
 fi
 
@@ -468,6 +498,10 @@ fi
 
 REVISION=$(awk -F\' '/DISTRIB_REVISION/{print $2}' /etc/openwrt_release)
 
+WAN_USERNAME=$(uci -q get network.wan.username)
+WAN_PASSWORD=$(uci -q get network.wan.password)
+WAN_KEEPALIVE=$(uci -q get network.wan.keepalive)
+
 echo '{'
 echo '"revision":"'$REVISION'",'
 echo '"devicesection":'$DEVICESECTION','
@@ -486,6 +520,9 @@ echo '"wan_ifname_default":"'$WAN_IFNAME_DEFAULT'",'
 echo '"wan_ifname_hilink":"'$WAN_IFNAME_HILINK'",'
 echo '"wan_dashboard_url":"'$WAN_DASHBOARD_URL'",'
 echo '"wan_modem_mode":"'$WAN_MODEM_MODE'",'
+echo '"wan_username":"'$(escapeJSON "$WAN_USERNAME")'",'
+echo '"wan_password":"'$(escapeJSON "$WAN_PASSWORD")'",'
+echo '"wan_keepalive":"'$(escapeJSON "$WAN_KEEPALIVE")'",'
 echo '"wan_waninlan":'$WAN_WANINLAN','
 
 echo '"wan_protos":["none"'
@@ -495,6 +532,7 @@ if [ -n "$T" ]; then
 else
 	if [ -n "$WAN_IFNAME_DEFAULT" ]; then
 		echo ',"dhcp","static"'
+		[ -f /usr/lib/pppd/*/pppoe.so ] && echo ',"pppoe"'
 	fi
 	tty=$(ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null)
 	if [ -n "$tty" ]; then
@@ -650,48 +688,53 @@ echo '"wan_lanto":"'$T'",'
 T=$(uci -q get easyconfig.global.datarec_period)
 echo '"datarec_period":'${T:-15}','
 
+BUTTON_RESET="-1"
 BUTTON_NAME=""
 BUTTON=""
 ACTION="none"
 
-if [ -e /sys/firmware/devicetree/base/keys/rfkill ]; then
-	BUTTON_NAME="WiFi"
-	BUTTON="rfkill"
-elif [ -e /sys/firmware/devicetree/base/keys/wps ]; then
-	BUTTON_NAME="WPS"
-	BUTTON="wps"
-fi
+LINES=$(find /sys/firmware/devicetree/base/ -name linux,code 2>/dev/null)
+for LINE in $LINES; do
+	CODE=$(hexdump -v -e '1/1 "%02x"' $LINE)
+	case "$CODE" in
+		"00000198")
+			# key_restart
+			if [ -e /etc/rc.button/reset ]; then
+				[ -e /usr/share/easyconfig/rc.button/reset ] || cp /etc/rc.button/reset /usr/share/easyconfig/rc.button/reset
+				BUTTON_RESET="1"
+			else
+				BUTTON_RESET="0"
+			fi
+			;;
+		"00000211")
+			# key_wps_button
+			BUTTON_NAME=$(cat "$(dirname $LINE)"/label | tr 'a-z' 'A-Z')
+			BUTTON="wps"
+			;;
+		"000000ee")
+			# key_wlan
+			BUTTON_NAME=$(cat "$(dirname $LINE)"/label | tr 'a-z' 'A-Z')
+			BUTTON="wlan"
+			;;
+		"000000f7")
+			# key_rfkill
+			BUTTON_NAME=$(cat "$(dirname $LINE)"/label | tr 'a-z' 'A-Z')
+			BUTTON="rfkill"
+			;;
+	esac
+done
 
 if [ -n "$BUTTON" ]; then
 	[ -e /usr/share/easyconfig/rc.button/rfkill ] || cp /etc/rc.button/rfkill /usr/share/easyconfig/rc.button/rfkill
-	if grep -q leds /etc/rc.button/$BUTTON; then
-		ACTION="leds"
-	fi
-	if grep -q rfkill /etc/rc.button/$BUTTON; then
-		ACTION="rfkill"
-	fi
-	if grep -q "easyconfig.vpn" /etc/rc.button/$BUTTON; then
-		ACTION="vpn"
-	fi
-	if grep -q "forwarding" /etc/rc.button/$BUTTON; then
-		ACTION="killswitch"
-	fi
-	if grep -q "wol" /etc/rc.button/$BUTTON; then
-		ACTION="wol"
-	fi
+	grep -q "^# killswich" /etc/rc.button/$BUTTON 2>/dev/null && ACTION="killswitch"
+	grep -q "^# leds" /etc/rc.button/$BUTTON 2>/dev/null && ACTION="leds"
+	grep -q rfkill /etc/rc.button/$BUTTON 2>/dev/null && ACTION="rfkill"
+	grep -q "^# vpn" /etc/rc.button/$BUTTON 2>/dev/null && ACTION="vpn"
+	grep -q "^# wifitoggle" /etc/rc.button/$BUTTON 2>/dev/null && ACTION="wifitoggle"
+	grep -q "^# wol" /etc/rc.button/$BUTTON 2>/dev/null && ACTION="wol"
 fi
 echo '"button":{"name":"'$BUTTON_NAME'","code":"'$BUTTON'","action":"'$ACTION'"},'
-
-if [ -e /sys/firmware/devicetree/base/keys/reset ]; then
-	if [ -e /etc/rc.button/reset ]; then
-		[ -e /usr/share/easyconfig/rc.button/reset ] || cp /etc/rc.button/reset /usr/share/easyconfig/rc.button/reset
-		echo '"button_reset":1,'
-	else
-		echo '"button_reset":0,'
-	fi
-else
-	echo '"button_reset":-1,'
-fi
+echo '"button_reset":'$BUTTON_RESET','
 
 echo '"services":{'
 
@@ -723,7 +766,10 @@ VPN=""
 [ -e /lib/netifd/proto/sstp.sh ] && VPN=${VPN}'"sstp",'
 [ -e /lib/netifd/proto/wireguard.sh ] && VPN=${VPN}'"wireguard",'
 [ -e /etc/init.d/openvpn ] && VPN=${VPN}'"openvpn",'
-[ -e /etc/init.d/zerotier ] && VPN=${VPN}'"zerotier",'
+if [ -e /etc/init.d/zerotier ]; then
+	T=$(uci -q get zerotier.global)
+	[ "x$T" = "xzerotier" ] && VPN=${VPN}'"zerotier",'
+fi
 echo '"vpn":['$VPN'],'
 
 if [ -e /etc/init.d/adblock ]; then
@@ -781,6 +827,26 @@ if [ -e /usr/bin/etherwake ]; then
 	echo '"wol":true,'
 else
 	echo '"wol":false,'
+fi
+
+FLOWOFFLOADING="false"
+T=$(uci show firewall | awk -F[.=] '/=defaults$/{print $2}')
+if [ -n "$T" ]; then
+	T1=$(uci -q get firewall.@defaults[0].flow_offloading)
+	[ "x$T1" = "x1" ] && FLOWOFFLOADING="true"
+fi
+echo '"flowoffloading":'$FLOWOFFLOADING','
+
+if [ -e /www/cgi-bin/luci ]; then
+	echo '"luci":true,'
+else
+	echo '"luci":false,'
+fi
+
+if [ -e /usr/bin/pingraw ]; then
+	echo '"pingraw":true,'
+else
+	echo '"pingraw":false,'
 fi
 
 echo '},'
@@ -847,67 +913,69 @@ client_data() {
 }
 
 show_clients() {
-WLAN_MAC=""
-RADIOS=$(uci -q show wireless | awk -F. '/type=/{print $2}')
-for R in $RADIOS; do
-	T=$(ubus call network.wireless status '{"device":"'$R'"}')
-	IFNAME=$(echo "$T" | jsonfilter -q -e '@.*.interfaces[@.config.network[*]="lan"].ifname')
-	if [ -n "$IFNAME" ]; then
-		T1=""
-		T2=""
-		eval $(echo "$T" | jsonfilter -q -e 'T1=@.*.config.hwmode' -e 'T2=@.*.config.band')
-		BAND=2
-		[ "x$T1" = "x11a" ] || [ "x$T2" = "x5g" ] && BAND=5
-		[ "x$T2" = "x6g" ] && BAND=6
-		PHY=$(iwinfo nl80211 phyname $R)
-		for i in $IFNAME; do
-			WLAN_MAC="$WLAN_MAC "$(iw dev $i station dump | awk -v band=$BAND -v phy=$PHY '{if($1 == "Station") {MAC=$2;station[MAC]=1} if($0 ~ /rx bytes:/) {rx[MAC]=$3} if($0 ~ /tx bytes:/) {tx[MAC]=$3} if($0 ~ /^\s*signal:/) {signal[MAC]=$2} if($0 ~ /connected time:/) {connected[MAC]=$3}} END {for (w in station) {printf "\"mac\":\"%s\",\"tx\":%s,\"rx\":%s,\"signal\":%d,\"connected\":%d,\"band\":%d,\"phy\":\"%s\",\"active\":true,\"type\":2 ", w, tx[w], rx[w], signal[w], connected[w], band, phy}}')
+NETWORKS=$(uci show network | awk -F. '/\.proto='\''static'\''/{print $2}')
+WIRELESSSTATUS=$(ubus call network.wireless status || echo '{}')
+TPORTS1=""
+echo '{"result":['
+for SEC in $NETWORKS; do
+	[ "$SEC" = "loopback" ] && continue
+	[ "$SEC" = "wan" ] && continue
+	[ "$SEC" = "wan6" ] && continue
+	if [ "$SEC" = "lan" ]; then
+		NETWORK="Sieć lokalna"
+	else
+		NETWORK=$(uci -q get network.$SEC.description)
+		[ -z "$NETWORK" ] && NETWORK=$SEC
+		NETWORK=$(escapeJSON "$NETWORK")
+	fi
+	BRIDGE=$(ubus call network.interface.$SEC status | jsonfilter -e @.l3_device)
+	if [ -e /sys/class/net/$BRIDGE/bridge ]; then
+		BRIDGEMACS=$(brctl showmacs $BRIDGE 2>/dev/null)
+		for I in $(find /sys/class/net/$BRIDGE/ -type l -name lower_*); do
+			IFNAME=${I##*lower_}
+			if [ -e $I/phy80211 ]; then
+				TSECTION=""
+				TBAND=""
+				eval $(echo "$WIRELESSSTATUS" | jsonfilter -q -e 'TSECTION=@.*.interfaces[@.config.network[*]="'$SEC'" && @.ifname="'$IFNAME'"].section' -e 'TBAND=@[@.interfaces[*].config.network[*]="'$SEC'" && @.interfaces[*].ifname="'$IFNAME'"].config.band')
+				PHY=$(iwinfo nl80211 phyname $(uci -q get wireless.${TSECTION}.device))
+				BAND=2
+				[ "x$TBAND" = "x5g" ] && BAND=5
+				[ "x$TBAND" = "x6g" ] && BAND=6
+				for M in $(iw dev $IFNAME station dump 2>/dev/null | awk '{if($1 == "Station") {MAC=$2;station[MAC]=1} if($0 ~ /rx bytes:/) {rx[MAC]=$3} if($0 ~ /tx bytes:/) {tx[MAC]=$3} if($0 ~ /^\s*signal:/) {signal[MAC]=$2} if($0 ~ /connected time:/) {connected[MAC]=$3}} END {for (w in station) {printf "\"mac\":\"%s\",\"tx\":%s,\"rx\":%s,\"signal\":%d,\"connected\":%d ", w, rx[w], tx[w], signal[w], connected[w]}}'); do
+					T=${M%\",\"tx*}
+					MAC=${T##*\"}
+					T=${M%,\"ba*}
+					CONNECTED=${T##*:}
+					if $TIMEISVALID; then
+						CONNECTED_SINCE=',"connected_since":"'$(date "+%Y%m%d%H%M" -d "@$(($(date +%s) - CONNECTED))")'"'
+					else
+						CONNECTED_SINCE=',"connected_since":""'
+					fi
+					CAPA=""
+					grep -qi "^ht supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/ht_capa 2>/dev/null && CAPA=',"capa":4'
+					grep -qi "^vht supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/vht_capa 2>/dev/null && CAPA=',"capa":5'
+					grep -qi "^he supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/he_capa 2>/dev/null && CAPA=',"capa":6'
+					grep -qi "^eht supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/eht_capa 2>/dev/null && CAPA=',"capa":7'
+
+					IP=$(awk '/'${MAC}'/{printf ",\"ip\":\"%s\",\"dhcpname\":\"%s\"", $3, $4}' /tmp/dhcp.leases)
+					[ -z "$IP" ] && IP=$(awk '/0x[26]\s*'${MAC}'/{printf ",\"ip\":\"%s\",\"dhcpname\":\"\"", $1; exit}' /proc/net/arp)
+					[ -z "$IP" ] && IP=',"ip":"","dhcpname":""'
+
+					echo "{${M},\"active\":true,\"type\":2,\"band\":${BAND},\"phy\":\"${PHY}\"${CONNECTED_SINCE}${CAPA},\"section\":\"${SEC}\",\"network\":\"${NETWORK}\"$(client_data $MAC)${IP}},"
+				done
+			else
+				TPORTS1="${TPORTS1} ${IFNAME};0"
+				PORTID=$(printf "%d" $(cat /sys/class/net/$BRIDGE/brif/$IFNAME/port_no))
+				for M in $(echo "$BRIDGEMACS" | awk '/^\s*'$PORTID'\s.*no/{print $2}' | sort -u); do
+					IP=$(awk '/'${M}'/{printf ",\"ip\":\"%s\",\"dhcpname\":\"%s\"", $3, $4}' /tmp/dhcp.leases)
+					[ -z "$IP" ] && IP=$(awk '/0x[26]\s*'${M}'/{printf ",\"ip\":\"%s\",\"dhcpname\":\"\"", $1; exit}' /proc/net/arp)
+					[ -z "$IP" ] && IP=',"ip":"","dhcpname":""'
+					echo "{\"mac\":\"$M\",\"active\":true,\"type\":1,\"port\":\"${IFNAME}\",\"section\":\"${SEC}\",\"network\":\"${NETWORK}\"$(client_data $M)${IP}},"
+				done
+			fi
 		done
 	fi
 done
-
-echo '{"result":['
-for M in $WLAN_MAC; do
-	T=${M%\",\"tx*}
-	MAC=${T##*\"}
-
-	IP=$(awk '/'$MAC'/{printf ",\"ip\":\"%s\",\"dhcpname\":\"%s\"", $3, $4}' /tmp/dhcp.leases)
-	[ -z "$IP" ] && IP=$(awk '/0x[26]\s*'$MAC'/{printf ",\"ip\":\"%s\",\"dhcpname\":\"\"", $1; exit}' /proc/net/arp)
-	[ -z "$IP" ] && IP=',"ip":"","dhcpname":""'
-
-	T=${M%,\"ba*}
-	CONNECTED=${T##*:}
-	if $TIMEISVALID; then
-		CONNECTED_SINCE=',"connected_since":"'$(date "+%Y%m%d%H%M" -d "@$(($(date +%s) - CONNECTED))")'"'
-	else
-		CONNECTED_SINCE=',"connected_since":""'
-	fi
-	CAPA=""
-	grep -qi "^ht supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/ht_capa 2>/dev/null && CAPA=',"capa":4'
-	grep -qi "^vht supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/vht_capa 2>/dev/null && CAPA=',"capa":5'
-	grep -qi "^he supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/he_capa 2>/dev/null && CAPA=',"capa":6'
-	grep -qi "^eht supported" /sys/kernel/debug/ieee80211/*/*/stations/${MAC}/eht_capa 2>/dev/null && CAPA=',"capa":7'
-
-	echo "{${M}${IP}${CONNECTED_SINCE}${CAPA}$(client_data $MAC)},"
-done
-
-BRIDGE=$(ubus call network.interface.lan status | jsonfilter -e @.l3_device)
-if [ -e /sys/class/net/$BRIDGE/bridge ]; then
-	for I in /sys/class/net/$BRIDGE/lower_*; do
-		if [ ! -e $I/phy80211 ]; then
-			IFNAME=${I##*lower_}
-			PORTID=$(printf "%d" $(cat /sys/class/net/$BRIDGE/brif/$IFNAME/port_no))
-			LAN_MACS=$(brctl showmacs $BRIDGE | awk '/^\s*'$PORTID'\s.*no/{print $2}')
-			for M in $LAN_MACS; do
-				IP=$(awk '/'$M'/{printf ",\"ip\":\"%s\",\"dhcpname\":\"%s\"", $3, $4}' /tmp/dhcp.leases)
-				[ -z "$IP" ] && IP=$(awk '/0x[26]\s*'$M'/{printf ",\"ip\":\"%s\",\"dhcpname\":\"\"", $1; exit}' /proc/net/arp)
-				[ -z "$IP" ] && IP=',"ip":"","dhcpname":""'
-
-				echo "{\"mac\":\"$M\"${IP},\"active\":true,\"port\":\"${IFNAME}\",\"type\":1$(client_data $M)},"
-			done
-		fi
-	done
-fi
 
 if [ -e "/tmp/easyconfig_statistics.json" ]; then
 	eval $(jsonfilter -i /tmp/easyconfig_statistics.json -e 'MACS=@')
@@ -917,12 +985,15 @@ if [ -e "/tmp/easyconfig_statistics.json" ]; then
 		LAST_SEEN=""
 		DHCPNAME=""
 		TYPE=""
-		eval $(jsonfilter -i /tmp/easyconfig_statistics.json -e 'FIRST_SEEN=@["'$M'"].first_seen' -e 'LAST_SEEN=@["'$M'"].last_seen' -e 'DHCPNAME=@["'$M'"].dhcpname' -e 'TYPE=@["'$M'"].type')
-		echo "{\"mac\":\"${M//_/:}\",\"active\":false,\"first_seen\":\"$FIRST_SEEN\",\"last_seen\":\"$LAST_SEEN\",\"dhcpname\":\"$DHCPNAME\",\"type\":${TYPE:-2}$(client_data ${M//_/:})},"
+		NETWORK=""
+		eval $(jsonfilter -i /tmp/easyconfig_statistics.json -e 'FIRST_SEEN=@["'$M'"].first_seen' -e 'LAST_SEEN=@["'$M'"].last_seen' -e 'DHCPNAME=@["'$M'"].dhcpname' -e 'TYPE=@["'$M'"].type' -e 'NETWORK=@["'$M'"].last_network')
+		echo "{\"mac\":\"${M//_/:}\",\"active\":false,\"type\":${TYPE:-2},\"first_seen\":\"$FIRST_SEEN\",\"last_seen\":\"$LAST_SEEN\",\"dhcpname\":\"$DHCPNAME\",\"section\":\"\",\"network\":\"$(escapeJSON "${NETWORK:-Sieć lokalna}")\"$(client_data ${M//_/:})},"
 	done
 fi
 
-echo ']}'
+echo '],'
+show_ports "$TPORTS1"
+echo '}'
 }
 
 show_clientslogs() {
@@ -995,7 +1066,7 @@ show_clientstatistics() {
 					json_select "$D"
 					json_get_vars total_tx total_rx
 					json_select ..
-					echo "{\"ifname\":\"$I\",\"date\":\"$D\",\"tx\":$total_tx,\"rx\":$total_rx},"
+					echo "{\"ifname\":\"$I\",\"date\":\"$D\",\"tx\":$total_rx,\"rx\":$total_tx},"
 				fi
 			done
 			json_select ..
@@ -1007,7 +1078,7 @@ show_clientstatistics() {
 show_clientbandwidth() {
 	read input;
 	json_load "$input"
-	json_get_vars mac
+	json_get_vars mac section
 
 	echo '{"result":['
 
@@ -1016,9 +1087,14 @@ show_clientbandwidth() {
 		exit 0
 	fi
 
-	IFNAMES=$(ubus call network.wireless status | jsonfilter -q -e '@.*.interfaces[@.config.network[*]="lan"].ifname')
+	if [ -z "$section" ]; then
+		echo ']}'
+		exit 0
+	fi
+
+	IFNAMES=$(ubus call network.wireless status | jsonfilter -q -e '@.*.interfaces[@.config.network[*]="'$section'"].ifname')
 	for i in $IFNAMES; do
-		iw dev $i station get $mac 2>/dev/null | awk -v ifname=$i -v search=$mac '{if($1 == "Station") {MAC=$2;station[MAC]=1} if($0 ~ /rx bytes:/) {rx[MAC]=$3} if($0 ~ /tx bytes:/) {tx[MAC]=$3}} END {for (w in station) {if(w == search){printf "{\"ifname\":\"%s\",\"tx_bytes\":%s,\"rx_bytes\":%s},", ifname, tx[w], rx[w]}}}'
+		iw dev $i station get $mac 2>/dev/null | awk -v ifname=$i -v search=$mac '{if($1 == "Station") {MAC=$2;station[MAC]=1} if($0 ~ /rx bytes:/) {rx[MAC]=$3} if($0 ~ /tx bytes:/) {tx[MAC]=$3}} END {for (w in station) {if(w == search){printf "{\"ifname\":\"%s\",\"tx_bytes\":%s,\"rx_bytes\":%s},", ifname, rx[w], tx[w]}}}'
 	done
 	echo ']}'
 }
@@ -1048,6 +1124,8 @@ show_modem()
 
 	if [ "x$(uci -q get network.wan.proto)" = "xqmi" ] && [ "x$(uci -q get easyconfig.modem.force_qmi)" = "x1" ]; then
 		FORCE_PLMN=$T /usr/share/easyconfig/modem/info_qmi.sh
+	elif [ "x$(uci -q get network.wan.proto)" = "xmodemmanager" ]; then
+		FORCE_PLMN=$T /usr/share/easyconfig/modem/info_modemmanager.sh
 	else
 		FORCE_PLMN=$T /usr/share/easyconfig/modem/info.sh
 	fi
@@ -1060,6 +1138,7 @@ show_modemsettings() {
 	MODEM_FORCE_QMI=$(uci -q get easyconfig.modem.force_qmi)
 	MODEM_FORCE_PLMN=$(uci -q get easyconfig.modem.force_plmn)
 	SMS_STORAGE=$(uci -q get easyconfig.sms.storage)
+	SMS_JOIN=$(uci -q get easyconfig.sms.join)
 	USSD_RAW_INPUT=$(uci -q get easyconfig.ussd.raw_input)
 	USSD_RAW_OUTPUT=$(uci -q get easyconfig.ussd.raw_output)
 	echo "{"
@@ -1067,6 +1146,7 @@ show_modemsettings() {
 	echo ',"modem_force_qmi":'${MODEM_FORCE_QMI:-0}
 	echo ',"modem_force_plmn":'${MODEM_FORCE_PLMN:-0}
 	echo ',"sms_storage":"'${SMS_STORAGE}'"'
+	echo ',"sms_join":'${SMS_JOIN:-1}
 	echo ',"ussd_raw_input":'${USSD_RAW_INPUT:-1}
 	echo ',"ussd_raw_output":'${USSD_RAW_OUTPUT:-1}
 	echo "}"
@@ -1075,19 +1155,33 @@ show_modemsettings() {
 ##############################################################################
 
 show_modeminfo() {
-	DEVICE=$(/usr/share/easyconfig/modem/detect.sh)
-	if [ -n "$DEVICE" ]; then
-		O=$(gcom -d $DEVICE -s /usr/share/easyconfig/modem/vendorproduct.gcom)
-		T=$(echo "$O" | awk '/CGMI:/{gsub(/.*CGMI[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
-		[ -n "$T" ] && VENDOR="$T"
-		T=$(echo "$O" | awk '/CGMM:/{gsub(/.*CGMM[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
-		[ -n "$T" ] && PRODUCT="$T"
-		T=$(echo "$O" | awk '/CGMR:/{gsub(/.*CGMR[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
-		[ -n "$T" ] && REVISION="$T"
-		T=$(echo "$O" | awk '/CGSN:/{gsub(/.*CGSN[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
-		[ -n "$T" ] && IMEI="$T"
-		T=$(echo "$O" | awk '/CCID:/{gsub(/.*CCID[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
-		[ -n "$T" ] && ICCID="$T"
+	if [ "x$(uci -q get network.wan.proto)" = 'xmodemmanager' ]; then
+		DEVICE=$(uci -q get network.wan.device);
+		if [ -n "$DEVICE" ]; then
+			IMEI=""
+			VENDOR=""
+			PRODUCT=""
+			REVISION=""
+			ICCID=""
+			SIM=""
+			eval $(mmcli -m "$DEVICE" -J | jsonfilter -q -e 'IMEI=@.modem.generic["equipment-identifier"]' -e 'VENDOR=@.modem.generic.manufacturer' -e 'PRODUCT=@.modem.generic.model' -e 'REVISION=@.modem.generic.revision' -e 'SIM=@.modem.generic.sim')
+			[ -n "$SIM" ] && eval $(mmcli -m "$DEVICE" -J --sim $SIM | jsonfilter -q -e 'ICCID=@.sim.properties.iccid')
+		fi
+	else
+		DEVICE=$(/usr/share/easyconfig/modem/detect.sh)
+		if [ -n "$DEVICE" ]; then
+			O=$(gcom -d $DEVICE -s /usr/share/easyconfig/modem/vendorproduct.gcom)
+			T=$(echo "$O" | awk '/CGMI:/{gsub(/.*CGMI[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
+			[ -n "$T" ] && VENDOR="$T"
+			T=$(echo "$O" | awk '/CGMM:/{gsub(/.*CGMM[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
+			[ -n "$T" ] && PRODUCT="$T"
+			T=$(echo "$O" | awk '/CGMR:/{gsub(/.*CGMR[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
+			[ -n "$T" ] && REVISION="$T"
+			T=$(echo "$O" | awk '/CGSN:/{gsub(/.*CGSN[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
+			[ -n "$T" ] && IMEI="$T"
+			T=$(echo "$O" | awk '/CCID:/{gsub(/.*CCID[ ]*:[ ]*/,"");gsub(/"/,"");print $0}')
+			[ -n "$T" ] && ICCID="$T"
+		fi
 	fi
 
 	echo '{'
@@ -1210,19 +1304,24 @@ show_sms() {
 
 	case "$action" in
 		"delete")
-			T=$(sms_tool -d $DEVICE delete "$arg1")
-			echo "{\"response\":\"$T\"}" | tr '\n' ' '
+			RES="Deleted message"
+			for idx in $arg1; do
+				T=$(sms_tool -d $DEVICE delete "$idx")
+				echo "$T" | grep -qi "error deleting message" && RES="error deleting message"
+			done
+			echo "{\"response\":\"$RES\"}"
 			;;
 		"send")
 			T=$(sms_tool -d $DEVICE send "$arg1" "$arg2")
 			echo "{\"response\":\"$T\"}" | tr '\n' ' '
 			;;
 		*)
+			JOIN=$(uci -q get easyconfig.sms.join)
 			STORAGE=""
 			T=$(uci -q get easyconfig.sms.storage)
 			[ -n "$T" ] && STORAGE="-s $T"
 			O=$(sms_tool -d $DEVICE $STORAGE -j -f "%Y%m%d%H%M%S" recv 2>/dev/null)
-			[ -n "$O" ] && echo "$O" || echo '{"msg":[]}'
+			[ -n "$O" ] && echo "$O" | sed 's/"msg"/"join":'${JOIN:-1}',"msg"/' || echo '{"join":1,"msg":[]}'
 			;;
 	esac
 }
@@ -1267,43 +1366,43 @@ END {for (T in LINE) {printf "{%s%s},\n", LINE[T], NXDOMAIN[T]}}
 ##############################################################################
 
 show_wifiscan() {
+	read input;
+	json_load "$input"
+	json_get_vars interface
+
 	echo '{"result":['
 
-	BRIDGE=$(ubus call network.interface.lan status | jsonfilter -e @.l3_device)
-	if [ -e /sys/class/net/$BRIDGE/bridge ]; then
-		for I in /sys/class/net/$BRIDGE/lower_*; do
-			if [ -e $I/phy80211 ]; then
-				iw dev ${I##*lower_} scan -u 2>/dev/null | awk 'function abs(value){return (value<0?-value:value)}{gsub("\\(on","");
-					if($0 ~ /^BSS.*/) {MAC = $2; wifi_enc[MAC] = ""; wifi_psk[MAC] = 0; wifi_psk2[MAC] = 0; wifi_chan[MAC] = "?"; wifi_mode1[MAC] = ""; wifi_mode2[MAC] = ""; wifi_bssload[MAC] = -1}
-					if($1 == "SSID:") {t="";for(i=2;i<=NF-1;++i){t=t$i" "};if(NF<2){t=""}else{t=t$NF}; gsub(/\\/,"\\\\", t); gsub(/"/, "\\\"", t); wifi_ssid[MAC]=t}
-					if($1 == "signal:") {wifi_sig[MAC] = $2}
-					if($1 == "freq:") {wifi_freq[MAC] = $2; if($2>=5160){wifi_mode1[MAC] = "a"}else{wifi_mode1[MAC] = "g"}}
-					if($0 ~ /primary channel:/) {wifi_chan[MAC] = $4}
-					if($0 ~ /secondary channel offset: no secondary/) {wifi_mode1[MAC] = "n"; wifi_mode2[MAC] = "HT20"}
-					if($0 ~ /secondary channel offset: above/) {wifi_mode1[MAC] = "n"; wifi_mode2[MAC] = "HT40+"}
-					if($0 ~ /secondary channel offset: below/) {wifi_mode1[MAC] = "n"; wifi_mode2[MAC] = "HT40-"}
-					if($0 ~ /STA channel width: 20 MHz/) {wifi_mode1[MAC] = "n"; wifi_mode2[MAC] = "HT20"}
-					if($0 ~ /VHT operation:/) {if(wifi_freq[MAC]>=5160){wifi_mode1[MAC] = "ac"}; wifi_mode2[MAC] = "VHT20"}
-					if($0 ~ /center freq segment 1:/) {wifi_vhtch1[MAC] = $6; if($6>0 && wifi_mode2[MAC] != "VHT80" && $6 != wifi_chan[MAC]){wifi_mode2[MAC] = "VHT40"}}
-					if($0 ~ /center freq segment 2:/) {wifi_vhtch2[MAC] = $6; if($6>0){if(abs(wifi_vhtch2[MAC] - wifi_vhtch1[MAC]) > 16){wifi_mode2[MAC] = "VHT80+80"}else{wifi_mode2[MAC] = "VHT160"}}}
-					if($0 ~ /channel width: 1 \(80 MHz\)/) {wifi_mode2[MAC] = "VHT80"}
-					if($0 ~ /HE capabilities:/) {wifi_mode1[MAC] = "ax"; gsub(/VHT|HT/, "HE", wifi_mode2[MAC])}
-					if($1 == "capability:") {t=$3; gsub(/\(/,"", t);gsub(/\)/,"", t); if(and(t,16)==16){wifi_enc[MAC] = "WEP"}}
-					if($0 ~ /WPA:.*Version: 1/) {wifi_psk[MAC] = 1}
-					if($0 ~ /RSN:.*Version: 1/) {wifi_psk2[MAC] = 1}
-					if($0 ~ /Authentication suites: PSK/) {if(wifi_psk[MAC] == 1){wifi_enc[MAC] = "WPA Personal"};if(wifi_psk2[MAC] == 1){wifi_enc[MAC] = "WPA2 Personal"};if(wifi_psk[MAC] == 1 && wifi_psk2[MAC] == 1){wifi_enc[MAC] = "WPA/WPA2 Personal"}}
-					if($0 ~ /Authentication suites: IEEE 802.1X/) {wifi_enc[MAC] = "WPA2 Enterprise"}
-					if($0 ~ /Authentication suites: SAE/) {wifi_enc[MAC] = "WPA3 Personal"}
-					if($0 ~ /Authentication suites: PSK SAE/) {wifi_enc[MAC] = "WPA3 Personal"}
-					if($0 ~ /Authentication suites: PSK PSK\/SHA-256 SAE/) {wifi_enc[MAC] = "WPA2/WPA3 Personal"}
-					if($0 ~ /TSF:/) {wifi_uptime[MAC] = $2/1000}
-					if($0 ~ /Unknown IE \(11\):/) {wifi_bssload[MAC] = int("0x"$4) + int("0x"$5)*256}
-					} END { for (w in wifi_enc) {
-							printf "{\"mac\":\"%s\",\"ssid\":\"%s\",\"freq\":\"%s\",\"signal\":\"%s\",\"channel\":\"%s\",\"encryption\":\"%s\",\"mode1\":\"%s\",\"mode2\":\"%s\",\"vhtch1\":\"%s\",\"vhtch2\":\"%s\",\"uptime\":\"%.0f\",\"bssload\":%d},\n", w, wifi_ssid[w], wifi_freq[w], wifi_sig[w], wifi_chan[w], wifi_enc[w], wifi_mode1[w], wifi_mode2[w], wifi_vhtch1[w], wifi_vhtch2[w], wifi_uptime[w]/1000, wifi_bssload[w]
-						}
-					}'
-			fi
-		done
+	if [ -n "$interface" ]; then
+		iw dev ${interface} scan -u 2>/dev/null | busybox awk 'function abs(value){return (value<0?-value:value)}{gsub("\\(on","");
+			if($0 ~ /^BSS.*/) {MAC = $2; wifi_enc[MAC] = ""; wifi_psk[MAC] = 0; wifi_psk2[MAC] = 0; wifi_chan[MAC] = "?"; wifi_mode1[MAC] = ""; wifi_mode2[MAC] = ""; wifi_bssload[MAC] = -1}
+			if($1 == "SSID:") {t="";for(i=2;i<=NF-1;++i){t=t$i" "};if(NF<2){t=""}else{t=t$NF}; gsub(/\\/,"\\\\", t); gsub(/"/, "\\\"", t); wifi_ssid[MAC]=t}
+			if($1 == "signal:") {wifi_sig[MAC] = $2}
+			if($1 == "freq:") {wifi_freq[MAC] = $2; if($2>=5160){wifi_mode1[MAC] = "a"}else{wifi_mode1[MAC] = "g"}}
+			if($0 ~ /primary channel:/) {wifi_chan[MAC] = $4}
+			if($0 ~ /secondary channel offset: no secondary/) {wifi_mode1[MAC] = "n"; wifi_mode2[MAC] = "HT20"}
+			if($0 ~ /secondary channel offset: above/) {wifi_mode1[MAC] = "n"; wifi_mode2[MAC] = "HT40+"}
+			if($0 ~ /secondary channel offset: below/) {wifi_mode1[MAC] = "n"; wifi_mode2[MAC] = "HT40-"}
+			if($0 ~ /STA channel width: 20 MHz/) {wifi_mode1[MAC] = "n"; wifi_mode2[MAC] = "HT20"}
+			if($0 ~ /VHT operation:/) {if(wifi_freq[MAC]>=5160){wifi_mode1[MAC] = "ac"}; wifi_mode2[MAC] = "VHT20"}
+			if($0 ~ /center freq segment 1:/) {wifi_vhtch1[MAC] = $6; if($6>0 && wifi_mode2[MAC] != "VHT80" && $6 != wifi_chan[MAC]){wifi_mode2[MAC] = "VHT40"}}
+			if($0 ~ /center freq segment 2:/) {wifi_vhtch2[MAC] = $6; if($6>0){if(abs(wifi_vhtch2[MAC] - wifi_vhtch1[MAC]) > 16){wifi_mode2[MAC] = "VHT80+80"}else{wifi_mode2[MAC] = "VHT160"}}}
+			if($0 ~ /channel width: 1 \(80 MHz\)/) {wifi_mode2[MAC] = "VHT80"}
+			if($0 ~ /HE capabilities:/) {wifi_mode1[MAC] = "ax"; gsub(/VHT|HT/, "HE", wifi_mode2[MAC])}
+			if($1 == "capability:") {t=$3; gsub(/\(/,"", t);gsub(/\)/,"", t); if(and(t,16)==16){wifi_enc[MAC] = "WEP"}}
+			if($0 ~ /WPA:.*Version: 1/) {wifi_psk[MAC] = 1}
+			if($0 ~ /RSN:.*Version: 1/) {wifi_psk2[MAC] = 1}
+			if($0 ~ /Authentication suites: PSK/) {if(wifi_psk[MAC] == 1){wifi_enc[MAC] = "WPA Personal"};if(wifi_psk2[MAC] == 1){wifi_enc[MAC] = "WPA2 Personal"};if(wifi_psk[MAC] == 1 && wifi_psk2[MAC] == 1){wifi_enc[MAC] = "WPA/WPA2 Personal"}}
+			if($0 ~ /Authentication suites: IEEE 802.1X/) {wifi_enc[MAC] = "WPA2 Enterprise"}
+			if($0 ~ /Authentication suites: SAE/) {wifi_enc[MAC] = "WPA3 Personal"}
+			if($0 ~ /Authentication suites: PSK SAE/) {wifi_enc[MAC] = "WPA3 Personal"}
+			if($0 ~ /Authentication suites: PSK PSK\/SHA-256 SAE/) {wifi_enc[MAC] = "WPA2/WPA3 Personal"}
+			if($0 ~ /TSF:/) {wifi_uptime[MAC] = $2/1000}
+			if($0 ~ /Unknown IE \(11\):/) {wifi_bssload[MAC] = int("0x"$4) + int("0x"$5)*256}
+			if($0 ~ /\* station count:/) {wifi_bssload[MAC] = $4}
+			} END { for (w in wifi_enc) {
+					printf "{\"mac\":\"%s\",\"ssid\":\"%s\",\"freq\":\"%s\",\"signal\":\"%s\",\"channel\":\"%s\",\"encryption\":\"%s\",\"mode1\":\"%s\",\"mode2\":\"%s\",\"vhtch1\":\"%s\",\"vhtch2\":\"%s\",\"uptime\":\"%.0f\",\"bssload\":%d},\n", w, wifi_ssid[w], wifi_freq[w], wifi_sig[w], wifi_chan[w], wifi_enc[w], wifi_mode1[w], wifi_mode2[w], wifi_vhtch1[w], wifi_vhtch2[w], wifi_uptime[w]/1000, wifi_bssload[w]
+				}
+			}'
 	fi
 	echo ']}'
 }
@@ -1572,7 +1671,16 @@ upgrade() {
 		T=$(grep -E "mifi.*$BOARD" $FSUMS | tail -n1)
 	else
 		BOARD=$(sed 's/,/_/g' /tmp/sysinfo/board_name)
-		T=$(grep -E "mifi.*$BOARD.*sysupgrade" $FSUMS | tail -n1)
+		if [ -e /sys/firmware/mikrotik/hard_config/booter_version ]; then
+			if grep -q "^7." /sys/firmware/mikrotik/hard_config/booter_version; then
+				BOOTER="-v7"
+			else
+				BOOTER=""
+			fi
+			T=$(grep -E "mifi.*$BOARD.*sysupgrade${BOOTER}\." $FSUMS | tail -n1)
+		else
+			T=$(grep -E "mifi.*$BOARD.*sysupgrade" $FSUMS | tail -n1)
+		fi
 	fi
 	rm $FSUMS >/dev/null 2>&1
 	if [ -z "$T" ]; then
@@ -1581,7 +1689,7 @@ upgrade() {
 	fi
 
 	CHECKSUM=$(echo "$T" | awk '{print $1}')
-	FILE=$(echo "$T" | awk '{print $2}')
+	FILE=$(echo "$T" | awk '{sub("*","",$2);print $2}')
 
 	OLD_BUILD=$(awk -F\' '/DISTRIB_REVISION/{print $2}' /etc/openwrt_release)
 	NEW_BUILD=$(echo $FILE | sed 's|.*-\(r[0-9]*-.*\)-'$BOARD'.*|\1|g')
@@ -1651,17 +1759,15 @@ show_vpn()
 
 	if [ -e /etc/config/zerotier ]; then
 		LN=$(zerotier-cli -j listnetworks)
-		ZTS=$(uci show zerotier | awk -F[.=] '/=zerotier/{print $2}')
+		ZTS=$(uci show zerotier | awk -F[.=] '/=network/{print $2}')
 		for ZT in $ZTS; do
 			NAME=$(uci -q get zerotier.$ZT.name)
 			UP="false"
 			PENDING="false"
-			JOINS=$(uci get zerotier.$ZT.join)
-			for JOIN in $JOINS; do
-				T=$(echo "$LN" | jsonfilter -q -e '@[@.id="'$JOIN'"].status')
-				[ "x$T" = "xOK" ] && UP="true"
-				[ "x$T" = "xREQUESTING_CONFIGURATION" ] && PENDING="true"
-			done
+			ID=$(uci get zerotier.$ZT.id)
+			T=$(echo "$LN" | jsonfilter -q -e '@[@.id="'$ID'"].status')
+			[ "x$T" = "xOK" ] && UP="true"
+			[ "x$T" = "xREQUESTING_CONFIGURATION" ] && PENDING="true"
 			echo "{\"interface\":\"\",\"section\":\"$ZT\",\"up\":${UP:-false},\"pending\":${PENDING:-false},\"uptime\":\"\",\"uptime_since\":\"\",\"proto\":\"zerotier\",\"name\":\""$(escapeJSON "${NAME:-$ZT}")"\"},"
 		done
 	fi
@@ -1817,19 +1923,17 @@ show_vpn_status_zerotier()
 	json_load "$input"
 	json_get_vars section
 
-	echo "{\"networks\":["
+	echo "{\"network\":"
 
 	LN=$(zerotier-cli -j listnetworks)
-	JOINS=$(uci -q get zerotier.$section.join)
-	for JOIN in $JOINS; do
-		IPADDR=""
-		NAME=""
-		STATUS=""
-		TYPE=""
-		eval $(echo "$LN" | jsonfilter -q -e 'IPADDR=@[@.id="'$JOIN'"].assignedAddresses[0]' -e 'NAME=@[@.id="'$JOIN'"].name' -e 'STATUS=@[@.id="'$JOIN'"].status' -e 'TYPE=@[@.id="'$JOIN'"].type')
-		echo "{\"id\":\"$JOIN\",\"name\":\""$(escapeJSON "$NAME")"\",\"ipaddr\":\"$IPADDR\",\"status\":\"$STATUS\",\"type\":\"$TYPE\"},"
-	done
-	echo "]}"
+	ID=$(uci -q get zerotier.$section.id)
+	IPADDR=""
+	NAME=""
+	STATUS=""
+	TYPE=""
+	eval $(echo "$LN" | jsonfilter -q -e 'IPADDR=@[@.id="'$ID'"].assignedAddresses[0]' -e 'NAME=@[@.id="'$ID'"].name' -e 'STATUS=@[@.id="'$ID'"].status' -e 'TYPE=@[@.id="'$ID'"].type')
+	echo "{\"id\":\"$ID\",\"name\":\""$(escapeJSON "$NAME")"\",\"ipaddr\":\"$IPADDR\",\"status\":\"$STATUS\",\"type\":\"$TYPE\"},"
+	echo "}"
 }
 
 show_vpn_details()
@@ -1918,12 +2022,12 @@ show_vpn_details()
 		echo "]}"
 	fi
 	if [ "x$PROTO" = "xzerotier" ]; then
-		ZTS=$(uci show zerotier | awk -F[.=] '/'$section'=zerotier/{print $2}')
+		ZTS=$(uci show zerotier | awk -F[.=] '/'$section'=network/{print $2}')
 		for ZT in $ZTS; do
 			NAME=$(uci -q get zerotier.$ZT.name)
-			ENABLED=$(uci -q get zerotier.$ZT.enabled)
-			JOINS=$(uci -q get zerotier.$ZT.join | sed 's/ /","/g')
-			echo "\"name\":\""$(escapeJSON "${NAME:-$section}")"\",\"enabled\":${ENABLED:-0},\"join\":[\"$JOINS\"]}"
+			ENABLED=$(uci -q get zerotier.global.enabled)
+			ID=$(uci -q get zerotier.$ZT.id)
+			echo "\"name\":\""$(escapeJSON "${NAME:-$section}")"\",\"enabled\":${ENABLED:-0},\"id\":\"$ID\"}"
 		done
 	fi
 }
@@ -1954,9 +2058,8 @@ show_geolocation()
 
 adblock_bwlist()
 {
-	json_add_array blacklist
-	F=$(uci -q get adblock.blacklist.adb_src)
-	[ -z "$F" ] && F=/etc/adblock/adblock.blacklist
+	json_add_array blocklist
+	F=/etc/adblock/adblock.blocklist
 	if [ -s "$F" ]; then
 		while read line; do
 			json_add_string "" "$line"
@@ -1964,8 +2067,8 @@ adblock_bwlist()
 	fi
 	json_close_array
 
-	json_add_array whitelist
-	F=/etc/adblock/adblock.whitelist
+	json_add_array allowlist
+	F=/etc/adblock/adblock.allowlist
 	if [ -s "$F" ]; then
 		while read line; do
 			json_add_string "" "$line"
@@ -2000,19 +2103,36 @@ show_adblock()
 			LISTS="${LISTS}{\"section\":\"${key}\",\"enabled\":${ENABLED},\"size\":\"${size}\",\"descurl\":\"${descurl}\",\"focus\":\"${focus}\"}"
 		done
 	fi
+	if [ -e /etc/adblock/adblock.feeds ]; then
+		json_load "$(cat /etc/adblock/adblock.feeds)"
+		json_get_keys keylist
+		for key in ${keylist}; do
+			json_select "${key}"
+			json_get_vars size
+			uci -q get adblock.global.adb_feed | grep -q ${key} && ENABLED=1 || ENABLED=0
+			json_select ..
+			[ -n "$LISTS" ] && LISTS="${LISTS},"
+			LISTS="${LISTS}{\"section\":\"${key}\",\"enabled\":${ENABLED},\"size\":\"${size}\",\"descurl\":\"\",\"focus\":\"\"}"
+		done
+	fi
 	ENABLED=$(uci -q get adblock.global.adb_enabled)
 	T=$(uci -q get firewall.dns_53_redirect)
 	[ "x$T" = "xredirect" ] && FORCEDNS="1" || FORCEDNS="0"
 
-	rtfile="$(uci -q get adblock.extra.adb_rtfile)"
-	rtfile="${rtfile:-"/tmp/adb_runtime.json"}"
+	if [ -e /tmp/adb_runtime.json ]; then
+		rtfile=/tmp/adb_runtime.json
+	elif [ -e /var/run/adb_runtime.json ]; then
+		rtfile=/var/run/adb_runtime.json
+	else
+		rtfile="$(uci -q get adblock.extra.adb_rtfile)"
+	fi
 	if [ -s "$rtfile" ]; then
 		json_load "$(cat "${rtfile}" 2>/dev/null)"
 		if json_is_a "data" object; then
 			json_select data
 		fi
 		json_get_var STATUS adblock_status
-		if [ -e /etc/adblock/adblock.sources.gz ]; then
+		if [ -e /etc/adblock/adblock.sources.gz ] || [ -e /etc/adblock/adblock.feeds ]; then
 			json_get_var DOMAINS blocked_domains
 		else
 			json_get_var DOMAINS overall_domains
@@ -2049,14 +2169,21 @@ show_nightmode()
 	SUNRISE=""
 	SUNSET=""
 	if [ -n "$LAT" ] && [ -n "$LON" ]; then
-		[ "x${LAT:0:1}" = "x-" ] && LAT="${LAT:1}S" || LAT="${LAT}N"
-		[ "x${LON:0:1}" = "x-" ] && LON="${LON:1}W" || LON="${LON}.E"
 		if [ -e /usr/bin/sunwait ]; then
-			T=$(sunwait -p $LAT $LON)
-			SUNRISE=$(echo "$T" | awk '/Sun rises/{print $3}')
-			SUNSET=$(echo "$T" | awk '/Sun rises/{print $6}')
-			SUNRISE="${SUNRISE:0:2}:${SUNRISE:2:2}"
-			SUNSET="${SUNSET:0:2}:${SUNSET:2:2}"
+			[ "${LAT:0:1}" = "-" ] && LAT="${LAT:1}S" || LAT="${LAT}N"
+			if sunwait 2>&1 | grep -q "options: -p"; then
+				[ "${LON:0:1}" = "-" ] && LON="${LON:1}W" || LON="${LON}.E"
+				T=$(sunwait -p $LAT $LON)
+				SUNRISE=$(echo "$T" | awk '/Sun rises/{print $3}')
+				SUNSET=$(echo "$T" | awk '/Sun rises/{print $6}')
+				SUNRISE="${SUNRISE:0:2}:${SUNRISE:2:2}"
+				SUNSET="${SUNSET:0:2}:${SUNSET:2:2}"
+			else
+				[ "${LON:0:1}" = "-" ] && LON="${LON:1}W" || LON="${LON}E"
+				T=$(sunwait list $LAT $LON)
+				SUNRISE=$(echo "$T" | awk '{gsub(",","");print $1}')
+				SUNSET=$(echo "$T" | awk '{print $2}')
+			fi
 		fi
 	fi
 	echo '"sunrise":"'$SUNRISE'",'
@@ -2085,9 +2212,15 @@ leds() {
 
 		BASE="/sys/firmware/devicetree/base/leds"
 		if [ -e "$BASE" ]; then
-			for i in $BASE/*; do
-				if [ -e "$i/linux,default-trigger" ]; then
-					LED="/sys/class/leds/"$(cat $i/label)"/trigger"
+			for i in $(find $BASE -name "linux,default-trigger" -type f -exec dirname {} \;); do
+				LED=""
+				[ -e "$i/label" ] && LED="/sys/class/leds/"$(cat $i/label)"/trigger"
+				if [ ! -e "$LED" ]; then
+					T=""
+					[ -e "$i/name" ] && T=$(grep -s -l -R "OF_NAME=$(cat $i/name)" /sys/class/leds/*/uevent)
+					[ -n "$T" ] && LED="$(dirname "$T")/trigger"
+				fi
+				if [ -e "$LED" ]; then
 					TRIGGER=$(cat $i/linux,default-trigger)
 					echo $TRIGGER > $LED
 				fi
@@ -2201,6 +2334,7 @@ show_networks() {
 		echo '"dhcp":'$DHCP','
 		echo '"wireless":['
 
+		BUTTON="false"
 		RADIOS=$(uci -q show wireless | awk -F. '/type=/{print $2}')
 		for R in $RADIOS; do
 			echo '{"'$R'":{'
@@ -2226,6 +2360,7 @@ show_networks() {
 					WLAN_ISOLATE=$(uci -q get wireless.$WLAN_SEC.isolate)
 					WLAN_HIDDEN=$(uci -q get wireless.$WLAN_SEC.hidden)
 					WLAN_MACADDR=$(uci -q get wireless.$WLAN_SEC.macaddr)
+					[ "x$(uci -q get wireless.$WLAN_SEC.button)" = "x1" ] && BUTTON="true"
 					break
 				done
 				[ -z "$WLAN_SSID" ] && WLAN_DISABLED=1
@@ -2243,28 +2378,33 @@ show_networks() {
 		done
 
 		echo '],'
+		echo '"button":'$BUTTON','
+		BRIDGE=$(ubus call network.interface.$SEC status | jsonfilter -e @.l3_device)
+		T=$(uci show network | awk -F. '/\.name='\'''$BRIDGE''\''/{print $2}')
+		TPORTS=""
+		if [ -n "$T" ]; then
+			TPORTS=$(uci -q get network.$T.ports)
+			[ -n "$TPORTS" ] && TPORTS='"'$(echo $TPORTS | sed 's/ /","/g')'"'
+		fi
+		echo '"wire":['${TPORTS}'],'
 		WLAN_CLIENTS=0
 		LAN_CLIENTS=0
-		TPORTS=""
-		BRIDGE=$(ubus call network.interface.$SEC status | jsonfilter -e @.l3_device)
 		if [ -e /sys/class/net/$BRIDGE/bridge ]; then
 			T=$(brctl showmacs $BRIDGE 2>/dev/null)
-			for I in /sys/class/net/$BRIDGE/lower_*; do
+			for I in $(find /sys/class/net/$BRIDGE/ -type l -name lower_*); do
 				IFNAME=${I##*lower_}
 				if [ -e $I/phy80211 ]; then
-					CNT=$(iw dev $IFNAME station dump | grep -c Station)
+					CNT=$(iw dev $IFNAME station dump 2>/dev/null | grep -c Station)
 					WLAN_CLIENTS=$((WLAN_CLIENTS+CNT))
 				else
 					if [ -e /sys/class/net/$BRIDGE/brif/$IFNAME/port_no ]; then
 						PORTID=$(printf "%d" $(cat /sys/class/net/$BRIDGE/brif/$IFNAME/port_no))
 						CNT=$(echo "$T" | awk '/^\s*'$PORTID'\s.*no/{print $2}' | wc -l)
 						LAN_CLIENTS=$((LAN_CLIENTS+CNT))
-						TPORTS='"'${IFNAME}'",'${TPORTS}
 					fi
 				fi
 			done
 		fi
-		echo '"wire":['${TPORTS}'],'
 		echo '"wlan_clients":'$WLAN_CLIENTS','
 		echo '"lan_clients":'$LAN_CLIENTS
 		echo '},'
@@ -2285,7 +2425,7 @@ case "$1" in
 		echo '"clients":{},'
 		echo '"clientslogs":{},'
 		echo '"clientstatistics":{"mac":"string"},'
-		echo '"clientbandwidth":{"mac":"string"},'
+		echo '"clientbandwidth":{"mac":"string","section":"string"},'
 		echo '"traffic":{},'
 		echo '"modem":{},'
 		echo '"modemsettings":{},'
@@ -2295,7 +2435,7 @@ case "$1" in
 		echo '"ussdshortcuts":{},'
 		echo '"sms":{"action":"string","arg1":"string","arg2":"string"},'
 		echo '"queries":{},'
-		echo '"wifiscan":{},'
+		echo '"wifiscan":{"interface":"string"},'
 		echo '"detect_wan":{},'
 		echo '"pincode":{"proto":"string","device":"string","pincode":"string"},'
 		echo '"reboot":{},'

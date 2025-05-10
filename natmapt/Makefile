@@ -1,14 +1,33 @@
+# SPDX-License-Identifier: MIT
+#
+# Copyright (C) 2023-2025 Anya Lin <hukk1996@gmail.com>
+
 include $(TOPDIR)/rules.mk
 
+PKG_UPSTREAM_NAME:=natmap
 PKG_NAME:=natmapt
-PKG_VERSION:=20240813
-PKG_RELEASE:=2
+PKG_UPSTREAM_VERSION:=20250318
+PKG_UPSTREAM_GITHASH:=
+PKG_VERSION:=$(PKG_UPSTREAM_VERSION)$(if $(PKG_UPSTREAM_GITHASH),~$(call version_abbrev,$(PKG_UPSTREAM_GITHASH)))
+PKG_RELEASE:=1
+SCRIPTS_VERSION:=0.2025.2.19
 
-RAW_NAME:=natmap
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(RAW_NAME)-$(PKG_VERSION)
-PKG_SOURCE:=$(RAW_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/heiher/natmap/releases/download/$(PKG_VERSION)
-PKG_HASH:=2fd89d286b19b9235d5e3477699c3752911bc5e80840ea1ed6930bfe98f47248
+PKG_SOURCE_SUBDIR:=$(PKG_UPSTREAM_NAME)-$(PKG_UPSTREAM_VERSION)
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
+
+ifeq ($(PKG_UPSTREAM_GITHASH),)
+PKG_SOURCE_URL:=https://github.com/heiher/natmap/releases/download/$(PKG_UPSTREAM_VERSION)
+PKG_HASH:=7d421e918d6101a6b36e9c9ae487a8b415bc28c1e712593e192b033f888f7e51
+
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.xz
+else
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/heiher/natmap.git
+PKG_SOURCE_VERSION:=$(PKG_UPSTREAM_GITHASH)
+PKG_MIRROR_HASH:=d1baa9250ce52cb9f0cac05508705ed4fc14a14a0dbece648a1002f9a95d594b
+
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR)-$(PKG_SOURCE_VERSION).tar.gz
+endif
 
 PKG_MAINTAINER:=Anya Lin <hukk1996@gmail.com>, Richard Yu <yurichard3839@gmail.com>, Ray Wang <r@hev.cc>
 PKG_LICENSE:=MIT
@@ -67,7 +86,7 @@ define Package/natmapt-scripts/Default
 	TITLE:=NATMap $(1) scripts ($(2))
 	DEPENDS:=+natmapt
 	PROVIDES:=natmapt-$(1)-scripts
-	VERSION:=20240603
+	VERSION:=$(SCRIPTS_VERSION)
 	PKGARCH:=all
 endef
 

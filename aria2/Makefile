@@ -21,7 +21,7 @@ PKG_MAINTAINER:=Imre Kaloz <kaloz@openwrt.org>, \
 	Hsing-Wang Liao <kuoruan@gmail.com>
 PKG_LICENSE:=GPLv2
 PKG_LICENSE_FILES:=COPYING
-PKG_CPE_ID:=cpe:/a:tatsuhiro_tsujikawa:aria2
+PKG_CPE_ID:=cpe:/a:aria2_project:aria2
 
 PKG_CONFIG_DEPENDS := \
 	CONFIG_ARIA2_NOSSL \
@@ -53,7 +53,7 @@ define Package/aria2
   SUBMENU:=File Transfer
   TITLE:=lightweight download utility
   URL:=https://aria2.github.io/
-  DEPENDS:=+zlib +libstdcpp +ARIA2_OPENSSL:libopenssl +ARIA2_GNUTLS:libgnutls \
+  DEPENDS:=+zlib +libstdcpp +ARIA2_OPENSSL:libopenssl +ARIA2_OPENSSL:libopenssl-legacy +ARIA2_GNUTLS:libgnutls \
 	+ARIA2_NETTLE:libnettle +ARIA2_LIBGCRYPT:libgcrypt +ARIA2_GMP:libgmp \
 	+ARIA2_LIBXML2:libxml2 +ARIA2_EXPAT:libexpat +ARIA2_SFTP:libssh2 \
 	+ARIA2_ASYNC_DNS:libcares +ARIA2_COOKIE:libsqlite3

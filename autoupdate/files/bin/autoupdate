@@ -1,9 +1,9 @@
 #!/bin/bash
 # AutoBuild Module by Hyy2001 <https://github.com/Hyy2001X/AutoBuild-Actions>
 # AutoUpdate for Openwrt
-# Dependences: wget-ssl/wget/uclient-fetch curl jq expr sysupgrade nslookup
+# Dependences: wget-ssl/wget/uclient-fetch curl jq expr sysupgrade
 
-Version=V6.9.12
+Version=V6.10.5
 
 function TITLE() {
 	clear && echo "Openwrt-AutoUpdate Script by Hyy2001 ${Version}"
@@ -22,9 +22,10 @@ function SHELL_HELP() {
     -f				跳过版本号校验,并强制刷写固件 ${Red}(危险)${White} *
     -F, --force-flash		强制刷写固件 ${Red}(危险)${White} *
     -P, --proxy			优先开启镜像加速下载固件 *
-    ${Next} A			自动选择
-    ${Next} F			Cloudflare Workers
-    ${Next} G			Ghproxy
+    ${Next} A			自动选择镜像地址
+	${Next} E		ghproxy.cn
+    ${Next} F			ghps.cc
+    ${Next} G			ghgo.xyz
     -D <Downloader>		使用指定的下载器 <wget-ssl | wget | curl | uclient-fetch> *
     --decompress		解压 img.gz 固件后再更新固件 *
     --skip-verify		跳过固件 SHA256 校验 ${Red}(危险)${White} *
@@ -37,7 +38,6 @@ function SHELL_HELP() {
 
 其他参数:
     --help			打印 AutoUpdate 程序帮助信息
-    -B, --boot-mode <TYPE>	指定 x86 设备下载 <TYPE> 引导的固件 (e.g. UEFI BIOS)
     -C <Github URL>		更改 Github 地址为提供的 <Github URL>
     --api			打印 Github API 内容
     --backup			备份当前系统配置到当前路径
@@ -84,9 +84,6 @@ OpenWrt Source:		https://github.com/${OP_AUTHOR}/${OP_REPO}:${OP_BRANCH} *
 日志文件:		${Log_Path}/${Log_File}
 可用下载器:		< ${DL_DEPENDS[@]} >
 EOF
-	[[ ${TARGET_BOARD} == x86 ]] && {
-		echo "固件引导:		${x86_Boot_Method}"
-	}
 	echo
 	return 0
 }
@@ -131,6 +128,19 @@ function RM() {
 		rm -r "$i" 2> /dev/null
 		LOGGER "删除文件: [$i]"
 	done
+}
+
+GET_DOWNLOADER() {
+	for i in ${DL_DEPENDS[@]}
+	do
+		if [[ $(CHECK_PKG $i) == true ]]
+		then
+			echo "$i"
+			return 0
+		fi
+	done
+	LOGGER "没有可用的下载器!"
+	return 1
 }
 
 function STRING() {
@@ -213,17 +223,6 @@ function CHECK_PKG() {
 	fi
 }
 
-function GET_IP() {
-	local Result="$(nslookup -type=a $1 $2 2> /dev/null | grep "Address:" | grep -v "$2" | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | sort | uniq | tr '\n' ' ')"
-	if [[ ${Result} ]]
-	then
-		echo "${Result}"
-		return 0
-	else
-		return 1
-	fi
-}
-
 function ECHO() {
 	local Color
 	if [[ ! $1 ]]
@@ -232,13 +231,14 @@ function ECHO() {
 	else
 		while [[ $1 ]];do
 			case $1 in
-			r | g | b | y | x)
+			r | g | b | y | x | w)
 				case $1 in
 				r) Color="${Red}";;
 				g) Color="${Green}";;
 				b) Color="${Blue}";;
 				y) Color="${Yellow}";;
 				x) Color="${Grey}";;
+				w) Color="${White}";;
 				esac
 				shift
 			;;
@@ -378,14 +378,6 @@ function LOAD_VARIABLE() {
 	Github_Release="${Github}/releases/download/AutoUpdate"
 	Github_Raw="https://raw.githubusercontent.com/${Firmware_Author}/master"
 	Github_API="https://api.github.com/repos/${Firmware_Author}/releases/latest"
-	case "${TARGET_BOARD}" in
-	x86)
-		if [[ ! ${x86_Boot_Method} ]]
-		then
-			[ -d /sys/firmware/efi ] && x86_Boot_Method="UEFI" || x86_Boot_Method="BIOS"
-		fi
-	;;
-	esac
 	Log_Full="${Log_Path}/${Log_File}"
 }
 
@@ -417,22 +409,6 @@ function ALTER_GITHUB() {
 		ECHO g "Github 地址未修改!"
 	fi
 	return 0
-}
-
-function ALTER_BOOT() {
-	[[ ${TARGET_BOARD} != x86 ]] && exit 1
-	case $1 in
-	UEFI | BIOS)
-		EDIT_VARIABLE edit ${Config_Custom} x86_Boot_Method $1
-		ECHO r "警告: 修改此设置后更新固件后可能导致设备无法启动!"
-		ECHO y "固件引导格式已修改为: [$1]"
-		return 0
-	;;
-	*)
-		ECHO r "错误的参数: [$1],当前支持的选项: [UEFI/BIOS]"
-		return 1
-	;;
-	esac
 }
 
 function ALTER_FLAG() {
@@ -548,7 +524,7 @@ function ANALYZE_API() {
 	local API_Cache=${Tmp_Path}/API_Cache
 	if [[ $(CHECK_TIME ${API_File} 1) == false ]]
 	then
-		DOWNLOADER --path ${Tmp_Path} --file-name API_Cache --dl ${DL_DEPENDS[@]} --url "${Github_API}@@1 $(Proxy_X ${Github_Release}/API G@@1 F@@1 A@@1)" --no-url-name --timeout 5
+		DOWNLOADER --path ${Tmp_Path} --file-name API_Cache --dl ${DL_DEPENDS[@]} --url "${Github_API}@@1 $(Proxy_X ${Github_Release}/API G@@1 F@@1 E@@1)" --no-url-name --timeout 5
 		[[ ! $? == 0 || -z $(cat ${API_Cache} 2> /dev/null) ]] && {
 			ECHO r "Github API 请求错误,请检查网络后再试!"
 			exit 2
@@ -597,7 +573,7 @@ function GET_FW_INFO() {
 		ECHO r "未检测到 API 文件!"
 		exit 1
 	}
-	Info=$(grep "AutoBuild-${OP_REPO}-${TARGET_PROFILE}" ${API_File} | grep "${x86_Boot_Method}" | grep "${TARGET_FLAG}" | awk 'BEGIN {MAX = 0} {if ($6+0 > MAX+0) {MAX=$6 ;content=$0} } END {print content}')
+	Info=$(grep "AutoBuild-${OP_REPO}-${TARGET_PROFILE}" ${API_File} | grep "${TARGET_FLAG}" | awk 'BEGIN {MAX = 0} {if ($6+0 > MAX+0) {MAX=$6 ;content=$0} } END {print content}')
 	Result="$(awk '{print $"'${1}'"}' <<< ${Info} 2> /dev/null)"
 	case $1 in
 	1) Type="固件名称";;
@@ -637,7 +613,7 @@ function GET_CLOUD_LOG() {
 	;;
 	esac
 	[[ $(CHECK_TIME ${Tmp_Path}/Update_Logs.json 1) == false ]] && {
-		DOWNLOADER --path ${Tmp_Path} --file-name Update_Logs.json --dl ${DL_DEPENDS[@]} --url "$(Proxy_X ${Github_Release} G@@1 F@@1 A@@1)" --timeout 5
+		DOWNLOADER --path ${Tmp_Path} --file-name Update_Logs.json --dl ${DL_DEPENDS[@]} --url "$(Proxy_X ${Github_Release} G@@1 F@@1 E@@1)" --timeout 5
 	}
 	[[ ! -s ${Tmp_Path}/Update_Logs.json ]] && return 1
 	log_Test="$(jq '."'"${TARGET_PROFILE}"'"."'"${Version}"'"' ${Tmp_Path}/Update_Logs.json 2> /dev/null)"
@@ -653,11 +629,9 @@ function GET_CLOUD_LOG() {
 
 function UPGRADE() {
 	TITLE
+	LOGGER "结束其他 autoupdate 进程 ..."
 	KILL_PROCESS ${Script_File}
-	[[ $(NETWORK_CHECK 223.5.5.5 2) == false ]] && {
-		ECHO r "网络连接错误,请稍后再试!"
-		exit 1
-	}
+	LOGGER "运行: $0 $*"
 	Firmware_Path="${Tmp_Path}"
 	Upgrade_Option="$(command -v sysupgrade) -q"
 	MSG="更新固件"
@@ -673,14 +647,19 @@ function UPGRADE() {
 				Special_Commands="${Special_Commands} [镜像加速 Automatic]"
 				shift
 			;;
+			E)
+				Proxy_Type=$2
+				Special_Commands="${Special_Commands} [ghproxy.cn]"
+				shift
+			;;
 			F)
 				Proxy_Type=$2
-				Special_Commands="${Special_Commands} [CF Workers]"
+				Special_Commands="${Special_Commands} [ghps.cc]"
 				shift
 			;;
 			G)
 				Proxy_Type=$2
-				Special_Commands="${Special_Commands} [Ghproxy]"
+				Special_Commands="${Special_Commands} [ghgo.xyz]"
 				shift
 			;;
 			*)
@@ -739,7 +718,7 @@ function UPGRADE() {
 	ECHO g "执行: ${MSG}${Special_MSG}"
 	if [[ ! ${Proxy_Type} ]]
 	then
-		[[ $(GOOGLE_CHECK) != true ]] && {
+		[[ $(NETWORK_CHECK https://www.google.com/generate_204) != true ]] && {
 			ECHO r "Google 连接错误,优先使用镜像加速下载!"
 			Proxy_Type="All"
 		}
@@ -774,7 +753,7 @@ ${Grey}### 系统 & 云端固件详情 ###${White}
 设备名称: ${TARGET_PROFILE}
 固件标签: ${TARGET_FLAG}
 内核版本: $(uname -sr)
-$([[ ${TARGET_BOARD} == x86 ]] && echo "固件格式: ${CLOUD_FW_Format} / ${x86_Boot_Method}" || echo "固件格式: ${CLOUD_FW_Format}")
+$(echo "固件格式: ${CLOUD_FW_Format}")
 
 $(echo -e "当前固件版本: ${OP_VERSION}${CURRENT_Type}")
 $(echo -e "云端固件版本: ${CLOUD_FW_Version}${CHECKED_Type}")
@@ -812,14 +791,14 @@ $(echo -e "云端固件版本: ${CLOUD_FW_Version}${CHECKED_Type}")
 	esac
 	local URL
 	case "${Proxy_Type}" in
-	F | G)
+	E | F | G)
 		URL="$(Proxy_X ${CLOUD_FW_Url} ${Proxy_Type}@@5)"
 	;;
 	All)
-		URL="$(Proxy_X ${CLOUD_FW_Url} G@@2 F@@2 X@@1)"
+		URL="$(Proxy_X ${CLOUD_FW_Url} G@@2 X@@1 E@@1 F@@1)"
 	;;
 	*)
-		URL="$(Proxy_X ${CLOUD_FW_Url} X@@3 G@@1 F@@1)"
+		URL="$(Proxy_X ${CLOUD_FW_Url} X@@2 G@@1 E@@1 F@@1)"
 	;;
 	esac
 	DOWNLOADER --file-name ${CLOUD_FW_Name} --no-url-name --dl ${DL_DEPENDS[@]} --url ${URL} --path ${Firmware_Path} --timeout 15 --type 固件
@@ -1021,26 +1000,6 @@ function DOWNLOADER() {
 		DL_Retries="${DL_URL_Cache##*@@}"
 		[[ ! ${DL_Retries} || ! ${DL_Retries} == [0-9] ]] && DL_Retries=1
 		DL_URL_Final="${DL_URL_Cache%*@@*}"
-		DL_URL_Final_Host=$(echo ${DL_URL_Final} | awk -F[/:] '{print $4}')
-		DL_URL_Final_IP=$(GET_IP ${DL_URL_Final_Host} 8.8.8.8)
-		LOGGER "当前 URL: [${DL_URL_Final}] URL 重试次数: [${DL_Retries}]"
-		if [[ ${DL_URL_Final_IP} ]]
-		then
-			LOGGER "当前 URL 信息: [${DL_URL_Final_Host}::${DL_URL_Final_IP}]"
-			case "${DL_Downloader}" in
-			curl)
-				case "${DL_URL_Final}"
-				in
-				https*)
-					DL_URL_Final="${DL_URL_Final} --resolve ${DL_URL_Final_Host}:443:${DL_URL_Final_IP}"
-				;;
-				*)
-					DL_URL_Final="${DL_URL_Final} --resolve ${DL_URL_Final_Host}:80:${DL_URL_Final_IP}"
-				;;
-				esac
-			;;
-			esac
-		fi
 		for u in $(seq ${DL_Retries})
 		do
 			sleep 1
@@ -1149,21 +1108,27 @@ function Proxy_X() {
 	
 	case "${Type}" in
 	raw)
-		F=https://proxy.hyy2001.workers.dev/$(echo ${URL##*com/})
-		G=https://mirror.ghproxy.com/${URL}
+		E=https://ghproxy.cn/${URL}
+		F=https://ghps.cc/${URL}
+		G=https://ghgo.xyz/${URL}
 	;;
 	release)
-		F=https://proxy.hyy2001.workers.dev/$(echo ${URL##*com/})
-		G=https://mirror.ghproxy.com/${URL}
+		E=https://ghproxy.cn/${URL}
+		F=https://ghps.cc/${URL}
+		G=https://ghgo.xyz/${URL}
 	;;
 	codeload)
-		F=https://proxy.hyy2001.workers.dev/$(echo ${URL##*com/})
-		G=https://mirror.ghproxy.com/${URL}
+		E=https://ghproxy.cn/${URL}
+		F=https://ghps.cc/${URL}
+		G=https://ghgo.xyz/${URL}
 	;;
 	esac
 	while [[ $1 ]];do
 		local URL_Cache=$1 URL_Final
 		case $1 in
+		E@@*)
+			URL_Final="${URL_Cache/E/${E}}"
+		;;
 		F@@*)
 			URL_Final="${URL_Cache/F/${F}}"
 		;;
@@ -1183,26 +1148,43 @@ function Proxy_X() {
 }
 
 function NETWORK_CHECK() {
-	ping $1 -c 1 -W $2 > /dev/null 2>&1
-	[[ $? == 0 ]] && echo true || echo false
-}
-
-function GOOGLE_CHECK() {
-	if [[ $(CHECK_PKG curl) == true ]]
-	then
-		local Result=$(curl -I -s --connect-timeout 3 google.com -w %{http_code} 2> /dev/null | tail -n1)
-		LOGGER "Google 连接检查结果: [${Result}]"
-		if [[ ${Result} == 301 ]]
+	case $(GET_DOWNLOADER) in
+	curl)
+		local Result=$(curl -I -o /dev/null -skL --connect-timeout 3 --retry 0 -w %{http_code} $1 2> /dev/null | tail -n1)
+		if [[ ${Result} == 204 ]]
 		then
 			echo true
+			LOGGER "[$(GET_DOWNLOADER)] [$1] 连通性测试正常!"
 			return 0
-		else
-			echo false
-			return 1
 		fi
-	else
+	;;
+	wget | wget-ssl)
+		rm -f "${Tmp_Path}/generate_204" > /dev/null 2>&1
+		$(GET_DOWNLOADER) "$1" -q --no-check-certificate --spider --timeout=3 --no-dns-cache -4 --tries 1
+		if [[ $? == 0 ]]
+		then
+			echo true
+			LOGGER "[$(GET_DOWNLOADER)] [$1] 连通性测试正常!"
+			return 0
+		fi
+	;;
+	uclient-fetch)
+		rm -f "${Tmp_Path}/generate_204" > /dev/null 2>&1
+		uclient-fetch "$1" --quiet --no-check-certificate --spider --timeout=3
+		if [[ $? == 0 ]]
+		then
+			echo true
+			LOGGER "[$(GET_DOWNLOADER)] [$1] 连通性测试正常!"
+			return 0
+		fi
+	;;
+	*)
 		return 1
-	fi
+	;;
+	esac
+	echo false
+	LOGGER "[$(GET_DOWNLOADER)] [$1] 连通性测试失败!"
+	return 1
 }
 
 function AutoUpdate_Main() {
@@ -1299,13 +1281,13 @@ function AutoUpdate_Main() {
 		--chk)
 			shift
 			CHECK_PKG_DEPENDS -e ${PKG_DEPENDS[@]} ${DL_DEPENDS[@]}
-			if [[ $(NETWORK_CHECK www.baidu.com 2) == false ]]
+			if [[ $(NETWORK_CHECK https://connectivitycheck.platform.hicloud.com/generate_204) == false ]]
 			then
-				ECHO r "基础网络连接错误!"
+				ECHO r "HiCloud 连接错误!"
 			else
-				ECHO y "基础网络连接正常!"
+				ECHO y "HiCloud 连接正常!"
 			fi
-			if [[ $(GOOGLE_CHECK) == false ]]
+			if [[ $(NETWORK_CHECK https://www.google.com/generate_204) == false ]]
 			then
 				ECHO r "Google 连接错误!"
 			else
@@ -1370,20 +1352,10 @@ function AutoUpdate_Main() {
 		;;
 		-x)
 			shift
-			URL="$(Proxy_X ${Script_Url} X@@1 G@@1 A@@1)"
-			if [[ $(NETWORK_CHECK 223.5.5.5 2) == false ]]
-			then
-				ECHO r "网络连接错误,请稍后再试!"
-				exit 1
-			fi
+			URL="$(Proxy_X ${Script_Url} X@@1 G@@1 F@@1)"
 			[[ ${Custom_Path} ]] && Script_Path="${Custom_Path}"
 			[[ ${Custom_URL} ]] && URL="${Custom_URL}"
 			UPDATE_SCRIPT ${Script_Path} ${URL}
-			exit $?
-		;;
-		-B | --boot-mode)
-			shift
-			ALTER_BOOT $1
 			exit $?
 		;;
 		-C)
@@ -1416,10 +1388,10 @@ function AutoUpdate_Main() {
 }
 
 function KILL_PROCESS() {
-	local i ; for i in $(ps -efww | grep -v grep | grep $1 | grep -v $$ | awk '{print $1}')
+	local i ; for i in $(ps -ef 2> /dev/null | grep -v grep | grep $1 | grep -v $$ | awk '{print $1}' 2> /dev/null)
 	do
 		kill -9 ${i} 2> /dev/null &
-		LOGGER "Killed ${i}"
+		LOGGER "结束进程: ${i}"
 	done
 }
 
@@ -1458,7 +1430,6 @@ DL_DEPENDS=(
 	curl
 	wget
 	uclient-fetch
-	nslookup
 )
 REGEX_Skip_Format=".vdi|.vhdx|.vmdk|kernel|rootfs|factory"
 
@@ -1471,3 +1442,4 @@ Green="\e[32m"
 
 [[ $* ]] && COMMAND="$0 $*" || COMMAND="$0"
 AutoUpdate_Main $*
+

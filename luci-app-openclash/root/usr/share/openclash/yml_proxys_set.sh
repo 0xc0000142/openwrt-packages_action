@@ -68,7 +68,7 @@ yml_other_rules_del()
 yml_proxy_provider_set()
 {
    local section="$1"
-   local enabled config type name path provider_filter provider_url provider_interval health_check health_check_url health_check_interval
+   local enabled config type name path provider_filter provider_url provider_interval health_check health_check_url health_check_interval other_parameters
    config_get_bool "enabled" "$section" "enabled" "1"
    config_get "config" "$section" "config" ""
    config_get "type" "$section" "type" ""
@@ -80,6 +80,7 @@ yml_proxy_provider_set()
    config_get "health_check" "$section" "health_check" ""
    config_get "health_check_url" "$section" "health_check_url" ""
    config_get "health_check_interval" "$section" "health_check_interval" ""
+   config_get "other_parameters" "$section" "other_parameters" ""
    
    if [ "$enabled" = "0" ]; then
       return
@@ -148,6 +149,10 @@ cat >> "$PROXY_PROVIDER_FILE" <<-EOF
       interval: $health_check_interval
 EOF
 
+#other_parameters
+   if [ -n "$other_parameters" ]; then
+      echo -e "$other_parameters" >> "$PROXY_PROVIDER_FILE"
+   fi
 }
 
 set_alpn()
@@ -258,6 +263,10 @@ yml_servers_set()
    config_get "recv_window_conn" "$section" "recv_window_conn" ""
    config_get "recv_window" "$section" "recv_window" ""
    config_get "disable_mtu_discovery" "$section" "disable_mtu_discovery" ""
+   config_get "initial_stream_receive_window" "$section" "initial_stream_receive_window" ""
+   config_get "max_stream_receive_window" "$section" "max_stream_receive_window" ""
+   config_get "initial_connection_receive_window" "$section" "initial_connection_receive_window" ""
+   config_get "max_connection_receive_window" "$section" "max_connection_receive_window" ""
    config_get "xudp" "$section" "xudp" ""
    config_get "packet_encoding" "$section" "packet_encoding" ""
    config_get "global_padding" "$section" "global_padding" ""
@@ -306,6 +315,10 @@ yml_servers_set()
    config_get "multiplex_only_tcp" "$section" "multiplex_only_tcp" ""
    config_get "other_parameters" "$section" "other_parameters" ""
    config_get "hysteria_obfs_password" "$section" "hysteria_obfs_password" ""
+   config_get "port_range" "$section" "port_range" ""
+   config_get "username" "$section" "username" ""
+   config_get "transport" "$section" "transport" "TCP"
+   config_get "multiplexing" "$section" "multiplexing" "MULTIPLEXING_LOW"
 
    if [ "$enabled" = "0" ]; then
       return
@@ -411,6 +424,14 @@ yml_servers_set()
       elif [ "$obfs_vmess" = "network: ws" ]; then
          path="ws-path: \"$path\""
       fi
+   fi
+
+   if [ "$client_fingerprint" = "none" ]; then
+        client_fingerprint=""
+   fi
+
+   if [ "$multiplex" = "false" ]; then
+        multiplex=""
    fi
 
 #ss
@@ -684,6 +705,36 @@ cat >> "$SERVER_FILE" <<-EOF
       grpc-service-name: "$grpc_service_name"
 EOF
          fi
+      fi
+   fi
+
+#Mieru
+   if [ "$type" = "mieru" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+  - name: "$name"
+    type: $type
+    server: "$server"
+    port: $port
+EOF
+      if [ -n "$port_range" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    port-range: "$port_range"
+EOF
+      fi
+      if [ -n "$username" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    username: "$username"
+EOF
+      fi
+      if [ -n "$transport" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    transport: "$transport"
+EOF
+      fi
+      if [ -n "$multiplexing" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    multiplexing: "$multiplexing"
+EOF
       fi
    fi
 
@@ -973,6 +1024,26 @@ EOF
       if [ -n "$hysteria_ca_str" ]; then
 cat >> "$SERVER_FILE" <<-EOF
     ca-str: "$hysteria_ca_str"
+EOF
+      fi
+      if [ -n "$initial_stream_receive_window" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    initial-stream-receive-window: "$initial_stream_receive_window"
+EOF
+      fi
+      if [ -n "$max_stream_receive_window" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    max_stream_receive_window: "$max_stream_receive_window"
+EOF
+      fi
+      if [ -n "$initial_connection_receive_window" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    initial-connection-receive-window: "$initial_connection_receive_window"
+EOF
+      fi
+      if [ -n "$max_connection_receive_window" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    max-connection-receive-window: "$max_connection_receive_window"
 EOF
       fi
       if [ -n "$fingerprint" ]; then
@@ -1313,37 +1384,37 @@ cat >> "$SERVER_FILE" <<-EOF
 EOF
       if [ -n "$multiplex_protocol" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-    protocol: $multiplex_protocol
+      protocol: $multiplex_protocol
 EOF
       fi
       if [ -n "$multiplex_max_connections" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-    max-connections: $multiplex_max_connections
+      max-connections: $multiplex_max_connections
 EOF
       fi
       if [ -n "$multiplex_min_streams" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-    min-streams: $multiplex_min_streams
+      min-streams: $multiplex_min_streams
 EOF
       fi
       if [ -n "$multiplex_max_streams" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-    max-streams: $multiplex_max_streams
+      max-streams: $multiplex_max_streams
 EOF
       fi
       if [ -n "$multiplex_padding" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-    padding: $multiplex_padding
+      padding: $multiplex_padding
 EOF
       fi
       if [ -n "$multiplex_statistic" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-    statistic: $multiplex_statistic
+      statistic: $multiplex_statistic
 EOF
       fi
       if [ -n "$multiplex_only_tcp" ]; then
 cat >> "$SERVER_FILE" <<-EOF
-    only-tcp: $multiplex_only_tcp
+      only-tcp: $multiplex_only_tcp
 EOF
       fi
    fi
@@ -1444,105 +1515,7 @@ fi
 rm -rf $servers_name
 
 #一键创建配置文件
-if [ "$rule_sources" = "ConnersHua" ] && [ "$servers_if_update" != "1" ] && [ -z "$if_game_proxy" ]; then
-LOG_OUT "Creating By Using Connershua (rule set) Rules..."
-echo "proxy-groups:" >>$SERVER_FILE
-cat >> "$SERVER_FILE" <<-EOF
-  - name: Auto - UrlTest
-    type: url-test
-EOF
-if [ -f "/tmp/Proxy_Server" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    proxies:
-EOF
-fi
-cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
-if [ -f "/tmp/Proxy_Provider" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    use:
-EOF
-fi
-cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
-cat >> "$SERVER_FILE" <<-EOF
-    url: http://cp.cloudflare.com/generate_204
-    interval: "600"
-    tolerance: "150"
-  - name: Proxy
-    type: select
-    proxies:
-      - Auto - UrlTest
-      - DIRECT
-EOF
-cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
-if [ -f "/tmp/Proxy_Provider" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    use:
-EOF
-fi
-cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
-cat >> "$SERVER_FILE" <<-EOF
-  - name: Domestic
-    type: select
-    proxies:
-      - DIRECT
-      - Proxy
-  - name: Others
-    type: select
-    proxies:
-      - Proxy
-      - DIRECT
-      - Domestic
-  - name: Asian TV
-    type: select
-    proxies:
-      - DIRECT
-      - Proxy
-EOF
-cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
-if [ -f "/tmp/Proxy_Provider" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    use:
-EOF
-fi
-cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
-cat >> "$SERVER_FILE" <<-EOF
-  - name: Global TV
-    type: select
-    proxies:
-      - Proxy
-      - DIRECT
-EOF
-cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
-if [ -f "/tmp/Proxy_Provider" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    use:
-EOF
-fi
-cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
-config_load "openclash"
-config_foreach yml_other_rules_del "other_rules" "$CONFIG_NAME" "ConnersHua"
-uci_name_tmp=$(uci -q add openclash other_rules)
-uci_set="uci -q set openclash.$uci_name_tmp."
-${UCI_SET}rule_source="1"
-${uci_set}enable="1"
-${uci_set}rule_name="ConnersHua"
-${uci_set}config="$CONFIG_NAME"
-${uci_set}GlobalTV="Global TV"
-${uci_set}AsianTV="Asian TV"
-${uci_set}Proxy="Proxy"
-${uci_set}AdBlock="AdBlock"
-${uci_set}Domestic="Domestic"
-${uci_set}Others="Others"
-
-[ "$config_auto_update" -eq 1 ] && [ "$new_servers_group_set" -eq 1 ] && {
-	${UCI_SET}servers_update="1"
-	${UCI_DEL_LIST}="all" >/dev/null 2>&1
-	${UCI_DEL_LIST}="Auto - UrlTest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Auto - UrlTest" >/dev/null 2>&1
-	${UCI_DEL_LIST}="Proxy" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Proxy" >/dev/null 2>&1
-	${UCI_DEL_LIST}="Asian TV" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Asian TV" >/dev/null 2>&1
-	${UCI_DEL_LIST}="Global TV" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Global TV" >/dev/null 2>&1
-}
-elif [ "$rule_sources" = "lhie1" ] && [ "$servers_if_update" != "1" ] && [ -z "$if_game_proxy" ]; then
+if [ "$rule_sources" = "lhie1" ] && [ "$servers_if_update" != "1" ] && [ -z "$if_game_proxy" ]; then
 LOG_OUT "Creating By Using lhie1 Rules..."
 echo "proxy-groups:" >>$SERVER_FILE
 cat >> "$SERVER_FILE" <<-EOF
@@ -1597,7 +1570,7 @@ cat >> "$SERVER_FILE" <<-EOF
       - Proxy
 EOF
 cat >> "$SERVER_FILE" <<-EOF
-  - name: OpenAI
+  - name: AI Suite
     type: select
     proxies:
       - Proxy
@@ -1670,7 +1643,7 @@ cat >> "$SERVER_FILE" <<-EOF
   - name: Bilibili
     type: select
     proxies:
-      - Asian TV
+      - CN Mainland TV
       - DIRECT
 EOF
 cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
@@ -1696,20 +1669,6 @@ fi
 cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
 cat >> "$SERVER_FILE" <<-EOF
   - name: HBO Max
-    type: select
-    proxies:
-      - Global TV
-      - DIRECT
-EOF
-cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
-if [ -f "/tmp/Proxy_Provider" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    use:
-EOF
-fi
-cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
-cat >> "$SERVER_FILE" <<-EOF
-  - name: HBO Go
     type: select
     proxies:
       - Global TV
@@ -1856,6 +1815,26 @@ cat >> "$SERVER_FILE" <<-EOF
       - REJECT
       - DIRECT
       - Proxy
+  - name: HTTPDNS
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+      - Proxy
+EOF
+cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
+if [ -f "/tmp/Proxy_Provider" ]; then
+cat >> "$SERVER_FILE" <<-EOF
+    use:
+EOF
+fi
+cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
+cat >> "$SERVER_FILE" <<-EOF
+  - name: CN Mainland TV
+    type: select
+    proxies:
+      - DIRECT
+      - Proxy
 EOF
 cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
 if [ -f "/tmp/Proxy_Provider" ]; then
@@ -1868,8 +1847,8 @@ cat >> "$SERVER_FILE" <<-EOF
   - name: Asian TV
     type: select
     proxies:
-      - DIRECT
       - Proxy
+      - DIRECT
 EOF
 cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
 if [ -f "/tmp/Proxy_Provider" ]; then
@@ -1972,19 +1951,19 @@ ${uci_set}rule_name="lhie1"
 ${uci_set}config="$CONFIG_NAME"
 ${uci_set}GlobalTV="Global TV"
 ${uci_set}AsianTV="Asian TV"
+${uci_set}MainlandTV="CN Mainland TV"
 ${uci_set}Proxy="Proxy"
 ${uci_set}Youtube="Youtube"
 ${uci_set}Bilibili="Bilibili"
 ${uci_set}Bahamut="Bahamut"
 ${uci_set}HBOMax="HBO Max"
-${uci_set}HBOGo="HBO Go"
 ${uci_set}Pornhub="Pornhub"
 ${uci_set}Apple="Apple"
 ${uci_set}AppleTV="Apple TV"
 ${uci_set}GoogleFCM="Google FCM"
 ${uci_set}Scholar="Scholar"
 ${uci_set}Microsoft="Microsoft"
-${uci_set}OpenAI="OpenAI"
+${uci_set}AI_Suite="AI Suite"
 ${uci_set}Netflix="Netflix"
 ${uci_set}Discovery="Discovery Plus"
 ${uci_set}DAZN="DAZN"
@@ -1993,6 +1972,7 @@ ${uci_set}Spotify="Spotify"
 ${uci_set}Steam="Steam"
 ${uci_set}miHoYo="miHoYo"
 ${uci_set}AdBlock="AdBlock"
+${uci_set}HTTPDNS="HTTPDNS"
 ${uci_set}Speedtest="Speedtest"
 ${uci_set}Telegram="Telegram"
 ${uci_set}Crypto="Crypto"
@@ -2010,86 +1990,27 @@ ${uci_set}Others="Others"
 	${UCI_DEL_LIST}="Bilibili" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Bilibili" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Bahamut" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Bahamut" >/dev/null 2>&1
 	${UCI_DEL_LIST}="HBO Max" >/dev/null 2>&1 && ${UCI_ADD_LIST}="HBO Max" >/dev/null 2>&1
-	${UCI_DEL_LIST}="HBO Go" >/dev/null 2>&1 && ${UCI_ADD_LIST}="HBO Go" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Pornhub" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Pornhub" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Asian TV" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Asian TV" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="CN Mainland TV" >/dev/null 2>&1 && ${UCI_ADD_LIST}="CN Mainland TV" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Global TV" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Global TV" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Netflix" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Netflix" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Discovery Plus" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Discovery Plus" >/dev/null 2>&1
 	${UCI_DEL_LIST}="DAZN" >/dev/null 2>&1 && ${UCI_ADD_LIST}="DAZN" >/dev/null 2>&1
-  ${UCI_DEL_LIST}="OpenAI" >/dev/null 2>&1 && ${UCI_ADD_LIST}="OpenAI" >/dev/null 2>&1
-  ${UCI_DEL_LIST}="Apple TV" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Apple TV" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="AI Suite" >/dev/null 2>&1 && ${UCI_ADD_LIST}="AI Suite" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="Apple TV" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Apple TV" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Google FCM" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Google FCM" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Scholar" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Scholar" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Disney" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Disney" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Spotify" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Spotify" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Steam" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Steam" >/dev/null 2>&1
-  ${UCI_DEL_LIST}="miHoYo" >/dev/null 2>&1 && ${UCI_ADD_LIST}="miHoYo" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="miHoYo" >/dev/null 2>&1 && ${UCI_ADD_LIST}="miHoYo" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Telegram" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Telegram" >/dev/null 2>&1
-  ${UCI_DEL_LIST}="Crypto" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Crypto" >/dev/null 2>&1
-  ${UCI_DEL_LIST}="Discord" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Discord" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="Crypto" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Crypto" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="Discord" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Discord" >/dev/null 2>&1
 	${UCI_DEL_LIST}="PayPal" >/dev/null 2>&1 && ${UCI_ADD_LIST}="PayPal" >/dev/null 2>&1
 	${UCI_DEL_LIST}="Speedtest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Speedtest" >/dev/null 2>&1
-  ${UCI_DEL_LIST}="Others" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Others" >/dev/null 2>&1
-}
-elif [ "$rule_sources" = "ConnersHua_return" ] && [ "$servers_if_update" != "1" ] && [ -z "$if_game_proxy" ]; then
-LOG_OUT "Creating By Using ConnersHua Return Rules..."
-echo "proxy-groups:" >>$SERVER_FILE
-cat >> "$SERVER_FILE" <<-EOF
-  - name: Auto - UrlTest
-    type: url-test
-EOF
-if [ -f "/tmp/Proxy_Server" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    proxies:
-EOF
-fi
-cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
-if [ -f "/tmp/Proxy_Provider" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    use:
-EOF
-fi
-cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
-cat >> "$SERVER_FILE" <<-EOF
-    url: http://cp.cloudflare.com/generate_204
-    interval: "600"
-    tolerance: "150"
-  - name: Proxy
-    type: select
-    proxies:
-      - Auto - UrlTest
-      - DIRECT
-EOF
-cat /tmp/Proxy_Server >> $SERVER_FILE 2>/dev/null
-if [ -f "/tmp/Proxy_Provider" ]; then
-cat >> "$SERVER_FILE" <<-EOF
-    use:
-EOF
-fi
-cat /tmp/Proxy_Provider >> $SERVER_FILE 2>/dev/null
-cat >> "$SERVER_FILE" <<-EOF
-  - name: Others
-    type: select
-    proxies:
-      - Proxy
-      - DIRECT
-EOF
-config_load "openclash"
-config_foreach yml_other_rules_del "other_rules" "$CONFIG_NAME" "ConnersHua_return"
-uci_name_tmp=$(uci -q add openclash other_rules)
-uci_set="uci -q set openclash.$uci_name_tmp."
-${UCI_SET}rule_source="1"
-${uci_set}enable="1"
-${uci_set}rule_name="ConnersHua_return"
-${uci_set}config="$CONFIG_NAME"
-${uci_set}Proxy="Proxy"
-${uci_set}Others="Others"
-[ "$config_auto_update" -eq 1 ] && [ "$new_servers_group_set" -eq 1 ] && {
-	${UCI_SET}servers_update="1"
-	${UCI_DEL_LIST}="all" >/dev/null 2>&1
-	${UCI_DEL_LIST}="Auto - UrlTest" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Auto - UrlTest" >/dev/null 2>&1
-	${UCI_DEL_LIST}="Proxy" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Proxy" >/dev/null 2>&1
+    ${UCI_DEL_LIST}="Others" >/dev/null 2>&1 && ${UCI_ADD_LIST}="Others" >/dev/null 2>&1
 }
 fi
 

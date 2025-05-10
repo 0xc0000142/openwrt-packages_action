@@ -66,6 +66,14 @@
                 return false;
             };
         }
+        const tasks_result_mask = container.querySelector("#tasks_result_mask");
+        if (taskd.show_mask_on_stopped) {
+            tasks_result_mask.onclick = function(){
+                tasks_result_mask.hidden=true;
+            };
+        } else {
+            tasks_result_mask.hidden=true;
+        }
         term.open(document.getElementById("tasks_xterm_log"));
 
         return {term,container};
@@ -96,6 +104,9 @@
             return false;
         };
         const checkTask = function() {
+            if (!showing) {
+                return Promise.resolve(false);
+            }
             return getTaskDetail(task_id).then(data=>{
                 if (!running) {
                     return false;
@@ -155,16 +166,18 @@
                 }
             }).catch(err => {
                 if (showing) {
-                    if (err.target.status == 0 || err.target.status == 502) {
-                        title_view.innerText = task_id + ' (' + $gettext("Fetch log failed, retrying...") + ')';
-                        setTimeout(()=>pulllog(true), 1000);
-                    } else if (err.target.status == 403 || err.target.status == 404) {
-                        title_view.innerText = task_id + ' (' + $gettext(err.target.status == 403?"Lost login status":"Task does not exist or has been deleted") + ')';
-                        container.querySelector(".dialog-icon-close").hidden = true;
-                        container.classList.add('tasks_unknown');
-                    } else {
-                        console.error(err);
+                    console.error(err);
+                    if (err.target) {
+                        if (err.target.status == 0 || err.target.status == 502) {
+                            title_view.innerText = task_id + ' (' + $gettext("Fetch log failed, retrying...") + ')';
+                        } else if (err.target.status == 403 || err.target.status == 404) {
+                            title_view.innerText = task_id + ' (' + $gettext(err.target.status == 403?"Lost login status":"Task does not exist or has been deleted") + ')';
+                            container.querySelector(".dialog-icon-close").hidden = true;
+                            container.classList.add('tasks_unknown');
+                            return
+                        }
                     }
+                    setTimeout(()=>pulllog(true), 1000);
                 }
             });
         };

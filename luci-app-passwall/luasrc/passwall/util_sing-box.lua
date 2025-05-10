@@ -5,6 +5,61 @@ local sys = api.sys
 local jsonc = api.jsonc
 local appname = "passwall"
 local fs = api.fs
+local split = api.split
+
+local local_version = api.get_app_version("sing-box")
+local version_ge_1_11_0 = api.compare_versions(local_version:match("[^v]+"), ">=", "1.11.0")
+local version_ge_1_12_0 = api.compare_versions(local_version:match("[^v]+"), ">=", "1.12.0")
+
+local geosite_all_tag = {}
+local geoip_all_tag = {}
+local srss_path = "/tmp/etc/" .. appname .."_tmp/srss/"
+
+local function convert_geofile()
+	if api.compare_versions(local_version:match("[^v]+"), "<", "1.8.0") then
+		api.log("！！！注意：Sing-Box 版本低，Sing-Box 分流无法启用！请在[组件更新]中更新。")
+		return
+	end
+	local geo_dir = (uci:get(appname, "@global_rules[0]", "v2ray_location_asset") or "/usr/share/v2ray/"):match("^(.*)/")
+	local geosite_path = geo_dir .. "/geosite.dat"
+	local geoip_path = geo_dir .. "/geoip.dat"
+	if not api.finded_com("geoview") then
+		api.log("！！！注意：缺少 Geoview 组件，Sing-Box 分流无法启用！请在[组件更新]中更新。")
+		return
+	else
+		if api.compare_versions(api.get_app_version("geoview"), "<", "0.1.6") then
+			api.log("！！！注意：Geoview 组件版本低，Sing-Box 分流无法启用！请在[组件更新]中更新。")
+			return
+		end
+	end
+	if not fs.access(srss_path) then
+		fs.mkdir(srss_path)
+	end
+	local function convert(file_path, prefix, tags)
+		if next(tags) and fs.access(file_path) then
+			local md5_file = srss_path .. prefix .. ".dat.md5"
+			local new_md5 = sys.exec("md5sum " .. file_path .. " 2>/dev/null | awk '{print $1}'"):gsub("\n", "")
+			local old_md5 = sys.exec("[ -f " .. md5_file .. " ] && head -n 1 " .. md5_file .. " | tr -d ' \t\n' || echo ''")
+			if new_md5 ~= "" and new_md5 ~= old_md5 then
+				sys.call("printf '%s' " .. new_md5 .. " > " .. md5_file)
+				sys.call("rm -rf " .. srss_path .. prefix .. "-*.srs" )
+			end
+			for k in pairs(tags) do
+				local srs_file = srss_path .. prefix .. "-" .. k .. ".srs"
+				if not fs.access(srs_file) then
+					local cmd = string.format("geoview -type %s -action convert -input '%s' -list '%s' -output '%s' -lowmem=true",
+						prefix, file_path, k, srs_file)
+					sys.exec(cmd)
+					--local status = fs.access(srs_file) and "成功。" or "失败！"
+					--api.log(string.format("  - 转换 %s:%s ... %s", prefix, k, status))
+				end
+			end
+		end
+	end
+	--api.log("Sing-Box 规则集转换：")
+	convert(geosite_path, "geosite", geosite_all_tag)
+	convert(geoip_path, "geoip", geoip_all_tag)
+end
 
 local new_port
 
@@ -19,24 +74,16 @@ end
 
 function gen_outbound(flag, node, tag, proxy_table)
 	local result = nil
-	if node and node ~= "nil" then
+	if node then
 		local node_id = node[".name"]
 		if tag == nil then
 			tag = node_id
 		end
 
-		local proxy = 0
-		local proxy_tag = "nil"
+		local proxy_tag = nil
+		local run_socks_instance = true
 		if proxy_table ~= nil and type(proxy_table) == "table" then
-			proxy = proxy_table.proxy or 0
-			proxy_tag = proxy_table.tag or "nil"
-		end
-
-		if node.type == "sing-box" then
-			proxy = 0
-			if proxy_tag ~= "nil" then
-				node.detour = proxy_tag
-			end
+			proxy_tag = proxy_table.tag or nil
 		end
 
 		if node.type ~= "sing-box" then
@@ -46,28 +93,34 @@ function gen_outbound(flag, node, tag, proxy_table)
 			if tag and node_id and tag ~= node_id then
 				config_file = string.format("%s_%s_%s_%s.json", flag, tag, node_id, new_port)
 			end
-			sys.call(string.format('/usr/share/%s/app.sh run_socks "%s"> /dev/null',
-				appname,
-				string.format("flag=%s node=%s bind=%s socks_port=%s config_file=%s relay_port=%s",
-					new_port, --flag
-					node_id, --node
-					"127.0.0.1", --bind
-					new_port, --socks port
-					config_file, --config file
-					(proxy == 1 and relay_port) and tostring(relay_port) or "" --relay port
+			if run_socks_instance then
+				sys.call(string.format('/usr/share/%s/app.sh run_socks "%s"> /dev/null',
+					appname,
+					string.format("flag=%s node=%s bind=%s socks_port=%s config_file=%s relay_port=%s",
+						new_port, --flag
+						node_id, --node
+						"127.0.0.1", --bind
+						new_port, --socks port
+						config_file, --config file
+						(proxy_tag and relay_port) and tostring(relay_port) or "" --relay port
+						)
 					)
 				)
-			)
+			end
 			node = {
 				protocol = "socks",
 				address = "127.0.0.1",
 				port = new_port
 			}
+		else
+			if proxy_tag then
+				node.detour = proxy_tag
+			end
 		end
 
 		result = {
-			_flag_tag = node_id,
-			_flag_proxy = proxy,
+			_id = node_id,
+			_flag = flag,
 			_flag_proxy_tag = proxy_tag,
 			tag = tag,
 			type = node.protocol,
@@ -76,6 +129,15 @@ function gen_outbound(flag, node, tag, proxy_table)
 			domain_strategy = node.domain_strategy,
 			detour = node.detour,
 		}
+
+		if version_ge_1_12_0 then
+			--https://sing-box.sagernet.org/migration/#migrate-outbound-domain-strategy-option-to-domain-resolver
+			result.domain_strategy = nil
+			result.domain_resolver = {
+				server = "direct",
+				strategy = (node.domain_strategy and node.domain_strategy ~="") and node.domain_strategy or nil
+			}
+		end
 
 		local tls = nil
 		if node.tls == "1" then
@@ -88,7 +150,7 @@ function gen_outbound(flag, node, tag, proxy_table)
 			end
 			tls = {
 				enabled = true,
-				disable_sni = false, --不要在 ClientHello 中发送服务器名称.
+				disable_sni = (node.tls_disable_sni == "1") and true or false, --不要在 ClientHello 中发送服务器名称.
 				server_name = node.tls_serverName, --用于验证返回证书上的主机名，除非设置不安全。它还包含在 ClientHello 中以支持虚拟主机，除非它是 IP 地址。
 				insecure = (node.tls_allowInsecure == "1") and true or false, --接受任何服务器证书。
 				alpn = alpn, --支持的应用层协议协商列表，按优先顺序排列。如果两个对等点都支持 ALPN，则选择的协议将是此列表中的一个，如果没有相互支持的协议则连接将失败。
@@ -96,7 +158,7 @@ function gen_outbound(flag, node, tag, proxy_table)
 				--max_version = "1.3",
 				ech = {
 					enabled = (node.ech == "1") and true or false,
-					config = (node.ech_config and node.ech_config:gsub("\\n","\n")) and node.ech_config:gsub("\\n","\n") or nil,
+					config = node.ech_config and split(node.ech_config:gsub("\\n", "\n"), "\n") or {},
 					pq_signature_schemes_enabled = node.pq_signature_schemes_enabled and true or false,
 					dynamic_record_sizing_disabled = node.dynamic_record_sizing_disabled and true or false
 				},
@@ -306,7 +368,7 @@ function gen_outbound(flag, node, tag, proxy_table)
 					} or nil,
 					ech = {
 						enabled = (node.ech == "1") and true or false,
-						config = (node.ech_config and node.ech_config:gsub("\\n","\n")) and node.ech_config:gsub("\\n","\n") or nil,
+						config = node.ech_config and split(node.ech_config:gsub("\\n", "\n"), "\n") or {},
 						pq_signature_schemes_enabled = node.pq_signature_schemes_enabled and true or false,
 						dynamic_record_sizing_disabled = node.dynamic_record_sizing_disabled and true or false
 					}
@@ -340,7 +402,7 @@ function gen_outbound(flag, node, tag, proxy_table)
 					} or nil,
 					ech = {
 						enabled = (node.ech == "1") and true or false,
-						config = (node.ech_config and node.ech_config:gsub("\\n","\n")) and node.ech_config:gsub("\\n","\n") or nil,
+						config = node.ech_config and split(node.ech_config:gsub("\\n", "\n"), "\n") or {},
 						pq_signature_schemes_enabled = node.pq_signature_schemes_enabled and true or false,
 						dynamic_record_sizing_disabled = node.dynamic_record_sizing_disabled and true or false
 					}
@@ -349,7 +411,18 @@ function gen_outbound(flag, node, tag, proxy_table)
 		end
 
 		if node.protocol == "hysteria2" then
+			local server_ports = {}
+			if node.hysteria2_hop then
+				node.hysteria2_hop = string.gsub(node.hysteria2_hop, "-", ":")
+				for range in node.hysteria2_hop:gmatch("([^,]+)") do
+					if range:match("^%d+:%d+$") then
+						table.insert(server_ports, range)
+					end
+				end
+			end
 			protocol_table = {
+				server_ports = next(server_ports) and server_ports or nil,
+				hop_interval = next(server_ports) and "30s" or nil,
 				up_mbps = (node.hysteria2_up_mbps and tonumber(node.hysteria2_up_mbps)) and tonumber(node.hysteria2_up_mbps) or nil,
 				down_mbps = (node.hysteria2_down_mbps and tonumber(node.hysteria2_down_mbps)) and tonumber(node.hysteria2_down_mbps) or nil,
 				obfs = {
@@ -363,11 +436,18 @@ function gen_outbound(flag, node, tag, proxy_table)
 					insecure = (node.tls_allowInsecure == "1") and true or false,
 					ech = {
 						enabled = (node.ech == "1") and true or false,
-						config = (node.ech_config and node.ech_config:gsub("\\n","\n")) and node.ech_config:gsub("\\n","\n") or nil,
+						config = node.ech_config and split(node.ech_config:gsub("\\n", "\n"), "\n") or {},
 						pq_signature_schemes_enabled = node.pq_signature_schemes_enabled and true or false,
 						dynamic_record_sizing_disabled = node.dynamic_record_sizing_disabled and true or false
 					}
 				}
+			}
+		end
+
+		if node.protocol == "anytls" then
+			protocol_table = {
+				password = (node.password and node.password ~= "") and node.password or "",
+				tls = tls
 			}
 		end
 
@@ -411,7 +491,7 @@ function gen_config_server(node)
 	if node.tls == "1" and node.ech == "1" then
 		tls.ech = {
 			enabled = true,
-			key = (node.ech_key and node.ech_key:gsub("\\n","\n")) and node.ech_key:gsub("\\n","\n") or nil,
+			key = node.ech_key and split(node.ech_key:gsub("\\n", "\n"), "\n") or {},
 			pq_signature_schemes_enabled = (node.pq_signature_schemes_enabled == "1") and true or false,
 			dynamic_record_sizing_disabled = (node.dynamic_record_sizing_disabled == "1") and true or false,
 		}
@@ -619,22 +699,26 @@ function gen_config_server(node)
 	end
 
 	if node.protocol == "tuic" then
-		tls.alpn = (node.tuic_alpn and node.tuic_alpn ~= "") and {
-			node.tuic_alpn
-		} or nil
-		protocol_table = {
-			users = {
-				{
-					name = "user1",
-					uuid = node.uuid,
+		if node.uuid then
+			local users = {}
+			for i = 1, #node.uuid do
+				users[i] = {
+					name = node.uuid[i],
+					uuid = node.uuid[i],
 					password = node.password
 				}
-			},
-			congestion_control = node.tuic_congestion_control or "cubic",
-			zero_rtt_handshake = (node.tuic_zero_rtt_handshake == "1") and true or false,
-			heartbeat = node.tuic_heartbeat .. "s",
-			tls = tls
-		}
+			end
+			tls.alpn = (node.tuic_alpn and node.tuic_alpn ~= "") and {
+				node.tuic_alpn
+			} or nil
+			protocol_table = {
+				users = users,
+				congestion_control = node.tuic_congestion_control or "cubic",
+				zero_rtt_handshake = (node.tuic_zero_rtt_handshake == "1") and true or false,
+				heartbeat = node.tuic_heartbeat .. "s",
+				tls = tls
+			}
+		end
 	end
 
 	if node.protocol == "hysteria2" then
@@ -653,6 +737,18 @@ function gen_config_server(node)
 			},
 			ignore_client_bandwidth = (node.hysteria2_ignore_client_bandwidth == "1") and true or false,
 			tls = tls
+		}
+	end
+
+	if node.protocol == "anytls" then
+		protocol_table = {
+			users = {
+				{
+					name = (node.username and node.username ~= "") and node.username or "sekai",
+					password = node.password
+				}
+			},
+			tls = tls,
 		}
 	end
 
@@ -679,7 +775,7 @@ function gen_config_server(node)
 		}
 	}
 
-	if node.outbound_node and node.outbound_node ~= "nil" then
+	if node.outbound_node then
 		local outbound = nil
 		if node.outbound_node == "_iface" and node.outbound_node_iface then
 			outbound = {
@@ -688,7 +784,7 @@ function gen_config_server(node)
 				bind_interface = node.outbound_node_iface,
 				routing_mark = 255,
 			}
-			sys.call("mkdir -p /tmp/etc/passwall/iface && touch /tmp/etc/passwall/iface/" .. node.outbound_node_iface)
+			sys.call(string.format("mkdir -p %s && touch %s/%s", api.TMP_IFACE_PATH, api.TMP_IFACE_PATH, node.outbound_node_iface))
 		else
 			local outbound_node_t = uci:get_all("passwall", node.outbound_node)
 			if node.outbound_node == "_socks" or node.outbound_node == "_http" then
@@ -729,6 +825,26 @@ function gen_config_server(node)
 		end
 	end
 
+	if version_ge_1_11_0 then
+		-- Migrate logics
+		-- https://sing-box.sagernet.org/migration/
+		for i = #config.outbounds, 1, -1 do
+			local value = config.outbounds[i]
+			if value.type == "block" then
+				-- https://sing-box.sagernet.org/migration/#migrate-legacy-special-outbounds-to-rule-actions
+				table.remove(config.outbounds, i)
+			end
+		end
+		-- https://sing-box.sagernet.org/migration/#migrate-legacy-special-outbounds-to-rule-actions
+		for i = #config.route.rules, 1, -1 do
+			local value = config.route.rules[i]
+			if value.outbound == "block" then
+				value.action = "reject"
+				value.outbound = nil
+			end
+		end
+	end
+
 	return config
 end
 
@@ -757,42 +873,35 @@ function gen_config(var)
 	local direct_dns_tcp_server = var["-direct_dns_tcp_server"]
 	local direct_dns_dot_server = var["-direct_dns_dot_server"]
 	local direct_dns_query_strategy = var["-direct_dns_query_strategy"]
+	local remote_dns_server = var["-remote_dns_server"]
 	local remote_dns_port = var["-remote_dns_port"]
 	local remote_dns_udp_server = var["-remote_dns_udp_server"]
 	local remote_dns_tcp_server = var["-remote_dns_tcp_server"]
 	local remote_dns_doh_url = var["-remote_dns_doh_url"]
 	local remote_dns_doh_host = var["-remote_dns_doh_host"]
+	local remote_dns_client_ip = var["-remote_dns_client_ip"]
 	local remote_dns_query_strategy = var["-remote_dns_query_strategy"]
 	local remote_dns_fake = var["-remote_dns_fake"]
 	local dns_cache = var["-dns_cache"]
 	local dns_socks_address = var["-dns_socks_address"]
 	local dns_socks_port = var["-dns_socks_port"]
 	local tags = var["-tags"]
+	local no_run = var["-no_run"]
 
 	local dns_domain_rules = {}
 	local dns = nil
 	local inbounds = {}
 	local outbounds = {}
+	local COMMON = {}
 
 	local singbox_settings = uci:get_all(appname, "@global_singbox[0]") or {}
 
 	local route = {
-		rules = {},
-		geoip = {
-			path = singbox_settings.geoip_path or "/usr/share/singbox/geoip.db",
-			download_url = singbox_settings.geoip_url or nil,
-			download_detour = nil,
-		},
-		geosite = {
-			path = singbox_settings.geosite_path or "/usr/share/singbox/geosite.db",
-			download_url = singbox_settings.geosite_url or nil,
-			download_detour = nil,
-		},
+		rules = {}
 	}
 
 	local experimental = nil
 
-	local default_outTag = nil
 	if node_id then
 		local node = uci:get_all(appname, node_id)
 		if node then
@@ -877,9 +986,58 @@ function gen_config(var)
 			table.insert(inbounds, inbound)
 		end
 
+		local function gen_urltest(_node)
+			local urltest_id = _node[".name"]
+			local urltest_tag = "urltest-" .. urltest_id
+			-- existing urltest
+			for _, v in ipairs(outbounds) do
+				if v.tag == urltest_tag then
+					return urltest_tag
+				end
+			end
+			-- new urltest
+			local ut_nodes = _node.urltest_node
+			local valid_nodes = {}
+			for i = 1, #ut_nodes do
+				local ut_node_id = ut_nodes[i]
+				local ut_node_tag = "ut-" .. ut_node_id
+				local is_new_ut_node = true
+				for _, outbound in ipairs(outbounds) do
+					if string.sub(outbound.tag, 1, #ut_node_tag) == ut_node_tag then
+						is_new_ut_node = false
+						valid_nodes[#valid_nodes + 1] = outbound.tag
+						break
+					end
+				end
+				if is_new_ut_node then
+					local ut_node = uci:get_all(appname, ut_node_id)
+					local outbound = gen_outbound(flag, ut_node, ut_node_tag)
+					if outbound then
+						outbound.tag = outbound.tag .. ":" .. ut_node.remarks
+						table.insert(outbounds, outbound)
+						valid_nodes[#valid_nodes + 1] = outbound.tag
+					end
+				end
+			end
+			if #valid_nodes == 0 then return nil end
+			local outbound = {
+				type = "urltest",
+				tag = urltest_tag,
+				outbounds = valid_nodes,
+				url = _node.urltest_url or "https://www.gstatic.com/generate_204",
+				interval = _node.urltest_interval and tonumber(_node.urltest_interval) and string.format("%dm", tonumber(_node.urltest_interval) / 60) or "3m",
+				tolerance = _node.urltest_tolerance and tonumber(_node.urltest_tolerance) and tonumber(_node.urltest_tolerance) or 50,
+				idle_timeout = _node.urltest_idle_timeout and tonumber(_node.urltest_idle_timeout) and string.format("%dm", tonumber(_node.urltest_idle_timeout) / 60) or "30m",
+				interrupt_exist_connections = (_node.urltest_interrupt_exist_connections == "true" or _node.urltest_interrupt_exist_connections == "1") and true or false
+			}
+			table.insert(outbounds, outbound)
+			return urltest_tag
+		end
+
 		local function set_outbound_detour(node, outbound, outbounds_table, shunt_rule_name)
 			if not node or not outbound or not outbounds_table then return nil end
 			local default_outTag = outbound.tag
+			local last_insert_outbound
 
 			if node.shadowtls == "1" then
 				local _node = {
@@ -896,14 +1054,31 @@ function gen_config(var)
 				}
 				local shadowtls_outbound = gen_outbound(nil, _node, outbound.tag .. "_shadowtls")
 				if shadowtls_outbound then
-					table.insert(outbounds_table, shadowtls_outbound)
+					last_insert_outbound = shadowtls_outbound
 					outbound.detour = outbound.tag .. "_shadowtls"
 					outbound.server = nil
 					outbound.server_port = nil
 				end
 			end
 
-			if node.to_node then
+			if node.chain_proxy == "1" and node.preproxy_node then
+				if outbound["_flag_proxy_tag"] then
+					--Ignore
+				else
+					local preproxy_node = uci:get_all(appname, node.preproxy_node)
+					if preproxy_node then
+						local preproxy_outbound = gen_outbound(nil, preproxy_node)
+						if preproxy_outbound then
+							preproxy_outbound.tag = preproxy_node[".name"] .. ":" .. preproxy_node.remarks
+							outbound.tag = preproxy_outbound.tag .. " -> " .. outbound.tag
+							outbound.detour = preproxy_outbound.tag
+							last_insert_outbound = preproxy_outbound
+							default_outTag = outbound.tag
+						end
+					end
+				end
+			end
+			if node.chain_proxy == "2" and node.to_node then
 				local to_node = uci:get_all(appname, node.to_node)
 				if to_node then
 					local to_outbound = gen_outbound(nil, to_node)
@@ -921,48 +1096,19 @@ function gen_config(var)
 					end
 				end
 			end
-			return default_outTag
+			return default_outTag, last_insert_outbound
 		end
 
 		if node.protocol == "_shunt" then
 			local rules = {}
 
-			local preproxy_enabled = node.preproxy_enabled == "1"
-			local preproxy_tag = "main"
-			local preproxy_node_id = node["main_node"]
-			local preproxy_node = preproxy_enabled and preproxy_node_id and uci:get_all(appname, preproxy_node_id) or nil
-
-			if preproxy_node_id and preproxy_node_id:find("Socks_") then
-				local socks_id = preproxy_node_id:sub(1 + #"Socks_")
-				local socks_node = uci:get_all(appname, socks_id) or nil
-				if socks_node then
-					local _node = {
-						type = "sing-box",
-						protocol = "socks",
-						address = "127.0.0.1",
-						port = socks_node.port,
-						uot = "1",
-					}
-					local preproxy_outbound = gen_outbound(flag, _node, preproxy_tag)
-					if preproxy_outbound then
-						table.insert(outbounds, preproxy_outbound)
-					else
-						preproxy_enabled = false
-					end
-				end
-			elseif preproxy_node and api.is_normal_node(preproxy_node) then
-				local preproxy_outbound = gen_outbound(flag, preproxy_node, preproxy_tag)
-				if preproxy_outbound then
-					set_outbound_detour(preproxy_node, preproxy_outbound, outbounds, preproxy_tag)
-					table.insert(outbounds, preproxy_outbound)
-				else
-					preproxy_enabled = false
-				end
-			end
+			local preproxy_rule_name = node.preproxy_enabled == "1" and "main" or nil
+			local preproxy_tag = preproxy_rule_name
+			local preproxy_node_id = preproxy_rule_name and node["main_node"] or nil
 
 			local function gen_shunt_node(rule_name, _node_id)
 				if not rule_name then return nil, nil end
-				if not _node_id then _node_id = node[rule_name] or "nil" end
+				if not _node_id then _node_id = node[rule_name] end
 				local rule_outboundTag
 				if _node_id == "_direct" then
 					rule_outboundTag = "direct"
@@ -970,7 +1116,7 @@ function gen_config(var)
 					rule_outboundTag = "block"
 				elseif _node_id == "_default" and rule_name ~= "default" then
 					rule_outboundTag = "default"
-				elseif _node_id:find("Socks_") then
+				elseif _node_id and _node_id:find("Socks_") then
 					local socks_id = _node_id:sub(1 + #"Socks_")
 					local socks_node = uci:get_all(appname, socks_id) or nil
 					if socks_node then
@@ -984,28 +1130,28 @@ function gen_config(var)
 						local _outbound = gen_outbound(flag, _node, rule_name)
 						if _outbound then
 							table.insert(outbounds, _outbound)
-							rule_outboundTag = rule_name
+							rule_outboundTag = _outbound.tag
 						end
 					end
-				elseif _node_id ~= "nil" then
+				elseif _node_id then
 					local _node = uci:get_all(appname, _node_id)
 					if not _node then return nil, nil end
 
 					if api.is_normal_node(_node) then
-						local proxy = preproxy_enabled and node[rule_name .. "_proxy_tag"] == preproxy_tag and _node_id ~= preproxy_node_id
+						local use_proxy = preproxy_tag and node[rule_name .. "_proxy_tag"] == preproxy_rule_name and _node_id ~= preproxy_node_id
 						local copied_outbound
 						for index, value in ipairs(outbounds) do
-							if value["_flag_tag"] == _node_id and value["_flag_proxy_tag"] == preproxy_tag then
+							if value["_id"] == _node_id and value["_flag_proxy_tag"] == (use_proxy and preproxy_tag or nil) then
 								copied_outbound = api.clone(value)
 								break
 							end
 						end
 						if copied_outbound then
-							copied_outbound.tag = rule_name
+							copied_outbound.tag = rule_name .. ":" .. _node.remarks
 							table.insert(outbounds, copied_outbound)
-							rule_outboundTag = rule_name
+							rule_outboundTag = copied_outbound.tag
 						else
-							if proxy then
+							if use_proxy then
 								local pre_proxy = nil
 								if _node.type ~= "sing-box" then
 									pre_proxy = true
@@ -1031,38 +1177,51 @@ function gen_config(var)
 									})
 								end
 							end
-							local _outbound = gen_outbound(flag, _node, rule_name, { proxy = proxy and 1 or 0, tag = proxy and preproxy_tag or nil })
+							
+							local _outbound = gen_outbound(flag, _node, rule_name, { tag = use_proxy and preproxy_tag or nil, run_socks_instance = not no_run })
 							if _outbound then
-								set_outbound_detour(_node, _outbound, outbounds, rule_name)
+								_outbound.tag = _outbound.tag .. ":" .. _node.remarks
+								rule_outboundTag, last_insert_outbound = set_outbound_detour(_node, _outbound, outbounds, rule_name)
 								table.insert(outbounds, _outbound)
-								rule_outboundTag = rule_name
+								if last_insert_outbound then
+									table.insert(outbounds, last_insert_outbound)
+								end
 							end
 						end
+					elseif _node.protocol == "_urltest" then
+						rule_outboundTag = gen_urltest(_node)
 					elseif _node.protocol == "_iface" then
 						if _node.iface then
 							local _outbound = {
 								type = "direct",
-								tag = rule_name,
+								tag = rule_name .. ":" .. _node.remarks,
 								bind_interface = _node.iface,
 								routing_mark = 255,
 							}
 							table.insert(outbounds, _outbound)
-							rule_outboundTag = rule_name
-							sys.call("touch /tmp/etc/passwall/iface/" .. _node.iface)
+							rule_outboundTag = _outbound.tag
+							sys.call(string.format("mkdir -p %s && touch %s/%s", api.TMP_IFACE_PATH, api.TMP_IFACE_PATH, _node.iface))
 						end
 					end
 				end
 				return rule_outboundTag
 			end
+
+			if preproxy_tag and preproxy_node_id then
+				local preproxy_outboundTag = gen_shunt_node(preproxy_rule_name, preproxy_node_id)
+				if preproxy_outboundTag then
+					preproxy_tag = preproxy_outboundTag
+				end
+			end
 			--default_node
 			local default_node_id = node.default_node or "_direct"
-			local default_outboundTag = gen_shunt_node("default", default_node_id)
+			COMMON.default_outbound_tag = gen_shunt_node("default", default_node_id)
 			--shunt rule
 			uci:foreach(appname, "shunt_rules", function(e)
 				local outboundTag = gen_shunt_node(e[".name"])
 				if outboundTag and e.remarks then
 					if outboundTag == "default" then
-						outboundTag = default_outboundTag
+						outboundTag = COMMON.default_outbound_tag
 					end
 					local protocols = nil
 					if e["protocol"] and e["protocol"] ~= "" then
@@ -1097,7 +1256,6 @@ function gen_config(var)
 					local rule = {
 						inbound = inboundTag,
 						outbound = outboundTag,
-						invert = false, --匹配反选
 						protocol = protocols
 					}
 
@@ -1110,17 +1268,21 @@ function gen_config(var)
 					end
 
 					if e.source then
-						local source_geoip = {}
 						local source_ip_cidr = {}
+						local is_private = false
 						string.gsub(e.source, '[^' .. " " .. ']+', function(w)
 							if w:find("geoip") == 1 then
-								table.insert(source_geoip, w)
+								local _geoip = w:sub(1 + #"geoip:")     --适配srs
+								if _geoip == "private" then
+									is_private = true
+								end
 							else
 								table.insert(source_ip_cidr, w)
 							end
 						end)
-						rule.source_geoip = #source_geoip > 0 and source_geoip or nil
+						rule.source_ip_is_private = is_private and true or nil
 						rule.source_ip_cidr = #source_ip_cidr > 0 and source_ip_cidr or nil
+						if is_private or #source_ip_cidr > 0 then rule.rule_set_ip_cidr_match_source = true end
 					end
 
 					if e.sourcePort then
@@ -1151,6 +1313,8 @@ function gen_config(var)
 						rule.port_range = #port_range > 0 and port_range or nil
 					end
 
+					local rule_set_tag = {}
+
 					if e.domain_list then
 						local domain_table = {
 							outboundTag = outboundTag,
@@ -1158,12 +1322,15 @@ function gen_config(var)
 							domain_suffix = {},
 							domain_keyword = {},
 							domain_regex = {},
-							geosite = {},
+							rule_set = {},
 						}
 						string.gsub(e.domain_list, '[^' .. "\r\n" .. ']+', function(w)
 							if w:find("#") == 1 then return end
 							if w:find("geosite:") == 1 then
-								table.insert(domain_table.geosite, w:sub(1 + #"geosite:"))
+								local _geosite = w:sub(1 + #"geosite:")  --适配srs
+								geosite_all_tag[_geosite] = true
+								table.insert(rule_set_tag, "geosite-" .. _geosite)
+								table.insert(domain_table.rule_set, "geosite-" .. _geosite)
 							elseif w:find("regexp:") == 1 then
 								table.insert(domain_table.domain_regex, w:sub(1 + #"regexp:"))
 							elseif w:find("full:") == 1 then
@@ -1178,62 +1345,102 @@ function gen_config(var)
 						rule.domain_suffix = #domain_table.domain_suffix > 0 and domain_table.domain_suffix or nil
 						rule.domain_keyword = #domain_table.domain_keyword > 0 and domain_table.domain_keyword or nil
 						rule.domain_regex = #domain_table.domain_regex > 0 and domain_table.domain_regex or nil
-						rule.geosite = #domain_table.geosite > 0 and domain_table.geosite or nil
 
-						if outboundTag and outboundTag ~= "nil" then
+						if outboundTag then
 							table.insert(dns_domain_rules, api.clone(domain_table))
 						end
 					end
 
 					if e.ip_list then
 						local ip_cidr = {}
-						local geoip = {}
+						local is_private = false
 						string.gsub(e.ip_list, '[^' .. "\r\n" .. ']+', function(w)
 							if w:find("#") == 1 then return end
 							if w:find("geoip:") == 1 then
-								table.insert(geoip, w:sub(1 + #"geoip:"))
+								local _geoip = w:sub(1 + #"geoip:")     --适配srs
+								if _geoip == "private" then
+									is_private = true
+								else
+									geoip_all_tag[_geoip] = true
+									table.insert(rule_set_tag, "geoip-" .. _geoip)
+								end
 							else
 								table.insert(ip_cidr, w)
 							end
 						end)
 
+						rule.ip_is_private = is_private and true or nil
 						rule.ip_cidr = #ip_cidr > 0 and ip_cidr or nil
-						rule.geoip = #geoip > 0 and geoip or nil
 					end
+
+					rule.rule_set = #rule_set_tag > 0 and rule_set_tag or nil --适配srs
 
 					table.insert(rules, rule)
 				end
 			end)
 
-			if default_outboundTag then
-				route.final = default_outboundTag
-				default_outTag = default_outboundTag
-			end
-
 			for index, value in ipairs(rules) do
 				table.insert(route.rules, rules[index])
+			end
+
+			local rule_set = {}    --适配srs
+			if next(geosite_all_tag) then
+				for k,v in pairs(geosite_all_tag) do
+					local srs_file = srss_path .. "geosite-" .. k ..".srs"
+					local _rule_set = {
+						tag = "geosite-" .. k,
+						type = "local",
+						format = "binary",
+						path = srs_file
+					}
+					table.insert(rule_set, _rule_set)
+				end
+			end
+			if next(geoip_all_tag) then
+				for k,v in pairs(geoip_all_tag) do
+					local srs_file = srss_path .. "geoip-" .. k ..".srs"
+					local _rule_set = {
+						tag = "geoip-" .. k,
+						type = "local",
+						format = "binary",
+						path = srs_file
+					}
+					table.insert(rule_set, _rule_set)
+				end
+			end
+			route.rule_set = #rule_set >0 and rule_set or nil
+
+		elseif node.protocol == "_urltest" then
+			if node.urltest_node then
+				COMMON.default_outbound_tag = gen_urltest(node)
 			end
 		elseif node.protocol == "_iface" then
 			if node.iface then
 				local outbound = {
 					type = "direct",
-					tag = node_id,
+					tag = node.remarks or node_id,
 					bind_interface = node.iface,
 					routing_mark = 255,
 				}
 				table.insert(outbounds, outbound)
-				default_outTag = outbound.tag
-				route.final = default_outTag
-				sys.call("touch /tmp/etc/passwall/iface/" .. node.iface)
+				COMMON.default_outbound_tag = outbound.tag
+				sys.call(string.format("mkdir -p %s && touch %s/%s", api.TMP_IFACE_PATH, api.TMP_IFACE_PATH, node.iface))
 			end
 		else
 			local outbound = gen_outbound(flag, node)
 			if outbound then
-				default_outTag = set_outbound_detour(node, outbound, outbounds)
+				outbound.tag = outbound.tag .. ":" .. node.remarks
+				COMMON.default_outbound_tag, last_insert_outbound = set_outbound_detour(node, outbound, outbounds)
 				table.insert(outbounds, outbound)
-				route.final = default_outTag
+				if last_insert_outbound then
+					table.insert(outbounds, last_insert_outbound)
+				end
 			end
 		end
+	end
+
+	if COMMON.default_outbound_tag then
+		route.final = COMMON.default_outbound_tag
 	end
 
 	if dns_listen_port then
@@ -1247,10 +1454,12 @@ function gen_config(var)
 			fakeip = nil,
 		}
 
-		table.insert(dns.servers, {
-			tag = "block",
-			address = "rcode://success",
-		})
+		if not version_ge_1_12_0 then --Migrate to new DNS server formats
+			table.insert(dns.servers, {
+				tag = "block",
+				address = "rcode://success",
+			})
+		end
 
 		if dns_socks_address and dns_socks_port then
 			default_outTag = "dns_socks_out"
@@ -1260,6 +1469,8 @@ function gen_config(var)
 				server = dns_socks_address,
 				server_port = tonumber(dns_socks_port)
 			})
+		else 
+			default_outTag = COMMON.default_outbound_tag
 		end
 
 		local remote_strategy = "prefer_ipv6"
@@ -1269,56 +1480,118 @@ function gen_config(var)
 			remote_strategy = "ipv6_only"
 		end
 
-		local remote_server = {
-			tag = "remote",
-			address_strategy = "prefer_ipv4",
-			strategy = remote_strategy,
-			address_resolver = "direct",
-			detour = default_outTag,
-		}
-
-		if remote_dns_udp_server then
-			local server_port = tonumber(remote_dns_port) or 53
-			remote_server.address = "udp://" .. remote_dns_udp_server .. ":" .. server_port
-		end
-
-		if remote_dns_tcp_server then
-			remote_server.address = remote_dns_tcp_server
-		end
-
-		if remote_dns_doh_url and remote_dns_doh_host then
-			remote_server.address = remote_dns_doh_url
-		end
-
-		if remote_server.address then
-			table.insert(dns.servers, remote_server)
-		end
-
+		local remote_server = {}
 		local fakedns_tag = "remote_fakeip"
-		if remote_dns_fake then
-			dns.fakeip = {
-				enabled = true,
-				inet4_range = "198.18.0.0/15",
-				inet6_range = "fc00::/18",
-			}
-			
-			table.insert(dns.servers, {
-				tag = fakedns_tag,
-				address = "fakeip",
-				strategy = remote_strategy,
-			})
 
-			if not experimental then
-				experimental = {}
-			end
-			experimental.cache_file = {
-				enabled = true,
-				store_fakeip = true,
-				path = "/tmp/singbox_passwall_" .. flag .. ".db"
+		if not version_ge_1_12_0 then --Migrate to new DNS server formats
+			remote_server = {
+				tag = "remote",
+				address_strategy = "prefer_ipv4",
+				strategy = remote_strategy,
+				address_resolver = "direct",
+				detour = default_outTag,
+				client_subnet = (remote_dns_client_ip and remote_dns_client_ip ~= "") and remote_dns_client_ip or nil,
 			}
+
+			if remote_dns_udp_server then
+				local server_port = tonumber(remote_dns_port) or 53
+				remote_server.address = "udp://" .. remote_dns_udp_server .. ":" .. server_port
+			end
+
+			if remote_dns_tcp_server then
+				remote_server.address = remote_dns_tcp_server
+			end
+
+			if remote_dns_doh_url and remote_dns_doh_host then
+				remote_server.address = remote_dns_doh_url
+			end
+
+			if remote_server.address then
+				table.insert(dns.servers, remote_server)
+			end
+
+			if remote_dns_fake then
+				dns.fakeip = {
+					enabled = true,
+					inet4_range = "198.18.0.0/15",
+					inet6_range = "fc00::/18",
+				}
+				
+				table.insert(dns.servers, {
+					tag = fakedns_tag,
+					address = "fakeip",
+					strategy = remote_strategy,
+				})
+
+				if not experimental then
+					experimental = {}
+				end
+				experimental.cache_file = {
+					enabled = true,
+					store_fakeip = true,
+					path = api.CACHE_PATH .. "/singbox_" .. flag .. ".db"
+				}
+			end
+		else               -- Migrate to 1.12 DNS
+			remote_server = {
+				tag = "remote",
+				domain_strategy = remote_strategy,
+				domain_resolver = "direct",
+				detour = default_outTag,
+			}
+
+			if remote_dns_udp_server then
+				local server_port = tonumber(remote_dns_port) or 53
+				remote_server.type = "udp"
+				remote_server.server = remote_dns_udp_server
+				remote_server.server_port = server_port
+			end
+
+			if remote_dns_tcp_server then
+				local server_port = tonumber(remote_dns_port) or 53
+				remote_server.type = "tcp"
+				remote_server.server = remote_dns_server
+				remote_server.server_port = server_port
+			end
+
+			if remote_dns_doh_url and remote_dns_doh_host then
+				local server_port = tonumber(remote_dns_port) or 443
+				remote_server.type = "https"
+				remote_server.server = remote_dns_doh_host
+				remote_server.server_port = server_port
+			end
+
+			if remote_server.server then
+				table.insert(dns.servers, remote_server)
+			end
+
+			if remote_dns_fake then		
+				table.insert(dns.servers, {
+					tag = fakedns_tag,
+					type = "fakeip",
+					inet4_range = "198.18.0.0/15",
+					inet6_range = "fc00::/18",
+				})
+
+				if not experimental then
+					experimental = {}
+				end
+				experimental.cache_file = {
+					enabled = true,
+					store_fakeip = true,
+					path = api.CACHE_PATH .. "/singbox_" .. flag .. ".db"
+				}
+			end
 		end
-	
+
+		local direct_strategy = "prefer_ipv6"
 		if direct_dns_udp_server or direct_dns_tcp_server or direct_dns_dot_server then
+			if direct_dns_query_strategy == "UseIPv4" then
+				direct_strategy = "ipv4_only"
+			elseif direct_dns_query_strategy == "UseIPv6" then
+				direct_strategy = "ipv6_only"
+			end
+
 			local domain = {}
 			local nodes_domain_text = sys.exec('uci show passwall | grep ".address=" | cut -d "\'" -f 2 | grep "[a-zA-Z]$" | sort -u')
 			string.gsub(nodes_domain_text, '[^' .. "\r\n" .. ']+', function(w)
@@ -1327,40 +1600,61 @@ function gen_config(var)
 			if #domain > 0 then
 				table.insert(dns_domain_rules, 1, {
 					outboundTag = "direct",
-					domain = domain
+					domain = domain,
+					strategy = version_ge_1_12_0 and direct_strategy or nil
 				})
 			end
-	
-			local direct_strategy = "prefer_ipv6"
-			if direct_dns_query_strategy == "UseIPv4" then
-				direct_strategy = "ipv4_only"
-			elseif direct_dns_query_strategy == "UseIPv6" then
-				direct_strategy = "ipv6_only"
+
+			if not version_ge_1_12_0 then --Migrate to new DNS server formats
+				local direct_dns_server, port
+				if direct_dns_udp_server then
+					port = tonumber(direct_dns_port) or 53
+					direct_dns_server = "udp://" .. direct_dns_udp_server .. ":" .. port
+				elseif direct_dns_tcp_server then
+					port = tonumber(direct_dns_port) or 53
+					direct_dns_server = "tcp://" .. direct_dns_tcp_server .. ":" .. port
+				elseif direct_dns_dot_server then
+					port = tonumber(direct_dns_port) or 853
+					if direct_dns_dot_server:find(":") == nil then
+						direct_dns_server = "tls://" .. direct_dns_dot_server .. ":" .. port
+					else
+						direct_dns_server = "tls://[" .. direct_dns_dot_server .. "]:" .. port
+					end
+				end
+		
+				table.insert(dns.servers, {
+					tag = "direct",
+					address = direct_dns_server,
+					address_strategy = "prefer_ipv6",
+					strategy = direct_strategy,
+					detour = "direct",
+				})
+			else               -- Migrate to 1.12 DNS
+				local direct_dns_server, port, type
+				if direct_dns_udp_server then
+					port = tonumber(direct_dns_port) or 53
+					direct_dns_server = direct_dns_udp_server
+					type = "udp"
+				elseif direct_dns_tcp_server then
+					port = tonumber(direct_dns_port) or 53
+					direct_dns_server = direct_dns_tcp_server
+					type = "tcp"
+				elseif direct_dns_dot_server then
+					port = tonumber(direct_dns_port) or 853
+					direct_dns_server = direct_dns_dot_server
+					type = "tls"
+				end
+		
+				table.insert(dns.servers, {
+					tag = "direct",
+					type = type,
+					server = direct_dns_server,
+					server_port = port,
+					domain_strategy = direct_strategy,
+					detour = "direct",
+				})
 			end
 
-			local direct_dns_server, port
-			if direct_dns_udp_server then
-				port = tonumber(direct_dns_port) or 53
-				direct_dns_server = "udp://" .. direct_dns_udp_server .. ":" .. port
-			elseif direct_dns_tcp_server then
-				port = tonumber(direct_dns_port) or 53
-				direct_dns_server = "tcp://" .. direct_dns_tcp_server .. ":" .. port
-			elseif direct_dns_dot_server then
-				port = tonumber(direct_dns_port) or 853
-				if direct_dns_dot_server:find(":") == nil then
-					direct_dns_server = "tls://" .. direct_dns_dot_server .. ":" .. port
-				else
-					direct_dns_server = "tls://[" .. direct_dns_dot_server .. "]:" .. port
-				end
-			end
-	
-			table.insert(dns.servers, {
-				tag = "direct",
-				address = direct_dns_server,
-				address_strategy = "prefer_ipv6",
-				strategy = direct_strategy,
-				detour = "direct",
-			})
 		end
 
 		local default_dns_flag = "remote"
@@ -1385,28 +1679,40 @@ function gen_config(var)
 			end
 		end
 		dns.final = default_dns_flag
+		if version_ge_1_12_0 then  -- Migrate to 1.12 DNS
+			dns.strategy = (default_dns_flag == "direct") and direct_strategy or remote_strategy
+		end
 
 		--按分流顺序DNS
 		if dns_domain_rules and #dns_domain_rules > 0 then
 			for index, value in ipairs(dns_domain_rules) do
-				if value.outboundTag and (value.domain or value.domain_suffix or value.domain_keyword or value.domain_regex or value.geosite) then
+				if value.outboundTag and (value.domain or value.domain_suffix or value.domain_keyword or value.domain_regex or value.rule_set) then
 					local dns_rule = {
 						server = value.outboundTag,
 						domain = (value.domain and #value.domain > 0) and value.domain or nil,
 						domain_suffix = (value.domain_suffix and #value.domain_suffix > 0) and value.domain_suffix or nil,
 						domain_keyword = (value.domain_keyword and #value.domain_keyword > 0) and value.domain_keyword or nil,
 						domain_regex = (value.domain_regex and #value.domain_regex > 0) and value.domain_regex or nil,
-						geosite = (value.geosite and #value.geosite > 0) and value.geosite or nil,
+						rule_set = (value.rule_set and #value.rule_set > 0) and value.rule_set or nil,                      --适配srs
 						disable_cache = false,
+						strategy = (version_ge_1_12_0 and value.outboundTag == "direct") and direct_strategy or nil --Migrate to 1.12 DNS
 					}
+					if version_ge_1_12_0 and value.outboundTag == "block" then --Migrate to 1.12 DNS
+						dns_rule.action = "predefined"
+						dns_rule.rcode = "NOERROR"
+						dns_rule.server = nil
+						dns_rule.disable_cache = nil
+					end
 					if value.outboundTag ~= "block" and value.outboundTag ~= "direct" then
 						dns_rule.server = "remote"
-						if value.outboundTag ~= "default" and remote_server.address then
-							local remote_dns_server = api.clone(remote_server)
-							remote_dns_server.tag = value.outboundTag
-							remote_dns_server.detour = value.outboundTag
-							table.insert(dns.servers, remote_dns_server)
-							dns_rule.server = remote_dns_server.tag
+						dns_rule.strategy = version_ge_1_12_0 and remote_strategy or nil --Migrate to 1.12 DNS
+						dns_rule.client_subnet = (version_ge_1_12_0 and remote_dns_client_ip and remote_dns_client_ip ~= "") and remote_dns_client_ip or nil --Migrate to 1.12 DNS
+						if value.outboundTag ~= COMMON.default_outbound_tag and (remote_server.address or remote_server.server) then
+							local remote_shunt_server = api.clone(remote_server)
+							remote_shunt_server.tag = value.outboundTag
+							remote_shunt_server.detour = value.outboundTag
+							table.insert(dns.servers, remote_shunt_server)
+							dns_rule.server = remote_shunt_server.tag
 						end
 						if remote_dns_fake then
 							local fakedns_dns_rule = api.clone(dns_rule)
@@ -1462,21 +1768,140 @@ function gen_config(var)
 			--实验性
 			experimental = experimental,
 		}
-		table.insert(outbounds, {
+
+		local direct_outbound = {
 			type = "direct",
 			tag = "direct",
 			routing_mark = 255,
-			domain_strategy = "prefer_ipv6",
-		})
+		}
+		if not version_ge_1_12_0 then  --Migrate to 1.12 DNS
+			direct_outbound.domain_strategy = "prefer_ipv6"
+		else
+			local domain_resolver = {
+				server = "direct",
+				strategy = "prefer_ipv6"
+			}
+			direct_outbound.domain_resolver = domain_resolver
+
+			-- 当没有 direct dns 服务器时添加 local
+			local hasDirect = false
+			if config.dns and config.dns.servers then
+				for _, server in ipairs(config.dns.servers) do
+					if server.tag == "direct" then
+						hasDirect = true
+						break
+					end
+				end
+			end
+			if not hasDirect then
+				config.dns = {
+					servers = {
+						{
+							type = "local",
+							tag = "direct"
+						}
+					},
+				}
+			end
+		end
+		table.insert(outbounds,direct_outbound)
+
 		table.insert(outbounds, {
 			type = "block",
 			tag = "block"
 		})
 		for index, value in ipairs(config.outbounds) do
+			if not value["_flag_proxy_tag"] and not value.detour and value["_id"] and value.server and value.server_port and not no_run then
+				sys.call(string.format("echo '%s' >> %s", value["_id"], api.TMP_PATH .. "/direct_node_list"))
+			end
 			for k, v in pairs(config.outbounds[index]) do
 				if k:find("_") == 1 then
 					config.outbounds[index][k] = nil
 				end
+			end
+		end
+		if version_ge_1_11_0 then
+			-- Migrate logics
+			-- https://sing-box.sagernet.org/migration/
+			local endpoints = {}
+			for i = #config.outbounds, 1, -1 do
+				local value = config.outbounds[i]
+				if value.type == "wireguard" then
+					-- https://sing-box.sagernet.org/migration/#migrate-wireguard-outbound-to-endpoint
+					local endpoint = {
+						type = "wireguard",
+						tag = value.tag,
+						system = value.system_interface,
+						name = value.interface_name,
+						mtu = value.mtu,
+						address = value.local_address,
+						private_key = value.private_key,
+						peers = {
+							{
+								address = value.server,
+								port = value.server_port,
+								public_key = value.peer_public_key,
+								pre_shared_key = value.pre_shared_key,
+								allowed_ips = {"0.0.0.0/0"},
+								reserved = value.reserved
+							}
+						},
+						domain_strategy = value.domain_strategy,
+						detour = value.detour
+					}
+					endpoints[#endpoints + 1] = endpoint
+					table.remove(config.outbounds, i)
+				end
+				if value.type == "block" or value.type == "dns" then
+					-- https://sing-box.sagernet.org/migration/#migrate-legacy-special-outbounds-to-rule-actions
+					table.remove(config.outbounds, i)
+				end
+			end
+			if #endpoints > 0 then
+				config.endpoints = endpoints
+			end
+
+			-- https://sing-box.sagernet.org/migration/#migrate-legacy-special-outbounds-to-rule-actions
+			for i = #config.route.rules, 1, -1 do
+				local value = config.route.rules[i]
+				if value.outbound == "block" then
+					value.action = "reject"
+					value.outbound = nil
+				elseif value.outbound == "dns-out" then
+					value.action = "hijack-dns"
+					value.outbound = nil
+				else
+					value.action = "route"
+				end
+			end
+
+			-- https://sing-box.sagernet.org/migration/#migrate-legacy-inbound-fields-to-rule-actions
+			for i = #config.inbounds, 1, -1 do
+				local value = config.inbounds[i]
+				if value.sniff == true then
+					table.insert(config.route.rules, 1, {
+						inbound = value.tag,
+						action = "sniff"
+					})
+					value.sniff = nil
+					value.sniff_override_destination = nil
+				end
+				if value.domain_strategy then
+					table.insert(config.route.rules, 1, {
+						inbound = value.tag,
+						action = "resolve",
+						strategy = value.domain_strategy,
+						--server = ""
+					})
+					value.domain_strategy = nil
+				end
+			end
+
+			if config.route.final == "block" then
+				config.route.final = nil
+				table.insert(config.route.rules, {
+					action = "reject"
+				})
 			end
 		end
 		return jsonc.stringify(config, 1)
@@ -1569,5 +1994,8 @@ if arg[1] then
 	local func =_G[arg[1]]
 	if func then
 		print(func(api.get_function_args(arg)))
+		if (next(geosite_all_tag) or next(geoip_all_tag)) and not no_run then
+			convert_geofile()
+		end
 	end
 end

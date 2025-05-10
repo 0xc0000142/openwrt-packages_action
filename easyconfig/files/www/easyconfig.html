@@ -24,7 +24,9 @@
 	<a href="#" class="closebtn" onclick="closenav();">&times;</a>
 	<a href="#" onclick="btn_pages('status');"><i data-feather="bar-chart-2" class="iconwithtext"></i>Status</a>
 	<a href="#" onclick="btn_pages('config');"><i data-feather="settings" class="iconwithtext"></i>Ustawienia</a>
-	<a href="#" onclick="btn_pages('networks');"><i data-feather="share-2" class="iconwithtext"></i>Sieci dodatkowe</a>
+	<div id="menu_networks">
+		<a href="#" onclick="btn_pages('networks');"><i data-feather="share-2" class="iconwithtext"></i>Sieci dodatkowe</a>
+	</div>
 	<a href="#" onclick="btn_pages('system');"><i data-feather="server" class="iconwithtext"></i>System</a>
 	<a href="#" onclick="btn_pages('watchdog');"><i data-feather="activity" class="iconwithtext"></i>Monitor połączenia</a>
 	<div id="menu_wlan">
@@ -49,6 +51,9 @@
 	</div>
 	<div id="menu_wol" style="display:none;">
 		<a href="#" onclick="btn_pages('wol');"><i data-feather="trending-up" class="iconwithtext"></i>WoL</a>
+	</div>
+	<div id="menu_luci" style="display:none;">
+		<a href="/cgi-bin/luci" target="_blank"><i data-feather="external-link" class="iconwithtext"></i>LuCI</a>
 	</div>
 	<a href="#" onclick="btn_pages('logout');"><i data-feather="log-out" class="iconwithtext"></i>Wyloguj</a>
 </div>
@@ -101,9 +106,7 @@
 		<div class="col-xs-2"></div>
 	</div>
 
-	<div class="alert alert-danger text-center" id="div_security" style="display:none">
-		<strong>UWAGA!</strong> Wymagana jest zmiana domyślnego hasła do routera!
-	</div>
+	<div class="alert alert-danger text-center" id="div_security" style="display:none"></div>
 
 	<div id="div_status" style="display:none;">
 
@@ -190,6 +193,24 @@
 			<p id="wan_ipaddr_status">-</p>
 			</div>
 		</div>
+		<div class="row">
+			<div class="col-xs-6 text-right">Maska</div>
+			<div class="col-xs-6">
+			<p id="wan_netmask_status">-</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-6 text-right">Brama</div>
+			<div class="col-xs-6">
+			<p id="wan_gateway_status">-</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-6 text-right">Serwery DNS</div>
+			<div class="col-xs-6">
+			<p id="wan_dns_status">-</p>
+			</div>
+		</div>
 		<div class="row" id="div_vpn_up_status" style="display:none;">
 			<div class="col-xs-6 text-right">VPN</div>
 			<div class="col-xs-6">
@@ -200,6 +221,9 @@
 			<div class="col-xs-6 col-xs-offset-6">
 			<p>wyłączony dostęp sieci lokalnej do internetu</p></a>
 			</div>
+		</div>
+		<div class="text-center" id="div_wan_diagnostics" style="display:none;">
+			<input type="button" class="btn btn-default" onclick="diagnostics();" value="Diagnostyka">
 		</div>
 	</div>
 
@@ -349,6 +373,34 @@
 			<div class="col-xs-8 col-sm-9">
 			<select id="wan_modem_mode" class="form-control">
 			</select>
+			</div>
+		</div>
+
+		<div class="form-group" id="div_wan_username">
+			<label for="wan_username" class="col-xs-4 col-sm-3 control-label">Nazwa użytkownika</label>
+			<div class="col-xs-8 col-sm-9">
+			<input id="wan_username" type="text" class="form-control">
+			</div>
+		</div>
+
+		<div class="form-group" id="div_wan_password">
+			<label for="wan_password" class="col-xs-4 col-sm-3 control-label click" onclick="showPassword('wan_password');">Hasło</label>
+			<div class="col-xs-8 col-sm-9">
+			<input id="wan_password" type="password" class="form-control">
+			</div>
+		</div>
+
+		<div class="form-group" id="div_wan_lcpef">
+			<label for="wan_lcpef" class="col-xs-4 col-sm-3 control-label">Próg błędu echa LCP</label>
+			<div class="col-xs-8 col-sm-9">
+			<input id="wan_lcpef" type="text" class="form-control" onkeyup="proofreadNumericRange(this, 0, 999);">
+			</div>
+		</div>
+
+		<div class="form-group" id="div_wan_lcpei">
+			<label for="wan_lcpei" class="col-xs-4 col-sm-3 control-label">Interwał echa LCP</label>
+			<div class="col-xs-8 col-sm-9">
+			<input id="wan_lcpei" type="text" class="form-control" onkeyup="proofreadNumericRange(this, 1, 999);">
 			</div>
 		</div>
 
@@ -636,6 +688,16 @@
 			</select>
 			</div>
 		</div>
+
+		<div class="form-group">
+			<label for="firewall_flowoffloading" class="col-xs-4 col-sm-3 control-label">Flow offloading</label>
+			<div class="col-xs-8 col-sm-9">
+			<label class="switch">
+				<input id="firewall_flowoffloading" type="checkbox">
+				<div class="slider round"></div>
+			</label>
+			</div>
+		</div>
 	</form>
 
 	<h3 class="section"></h3>
@@ -700,7 +762,7 @@
 			<p><a href="#" class="click" onclick="modemsettings();">ustawienia dodatkowe</a></p>
 			</div>
 		</div>
-		<div class="row">
+		<div id="div_modem_modemat" class="row" style="display:none;">
 			<div class="col-xs-6 col-xs-offset-6">
 			<p><a href="#" class="click" onclick="modemat();">polecenia AT</a></p>
 			</div>
@@ -864,7 +926,7 @@
 
 	<h3 class="section">Monitor połączenia</h3>
 	<div class="alert alert-warning" id="watchdog_enabled_info">
-		<strong>UWAGA!</strong> Połączenie z internetem jest wyłączone. <a href="#" class="click" onclick="btn_pages('settings');">Kliknij tutaj aby ustawić połączenie &rarr;</a>
+		<strong>UWAGA!</strong> Połączenie z internetem jest wyłączone. <a href="#" class="click" onclick="btn_pages('config');">Kliknij tutaj aby ustawić połączenie &rarr;</a>
 	</div>
 
 	<div class="row">
@@ -1352,15 +1414,15 @@
 		</div>
 		<h3 class="section"></h3>
 		<div class="text-center">
-			<input type="button" class="btn btn-default" onclick="whitelistdomain();" value="Zezwalaj">
-			<input type="button" class="btn btn-default" onclick="blacklistdomain();" value="Blokuj">
+			<input type="button" class="btn btn-default" onclick="allowlistdomain();" value="Zezwalaj">
+			<input type="button" class="btn btn-default" onclick="blocklistdomain();" value="Blokuj">
 			<input id="btn_adblock_checkdomain" type="button" class="btn btn-default" onclick="checkdomain();" value="Sprawdź">
 		</div>
 	</form>
-	<h3 class="section">Domeny blokowane (czarna lista)</h3>
-	<div id="div_adblock_list_blacklist"></div>
-	<h3 class="section">Domeny dozwolone (biała lista)</h3>
-	<div id="div_adblock_list_whitelist"></div>
+	<h3 class="section">Domeny blokowane</h3>
+	<div id="div_adblock_list_blocklist"></div>
+	<h3 class="section">Domeny dozwolone</h3>
+	<div id="div_adblock_list_allowlist"></div>
 	</div>
 
 	<div id="div_nightmode" style="display:none;">
@@ -1379,6 +1441,13 @@
 			<input type="button" class="btn btn-default" onclick="btn_nightmode_wifi_off();" value="Wyłącz">
 			</div>
 		</div>
+
+		<hr>
+		<div class="row">
+			<div class="col-xs-12 text-center">
+			<input type="button" class="btn btn-default" onclick="btn_nightmode_wifi_scheduler();" value="Harmonogram">
+			</div>
+		</div>
 	</div>
 
 	<h3 class="section">Diody LED</h3>
@@ -1388,7 +1457,7 @@
 		<input type="button" class="btn btn-default" onclick="btn_nightmode_leds_on();" value="Włącz">
 		</div>
 	</div>
-	<div class="row space">
+	<div class="row">
 		<div class="col-xs-6 text-right">Wyłączenie LED</div>
 		<div class="col-xs-6">
 		<input type="button" class="btn btn-default" onclick="btn_nightmode_leds_off();" value="Wyłącz">
@@ -1426,12 +1495,9 @@
 		<div class="text-center">
 			<input type="button" class="btn btn-default" onclick="btn_nightmode_getlocation();" value="Sprawdź online">
 			<input id="btn_nightmode_locationfromgps" type="button" class="btn btn-default" style="display:none;" onclick="btn_nightmode_getlocationfromgps();" value="Pozycja z GPS">
+			<input type="button" class="btn btn-primary" onclick="savenightmode();" value="Zapisz zmiany">
 		</div>
 	</form>
-	<h3 class="section"></h3>
-	<div class="text-center">
-		<input type="button" class="btn btn-primary" onclick="savenightmode();" value="Zapisz zmiany">
-	</div>
 	</div>
 
 	</div>
@@ -1539,6 +1605,7 @@
 			Statyczny adres IP dla "<span id="hostip_name"></span>"
 		</div>
 
+		<div class="alert alert-info text-center">Rozłączenie klienta może być niezbędne do pobrania statycznego adresu IP</div>
 		<form class="form-horizontal">
 		<div class="form-group">
 			<label for="hostip_ip" class="hidden-xs col-sm-3 control-label">Statyczny adres IP</label>
@@ -1548,18 +1615,13 @@
 			<em><small class="form-text text-muted">obecny statyczny adres IP: <span id="hostip_ipaddr"></span></small></em>
 			</div>
 		</div>
-		<div class="form-group mmarginbottom">
+		<div id="div_hostip_disconnect" class="form-group mmarginbottom">
 			<label for="hostip_disconnect" class="col-xs-4 col-sm-3 control-label">Rozłącz klienta</label>
 			<div class="col-xs-8 col-sm-9">
 			<label class="switch">
 				<input id="hostip_disconnect" type="checkbox">
 				<div class="slider round"></div>
 			</label>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-xs-12 col-sm-9 col-sm-offset-3">
-			<em><small class="form-text text-muted">rozłączenie klienta może być niezbędne do pobrania statycznego adresu IP</small></em>
 			</div>
 		</div>
 		</form>
@@ -1617,6 +1679,9 @@
 		<div class="text-center space">
 			Limit szybkości dla "<span id="hostqos_name"></span>"
 		</div>
+
+		<div class="alert alert-warning text-center" id="div_hostqos_flowoffloading" style="display: none;"><strong>UWAGA!</strong>&nbsp;Włączony jest flow offloading, limitowanie prędkości może nie działać</div>
+		<div class="alert alert-warning text-center" id="div_hostqos_ip" style="display: none;"><strong>UWAGA!</strong>&nbsp;Aby działało limitowanie prędkości należy ustawić statyczny adres IP</div>
 
 		<form class="form-horizontal">
 		<div class="form-group">
@@ -1716,6 +1781,15 @@
 					<option value="SM">SM - pamięć karty SIM</option>
 					<option value="ME">ME - pamięć modemu</option>
 				</select>
+				</div>
+			</div>
+			<div class="form-group mmarginbottom">
+				<label for="modemsettings_sms_join" class="col-xs-6 control-label">Łączenie wieloczęściowych SMS</label>
+				<div class="col-xs-6">
+				<label class="switch">
+					<input id="modemsettings_sms_join" type="checkbox">
+					<div class="slider round"></div>
+				</label>
 				</div>
 			</div>
 			<div class="form-group mmarginbottom">
@@ -1839,7 +1913,7 @@
 		<div class="text-center space">OpenVPN</div>
 		<input id="vpn_openvpn_interface" type="hidden">
 		<input id="vpn_openvpn_section" type="hidden">
-		<div class="error text-center space"><span id="vpn_openvpn_error"></span></div>
+		<div class="alert alert-danger text-center" id="vpn_openvpn_error" style="display:none"></div>
 
 		<form class="form-horizontal">
 		<div class="form-group">
@@ -1915,7 +1989,7 @@
 	<div class="row modal-content">
 		<div class="text-center space">PPTP</div>
 		<input id="vpn_pptp_interface" type="hidden">
-		<div class="error text-center space"><span id="vpn_pptp_error"></span></div>
+		<div class="alert alert-danger text-center" id="vpn_pptp_error" style="display:none"></div>
 
 		<form class="form-horizontal">
 		<div class="form-group">
@@ -2001,7 +2075,7 @@
 	<div class="row modal-content">
 		<div class="text-center space">SSTP</div>
 		<input id="vpn_sstp_interface" type="hidden">
-		<div class="error text-center space"><span id="vpn_sstp_error"></span></div>
+		<div class="alert alert-danger text-center" id="vpn_sstp_error" style="display:none"></div>
 
 		<form class="form-horizontal">
 		<div class="form-group">
@@ -2077,7 +2151,7 @@
 	<div class="row modal-content">
 		<div class="text-center space">WireGuard</div>
 		<input id="vpn_wireguard_interface" type="hidden">
-		<div class="error text-center space"><span id="vpn_wireguard_error"></span></div>
+		<div class="alert alert-danger text-center" id="vpn_wireguard_error" style="display:none"></div>
 
 		<form class="form-horizontal">
 		<div class="form-group">
@@ -2236,9 +2310,21 @@
 	<div class="row modal-content">
 		<div class="text-center space">ZeroTier</div>
 		<input id="vpn_zerotier_section" type="hidden">
-		<div class="error text-center space"><span id="vpn_zerotier_error"></span></div>
+		<div class="alert alert-danger text-center" id="vpn_zerotier_error" style="display:none"></div>
 
 		<form class="form-horizontal">
+		<div class="form-group">
+			<label for="vpn_zerotier_enabled" class="col-xs-4 col-sm-3 control-label">Włączony</label>
+			<div class="col-xs-8 col-sm-9">
+			<label class="switch">
+				<input id="vpn_zerotier_enabled" type="checkbox">
+				<div class="slider round"></div>
+			</label>
+			<span class="hidden-xs control-label labelleft"><em><small class="form-text text-muted">włączenie dotyczy wszystkich sieci ZeroTier</small></em></span>
+			<div class="visible-xs"><em><small class="form-text text-muted">włączenie dotyczy wszystkich sieci ZeroTier</small></em></div>
+			</div>
+		</div>
+
 		<div class="form-group">
 			<label for="vpn_zerotier_name" class="col-xs-4 col-sm-3 control-label">Nazwa</label>
 			<div class="col-xs-8 col-sm-9">
@@ -2247,28 +2333,10 @@
 		</div>
 
 		<div class="form-group">
-			<label for="vpn_zerotier_enabled" class="col-xs-4 col-sm-3 control-label">Włączony</label>
-			<div class="col-xs-8 col-sm-9">
-			<label class="switch">
-				<input id="vpn_zerotier_enabled" type="checkbox">
-				<div class="slider round"></div>
-			</label>
-			</div>
-		</div>
-
-		<input id="vpn_zerotier_network" type="hidden">
-		<div id="div_vpn_zerotier_network_template" style="display:none">
-		<div class="form-group">
-			<label for="vpn_zerotier_network_idx" class="col-xs-4 col-sm-3 control-label">Sieć</label>
+			<label for="vpn_zerotier_network" class="col-xs-4 col-sm-3 control-label">Sieć</label>
 			<div class="col-xs-8 col-sm-9 input-group">
-				<input id="vpn_zerotier_network_idx" type="text" class="form-control" onkeyup="proofreadLengthRange(this, 16, 16);">
-				<span class="click input-group-element" title="usuń sieć" onclick="removezerotiernetwork('_idx');"><i data-feather="trash-2"></i></span>
+				<input id="vpn_zerotier_network" type="text" class="form-control" onkeyup="proofreadLengthRange(this, 16, 16);">
 			</div>
-		</div>
-		</div>
-		<div id="vpn_zerotier_network_content"></div>
-		<div class="text-right">
-			<input type="button" class="btn btn-default" onclick="addzerotiernetwork();" value="Nowa sieć">
 		</div>
 
 		<h3 class="section"></h3>
@@ -2285,7 +2353,7 @@
 	<div class="row modal-content">
 		<div class="text-center space">Wake on LAN</div>
 		<input id="wol_section" type="hidden">
-		<div class="error text-center space"><span id="wol_error"></span></div>
+		<div class="alert alert-danger text-center" id="wol_error" style="display:none"></div>
 
 		<form class="form-horizontal">
 		<div class="form-group">
@@ -2337,8 +2405,7 @@
 	<div class="row modal-content">
 		<div class="text-center space">Sieć dodatkowa</div>
 		<input id="network_data" type="hidden">
-		<input id="network_ports" type="hidden">
-		<div class="error text-center space"><span id="network_error"></span></div>
+		<div class="alert alert-danger text-center" id="network_error" style="display:none"></div>
 
 		<form class="form-horizontal">
 		<div class="form-group">
@@ -2378,6 +2445,16 @@
 			<div class="col-xs-8 col-sm-9">
 			<label class="switch">
 				<input id="network_towan" type="checkbox">
+				<div class="slider round"></div>
+			</label>
+			</div>
+		</div>
+
+		<div class="form-group" id="div_network_wifitoggle" style="display:none;">
+			<label for="network_wifitoggle" class="col-xs-4 col-sm-3 control-label">Zmiana stanu Wi-Fi przyciskiem</label>
+			<div class="col-xs-8 col-sm-9">
+			<label class="switch">
+				<input id="network_wifitoggle" type="checkbox">
 				<div class="slider round"></div>
 			</label>
 			</div>
@@ -2489,6 +2566,29 @@
 			<input type="button" class="btn btn-primary" onclick="savenetwork();" value="Zapisz zmiany">
 		</div>
 		</form>
+	</div>
+</div>
+
+<div id="div_cron" class="modal">
+	<div class="row modal-content text-center">
+		<div class="text-center space"><span id="cron_title"></span></div>
+
+		<div id="div_cron_scheduler" class="space"></div>
+		<div class="col-xs-12">
+			<div class="row space">
+				<div id="cron_off" class="col-xs-1">&nbsp;</div><div id="cron_off_info" class="col-xs-9 text-left"></div>
+			</div>
+		</div>
+		<div class="row space">
+			<div class="col-xs-6"><a href="#" class="click" onclick="cron_checkall();">zaznacz wszystko</a></div>
+			<div class="col-xs-6"><a href="#" class="click" onclick="cron_uncheckall();">odznacz wszystko</a></div>
+		</div>
+
+		<h3 class="section"></h3>
+		<div class="text-center">
+			<input type="button" class="btn btn-default" onclick="cron_cancel();" value="Anuluj">
+			<input type="button" id="cron_btn_primary" class="btn btn-primary" value="Ustaw">
+		</div>
 	</div>
 </div>
 

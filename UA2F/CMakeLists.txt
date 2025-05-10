@@ -3,8 +3,12 @@ project(UA2F LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 17)
 
+cmake_policy(SET CMP0135 NEW)
+
 OPTION(UA2F_BUILD_TESTS "Build tests" OFF)
 OPTION(UA2F_ENABLE_UCI "Enable UCI support" ON)
+OPTION(UA2F_NO_CACHE "Disable cache" OFF)
+OPTION(UA2F_ENABLE_BACKTRACE "Enable libbacktrace support" ON)
 
 find_package(Git)
 if (GIT_FOUND)
@@ -40,10 +44,26 @@ if (GIT_FOUND)
     if ((NOT GIT_COMMIT_RESULT EQUAL 0) OR (GIT_COMMIT STREQUAL ""))
         set(GIT_COMMIT "unknown")
     endif ()
+
+    execute_process(
+            COMMAND ${GIT_EXECUTABLE} status --porcelain
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_DIRTY_OUTPUT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            RESULT_VARIABLE GIT_DIRTY_RESULT
+    )
+    if ((NOT GIT_DIRTY_RESULT EQUAL 0))
+        set(GIT_DIRTY "unknown")
+    elseif (GIT_DIRTY_OUTPUT STREQUAL "")
+        set(GIT_DIRTY "clean")
+    else ()
+        set(GIT_DIRTY "dirty")
+    endif ()
 else ()
     set(GIT_COMMIT "unknown")
     set(GIT_BRANCH "unknown")
     set(GIT_TAG "unknown")
+    set(GIT_DIRTY "unknown")
 endif ()
 
 if (UA2F_VERSION_STR)
@@ -56,14 +76,16 @@ endif ()
 add_compile_definitions(UA2F_GIT_COMMIT="${GIT_COMMIT}")
 add_compile_definitions(UA2F_GIT_BRANCH="${GIT_BRANCH}")
 add_compile_definitions(UA2F_GIT_TAG="${GIT_TAG}")
+add_compile_definitions(UA2F_GIT_DIRTY="${GIT_DIRTY}")
 add_compile_definitions(UA2F_VERSION="${UA2F_VERSION_STR}")
+
+add_compile_options(-fno-omit-frame-pointer -fno-strict-aliasing)
 
 if (DEFINED ENV{UA2F_ENABLE_ASAN})
     set(UA2F_ENABLE_ASAN $ENV{UA2F_ENABLE_ASAN})
     message(STATUS "UA2F_ENABLE_ASAN set from environment: ${UA2F_ENABLE_ASAN}")
 else ()
-    set(UA2F_ENABLE_ASAN OFF)
-    message(STATUS "UA2F_ENABLE_ASAN not set in environment, using default: OFF")
+    message(STATUS "UA2F_ENABLE_ASAN not set in environment")
 endif ()
 
 if (UA2F_ENABLE_ASAN)
@@ -73,9 +95,6 @@ if (UA2F_ENABLE_ASAN)
 else ()
     message(STATUS "AddressSanitizer is disabled.")
 endif ()
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-gc-sections")
 
 if (UA2F_CUSTOM_USER_AGENT)
     if (NOT UA2F_USER_AGENT_STRING)
@@ -97,15 +116,59 @@ add_executable(ua2f
         src/handler.c
         src/cli.c
         src/config.c
-        src/third/nfqueue-mnl.c)
+        src/third/nfqueue-mnl/nfqueue-mnl.c)
 
 target_link_libraries(ua2f mnl netfilter_queue pthread nfnetlink)
+
+if (UA2F_ENABLE_BACKTRACE)
+    set(LIBBACKTRACE_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/libbacktrace)
+    
+    execute_process(
+        COMMAND ${CMAKE_C_COMPILER} -dumpmachine
+        OUTPUT_VARIABLE LIBBACKTRACE_HOST
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE DUMPMACHINE_RESULT
+    )
+    if(NOT DUMPMACHINE_RESULT EQUAL 0)
+        set(LIBBACKTRACE_HOST "")
+    endif()
+    message(STATUS "LIBBACKTRACE_HOST: ${LIBBACKTRACE_HOST}")
+    
+    add_custom_target(libbacktrace
+        COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/src/third/libbacktrace && 
+                autoreconf -i && 
+                ./configure --prefix=${LIBBACKTRACE_BUILD_DIR} --host=${LIBBACKTRACE_HOST} && 
+                make && 
+                make install
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/third/libbacktrace
+    )
+    
+    target_include_directories(ua2f PRIVATE ${LIBBACKTRACE_BUILD_DIR}/include)
+    
+    target_link_directories(ua2f PRIVATE ${LIBBACKTRACE_BUILD_DIR}/lib)
+    
+    target_link_libraries(ua2f backtrace)
+    
+    add_dependencies(ua2f libbacktrace)
+    
+    add_compile_definitions(UA2F_ENABLE_BACKTRACE=1)
+    message(STATUS "libbacktrace support is enabled.")
+else()
+    message(STATUS "libbacktrace support is disabled.")
+endif()
 
 if (UA2F_ENABLE_UCI)
     add_compile_definitions(UA2F_ENABLE_UCI=1)
     target_link_libraries(ua2f uci)
 else ()
     message(STATUS "UCI support is disabled.")
+endif ()
+
+if (UA2F_NO_CACHE)
+    add_compile_definitions(UA2F_NO_CACHE=1)
+    message(STATUS "Cache is disabled.")
+else ()
+    message(STATUS "Cache is auto.")
 endif ()
 
 install(TARGETS ua2f RUNTIME DESTINATION bin)
@@ -130,7 +193,6 @@ if (UA2F_BUILD_TESTS)
             test/cache_test.cc
             src/util.c
             src/cache.c
-            src/cli.c
     )
     target_link_libraries(
             ua2f_test

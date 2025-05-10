@@ -140,14 +140,12 @@ return view.extend({
 				}),
 				fs.exec('adb', ['-s', device, 'shell', 'su', '-v']).then(function(result) {
 					var rootInfo = {};
-					var stdout = result.stdout;
+					var stdout = result.stdout ? result.stdout.trim() : '';
 					var stderr = result.stderr;
-					if (stderr) {
-						rootInfo['device_root'] = false;
-					} else if (stdout === '/system/bin/sh: su: not found\n') {
+					if (stderr || stdout === '/system/bin/sh: su: not found' || stdout === '/system/bin/sh: su: inaccessible or not found') {
 						rootInfo['device_root'] = false;
 					} else {
-						var parts = stdout.trim().split(':');
+						var parts = stdout.split(':');
 						rootInfo['device_root'] = {'version': parts[0], 'name': parts[1]};
 					};
 					return rootInfo;
@@ -160,7 +158,7 @@ return view.extend({
 				var kernelInfo = results[2];
 				var memmoryInfo = results[3];
 				var batteryInfo = results[4];
-				var rootInfo = results[4];
+				var rootInfo = results[5];
 				if (device && deviceInfo && uptimeInfo && kernelInfo && memmoryInfo && batteryInfo && rootInfo) {
 					return Object.assign({}, {device: device}, deviceInfo, uptimeInfo, kernelInfo, memmoryInfo, batteryInfo, rootInfo)
 				} else {
@@ -275,4 +273,3 @@ return view.extend({
 		};
 	}
 });
-

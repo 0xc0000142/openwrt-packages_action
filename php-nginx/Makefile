@@ -1,16 +1,14 @@
+# SPDX-License-Identifier: MIT
 #
-# Copyright (C) 2023 muink
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
+# Copyright (C) 2023-2024 muink <https://github.com/muink>
+
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=php-nginx
-PKG_VERSION:=20230426
-#PKG_RELEASE:=
+PKG_VERSION:=0.2023.04.26
+PKG_RELEASE:=1
 
-PKG_MAINTAINER:=muink <hukk1996@gmail.com>
+PKG_MAINTAINER:=Anya Lin <hukk1996@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
 
