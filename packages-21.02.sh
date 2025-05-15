@@ -20,7 +20,8 @@ git clone --depth 1 https://github.com/sirpdboy/sirpdboy-package ./package457786
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall-packages.git ./package15486786
 git clone --depth 1 https://github.com/CCnut/feed-netkeeper.git
 
-git clone --depth 1 https://github.com/Zxilly/UA2F.git
+git clone --depth 1 https://github.com/EOYOHOO/UA2F.git
+git clone --depth 1 https://github.com/EOYOHOO/rkp-ipid.git
 
 git clone --depth 1 https://github.com/0xc0000142/openwrt-r8168.git
 git clone --depth 1 https://github.com/fw876/helloworld
