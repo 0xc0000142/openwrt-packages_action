@@ -1,0 +1,59 @@
+msgid "Allow guests"
+msgstr "允许访客"
+
+msgid "Allow system users to reach their home directories via network shares"
+msgstr "允许用户共享Home目录"
+
+msgid "Allowed users"
+msgstr "授权用户"
+
+msgid "Browseable"
+msgstr "可读"
+
+msgid "Create mask"
+msgstr "文件权限"
+
+msgid "Description"
+msgstr "描述"
+
+msgid "Directory mask"
+msgstr "目录权限"
+
+msgid "Edit Template"
+msgstr "编辑模版"
+
+msgid "General Settings"
+msgstr "基本设置"
+
+msgid "Hostname"
+msgstr "主机名"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "Network Shares"
+msgstr "网络共享"
+
+msgid "Path"
+msgstr "目录"
+
+msgid "Please add directories to share. Each directory refers to a folder on a mounted device."
+msgstr "请添加要共享的目录"
+
+msgid "Read-only"
+msgstr "只读"
+
+msgid "Share home-directories"
+msgstr "共享Home目录"
+
+msgid "Shared Directories"
+msgstr "共享目录"
+
+msgid "Workgroup"
+msgstr "工作组"
+
+msgid "Auto Share"
+msgstr "自动共享"
+
+msgid "Auto share local disk which connected"
+msgstr "自动共享连接的硬盘"

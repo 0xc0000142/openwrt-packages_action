@@ -1,0 +1,5 @@
+#!/bin/sh
+touch /etc/config/arpbind
+
+rm -f /tmp/luci-indexcache
+exit 0

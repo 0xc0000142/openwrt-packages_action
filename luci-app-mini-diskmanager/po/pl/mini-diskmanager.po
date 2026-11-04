@@ -1,0 +1,1344 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-app-mini-diskmanager\n"
+"Language-Team: Rafał Wabik (IceG)\n"
+
+msgid "Disk Manager"
+msgstr "Menedżer dysków"
+
+msgid "-- Select a disk --"
+msgstr "-- Wybierz dysk --"
+
+msgid "Disk"
+msgstr "Dysk"
+
+msgid "Refresh"
+msgstr "Odśwież"
+
+msgid "Mounting actions"
+msgstr "Akcje montowania"
+
+msgid "Actions on partitions"
+msgstr "Operacje na partycjach"
+
+msgid "Mount"
+msgstr "Zamontuj"
+
+msgid "Unmount"
+msgstr "Odmontuj"
+
+msgid "Create"
+msgstr "Utwórz"
+
+msgid "Delete"
+msgstr "Usuń"
+
+msgid "Format"
+msgstr "Formatuj"
+
+msgid "Please select a disk to view its partitions"
+msgstr "Proszę wybrać dysk, aby zobaczyć jego partycje"
+
+msgid "Please select a disk first"
+msgstr "Proszę najpierw wybrać dysk"
+
+msgid "Please select a partition first"
+msgstr "Proszę najpierw wybrać partycję"
+
+msgid "Loading disk information..."
+msgstr "Ładowanie informacji o dysku..."
+
+msgid "Error loading disk information: "
+msgstr "Błąd wczytywania informacji o dysku: "
+
+msgid "Disk Information"
+msgstr "Informacje o dysku"
+
+msgid "Temperature"
+msgstr "Temperatura"
+
+msgid "S.M.A.R.T."
+msgstr "S.M.A.R.T."
+
+msgid "S.M.A.R.T. Status"
+msgstr "Status S.M.A.R.T."
+
+msgid "Partitions"
+msgstr "Partycje"
+
+msgid "Mount Status"
+msgstr "Status montowania"
+
+msgid "Mounted"
+msgstr "Zamontowany"
+
+msgid "Not mounted"
+msgstr "Niezamontowany"
+
+msgid "Partition Layout"
+msgstr "Układ partycji"
+
+msgid "Partition"
+msgstr "Partycja"
+
+msgid "Type / Filesystem"
+msgstr "Typ / System plików"
+
+msgid "Filesystem"
+msgstr "System plików"
+
+msgid "Mount Point"
+msgstr "Punkt montowania"
+
+msgid "Label"
+msgstr "Etykieta"
+
+msgid "Size"
+msgstr "Rozmiar"
+
+msgid "Used"
+msgstr "Użyte"
+
+msgid "Unused"
+msgstr "Wolne"
+
+msgid "Flags"
+msgstr "Flagi"
+
+msgid "No partitions found"
+msgstr "Nie znaleziono partycji"
+
+msgid "Unallocated"
+msgstr "Nieprzydzielone"
+
+msgid "Area without partition table"
+msgstr "Obszar bez tabeli partycji"
+
+msgid "Free Space"
+msgstr "Wolne miejsce"
+
+msgid "Primary"
+msgstr "Podstawowa"
+
+msgid "Extended"
+msgstr "Rozszerzona"
+
+msgid "Logical"
+msgstr "Logiczna"
+
+msgid "Create partition"
+msgstr "Utwórz partycję"
+
+msgid "Cancel"
+msgstr "Anuluj"
+
+msgid "File system"
+msgstr "System plików"
+
+msgid "Volume label"
+msgstr "Etykieta woluminu"
+
+msgid "Partition size"
+msgstr "Rozmiar partycji"
+
+msgid "Enter size"
+msgstr "Wprowadź rozmiar"
+
+msgid "Use all available space"
+msgstr "Użyj całego dostępnego miejsca"
+
+msgid "Available: %s MB / %s GB / %s TB"
+msgstr "Dostępne: %s MB / %s GB / %s TB"
+
+msgid "Please enter a valid size"
+msgstr "Wprowadź prawidłowy rozmiar"
+
+msgid "Size is too small"
+msgstr "Rozmiar jest zbyt mały"
+
+msgid "Creating partition..."
+msgstr "Tworzenie partycji..."
+
+msgid "Partition created successfully"
+msgstr "Partycja utworzona pomyślnie"
+
+msgid "Failed to create partition"
+msgstr "Nie udało się utworzyć partycji"
+
+msgid "Format Partition"
+msgstr "Formatuj partycję"
+
+msgid "Warning"
+msgstr "Ostrzeżenie"
+
+msgid "This will erase all data on /dev/%s"
+msgstr "To usunie wszystkie dane na /dev/%s"
+
+msgid "Formatting partition..."
+msgstr "Formatowanie partycji..."
+
+msgid "Partition formatted successfully"
+msgstr "Partycja sformatowana pomyślnie"
+
+msgid "Failed to format partition"
+msgstr "Nie udało się sformatować partycji"
+
+msgid "Delete Partition"
+msgstr "Usuń partycję"
+
+msgid "Are you sure you want to continue?"
+msgstr "Czy na pewno chcesz kontynuować?"
+
+msgid "Deleting partition..."
+msgstr "Usuwanie partycji..."
+
+msgid "Partition deleted successfully"
+msgstr "Partycja została pomyślnie usunięta"
+
+msgid "Failed to delete partition"
+msgstr "Nie udało się usunąć partycji"
+
+msgid "No partitions to mount"
+msgstr "Brak partycji do zamontowania"
+
+msgid "No mounted partitions found"
+msgstr "Nie znaleziono zamontowanych partycji"
+
+msgid "No partitions to unmount"
+msgstr "Brak partycji do odmontowania"
+
+msgid "Mounted to %s"
+msgstr "Zamontowano w %s"
+
+msgid "Unmounted %s"
+msgstr "Odmontowano %s"
+
+msgid "Failed to mount: "
+msgstr "Nie udało się zamontować: "
+
+msgid "Failed to unmount: "
+msgstr "Nie udało się odmontować: "
+
+msgid "Failed to check operation status: "
+msgstr "Nie udało się sprawdzić statusu operacji: "
+
+msgid "Partition created but device node did not appear in time"
+msgstr "Partycja została utworzona, ale urządzenie nie pojawiło się na czas"
+
+msgid "Partition created but device node did not appear; please refresh manually"
+msgstr "Partycja została utworzona, ale urządzenie się nie pojawiło — odśwież ręcznie"
+
+msgid "PASSED"
+msgstr "ZALICZONY"
+
+msgid "FAILED"
+msgstr "NIEZALICZONY"
+
+msgid "Cannot create partition on mounted disk. Please unmount first."
+msgstr "Nie można utworzyć partycji na zamontowanym dysku. Proszę najpierw odmontować."
+
+msgid "No unallocated space available on this disk"
+msgstr "Brak wolnego miejsca na tym dysku"
+
+msgid "Cannot format mounted partition. Please unmount first."
+msgstr "Nie można sformatować zamontowanej partycji. Proszę najpierw ją odmontować."
+
+msgid "Failed to refresh partition data: "
+msgstr "Nie udało się odświeżyć danych partycji: "
+
+msgid "Cannot delete partition on mounted disk. Please unmount first."
+msgstr "Nie można usunąć partycji z zamontowanego dysku. Proszę najpierw odmontować."
+
+msgid "This will delete partition /dev/%s and all its data!"
+msgstr "Ta operacja spowoduje usunięcie partycji /dev/%s i wszystkich jej danych!"
+
+msgid "Failed to load disk information: "
+msgstr "Nie udało się załadować informacji o dysku: "
+
+msgid "Click to select"
+msgstr "Kliknij, aby wybrać"
+
+msgid "System partition cannot be selected"
+msgstr "Nie możesz wskazać partycji systemowej"
+
+msgid "Free"
+msgstr "Wolne"
+
+msgid "Select a disk"
+msgstr "Wybierz dysk"
+
+msgid "Create a new partition on the selected disk"
+msgstr "Utwórz nową partycję na wybranym dysku"
+
+msgid "Partition layout"
+msgstr "Układ partycji"
+
+msgid "Partition type"
+msgstr "Typ partycji"
+
+msgid "Refresh partition data"
+msgstr "Odśwież dane partycji"
+
+msgid "MBR (Master Boot Record)"
+msgstr "MBR (Główny Rekord Rozruchowy)"
+
+msgid "GPT (GUID Partition Table)"
+msgstr "GPT (Tabela Partycji GUID)"
+
+msgid "The Mini Disk Manager package allows users to easily manage disks and partitions."
+msgstr "Mini Menedżer Dysków pozwala użytkownikowi w prosty sposób zarządzać dyskami oraz partycjami."
+
+msgid "Configuration"
+msgstr "Konfiguracja"
+
+msgid "Package and Driver Verification"
+msgstr "Weryfikacja pakietów i sterowników"
+
+msgid "Check and install required drivers for storage devices."
+msgstr "Sprawdź i zainstaluj wymagane sterowniki dla urządzeń pamięci masowej."
+
+msgid "Filesystem Support"
+msgstr "Obsługa systemów plików"
+
+msgid "Check USB drivers"
+msgstr "Sprawdź sterowniki USB"
+
+msgid "USB drivers"
+msgstr "Sterowniki USB"
+
+msgid "Check NVMe drivers"
+msgstr "Sprawdź sterowniki NVMe"
+
+msgid "NVMe drivers"
+msgstr "Sterowniki NVMe"
+
+msgid "Check ATA/SATA drivers"
+msgstr "Sprawdź sterowniki ATA/SATA"
+
+msgid "ATA/SATA drivers"
+msgstr "Sterowniki ATA/SATA"
+
+msgid "Check Linux filesystem packages"
+msgstr "Sprawdź pakiety systemów plików Linux"
+
+msgid "Linux filesystems"
+msgstr "Systemy plików Linux"
+
+msgid "Check Windows filesystem packages"
+msgstr "Sprawdź pakiety systemów plików Windows"
+
+msgid "Windows filesystems"
+msgstr "Systemy plików Windows"
+
+msgid "View disk manager log"
+msgstr "Pokaż dziennik menedżera dysków"
+
+msgid "View log"
+msgstr "Pokaż dziennik"
+
+msgid "USB Drivers"
+msgstr "Sterowniki USB"
+
+msgid "NVMe Drivers"
+msgstr "Sterowniki NVMe"
+
+msgid "ATA/SATA Drivers"
+msgstr "Sterowniki ATA/SATA"
+
+msgid "Linux Filesystem Packages"
+msgstr "Pakiety systemów plików Linux"
+
+msgid "Windows Filesystem Packages"
+msgstr "Pakiety systemów plików Windows"
+
+msgid "Disk Manager Log"
+msgstr "Dziennik menedżera dysków"
+
+msgid "Loading package data…"
+msgstr "Ładowanie danych o pakietach…"
+
+msgid "Loading log file…"
+msgstr "Ładowanie pliku dziennika…"
+
+msgid "Log file content"
+msgstr "Zawartość pliku dziennika"
+
+msgid "Log file is empty"
+msgstr "Plik dziennika jest pusty"
+
+msgid "Unable to read log file"
+msgstr "Nie można odczytać pliku dziennika"
+
+msgid "Log file cleared successfully"
+msgstr "Plik dziennika wyczyszczony pomyślnie"
+
+msgid "Unable to clear the file"
+msgstr "Nie można wyczyścić pliku"
+
+msgid "Installed"
+msgstr "Zainstalowany"
+
+msgid "Install…"
+msgstr "Instaluj…"
+
+msgid "Clear"
+msgstr "Wyczyść"
+
+msgid "Download"
+msgstr "Pobierz"
+
+msgid "Close"
+msgstr "Zamknij"
+
+msgid "Failed to load package data"
+msgstr "Nie udało się załadować danych o pakietach"
+
+msgid "more info in log"
+msgstr "więcej informacji w dzienniku pakietu"
+
+msgid "The tab allows users to support the package."
+msgstr "Ta zakładka umożliwia użytkownikowi wsparcie pakietu."
+
+msgid "Package support"
+msgstr "Wsparcie pakietu"
+
+msgid "Mini Disk Manager Info"
+msgstr "Mini Menedżer Dysków - informacje"
+
+msgid "Luci-app-mdmanager"
+msgstr "Luci-app-mdmanager"
+
+msgid "Buy a coffee"
+msgstr "Postaw kawę"
+
+msgid "Buy a coffee if you want to support the development of the project and the author"
+msgstr "Postaw kawę, jeśli chcesz wesprzeć rozwój projektu i jego autora"
+
+msgid "Become a sponsor"
+msgstr "Zostań sponsorem"
+
+msgid "Become a sponsor if you want to support the development of the project and the author"
+msgstr "Zostań sponsorem, jeśli chcesz wesprzeć rozwój projektu i jego autora"
+
+msgid "Write on forum"
+msgstr "Napisz na forum"
+
+msgid "Write in the topic of the package on the forum eko.one.pl"
+msgstr "Napisz w wątku pakietu na forum eko.one.pl"
+
+msgid "Open discussion"
+msgstr "Otwórz dyskusję"
+
+msgid "Open a package discussion on Github"
+msgstr "Otwórz dyskusję o pakiecie na GitHubie"
+
+msgid "Report a bug"
+msgstr "Zgłoś błąd"
+
+msgid "Report a bug on the package Github page"
+msgstr "Zgłoś błąd na stronie pakietu w serwisie GitHub"
+
+msgid "Package name"
+msgstr "Nazwa pakietu"
+
+msgid "Author (package maintainer)"
+msgstr "Autor (opiekun pakietu)"
+
+msgid "Information about package author and available support options."
+msgstr "Informacje o autorze pakietu i dostępnych opcjach wsparcia."
+
+# --
+
+msgid "All available space"
+msgstr "Cała dostępna przestrzeń"
+
+msgid "Cannot delete mounted partition. Please unmount first."
+msgstr "Nie można usunąć zamontowanej partycji. Proszę najpierw ją odmontować."
+
+msgid "Failed to create partition: "
+msgstr "Nie udało się utworzyć partycji: "
+
+msgid "Failed to detect supported filesystems"
+msgstr "Nie udało się wykryć obsługiwanych systemów plików"
+
+msgid "Failed to format partition: "
+msgstr "Nie udało się sformatować partycji: "
+
+msgid "Failed to parse JSON response: "
+msgstr "Nie udało się przetworzyć odpowiedzi JSON: "
+
+msgid "Failed to start formatting"
+msgstr "Nie udało się rozpocząć formatowania"
+
+msgid "Failed to start partition creation"
+msgstr "Nie udało się rozpocząć tworzenia partycji"
+
+msgid "Failed to start partition deletion"
+msgstr "Nie udało się rozpocząć usuwania partycji"
+
+msgid "Fill in size"
+msgstr "Uzupełnij rozmiar"
+
+msgid "Linux Swap"
+msgstr "Linux Swap"
+
+msgid "Loading..."
+msgstr "Ładowanie..."
+
+msgid "No filesystem packages detected — user cannot choose unsupported filesystem formats."
+msgstr "Nie wykryto pakietów systemów plików — użytkownik nie może wybrać formatów nieobsługiwanych przez system."
+
+msgid "No partition types available. Maximum partitions reached."
+msgstr "Brak dostępnych typów partycji. Osiągnięto maksymalną liczbę partycji."
+
+msgid "No supported filesystems detected on this system"
+msgstr "Nie wykryto obsługiwanych systemów plików w tym systemie"
+
+msgid "Optional"
+msgstr "Opcjonalne"
+
+msgid "Partition created but selected filesystem is not available for formatting on this system"
+msgstr "Partycja została utworzona, ale wybrany system plików nie jest dostępny do formatowania w tym systemie"
+
+msgid "Partition data refreshed"
+msgstr "Dane partycji zostały odświeżone"
+
+msgid "Please select a filesystem"
+msgstr "Proszę wybrać system plików"
+
+msgid "RPC call failed: "
+msgstr "Wywołanie RPC nie powiodło się: "
+
+msgid "Refreshing..."
+msgstr "Odświeżanie..."
+
+msgid "Selected filesystem is not supported on this system"
+msgstr "Wybrany system plików nie jest obsługiwany w tym systemie"
+
+msgid "Selected partition is not mounted"
+msgstr "Wybrana partycja nie jest zamontowana"
+
+msgid "unknown error"
+msgstr "nieznany błąd"
+
+msgid "Packages & Drivers"
+msgstr "Pakiety oraz sterowniki"
+
+msgid "Mini Disk Manager log"
+msgstr "Mini Menedżer Dysków dziennik"
+
+msgid "Mini Disk Manager Log"
+msgstr "Mini Menedżer Dysków dziennik"
+
+msgid "Packages required to support various file systems."
+msgstr "Pakiety wymagane do obsługi różnych systemów plików."
+
+msgid "Expand"
+msgstr "Rozszerz"
+
+msgid "Resize"
+msgstr "Zmień rozmiar"
+
+msgid "Resize Partition"
+msgstr "Zmień rozmiar partycji"
+
+msgid "Resize partition /dev/%s"
+msgstr "Zmień rozmiar partycji /dev/%s"
+
+msgid "Resizing partition..."
+msgstr "Zmiana rozmiaru partycji..."
+
+msgid "Resizing a partition can cause data loss if not done correctly."
+msgstr "Zmiana rozmiaru partycji może spowodować utratę danych, jeśli nie zostanie wykonana poprawnie."
+
+msgid "Please ensure you have a backup of important data before proceeding."
+msgstr "Upewnij się, że masz kopię zapasową ważnych danych przed kontynuowaniem."
+
+msgid "Current size: %s MB / %s GB / %s TB"
+msgstr "Obecny rozmiar: %s MB / %s GB / %s TB"
+
+msgid "Available space: %s MB / %s GB / %s TB"
+msgstr "Dostępne miejsce: %s MB / %s GB / %s TB"
+
+msgid "Maximum size to be obtained: %s MB / %s GB / %s TB"
+msgstr "Maksymalny rozmiar do uzyskania: %s MB / %s GB / %s TB"
+
+msgid "Maximum new size"
+msgstr "Maksymalny nowy rozmiar"
+
+msgid "New size"
+msgstr "Nowy rozmiar"
+
+msgid "Enter new size"
+msgstr "Wprowadź nowy rozmiar"
+
+msgid "New size must be larger than current size"
+msgstr "Nowy rozmiar musi być większy niż obecny rozmiar"
+
+msgid "New size exceeds available space"
+msgstr "Nowy rozmiar przekracza dostępne miejsce"
+
+msgid "Partition resized successfully"
+msgstr "Pomyślnie zmieniono rozmiar partycji"
+
+msgid "Failed to resize partition"
+msgstr "Nie udało się zmienić rozmiaru partycji"
+
+msgid "Failed to resize partition: "
+msgstr "Nie udało się zmienić rozmiaru partycji: "
+
+msgid "Failed to start partition resize"
+msgstr "Nie udało się rozpocząć zmiany rozmiaru partycji"
+
+msgid "Selected partition cannot be resized. Only unmounted Ext2/3/4 partitions with available space can be resized."
+msgstr "Nie można zmienić rozmiaru wybranej partycji. Można zmieniać rozmiar tylko odmontowanych partycji Ext2/3/4 z dostępnym miejscem."
+
+msgid "MB"
+msgstr "MB"
+
+msgid "GB"
+msgstr "GB"
+
+msgid "TB"
+msgstr "TB"
+
+msgid "Cannot Create Partition"
+msgstr "Nie można utworzyć partycji"
+
+msgid "Insufficient Space"
+msgstr "Niewystarczające miejsce"
+
+msgid "Cannot read partition information"
+msgstr "Nie można odczytać informacji o partycji"
+
+msgid "Invalid extended partition"
+msgstr "Nieprawidłowa partycja rozszerzona"
+
+msgid "Extended partition not found or has invalid size"
+msgstr "Nie znaleziono partycji rozszerzonej lub ma nieprawidłowy rozmiar"
+
+msgid "Extended partition size: %s MB"
+msgstr "Rozmiar partycji rozszerzonej: %s MB"
+
+msgid "Used by logical partitions: %s MB"
+msgstr "Używane przez partycje logiczne: %s MB"
+
+msgid "Available for new logical: %s MB"
+msgstr "Dostępne dla nowej logicznej: %s MB"
+
+msgid "Required minimum: 10 MB"
+msgstr "Wymagane minimum: 10 MB"
+
+msgid "Not enough free space in extended partition /dev/%s"
+msgstr "Za mało wolnego miejsca w partycji rozszerzonej /dev/%s"
+
+msgid "Extended partition already exists. You can create primary partitions or select the extended partition to create logical partitions inside."
+msgstr "Partycja rozszerzona już istnieje. Możesz utworzyć partycje podstawowe lub wybrać partycję rozszerzoną, aby utworzyć partycje logiczne wewnątrz."
+
+msgid "Creating partition inside extended partition. Only logical partitions can be created here."
+msgstr "Tworzenie partycji wewnątrz partycji rozszerzonej. Można tu tworzyć tylko partycje logiczne."
+
+msgid "No partition table detected. A primary partition will be created and a partition table will be initialized."
+msgstr "Nie wykryto tablicy partycji. Zostanie utworzona partycja podstawowa i zainicjowana tablica partycji."
+
+msgid "No partition table - select to create"
+msgstr "Brak tablicy partycji - zaznacz aby utworzyć"
+
+msgid "No partitions - select to create"
+msgstr "Brak partycji - zaznacz aby utworzyć"
+
+msgid "Select to enable partition creation"
+msgstr "Zaznacz aby włączyć tworzenie partycji"
+
+msgid "Select unallocated space"
+msgstr "Wybierz nieprzydzielone miejsce"
+
+msgid "Unallocated space"
+msgstr "Nieprzydzielone miejsce"
+
+msgid "Expand Ext2/Ext3/Ext4"
+msgstr "Rozszerzanie Ext2/Ext3/Ext4"
+
+msgid "Wipe"
+msgstr "Wymaż"
+
+msgid "Select all partitions for wiping"
+msgstr "Zaznacz wszystkie partycje do wymazania"
+
+msgid "Please enable wipe mode first"
+msgstr "Najpierw włącz tryb wymazywania"
+
+msgid "Cannot wipe disk with mounted partitions. Please unmount all partitions first."
+msgstr "Nie można wymazać dysku z zamontowanymi partycjami. Najpierw odmontuj wszystkie partycje."
+
+msgid "Wipe Disk"
+msgstr "Wymaż dysk"
+
+msgid "WARNING"
+msgstr "OSTRZEŻENIE"
+
+msgid "This will completely erase the partition table and all data on /dev/%s!"
+msgstr "Ta operacja usunie całkowicie tablicę partycji i wszystkie dane na /dev/%s!"
+
+msgid "THIS OPERATION CANNOT BE UNDONE!"
+msgstr "TEJ OPERACJI NIE MOŻNA COFNĄĆ!"
+
+msgid "Number of partitions to be deleted: %d"
+msgstr "Liczba partycji do usunięcia: %d"
+
+msgid "Are you absolutely sure you want to continue?"
+msgstr "Czy na pewno chcesz kontynuować?"
+
+msgid "Wiping disk partition table..."
+msgstr "Wymazywanie tablicy partycji dysku..."
+
+msgid "Disk partition table has been successfully erased"
+msgstr "Tablica partycji dla dysku została pomyślnie wymazana"
+
+msgid "Failed to wipe disk"
+msgstr "Nie udało się wymazać dysku"
+
+msgid "Failed to start disk wipe"
+msgstr "Nie udało się rozpocząć wymazywania dysku"
+
+msgid "Failed to wipe disk: "
+msgstr "Nie udało się wymazać dysku: "
+
+msgid "Disk Wipe Support"
+msgstr "Wsparcie wymazywania dysku"
+
+msgid "Packages required to support disk wiping functionality (clearing partition table)."
+msgstr "Pakiety wymagane do działania opcji wymazywania dysku (usuwanie tablicy partycji)."
+
+msgid "Check Disk Wipe packages"
+msgstr "Sprawdź pakiety do wymazywania dysku"
+
+msgid "Disk Wipe"
+msgstr "Wymazywanie dysku"
+
+msgid "dd from BusyBox"
+msgstr "dd z BusyBox"
+
+msgid "Disk Wipe (dd command)"
+msgstr "Wymazywanie dysku (komenda dd)"
+
+msgid "alternative"
+msgstr "alternatywnie"
+
+# MORE SMART
+
+msgid "Attribute"
+msgstr "Atrybut"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Raw"
+msgstr "Raw"
+
+msgid "Worst"
+msgstr "Najgorszy"
+
+msgid "Thresh"
+msgstr "Próg"
+
+msgid "Value"
+msgstr "Wartość"
+
+msgid "NVMe S.M.A.R.T. Health Status"
+msgstr "Status zdrowia NVMe (S.M.A.R.T.)"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "WARNING"
+msgstr "OSTRZEŻENIE"
+
+msgid "Power On Time"
+msgstr "Czas pracy"
+
+msgid "Power On Hours"
+msgstr "Godziny pracy"
+
+msgid "Disk Usage"
+msgstr "Zużycie dysku"
+
+msgid "Disk Wear Level"
+msgstr "Poziom zużycia dysku"
+
+msgid "Available Spare"
+msgstr "Dostępna rezerwa"
+
+msgid "Available Spare Threshold"
+msgstr "Próg dostępnej rezerwy"
+
+msgid "hour"
+msgstr "godzina"
+
+msgid "hours"
+msgstr "godzin(-y)"
+
+msgid "h"
+msgstr "godz"
+
+msgid "year"
+msgstr "rok"
+
+msgid "years"
+msgstr "lata"
+
+msgid "month"
+msgstr "miesiąc"
+
+msgid "months"
+msgstr "miesiące(-ęcy)"
+
+msgid "day"
+msgstr "dzień"
+
+msgid "days"
+msgstr "dni"
+
+msgid "worn"
+msgstr "zużyte"
+
+msgid "remaining"
+msgstr "pozostało"
+
+msgid "S.M.A.R.T. Health Status"
+msgstr "Ogólny stan zdrowia dysku (S.M.A.R.T.)"
+
+msgid "No S.M.A.R.T. attributes found."
+msgstr "Nie znaleziono atrybutów S.M.A.R.T."
+
+msgid "Loading S.M.A.R.T. data..."
+msgstr "Ładowanie danych S.M.A.R.T..."
+
+msgid "Unable to read S.M.A.R.T. data."
+msgstr "Nie można odczytać danych S.M.A.R.T."
+
+msgid "Error reading S.M.A.R.T. data."
+msgstr "Błąd odczytu danych S.M.A.R.T."
+
+# SMART & Disk Info
+
+msgid "Raw Read Error Rate"
+msgstr "Współczynnik błędów odczytu"
+
+msgid "Throughput Performance"
+msgstr "Wydajność przepustowości"
+
+msgid "Spin Up Time"
+msgstr "Czas rozkręcania"
+
+msgid "Start Stop Count"
+msgstr "Liczba starów/zatrzymań"
+
+msgid "Reallocated Sector Count"
+msgstr "Liczba przemapowanych sektorów"
+
+msgid "Seek Error Rate"
+msgstr "Współczynnik błędów pozycjonowania"
+
+msgid "Seek Time Performance"
+msgstr "Wydajność pozycjonowania"
+
+msgid "Power On Hours"
+msgstr "Czas pracy"
+
+msgid "Spin Retry Count"
+msgstr "Liczba ponowień rozkręcania"
+
+msgid "Calibration Retry Count"
+msgstr "Liczba ponowień kalibracji"
+
+msgid "Power Cycle Count"
+msgstr "Liczba cykli zasilania"
+
+msgid "Read Soft Error Rate"
+msgstr "Współczynnik miękkich błędów odczytu"
+
+msgid "Airflow Temperature"
+msgstr "Temperatura przepływu powietrza"
+
+msgid "Temperature Celsius"
+msgstr "Temperatura"
+
+msgid "Hardware ECC Recovered"
+msgstr "Błędy ECC naprawione sprzętowo"
+
+msgid "Current Pending Sector"
+msgstr "Niestabilne sektory"
+
+msgid "Offline Uncorrectable"
+msgstr "Nienaprawialne sektory offline"
+
+msgid "UDMA CRC Error Count"
+msgstr "Liczba błędów CRC UDMA"
+
+msgid "Multi Zone Error Rate"
+msgstr "Współczynnik błędów wielostrefowych"
+
+msgid "Wear Leveling Count"
+msgstr "Licznik zużycia"
+
+msgid "Used Reserved Block Count Total"
+msgstr "Użyte bloki rezerwowe (całość)"
+
+msgid "Used Reserved Block Count Chip"
+msgstr "Użyte bloki rezerwowe (chip)"
+
+msgid "Unused Reserved Block Count Total"
+msgstr "Niewykorzystane bloki rezerwowe"
+
+msgid "Program Fail Count Total"
+msgstr "Liczba błędów zapisu"
+
+msgid "Erase Fail Count Total"
+msgstr "Liczba błędów kasowania"
+
+msgid "Runtime Bad Block"
+msgstr "Uszkodzone bloki"
+
+msgid "Uncorrectable Error Count"
+msgstr "Liczba błędów nienaprawialnych"
+
+msgid "Temperature Exceed Count"
+msgstr "Liczba przekroczeń temperatury"
+
+msgid "Erase Fail Count"
+msgstr "Liczba błędów kasowania"
+
+msgid "Reported Uncorrectable Errors"
+msgstr "Zgłoszone błędy nienaprawialne"
+
+msgid "High Fly Writes"
+msgstr "Zapisy w wysokim locie"
+
+msgid "G-Sense Error Rate"
+msgstr "Współczynnik błędów czujnika przeciążeń"
+
+msgid "Power-Off Retract Count"
+msgstr "Liczba cofnięć głowic przy wyłączeniu"
+
+msgid "Load Cycle Count"
+msgstr "Liczba cykli parkowania głowic"
+
+msgid "Temperature Case"
+msgstr "Temperatura obudowy"
+
+msgid "Reallocated Event Count"
+msgstr "Liczba zdarzeń przemapowania"
+
+msgid "Transfer Error Rate"
+msgstr "Współczynnik błędów przesyłu"
+
+msgid "Free Fall Sensor"
+msgstr "Czujnik swobodnego spadku"
+
+msgid "Total LBAs Written"
+msgstr "Całkowita liczba zapisanych LBA"
+
+msgid "Total LBAs Read"
+msgstr "Całkowita liczba odczytanych LBA"
+
+msgid "Read Error Retry Rate"
+msgstr "Współczynnik ponowień odczytu"
+
+msgid "Minimum W/E Cycle"
+msgstr "Minimalny cykl zapisu/kasowania"
+
+msgid "Maximum W/E Cycle"
+msgstr "Maksymalny cykl zapisu/kasowania"
+
+msgid "Average W/E Cycle"
+msgstr "Średni cykl zapisu/kasowania"
+
+msgid "Media Wearout Indicator"
+msgstr "Wskaźnik zużycia nośnika"
+
+msgid "Available Reserved Space"
+msgstr "Dostępna przestrzeń rezerwowa"
+
+msgid "SSD Life Left"
+msgstr "Pozostały żywotność SSD"
+
+msgid "Remaining Lifetime Percentage"
+msgstr "Pozostała żywotność (procent)"
+
+msgid "Percentage Lifetime Remaining"
+msgstr "Procent pozostałej żywotności"
+
+msgid "Remaining Life"
+msgstr "Pozostała żywotność"
+
+msgid "Lifetime Writes GiB"
+msgstr "Zapisane dane (GiB)"
+
+msgid "Lifetime Reads GiB"
+msgstr "Odczytane dane (GiB)"
+
+msgid "Program Fail Count"
+msgstr "Liczba błędów programowania"
+
+msgid "Unexpected Power Loss Count"
+msgstr "Liczba nieoczekiwanych utrat zasilania"
+
+msgid "Thermal Throttle Status"
+msgstr "Status ograniczenia termicznego"
+
+msgid "End-to-End Error"
+msgstr "Błąd end-to-end"
+
+msgid "Workload Host Reads Percentage"
+msgstr "Procent odczytów hosta"
+
+msgid "Workload Media Wear Indicator"
+msgstr "Wskaźnik zużycia nośnika (obciążenie)"
+
+msgid "Timed Workload Media Wear"
+msgstr "Zużycie nośnika (czasowe obciążenie)"
+
+msgid "Workload Timer"
+msgstr "Timer obciążenia"
+
+msgid "Percentage Rated Life Used"
+msgstr "Procent zużytej żywotności"
+
+msgid "Head Flying Hours"
+msgstr "Czas lotu głowic"
+
+msgid "Read Channel Margin"
+msgstr "Margines kanału odczytu"
+
+msgid "Loaded Hours"
+msgstr "Czas pracy z odparkowaniem"
+
+msgid "Load/Unload Retry Count"
+msgstr "Liczba ponowień parkowania/odparkowania"
+
+msgid "GMR Head Amplitude"
+msgstr "Amplituda głowicy GMR"
+
+msgid "Drive Temperature"
+msgstr "Temperatura dysku"
+
+msgid "Endurance Remaining"
+msgstr "Pozostała wytrzymałość"
+
+msgid "Power On Hours and Milliseconds"
+msgstr "Czas pracy (godziny i milisekundy)"
+
+msgid "Head Health"
+msgstr "Stan głowic"
+
+msgid "POR Recovery Count"
+msgstr "Liczba odzyskań POR"
+
+msgid "Unused Reserve NAND Blocks"
+msgstr "Niewykorzystane bloki NAND rezerwowe"
+
+msgid "SSD Protect Mode"
+msgstr "Tryb ochrony SSD"
+
+msgid "Host Writes 32MiB"
+msgstr "Zapisy hosta (32MiB)"
+
+msgid "NAND Writes 32MiB"
+msgstr "Zapisy NAND (32MiB)"
+
+msgid "Remaining Life Left"
+msgstr "Pozostała żywotność"
+
+msgid "Grown Bad Block Count"
+msgstr "Liczba nowych uszkodzonych bloków"
+
+msgid "Soft Read Error Rate"
+msgstr "Współczynnik miękkich błędów odczytu"
+
+msgid "Data Address Mark Errors"
+msgstr "Błędy znacznika adresu danych"
+
+msgid "Run Out Cancel"
+msgstr "Anulowanie przekroczenia"
+
+msgid "Soft ECC Correction"
+msgstr "Miękka korekta ECC"
+
+msgid "TA Increase Count"
+msgstr "Liczba wzrostów TA"
+
+msgid "Shock Count Write Operation"
+msgstr "Liczba wstrząsów przy zapisie"
+
+msgid "Shock Rate Write Operation"
+msgstr "Współczynnik wstrząsów przy zapisie"
+
+msgid "Flying Height"
+msgstr "Wysokość lotu głowic"
+
+msgid "Spin High Current"
+msgstr "Wysoki prąd rozruchu"
+
+msgid "Spin Buzz"
+msgstr "Buzz rozruchu"
+
+msgid "Offline Seek Performance"
+msgstr "Wydajność pozycjonowania offline"
+
+msgid "Vibration During Write"
+msgstr "Wibracje podczas zapisu"
+
+msgid "Shock During Write"
+msgstr "Wstrząsy podczas zapisu"
+
+msgid "Disk Shift"
+msgstr "Przesunięcie dysku"
+
+msgid "Load Retry Count"
+msgstr "Liczba ponowień załadowania"
+
+msgid "Load Friction"
+msgstr "Tarcie ładowania"
+
+msgid "Load-in Time"
+msgstr "Czas załadowania"
+
+msgid "Torque Amplification Count"
+msgstr "Liczba wzmocnień momentu obrotowego"
+
+msgid "Write Error Rate"
+msgstr "Współczynnik błędów zapisu"
+
+msgid "Serial Number"
+msgstr "Numer seryjny"
+
+msgid "LU WWN Device Id"
+msgstr "Identyfikator LU WWN"
+
+msgid "Firmware Version"
+msgstr "Wersja firmware"
+
+msgid "User Capacity"
+msgstr "Pojemność użyteczna"
+
+msgid "Capacity"
+msgstr "Pojemność"
+
+msgid "Sector Size"
+msgstr "Rozmiar sektora"
+
+msgid "Sector Sizes"
+msgstr "Rozmiary sektorów"
+
+msgid "Rotation Rate"
+msgstr "Prędkość obrotowa"
+
+msgid "Form Factor"
+msgstr "Format"
+
+msgid "Device is"
+msgstr "Urządzenie"
+
+msgid "ATA Version is"
+msgstr "Wersja ATA"
+
+msgid "SATA Version is"
+msgstr "Wersja SATA"
+
+msgid "Local Time is"
+msgstr "Czas lokalny"
+
+msgid "SMART support is"
+msgstr "Obsługa SMART"
+
+msgid "SMART Status"
+msgstr "Status SMART"
+
+msgid "Device"
+msgstr "Urządzenie"
+
+msgid "Model Number"
+msgstr "Model"
+
+msgid "Firmware Revision"
+msgstr "Wersja firmware"
+
+msgid "PCI Vendor/Subsystem ID"
+msgstr "ID producenta/podsystemu PCI"
+
+msgid "IEEE OUI Identifier"
+msgstr "Identyfikator IEEE OUI"
+
+msgid "Total NVM Capacity"
+msgstr "Całkowita pojemność NVM"
+
+msgid "Unallocated NVM Capacity"
+msgstr "Nieprzydzielona pojemność NVM"
+
+msgid "Controller ID"
+msgstr "ID kontrolera"
+
+msgid "Number of Namespaces"
+msgstr "Liczba obszarów adresowych"
+
+msgid "Namespace 1 Size/Capacity"
+msgstr "Rozmiar/pojemność obszaru adresowego 1"
+
+msgid "Namespace 1 Formatted LBA Size"
+msgstr "Rozmiar LBA obszaru adresowego 1"
+
+msgid "Namespace 1 IEEE EUI-64"
+msgstr "IEEE EUI-64 obszaru adresowego 1"
+
+msgid "logical/physical"
+msgstr "logiczny/fizyczny"
+
+msgid "bytes"
+msgstr "bajtów"
+
+msgid "blocks"
+msgstr "bloków"
+
+msgid "Solid State Device"
+msgstr "Dysk SSD"
+
+# Reserved space
+
+msgid "Reserved space"
+msgstr "Przestrzeń zarezerwowana"
+
+msgid "Space reserved for root (default: 5%)"
+msgstr "Przestrzeń zarezerwowana dla roota (domyślnie: 5%)"
+
+msgid "Used Reserved Block Count Total"
+msgstr "Całkowita liczba użytych bloków zarezerwowanych"
+
+msgid "Used Reserved Block Count Chip"
+msgstr "Liczba użytych bloków zarezerwowanych układu"
+
+msgid "Unused Reserved Block Count Total"
+msgstr "Całkowita liczba nieużywanych bloków zarezerwowanych"
+
+msgid "Available Reserved Space"
+msgstr "Dostępna przestrzeń zarezerwowana"
+
+# NVMe
+
+msgid "Critical Warning"
+msgstr "Ostrzeżenie krytyczne"
+
+msgid "Percentage Used"
+msgstr "Procent wykorzystania"
+
+msgid "Data Units Read"
+msgstr "Odczytane jednostki danych"
+
+msgid "Data Units Written"
+msgstr "Zapisane jednostki danych"
+
+msgid "Host Read Commands"
+msgstr "Polecenia odczytu hosta"
+
+msgid "Host Write Commands"
+msgstr "Polecenia zapisu hosta"
+
+msgid "Controller Busy Time"
+msgstr "Czas zajętości kontrolera"
+
+msgid "Power Cycles"
+msgstr "Cykle zasilania"
+
+msgid "Unsafe Shutdowns"
+msgstr "Niebezpieczne wyłączenia"
+
+msgid "Media Errors"
+msgstr "Błędy nośnika"
+
+msgid "Error Log Entries"
+msgstr "Wpisy dziennika błędów"
+
+# SMART
+
+msgid "S.M.A.R.T. Data Reading"
+msgstr "Odczyt danych S.M.A.R.T."
+
+msgid "Packages required to read S.M.A.R.T. disk data."
+msgstr "Pakiety wymagane do odczytu danych S.M.A.R.T. dysku."
+
+msgid "Check S.M.A.R.T. packages"
+msgstr "Sprawdź pakiety S.M.A.R.T."
+
+msgid "S.M.A.R.T. tools"
+msgstr "Narzędzia S.M.A.R.T."
+
+# Mount
+
+msgid "Please select a partition first"
+msgstr "Najpierw wybierz partycję"
+
+msgid "UUID"
+msgstr "UUID"
+
+msgid "Device"
+msgstr "Urządzenie"
+
+msgid "Filesystem"
+msgstr "System plików"
+
+msgid "Mount point"
+msgstr "Punkt montowania"
+
+msgid "Use as root filesystem (/)"
+msgstr "Użyj jako główny system plików (/)"
+
+msgid "Use as external overlay (/overlay)"
+msgstr "Użyj jako zewnętrzną nakładkę (/overlay)"
+
+msgid "-- custom --"
+msgstr "-- niestandardowy --"
+
+msgid "Enter custom mount point"
+msgstr "Wprowadź niestandardowy punkt montowania"
+
+msgid "Mount options"
+msgstr "Opcje montowania"
+
+msgid "See \"mount\" manpage for details."
+msgstr "Zobacz stronę podręcznika \"mount\" dla szczegółów."
+
+msgid "Mount Points - Mount Entry"
+msgstr "Punkty montowania - Wpis montowania"
+
+msgid "Cancel"
+msgstr "Anuluj"
+
+msgid "Mount point cannot be empty"
+msgstr "Punkt montowania nie może być pusty"
+
+msgid "Mounted to %s"
+msgstr "Zamontowano w %s"
+
+msgid "Failed to mount: "
+msgstr "Montowanie nie powiodło się: "
+
+msgid "Mount failed: %s"
+msgstr "Montowanie nie powiodło się: %s"
+
+msgid "Mount"
+msgstr "Montuj"
+
+msgid "Selected partition is not mounted"
+msgstr "Wybrana partycja nie jest zamontowana"
+
+msgid "Unmounted %s"
+msgstr "Odmontowano %s"
+
+msgid "Failed to unmount: "
+msgstr "Odmontowanie nie powiodło się: "
+
+msgid "Last selected disk has changed and did not pass verification. Data collection for: %s will be aborted. The page will be reloaded."
+msgstr "Ostatnio wybrany dysk został zmieniony i nie przeszedł weryfikacji. Zbieranie danych dla: %s zostanie przerwane. Strona zostanie przeładowana."
+
+msgid "Last selected disk has changed. Refreshing the view..."
+msgstr "Ostatnio wybrany dysk został zmieniony. Odświeżanie widoku..."

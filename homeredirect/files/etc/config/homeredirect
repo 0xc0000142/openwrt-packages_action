@@ -1,0 +1,13 @@
+config global
+	option enabled '1'
+	option cert ''
+	option key ''
+
+config redirect
+	option name 'demo-cross-family'
+	option proto 'tcp6'
+	option src_dport '60608'
+	option dest_ip '192.168.1.100'
+	option dest_port '3389'
+	option ipv6only '1'
+	option enabled '0'

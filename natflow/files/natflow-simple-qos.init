@@ -1,0 +1,15 @@
+#!/bin/sh /etc/rc.common
+# shellcheck disable=SC2034
+
+START=95
+EVENTD=/etc/init.d/natflow-userinfo-eventd
+
+# Compatibility entry for existing LuCI ucitrack consumers. Startup is owned
+# by natflow-userinfo-eventd so package installation does not reconcile twice.
+reload() {
+	"$EVENTD" reload
+}
+
+restart() {
+	reload
+}

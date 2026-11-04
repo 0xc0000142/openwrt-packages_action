@@ -1,0 +1,355 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006-2011 OpenWrt.org
+
+START=95
+
+DEVCTL=/dev/natflow_qos_ctl
+IPOPS="lua /usr/lib/lua/ipops.lua"
+test -e /usr/share/natflow/ipops.lua && IPOPS="lua /usr/share/natflow/ipops.lua"
+
+qos_idx=0
+
+format_ip_strings()
+{
+	local input="$1"
+	local v4_list=""
+	local v6_list=""
+	local ip processed_v4
+
+	for ip in $(echo "$input" | tr ',' ' '); do
+		case "$ip" in
+			*:*)
+				v6_list="$v6_list $ip"
+			;;
+			*)
+				if [ -z "$v4_list" ]; then
+					v4_list="$ip"
+				else
+					v4_list="$v4_list,$ip"
+				fi
+			;;
+		esac
+	done
+
+	if [ -n "$v4_list" ]; then
+		processed_v4=$($IPOPS netStrings2ipcidrStrings "$v4_list" | tr ',' ' ')
+	fi
+
+	echo $processed_v4 $v6_list
+}
+
+ip_set_add()
+{
+	local basename=$1
+	local net=$2
+
+	# hack for 0.0.0.0/0 and ::/0
+	[ "$net" = "0.0.0.0/0" ] && net="0.0.0.0/1 128.0.0.0/1"
+	[ "$net" = "::/0" ] && net="::/1 8000::/1"
+
+	for n in $net; do
+		case "$n" in
+			*:*)
+				ipset add ${basename}_v6 $n 2>/dev/null
+			;;
+			*)
+				ipset add ${basename}_v4 $n 2>/dev/null
+			;;
+		esac
+	done
+}
+
+create_dual_stack_set()
+{
+	local basename=$1
+
+	ipset create ${basename}_v4 nethash family inet hashsize 64 maxelem 1024 2>/dev/null
+	ipset flush ${basename}_v4
+	ipset create ${basename}_v6 nethash family inet6 hashsize 64 maxelem 1024 2>/dev/null
+	ipset flush ${basename}_v6
+
+	ipset create ${basename} list:set 2>/dev/null
+	ipset flush ${basename}
+
+	ipset add ${basename} ${basename}_v4 2>/dev/null
+	ipset add ${basename} ${basename}_v6 2>/dev/null
+}
+
+setup_qos_ip_field()
+{
+	local basename=$1
+	local ip_list
+	local net
+
+	ip_list=$(format_ip_strings "$2")
+	if [ "$(echo $ip_list | wc -w)" -gt 1 ]; then
+		create_dual_stack_set "$basename"
+		for net in $ip_list; do
+			ip_set_add "$basename" $net
+		done
+		echo "$basename"
+	else
+		echo $ip_list
+	fi
+}
+
+get_rate_data()
+{
+	local rate num int frac frac_value digit scale mul div
+
+	rate=$1
+	case "$rate" in
+		*[Gg][Bb][Pp][Ss])
+			num=${rate%[Gg][Bb][Pp][Ss]}
+			mul=$((128*1024*1024))
+			div=1
+		;;
+		*[Mm][Bb][Pp][Ss])
+			num=${rate%[Mm][Bb][Pp][Ss]}
+			mul=$((128*1024))
+			div=1
+		;;
+		*[Kk][Bb][Pp][Ss])
+			num=${rate%[Kk][Bb][Pp][Ss]}
+			mul=128
+			div=1
+		;;
+		*[Bb][Pp][Ss])
+			num=${rate%[Bb][Pp][Ss]}
+			mul=1
+			div=8
+		;;
+		*)
+			num=$rate
+			mul=1
+			div=1
+		;;
+	esac
+
+	case "$num" in
+		''|*[!0-9.]*)
+			echo -n 0
+			return
+		;;
+	esac
+
+	case "$num" in
+		*.*)
+			int=${num%%.*}
+			frac=${num#*.}
+			test -n "$int" || int=0
+			while test "${int#0}" != "$int" && test "$int" != "0"; do
+				int=${int#0}
+			done
+			case "$frac" in
+				''|*.*)
+					echo -n 0
+					return
+				;;
+			esac
+			frac_value=0
+			scale=1
+			while test -n "$frac"; do
+				digit=${frac%"${frac#?}"}
+				frac=${frac#?}
+				frac_value=$((frac_value*10 + digit))
+				scale=$((scale*10))
+			done
+			echo -n $((((int*scale + frac_value)*mul)/scale/div))
+		;;
+		*)
+			while test "${num#0}" != "$num" && test "$num" != "0"; do
+				num=${num#0}
+			done
+			echo -n $((num*mul/div))
+		;;
+	esac
+}
+
+natflow_qos_setup()
+{
+	local idx=$qos_idx
+	qos_idx=$((qos_idx+1))
+	local cfg="$1"
+	local disabled user user_port remote remote_port proto rx_rate tx_rate
+
+	config_get disabled "$cfg" disabled 0
+	config_get user "$cfg" user
+	config_get user_port "$cfg" user_port
+	config_get remote "$cfg" remote
+	config_get remote_port "$cfg" remote_port
+	config_get proto "$cfg" proto
+	config_get rx_rate "$cfg" rx_rate 0
+	config_get tx_rate "$cfg" tx_rate 0
+
+	[ "$disabled" = "1" ] && return 0
+
+	#echo add user=<ipset/ip/ipcidr>,user_port=<portset/port>,remote=<ipset/ip/ipcidr>,remote_port=<portset/port>,proto=<tcp/udp>,rxbytes=Bytes,txbytes=Bytes
+
+	user=$(setup_qos_ip_field "qos_u$idx" "$user")
+
+	if [ "$(echo "$user_port" | sed 's/,/ /g;s/-/ /g' | wc -w)" -gt 1 ]; then
+		ipset create qos_up$idx bitmap:port range 0-65535 2>/dev/null
+		ipset flush qos_up$idx
+		for port in $(echo "$user_port" | sed 's/,/ /g'); do
+			ipset add qos_up$idx $port
+		done
+		user_port=qos_up$idx
+	fi
+
+	remote=$(setup_qos_ip_field "qos_r$idx" "$remote")
+
+	if [ "$(echo "$remote_port" | sed 's/,/ /g;s/-/ /g' | wc -w)" -gt 1 ]; then
+		ipset create qos_rp$idx bitmap:port range 0-65535 2>/dev/null
+		ipset flush qos_rp$idx
+		for port in $(echo "$remote_port" | sed 's/,/ /g'); do
+			ipset add qos_rp$idx $port
+		done
+		remote_port=qos_rp$idx
+	fi
+
+	rx_rate=$(get_rate_data "$rx_rate")
+	tx_rate=$(get_rate_data "$tx_rate")
+
+	cmd="add user=$user,user_port=$user_port,remote=$remote,remote_port=$remote_port,proto=$proto,rxbytes=$rx_rate,txbytes=$tx_rate"
+
+	echo "$cmd" >$DEVCTL
+}
+
+natflow_qos_zone_setup_tc()
+{
+	local idx=$zone_idx
+	zone_idx=$((zone_idx+1))
+	local cfg="$1"
+	local fw_zone ifname type
+
+	config_get fw_zone "$cfg" fw_zone
+	config_get ifname "$cfg" ifname
+	config_get type "$cfg" type
+
+	(for fwz in $fw_zone; do
+		fw3 -q zone $fwz
+	done; \
+	for ifn in $ifname; do
+		echo $ifn
+	done) | sed 's/+$/\.\*/' | sort | uniq | while read -r IFN; do
+		#echo $type $idx=$IFN >$DEVCTL
+		l2dev=$(ubus call network.interface dump | grep "\"l3_device\": \"${IFN}\"" -A2 | grep "\"device\"" | cut -d\" -f4)
+		l2dev=$(for ifn in $IFN $l2dev; do echo $ifn; done | sort | uniq)
+		for ifn in $l2dev; do
+		case $type in
+		lan_zone)
+			ifconfig -a | grep "^$ifn " | awk '{print $1}' | while read -r lan; do
+				if [ "${lan}" = "${lan//:}" ]; then
+					qos_id=0
+					grep "^add user=" < /dev/natflow_qos_ctl | while read -r line; do
+						line="${line/*rxbytes=}"
+						rxbytes="${line/,*}"
+						quantum=$(($rxbytes/1000))
+						if test $quantum -lt 256; then
+							quantum=256
+						fi
+						qos_id=$((qos_id+1))
+						QOSID=$((qos_id*2-1))
+						lower1=$(for vif in /sys/class/net/$lan/lower_*; do test -e $vif && echo ${vif##/sys/class/net/*/lower_}; done)
+						lower2=$(for dev in $lower1; do for vif in /sys/class/net/$dev/lower_*; do test -e $vif && echo ${vif##/sys/class/net/*/lower_}; done; done)
+						devs=$(for dev in $lan $lower1 $lower2; do echo $dev; done | sort | uniq);
+						echo setup tc for @lan=[`echo $devs`] rxbytes=$rxbytes quantum=$quantum rule_id=${qos_id} QOSID=${QOSID}
+						for DEVICE in $devs; do
+							tc qdisc add dev $DEVICE root handle 1: htb >/dev/null 2>&1
+							tc class add dev $DEVICE parent 1: classid 1:${QOSID} htb rate ${rxbytes}Bps quantum $quantum >/dev/null 2>&1
+							tc filter add dev $DEVICE parent 1: protocol all prio 1 handle ${QOSID} fw classid 1:${QOSID} >/dev/null 2>&1
+						done
+					done
+				fi
+			done
+		;;
+		wan_zone)
+			ifconfig -a | grep "^$ifn " | awk '{print $1}' | while read -r wan; do
+				if [ "${wan}" = "${wan//:}" ]; then
+					qos_id=0
+					grep "^add user=" < /dev/natflow_qos_ctl | while read -r line; do
+						txbytes="${line/*,txbytes=}"
+						quantum=$(($txbytes/1000))
+						if test $quantum -lt 256; then
+							quantum=256
+						fi
+						qos_id=$((qos_id+1))
+						QOSID=$((qos_id*2))
+						lower1=$(for vif in /sys/class/net/$wan/lower_*; do test -e $vif && echo ${vif##/sys/class/net/*/lower_}; done)
+						lower2=$(for dev in $lower1; do for vif in /sys/class/net/$dev/lower_*; do test -e $vif && echo ${vif##/sys/class/net/*/lower_}; done; done)
+						devs=$(for dev in $wan $lower1 $lower2; do echo $dev; done | sort | uniq);
+						echo setup tc for @wan=[`echo $devs`] txbytes=$txbytes quantum=$quantum rule_id=${qos_id} QOSID=${QOSID}
+						for DEVICE in $devs; do
+							tc qdisc add dev $DEVICE root handle 1: htb >/dev/null 2>&1
+							tc class add dev $DEVICE parent 1: classid 1:${QOSID} htb rate ${txbytes}Bps quantum $quantum >/dev/null 2>&1
+							tc filter add dev $DEVICE parent 1: protocol all prio 1 handle ${QOSID} fw classid 1:${QOSID} >/dev/null 2>&1
+						done
+					done
+				fi
+			done
+		;;
+		esac
+		done
+	done
+}
+
+natflow_qos_clear_tc()
+{
+	command -v tc >/dev/null 2>&1 || return
+	ifconfig | grep "^[^ ]" | awk '{print $1}' | while read -r ifname; do
+		if [ "${ifname}" = "${ifname//:}" ]; then
+			tc qdisc del dev $ifname root >/dev/null 2>&1
+		fi
+	done
+}
+
+start() {
+	test -c $DEVCTL || return 0
+
+	echo clear >$DEVCTL
+
+	local buffer_ms=$(uci get natflow.main.buffer_ms 2>/dev/null || echo 100)
+	echo "buffer_ms=$buffer_ms" >$DEVCTL 2>/dev/null
+
+	config_load natflow
+	config_foreach natflow_qos_setup qos
+
+	natflow_qos_clear_tc
+
+	if [ "$(uci get natflow.main.tc_classid_mode 2>/dev/null || echo 0)" = "1" ] && command -v tc >/dev/null 2>&1; then
+		echo tc_classid_mode=1 >/dev/natflow_qos_ctl
+		config_foreach natflow_qos_zone_setup_tc zone
+	else
+		echo tc_classid_mode=0 >/dev/natflow_qos_ctl
+	fi
+
+	mkdir -p /tmp/config
+	touch /tmp/config/natflow-qos
+	ln -s /tmp/config/natflow-qos /etc/config/natflow-qos >/dev/null 2>&1
+	config_load natflow-qos
+	config_foreach natflow_qos_setup qos
+}
+
+stop() {
+	test -c $DEVCTL || return 0
+
+	echo clear >$DEVCTL
+	ipset list -n | grep ^qos_ | while read -r ipset_name; do
+		ipset flush $ipset_name 2>/dev/null
+	done
+	ipset list -n | grep ^qos_ | while read -r ipset_name; do
+		ipset destroy $ipset_name 2>/dev/null
+	done
+
+	natflow_qos_clear_tc
+}
+
+reload() {
+	restart
+}
+
+restart() {
+	stop
+	start
+}

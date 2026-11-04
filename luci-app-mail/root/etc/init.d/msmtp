@@ -1,0 +1,92 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2018 Ycarus (Yannick Chabanois) <ycarus@zugaina.org>
+
+START=90
+STOP=10
+
+USE_PROCD=1
+
+validate_section() {
+	uci_validate_section mail smtp "${1}" \
+		'server:host'          \
+		'tls:bool:0'           \
+		'tls_starttls:bool:0'  \
+		'from:string'          \
+		'user:string'          \
+		'password:string'      \
+		'port:port:25'
+}
+
+# msmtp takes the rest of the line as the argument and strips one pair of
+# enclosing double quotes, nothing else: quoting keeps leading/trailing
+# spaces and a value that is itself quoted; a newline would start a new
+# command, so it is dropped.
+msmtp_arg() {
+	printf '"%s"' "$(printf '%s' "$1" | tr -d '\r\n')"
+}
+
+config_account() {
+	local server tls tls_starttls from user password port
+
+	validate_section "${1}" || {
+		logger -t msmtp "${1}: validation failed"
+		return 1
+	}
+
+	cat > "$msmtp_tmp" <<-EOF
+	account default
+	host $server
+	port $port
+	EOF
+	[ -n "$user" ] && [ -n "$password" ] && {
+		cat >> "$msmtp_tmp" <<-EOF
+		auth on
+		user $(msmtp_arg "$user")
+		password $(msmtp_arg "$password")
+		EOF
+	}
+	[ -n "$from" ] && echo "from $(msmtp_arg "$from")" >> "$msmtp_tmp"
+	[ "$tls" = "1" ] && {
+		cat >> "$msmtp_tmp" <<-EOF
+		tls_trust_file /etc/ssl/certs/ca-certificates.crt
+		tls on
+		EOF
+	} || {
+		echo 'tls off' >> "$msmtp_tmp"
+	}
+	[ "$tls_starttls" = "1" ] && {
+		echo 'tls_starttls on' >> "$msmtp_tmp"
+	} || {
+		echo 'tls_starttls off' >> "$msmtp_tmp"
+	}
+	msmtp_written=1
+}
+
+start_service() {
+	local msmtp_tmp msmtp_new msmtp_written=0
+	# The file holds the SMTP password: always created 0600. Built in tmpfs
+	# and only written to flash when it changed, every start and reload
+	# rewrote /etc/msmtprc
+	msmtp_tmp="$(umask 077; mktemp /tmp/msmtprc.XXXXXX)" || return 1
+	config_load mail
+	config_foreach config_account smtp
+	if [ "$msmtp_written" = "1" ] && ! cmp -s "$msmtp_tmp" /etc/msmtprc; then
+		# next to the target so the mv is a rename, never readable by
+		# others even for a moment; keeps the owner and mode of the old
+		# file, but never its bits for others
+		msmtp_new="$(umask 077; mktemp /etc/msmtprc.XXXXXX)" &&
+		cat "$msmtp_tmp" > "$msmtp_new" && {
+			[ -f /etc/msmtprc ] && {
+				chown "$(stat -c %u:%g /etc/msmtprc)" "$msmtp_new"
+				chmod "$(stat -c %a /etc/msmtprc)" "$msmtp_new"
+				chmod o-rwx "$msmtp_new"
+			}
+			mv "$msmtp_new" /etc/msmtprc
+		} || rm -f "$msmtp_new"
+	fi
+	rm -f "$msmtp_tmp"
+}
+
+service_triggers() {
+	procd_add_reload_trigger mail
+}

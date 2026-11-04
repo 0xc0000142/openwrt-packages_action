@@ -1,0 +1,7 @@
+#!/bin/sh
+
+/etc/init.d/nfs enable && /etc/init.d/nfs restart
+
+rm -f /tmp/luci-indexcache
+
+exit 0

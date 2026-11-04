@@ -1,0 +1,8 @@
+
+config poddns 'config'
+	option enable '0'
+	option token ''
+
+config domain 'domain'
+	option sub_domain ''
+	option main_domain ''

@@ -1,0 +1,1510 @@
+#!/bin/sh
+
+. /usr/share/libubox/jshn.sh
+
+##################################################################################################################
+#
+#  Copyright 2025-2026 Rafał Wabik - IceG - From eko.one.pl forum
+#  
+#  MIT License
+#  
+##################################################################################################################
+
+LOG_FILE="/tmp/mini-diskmanager.log"
+PID_FILE="/tmp/mini-diskmanager.pid"
+RESULT_FILE="/tmp/mini-diskmanager.result"
+
+##################################################################################################################
+# LOG
+##################################################################################################################
+log_msg() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
+}
+
+##################################################################################################################
+# MOUNT DETECTION / WYKRYWANIE MONTOWANIA
+##################################################################################################################
+is_device_mounted() {
+    device="$1"
+    grep -q "^${device} " /proc/mounts 2>/dev/null
+    return $?
+}
+
+##################################################################################################################
+# PARTITION SUFFIX DETECTOR / DETEKTOR SUFIKSU PARTYCJI
+##################################################################################################################
+part_suffix() {
+    dev="$1"
+    case "$(basename "$dev")" in
+        *[0-9]) echo "p" ;;
+        *) echo "" ;;
+    esac
+}
+
+##################################################################################################################
+# PARSE PARTITION NAME / PARSOWANIE NAZWY PARTYCJI
+# Extracts device and partition number / Wyodrębnia urządzenie i numer partycji
+# Examples / Przykłady:
+#   /dev/sda1 -> DEVICE=/dev/sda NUM=1
+#   /dev/sataa3 -> DEVICE=/dev/sataa NUM=3
+#   /dev/md1p2 -> DEVICE=/dev/md1 NUM=2
+#   /dev/mmcblk0p3 -> DEVICE=/dev/mmcblk0 NUM=3
+#   /dev/nvme0n1p1 -> DEVICE=/dev/nvme0n1 NUM=1
+#   /dev/sda -> DEVICE=/dev/sda NUM=1 (disk without partition table)
+##################################################################################################################
+parse_partition_name() {
+    partition="$1"
+    NUM=""
+    BNAME=$(basename "$partition")
+    
+    log_msg "DEBUG: Parsing partition name: $partition (basename: $BNAME)"
+    
+    if [ "$BNAME" != "${BNAME#sd?}" ]; then
+        if [ -z "${BNAME#sd?}" ]; then
+            DEVICE="/dev/$BNAME"
+            NUM="1"
+            log_msg "DEBUG: Detected sd* disk without partition: DEVICE=$DEVICE NUM=$NUM"
+        else
+            DEVICE="/dev/${BNAME:0:3}"
+            NUM="${BNAME#sd?}"
+            log_msg "DEBUG: Detected sd* partition: DEVICE=$DEVICE NUM=$NUM"
+        fi
+    elif [ "$BNAME" != "${BNAME#sata?}" ]; then
+        if [ -z "${BNAME#sata?}" ]; then
+            DEVICE="/dev/$BNAME"
+            NUM="1"
+            log_msg "DEBUG: Detected sata* disk without partition: DEVICE=$DEVICE NUM=$NUM"
+        else
+            DEVICE="/dev/${BNAME:0:5}"
+            NUM="${BNAME#sata?}"
+            log_msg "DEBUG: Detected sata* partition: DEVICE=$DEVICE NUM=$NUM"
+        fi
+    elif [ "$BNAME" != "${BNAME#md?}" ]; then
+        if echo "$BNAME" | grep -q 'p[0-9]*$'; then
+            DEVICE="/dev/${BNAME%%p*}"
+            NUM="${BNAME##*p}"
+            log_msg "DEBUG: Detected md* with p separator: DEVICE=$DEVICE NUM=$NUM"
+        elif [ -z "${BNAME#md?}" ]; then
+            DEVICE="/dev/$BNAME"
+            NUM="1"
+            log_msg "DEBUG: Detected md* disk without partition: DEVICE=$DEVICE NUM=$NUM"
+        else
+            DEVICE="/dev/${BNAME:0:3}"
+            NUM="${BNAME#md?}"
+            log_msg "DEBUG: Detected md* partition: DEVICE=$DEVICE NUM=$NUM"
+        fi
+    elif [ "$BNAME" != "${BNAME#mmcblk?}" ]; then
+        if echo "$BNAME" | grep -q 'p[0-9]*$'; then
+            DEVICE="/dev/${BNAME%%p*}"
+            NUM="${BNAME##*p}"
+            log_msg "DEBUG: Detected mmcblk* partition: DEVICE=$DEVICE NUM=$NUM"
+        else
+            DEVICE="/dev/$BNAME"
+            NUM="1"
+            log_msg "DEBUG: Detected mmcblk* disk without partition: DEVICE=$DEVICE NUM=$NUM"
+        fi
+    elif [ "$BNAME" != "${BNAME#nvme?n?}" ]; then
+        if echo "$BNAME" | grep -q 'p[0-9]*$'; then
+            DEVICE="/dev/${BNAME%%p*}"
+            NUM="${BNAME##*p}"
+            log_msg "DEBUG: Detected nvme* partition: DEVICE=$DEVICE NUM=$NUM"
+        else
+            DEVICE="/dev/$BNAME"
+            NUM="1"
+            log_msg "DEBUG: Detected nvme* disk without partition: DEVICE=$DEVICE NUM=$NUM"
+        fi
+    else
+        log_msg "ERROR: $partition is invalid - unsupported device type (BŁĄD: $partition jest niepoprawny - nieobsługiwany typ urządzenia)"
+        return 1
+    fi
+    
+    export DEVICE NUM
+    log_msg "DEBUG: Final parse result - DEVICE=$DEVICE NUM=$NUM"
+    return 0
+}
+
+##################################################################################################################
+# CHECK TARGET PATH / SPRAWDZANIE ŚCIEŻKI DOCELOWEJ
+##################################################################################################################
+check_target_path() {
+    target="$1"
+    
+    if [ ! -b "$target" ]; then
+        log_msg "ERROR: $target does not exist (BŁĄD: $target nie istnieje)"
+        echo "1" > "$RESULT_FILE"
+        return 1
+    fi
+    log_msg "DEBUG: $target exists ($target istnieje)"
+    
+    BNAME=$(basename "$target")
+    
+    if [ "$BNAME" != "${BNAME#sd?}" ]; then
+        log_msg "DEBUG: $target is valid (sd* device) ($target jest poprawny - urządzenie sd*)"
+    elif [ "$BNAME" != "${BNAME#sata?}" ]; then
+        log_msg "DEBUG: $target is valid (sata* device) ($target jest poprawny - urządzenie sata*)"
+    elif [ "$BNAME" != "${BNAME#md?}" ]; then
+        log_msg "DEBUG: $target is valid (md* device) ($target jest poprawny - urządzenie md*)"
+    elif [ "$BNAME" != "${BNAME#mmcblk?}" ]; then
+        if [ "$BNAME" != "${BNAME#mmcblk0*}" ]; then
+            log_msg "ERROR: $target is invalid (mmcblk0 protected) (BŁĄD: $target jest niepoprawny - mmcblk0 jest chroniony)"
+            echo "1" > "$RESULT_FILE"
+            return 1
+        fi
+        log_msg "DEBUG: $target is valid (mmcblk* device) ($target jest poprawny - urządzenie mmcblk*)"
+    elif [ "$BNAME" != "${BNAME#nvme?n?}" ]; then
+        log_msg "DEBUG: $target is valid (nvme* device) ($target jest poprawny - urządzenie nvme*)"
+    else
+        log_msg "ERROR: $target is invalid (unsupported device type) (BŁĄD: $target jest niepoprawny - nieobsługiwany typ urządzenia)"
+        echo "1" > "$RESULT_FILE"
+        return 1
+    fi
+    
+    log_msg "DEBUG: $target validation passed ($target przeszedł walidację)"
+    return 0
+}
+
+##################################################################################################################
+# UNMOUNTING PARTITIONS / ODMONTOWYWANIE PARTYCJI
+##################################################################################################################
+unmount_device() {
+    device="$1"
+    log_msg "Unmounting partitions for $device (Odmontowywanie partycji dla $device)"
+
+    suffix=$(part_suffix "$device")
+
+    if [ -n "$suffix" ]; then
+        pattern="${device}${suffix}[0-9]*"
+    else
+        pattern="${device}[0-9]*"
+    fi
+
+    for part in $pattern; do
+        if [ -b "$part" ] && [ "$part" != "$device" ]; then
+            if is_device_mounted "$part"; then
+                log_msg "Unmounting $part (Odmontowywanie $part)"
+                umount -l "$part" >> "$LOG_FILE" 2>&1 || umount -f "$part" >> "$LOG_FILE" 2>&1
+                sleep 1
+            fi
+        fi
+    done
+
+    grep "^$device" /proc/mounts | while read dev mp rest; do
+        log_msg "Force unmounting $dev from $mp (Wymuszanie odmontowania $dev z $mp)"
+        umount -l "$dev" >> "$LOG_FILE" 2>&1 || umount -f "$dev" >> "$LOG_FILE" 2>&1
+        sleep 1
+    done
+}
+
+##################################################################################################################
+# KERNEL PARTITION TABLE REFRESH / ODŚWIEŻANIE TABLICY PARTYCJI
+##################################################################################################################
+refresh_partitions() {
+    device="$1"
+    log_msg "Refreshing partition table for $device (Odświeżanie tablicy partycji dla $device)"
+
+    if command -v blockdev >/dev/null 2>&1; then
+        blockdev --rereadpt "$device" >> "$LOG_FILE" 2>&1 || true
+    fi
+
+    if command -v partprobe >/dev/null 2>&1; then
+        partprobe "$device" >> "$LOG_FILE" 2>&1 || true
+    fi
+
+    base_name=$(basename "$device")
+    if [ -w "/sys/block/$base_name/device/rescan" ]; then
+        echo 1 > "/sys/block/$base_name/device/rescan" 2>/dev/null || true
+    fi
+
+    sleep 1
+}
+
+##################################################################################################################
+# WAIT FOR BLOCK DEVICE / OCZEKIWANIE NA URZĄDZENIE
+##################################################################################################################
+wait_for_partition() {
+    partition="$1"
+    max_wait=${2:-10}
+    count=0
+
+    log_msg "Waiting for $partition to appear... (Oczekiwanie na pojawienie się $partition...)"
+
+    while [ $count -lt $max_wait ]; do
+        if [ -b "$partition" ]; then
+            log_msg "Partition $partition appeared (Partycja $partition pojawiła się)"
+            return 0
+        fi
+        sleep 1
+        count=$((count + 1))
+    done
+
+    log_msg "Timeout waiting for $partition (Przekroczono czas oczekiwania na $partition)"
+    return 1
+}
+
+##################################################################################################################
+# GET LAST PARTITION NUMBER / POBIERZ NUMER OSTATNIEJ PARTYCJI
+##################################################################################################################
+get_last_partition_number() {
+    device="$1"
+    /sbin/parted -s -m "$device" print 2>/dev/null | awk -F: '/^[0-9]+:/ {x=$1} END{print x}'
+}
+
+##################################################################################################################
+# CHECK IF DISK HAS PARTITIONS / SPRAWDŹ CZY DYSK MA PARTYCJE
+##################################################################################################################
+disk_has_partitions() {
+    device="$1"
+    count=$(/sbin/parted -s -m "$device" print 2>/dev/null | awk -F: '/^[0-9]+:/ {count++} END{print count+0}')
+    [ "$count" -gt 0 ]
+    return $?
+}
+
+##################################################################################################################
+# FIND FREE SPACE REGION ON DISK / ZNAJDŹ WOLNĄ PRZESTRZEŃ NA DYSKU
+##################################################################################################################
+find_free_space() {
+    device="$1"
+    
+    log_msg "DEBUG: Searching for free space on $device (Szukanie wolnej przestrzeni na $device)"
+ 
+    free=$(/sbin/parted -s -m "$device" unit s print free 2>/dev/null | grep "free;")
+    
+    log_msg "DEBUG: Free regions found (Znalezione wolne regiony: $free)"
+    
+    result=$(echo "$free" | awk -F: '
+        BEGIN {
+            max = 0
+            best_start = ""
+            best_end = ""
+        }
+        /free/ {
+            start=$2; end=$3; size=$4
+            gsub("s","",start); gsub("s","",end); gsub("s","",size)
+            
+            start = start + 0
+            end = end + 0
+            size = size + 0
+            
+            if (size < 2048) {
+                next
+            }
+            
+            if (size > max) { 
+                max = size
+                best_start = start
+                best_end = end
+            }
+        }
+        END { 
+            if (max > 0) {
+                printf "%s:%s:%s", best_start, best_end, max
+            }
+        }
+    ')
+    
+    log_msg "DEBUG: find_free_space result (Wynik find_free_space: '$result')"
+    echo "$result"
+}
+
+##################################################################################################################
+# FIND FREE SPACE INSIDE EXTENDED PARTITION / ZNAJDŹ WOLNE MIEJSCE WEWNĄTRZ PARTYCJI ROZSZERZONEJ
+##################################################################################################################
+find_free_space_in_extended() {
+    device="$1"
+    ext_num="$2"
+    
+    log_msg "DEBUG: Searching for free space inside extended partition $ext_num on $device"
+    
+    ext_info=$(/sbin/parted -s -m "$device" unit s print 2>/dev/null | awk -F: -v num="$ext_num" '$1==num {print $2":"$3}' || true)
+    
+    if [ -z "$ext_info" ]; then
+        log_msg "ERROR: Cannot get extended partition $ext_num boundaries"
+        return 1
+    fi
+    
+    ext_start=$(echo "$ext_info" | cut -d: -f1 | sed 's/s$//')
+    ext_end=$(echo "$ext_info" | cut -d: -f2 | sed 's/s$//')
+    
+    log_msg "DEBUG: Extended partition $ext_num boundaries: ${ext_start}s - ${ext_end}s"
+    
+    free=$(/sbin/parted -s -m "$device" unit s print free 2>/dev/null | grep "free;")
+    
+    log_msg "DEBUG: All free regions: $free"
+    
+    result=$(echo "$free" | awk -F: -v ext_start="$ext_start" -v ext_end="$ext_end" '
+        BEGIN {
+            max = 0
+            best_start = ""
+            best_end = ""
+        }
+        /free/ {
+            start=$2; end=$3; size=$4
+            gsub("s","",start); gsub("s","",end); gsub("s","",size)
+            
+            start = start + 0
+            end = end + 0
+            size = size + 0
+            
+            if (start < ext_start || end > ext_end) {
+                next
+            }
+            
+            if (size < 2048) {
+                next
+            }
+            
+            if (size > max) { 
+                max = size
+                best_start = start
+                best_end = end
+            }
+        }
+        END { 
+            if (max > 0) {
+                printf "%s:%s:%s", best_start, best_end, max
+            }
+        }
+    ')
+    
+    log_msg "DEBUG: find_free_space_in_extended result: '$result'"
+    echo "$result"
+}
+
+##################################################################################################################
+# PARTED ALWAYS NON-INTERACTIVE / PARTED ZAWSZE NIE-INTERAKTYWNY
+##################################################################################################################
+parted_cmd() {
+    /sbin/parted -s -- "$@"
+}
+
+##################################################################################################################
+# MAP FILESYSTEM TYPE FOR PARTED / MAPOWANIE TYPU SYSTEMU PLIKÓW DLA PARTED
+# Parted uses different names than mkfs
+# Parted używa innych nazw niż mkfs
+##################################################################################################################
+map_fstype_for_parted() {
+    fstype="$1"
+    case "$fstype" in
+        vfat|fat32) echo "fat32" ;;
+        fat16) echo "fat16" ;;
+        exfat) echo "fat32" ;;  # exfat not supported by parted
+        swap) echo "linux-swap" ;;
+        ext2|ext3|ext4|ntfs|hfs|hfs+|hfsx) echo "$fstype" ;;
+        *) echo "ext2" ;;
+    esac
+}
+
+##################################################################################################################
+# ZERO OUT PARTITION OR DISK START / WYZERUJ POCZĄTEK PARTYCJI LUB DYSKU
+##################################################################################################################
+zero_device_start() {
+    target="$1"
+    size_kb="${2:-10240}"  # default 10MB / domyślnie 10MB
+    
+    log_msg "Zeroing first ${size_kb}KB of $target (Zerowanie pierwszych ${size_kb}KB z $target)"
+    
+    if [ ! -b "$target" ]; then
+        log_msg "Device $target not found, skipping zero (Urządzenie $target nie znalezione, pomijanie zerowania)"
+        return 0
+    fi
+    
+    actual_size=$(grep "$(basename "$target")$" /proc/partitions 2>/dev/null | awk '{print $3}')
+    
+    if [ -n "$actual_size" ] && [ "$actual_size" -gt 0 ]; then
+        if [ "$actual_size" -lt "$size_kb" ]; then
+            dd if=/dev/zero of="$target" bs=1K count="$actual_size" >> "$LOG_FILE" 2>&1 || true
+        else
+            dd if=/dev/zero of="$target" bs=1M count=10 >> "$LOG_FILE" 2>&1 || true
+        fi
+    else
+        dd if=/dev/zero of="$target" bs=1M count=10 >> "$LOG_FILE" 2>&1 || true
+    fi
+    
+    sync
+    sleep 1
+}
+
+##################################################################################################################
+# CREATE PARTITION / TWORZENIE PARTYCJI
+##################################################################################################################
+# Arguments / Argumenty:
+#   $1 - disk: base disk device / urządzenie bazowe dysku (np. /dev/sda, /dev/nvme0n1)
+#   $2 - type: partition type / typ partycji (primary | extended | logical)
+#   $3 - fstype: placeholder for filesystem type / placeholder dla typu systemu plików (np. ext2, ext4)
+#   $4 - size_param: size / rozmiar ('123MB' / '1GB' / '100%' / '1114656768s')
+#   $5 - layout: partitioning scheme / schemat partycjonowania ('gpt' lub 'msdos')
+#   $6 - label: optional label / opcjonalna etykieta
+#   $7 - reserved_space: optional reserved space value / opcjonalna wartość zarezerwowanego miejsca
+#   $8 - reserved_unit: optional reserved space unit / opcjonalna jednostka zarezerwowanego miejsca (%, MB, GB, TB)
+##################################################################################################################
+create_partition_impl() {
+    disk="$1"       # Base device / Urządzenie bazowe: /dev/sda lub /dev/nvme0n1
+    type="$2"       # primary | extended | logical
+    fstype="$3"     # placeholder FS type / typ systemu plików (np. ext2)
+    size_param="$4" # number in MB or / liczba MB lub '123MB' / '1GB' / '100%' / '1114656768s'
+    layout="$5"     # 'gpt' or 'msdos' (msdos = mbr)
+    label="$6"      # optional label / opcjonalna etykieta
+    reserved_space="$7"  # optional reserved space value / opcjonalna wartość zarezerwowanego miejsca
+    reserved_unit="$8"   # optional reserved space unit / opcjonalna jednostka (%, MB, GB, TB)
+
+    log_msg "=== Creating partition on $disk (Tworzenie partycji na $disk) ==="
+    log_msg "CREATE PARTITION PARAMETERS (PARAMETRY TWORZENIA PARTYCJI):"
+    log_msg "  - Disk (Dysk): $disk"
+    log_msg "  - Partition type (Typ partycji): $type"
+    log_msg "  - Filesystem type (Typ systemu plików): $fstype"
+    log_msg "  - Partition size (Rozmiar partycji): $size_param"
+    log_msg "  - Partition layout (Układ partycji): $layout"
+    log_msg "  - Label (Etykieta): ${label:-<none/brak>}"
+    log_msg "  - Reserved space value (Wartość zarezerwowanego miejsca): ${reserved_space:-<not set/nie ustawiono>}"
+    log_msg "  - Reserved space unit (Jednostka zarezerwowanego miejsca): ${reserved_unit:-<not set/nie ustawiono>}"
+
+    if [ ! -b "$disk" ]; then
+        log_msg "Device $disk not found! (Urządzenie $disk nie znalezione!)"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    parted_out=$(/sbin/parted -s "$disk" print 2>&1 || true)
+    if echo "$parted_out" | grep -qi "unrecognised disk label\|unrecognized disk label"; then
+        log_msg "Disk has no partition table, creating $layout (Dysk nie ma tablicy partycji, tworzenie $layout)"
+        label_type="msdos"
+        [ "$layout" = "gpt" ] && label_type="gpt"
+        parted_cmd "$disk" mklabel "$label_type" >> "$LOG_FILE" 2>&1
+        rc=$?
+        if [ $rc -ne 0 ]; then
+            log_msg "Failed to create partition table (rc=$rc) (Nie udało się utworzyć tablicy partycji (rc=$rc))"
+            echo $rc > "$RESULT_FILE"
+            return $rc
+        fi
+        log_msg "Partition table $label_type created successfully (Tablica partycji $label_type utworzona pomyślnie)"
+        refresh_partitions "$disk"
+        parted_out=$(/sbin/parted -s "$disk" print 2>&1 || true)
+    elif ! echo "$parted_out" | grep -q "Partition Table:"; then
+        log_msg "No partition table found, creating $layout (Nie znaleziono tablicy partycji, tworzenie $layout)"
+        label_type="msdos"
+        [ "$layout" = "gpt" ] && label_type="gpt"
+        parted_cmd "$disk" mklabel "$label_type" >> "$LOG_FILE" 2>&1
+        rc=$?
+        if [ $rc -ne 0 ]; then
+            log_msg "Failed to create partition table (rc=$rc) (Nie udało się utworzyć tablicy partycji (rc=$rc))"
+            echo $rc > "$RESULT_FILE"
+            return $rc
+        fi
+        log_msg "Partition table $label_type created successfully (Tablica partycji $label_type utworzona pomyślnie)"
+        refresh_partitions "$disk"
+        parted_out=$(/sbin/parted -s "$disk" print 2>&1 || true)
+    fi
+
+    free_space=$(find_free_space "$disk")
+    
+    log_msg "DEBUG: free_space variable value (Wartość zmiennej free_space): '$free_space'"
+    
+    if [ -n "$free_space" ]; then
+        free_start=$(echo "$free_space" | cut -d: -f1)
+        free_end=$(echo "$free_space" | cut -d: -f2)
+        free_size=$(echo "$free_space" | cut -d: -f3)
+        
+        if [ -n "$free_start" ] && [ -n "$free_end" ] && [ "$free_start" -lt "$free_end" ] 2>/dev/null; then
+            log_msg "Found free region (Znaleziono wolny region): ${free_start}s - ${free_end}s (size/rozmiar: ${free_size}s)"
+            
+            if [ "$free_start" -lt 2048 ]; then
+                free_start=2048
+                log_msg "Adjusted free_start to 2048s for proper alignment (Dostosowano free_start do 2048s dla prawidłowego wyrównania)"
+            else
+                remainder=$((free_start % 2048))
+                if [ $remainder -ne 0 ]; then
+                    free_start=$((free_start + 2048 - remainder))
+                    log_msg "Adjusted free_start to ${free_start}s for proper alignment (Dostosowano free_start do ${free_start}s dla wyrównania)"
+                fi
+            fi
+            
+            if [ "$free_start" -ge "$free_end" ]; then
+                log_msg "ERROR: No space left after alignment (BŁĄD: Brak miejsca po wyrównaniu)"
+                echo 1 > "$RESULT_FILE"
+                return 1
+            fi
+        else
+            log_msg "Invalid free space values, will use fallback (Nieprawidłowe wartości wolnej przestrzeni, użyje fallback)"
+            free_space=""
+        fi
+    fi
+    
+    if [ -z "$free_space" ]; then
+        log_msg "No free space found by parted, calculating disk size manually (Nie znaleziono wolnej przestrzeni przez parted, ręczne obliczanie rozmiaru dysku)"
+        
+        total_sectors=$(blockdev --getsz "$disk" 2>/dev/null || true)
+        
+        if [ -z "$total_sectors" ] || [ "$total_sectors" = "0" ]; then
+            base_name=$(basename "$disk")
+            if [ -f "/sys/block/$base_name/size" ]; then
+                total_sectors=$(cat "/sys/block/$base_name/size" 2>/dev/null || true)
+            fi
+        fi
+        
+        if [ -z "$total_sectors" ] || [ "$total_sectors" = "0" ]; then
+            total_sectors=$(/sbin/parted -s -m "$disk" unit s print 2>/dev/null | awk -F: -v dev="$(basename "$disk")" '$1==dev{print $2}' | sed 's/s$//' || true)
+        fi
+        
+        if [ -z "$total_sectors" ] || [ "$total_sectors" = "0" ]; then
+            total_sectors=$(fdisk -l "$disk" 2>/dev/null | awk '/^Disk \/dev\// && /bytes/ {gsub(",","",$5); print int($5/512)}' | head -1 || true)
+        fi
+        
+        if [ -z "$total_sectors" ] || [ "$total_sectors" = "0" ]; then
+            log_msg "Cannot determine disk size (Nie można określić rozmiaru dysku)"
+            echo 1 > "$RESULT_FILE"
+            return 1
+        fi
+        
+        log_msg "Disk size determined (Określono rozmiar dysku: $total_sectors sectors/sektorów)"
+        
+        if [ "$layout" = "gpt" ]; then
+            free_start=2048
+            free_end=$((total_sectors - 34))
+        else
+            free_start=2048
+            free_end=$((total_sectors - 1))
+        fi
+        log_msg "Using default free area (Używanie domyślnego wolnego obszaru: ${free_start}s - ${free_end}s)"
+    fi
+
+    case "$size_param" in
+        *%|*s)
+            partition_end="$size_param"
+            ;;
+        *MB|*mb)
+            mb=$(echo "$size_param" | sed -E 's/[Mm][Bb]$//')
+            secs=$(( mb * 1024 * 1024 / 512 ))
+            partition_end="$(( free_start + secs ))s"
+            ;;
+        *GB|*gb)
+            gb=$(echo "$size_param" | sed -E 's/[Gg][Bb]$//')
+            secs=$(( gb * 1024 * 1024 * 1024 / 512 ))
+            partition_end="$(( free_start + secs ))s"
+            ;;
+        *)
+            if echo "$size_param" | grep -qE '^[0-9]+$'; then
+                mb=$size_param
+                secs=$(( mb * 1024 * 1024 / 512 ))
+                partition_end="$(( free_start + secs ))s"
+            else
+                partition_end="${free_end}s"
+            fi
+            ;;
+    esac
+
+    case "$partition_end" in
+        *s) ;;
+        *%) ;;
+        *) partition_end="${partition_end}s" ;;
+    esac
+    
+    if echo "$partition_end" | grep -qE '^[0-9]+s$'; then
+        num_end=$(echo "$partition_end" | sed 's/s$//')
+
+        if [ -n "$free_end" ] && [ "$num_end" -gt "$free_end" ] 2>/dev/null; then
+            log_msg "WARNING: Requested end $num_end > free_end $free_end, capping to free_end (OSTRZEŻENIE: Żądany koniec $num_end > free_end $free_end, ograniczanie do free_end)"
+            partition_end="${free_end}s"
+        fi
+    fi
+
+    log_msg "Creating partition type=$type from ${free_start}s to ${partition_end} (Tworzenie partycji type=$type od ${free_start}s do ${partition_end})"
+    log_msg "DEBUG: size_param='$size_param', free_start=$free_start, free_end=$free_end, partition_end=$partition_end"
+
+    if [ "$type" = "logical" ]; then
+        log_msg "Refreshing partition table before checking for extended (Odświeżanie tablicy partycji przed sprawdzeniem rozszerzonej)"
+        refresh_partitions "$disk"
+        sleep 1
+        
+        parted_machine=$(/sbin/parted -s -m "$disk" print 2>/dev/null || true)
+        parted_regular=$(/sbin/parted -s "$disk" print 2>/dev/null || true)
+        log_msg "DEBUG parted -m output: $parted_machine"
+        log_msg "DEBUG parted regular output (grep extended): $(echo "$parted_regular" | grep -i extended || echo 'NO MATCH')"
+        
+        ext_exists=""
+
+        ext_exists=$(/sbin/parted -s -m "$disk" print 2>/dev/null | awk -F: '/^[0-9]+:/ && tolower($5) ~ /extended/ {print $1}' | head -1 || true)
+        log_msg "DEBUG Method 1 (col 5): ext_exists='$ext_exists'"
+        
+        if [ -z "$ext_exists" ]; then
+            ext_exists=$(/sbin/parted -s -m "$disk" print 2>/dev/null | awk -F: '/^[0-9]+:/ && tolower($6) ~ /extended/ {print $1}' | head -1 || true)
+            log_msg "DEBUG Method 2 (col 6): ext_exists='$ext_exists'"
+        fi
+        
+        if [ -z "$ext_exists" ]; then
+            ext_exists=$(/sbin/parted -s "$disk" print 2>/dev/null | awk '/[Ee]xtended/ {print $1}' | head -1 || true)
+            log_msg "DEBUG Method 3 (regular): ext_exists='$ext_exists'"
+        fi
+        
+        log_msg "Extended partition check FINAL (Sprawdzenie partycji rozszerzonej FINALNE): ext_exists='$ext_exists'"
+        
+        if [ -n "$ext_exists" ]; then
+            log_msg "Extended partition $ext_exists already exists, will create logical inside it (Partycja rozszerzona $ext_exists już istnieje, utworzę logiczną wewnątrz)"
+            free_space=$(find_free_space_in_extended "$disk" "$ext_exists")
+            if [ -n "$free_space" ]; then
+                free_start=$(echo "$free_space" | cut -d: -f1)
+                free_end=$(echo "$free_space" | cut -d: -f2)
+                
+                remainder=$((free_start % 2048))
+                if [ $remainder -ne 0 ]; then
+                    free_start=$((free_start + 2048 - remainder))
+                    log_msg "Adjusted logical free_start to ${free_start}s for alignment (Dostosowano logiczny free_start do ${free_start}s dla wyrównania)"
+                fi
+                
+                log_msg "Free space inside extended (Wolna przestrzeń wewnątrz rozszerzonej): ${free_start}s - ${free_end}s"
+                
+                case "$size_param" in
+                    *%|*s)
+                        partition_end="$size_param"
+                        ;;
+                    *MB|*mb)
+                        mb=$(echo "$size_param" | sed -E 's/[Mm][Bb]$//')
+                        secs=$(( mb * 1024 * 1024 / 512 ))
+                        partition_end="$(( free_start + secs ))s"
+                        ;;
+                    *GB|*gb)
+                        gb=$(echo "$size_param" | sed -E 's/[Gg][Bb]$//')
+                        secs=$(( gb * 1024 * 1024 * 1024 / 512 ))
+                        partition_end="$(( free_start + secs ))s"
+                        ;;
+                    *)
+                        if echo "$size_param" | grep -qE '^[0-9]+$'; then
+                            mb=$size_param
+                            secs=$(( mb * 1024 * 1024 / 512 ))
+                            partition_end="$(( free_start + secs ))s"
+                        else
+                            partition_end="${free_end}s"
+                        fi
+                        ;;
+                esac
+                
+                case "$partition_end" in
+                    *s) ;;
+                    *%) ;;
+                    *) partition_end="${partition_end}s" ;;
+                esac
+                
+                if echo "$partition_end" | grep -qE '^[0-9]+s$'; then
+                    num_end=$(echo "$partition_end" | sed 's/s$//')
+                    if [ -n "$free_end" ] && [ "$num_end" -gt "$free_end" ] 2>/dev/null; then
+                        log_msg "Requested end $num_end > free_end $free_end inside extended, capping (Żądany koniec $num_end > free_end $free_end wewnątrz rozszerzonej, ograniczanie)"
+                        partition_end="${free_end}s"
+                    fi
+                fi
+            else
+                log_msg "ERROR: No free space found inside extended partition (BŁĄD: Nie znaleziono wolnej przestrzeni wewnątrz partycji rozszerzonej)"
+                echo 1 > "$RESULT_FILE"
+                return 1
+            fi
+        else
+            log_msg "No extended partition found — creating extended from ${free_start}s to ${free_end}s (Nie znaleziono partycji rozszerzonej — tworzenie rozszerzonej od ${free_start}s do ${free_end}s)"
+            parted_cmd "$disk" mkpart extended "${free_start}s" "${free_end}s" >> "$LOG_FILE" 2>&1
+            rc=$?
+            if [ $rc -ne 0 ]; then
+                log_msg "Failed to create extended partition (rc=$rc) (Nie udało się utworzyć partycji rozszerzonej (rc=$rc))"
+                echo $rc > "$RESULT_FILE"
+                refresh_partitions "$disk"
+                return $rc
+            fi
+            refresh_partitions "$disk"
+            
+            ext_exists=$(/sbin/parted -s -m "$disk" print 2>/dev/null | awk -F: '/^[0-9]+:/ && tolower($5) ~ /extended/ {print $1}' | head -1 || true)
+            if [ -z "$ext_exists" ]; then
+                ext_exists=$(/sbin/parted -s -m "$disk" print 2>/dev/null | awk -F: '/^[0-9]+:/ && tolower($6) ~ /extended/ {print $1}' | head -1 || true)
+            fi
+            if [ -z "$ext_exists" ]; then
+                ext_exists=$(/sbin/parted -s "$disk" print 2>/dev/null | awk '/[Ee]xtended/ {print $1}' | head -1 || true)
+            fi
+            
+            log_msg "Newly created extended partition number: $ext_exists"
+            
+            if [ -n "$ext_exists" ]; then
+                free_space=$(find_free_space_in_extended "$disk" "$ext_exists")
+            else
+                free_space=$(find_free_space "$disk")
+            fi
+            
+            if [ -n "$free_space" ]; then
+                free_start=$(echo "$free_space" | cut -d: -f1)
+                free_end=$(echo "$free_space" | cut -d: -f2)
+                
+                remainder=$((free_start % 2048))
+                if [ $remainder -ne 0 ]; then
+                    free_start=$((free_start + 2048 - remainder))
+                    log_msg "Adjusted logical free_start to ${free_start}s for alignment (Dostosowano logiczny free_start do ${free_start}s dla wyrównania)"
+                fi
+                
+                log_msg "After extended (Po rozszerzonej): free region / wolny region ${free_start}s - ${free_end}s"
+                
+                case "$size_param" in
+                    *%|*s)
+                        partition_end="$size_param"
+                        ;;
+                    *MB|*mb)
+                        mb=$(echo "$size_param" | sed -E 's/[Mm][Bb]$//')
+                        secs=$(( mb * 1024 * 1024 / 512 ))
+                        partition_end="$(( free_start + secs ))s"
+                        ;;
+                    *GB|*gb)
+                        gb=$(echo "$size_param" | sed -E 's/[Gg][Bb]$//')
+                        secs=$(( gb * 1024 * 1024 * 1024 / 512 ))
+                        partition_end="$(( free_start + secs ))s"
+                        ;;
+                    *)
+                        if echo "$size_param" | grep -qE '^[0-9]+$'; then
+                            mb=$size_param
+                            secs=$(( mb * 1024 * 1024 / 512 ))
+                            partition_end="$(( free_start + secs ))s"
+                        else
+                            partition_end="${free_end}s"
+                        fi
+                        ;;
+                esac
+                
+                case "$partition_end" in
+                    *s) ;;
+                    *%) ;;
+                    *) partition_end="${partition_end}s" ;;
+                esac
+                
+                if echo "$partition_end" | grep -qE '^[0-9]+s$'; then
+                    num_end=$(echo "$partition_end" | sed 's/s$//')
+                    if [ -n "$free_end" ] && [ "$num_end" -gt "$free_end" ] 2>/dev/null; then
+                        log_msg "Requested end $num_end > free_end $free_end, capping (Żądany koniec $num_end > free_end $free_end, ograniczanie)"
+                        partition_end="${free_end}s"
+                    fi
+                fi
+            fi
+        fi
+        parted_fstype=$(map_fstype_for_parted "$fstype")
+        log_msg "Creating logical partition (Tworzenie partycji logicznej): parted $disk mkpart logical $parted_fstype ${free_start}s ${partition_end}"
+        parted_cmd "$disk" mkpart logical "$parted_fstype" "${free_start}s" "${partition_end}" >> "$LOG_FILE" 2>&1
+        rc=$?
+    else
+        case "$type" in
+            extended)
+                parted_cmd "$disk" mkpart extended "${free_start}s" "${partition_end}" >> "$LOG_FILE" 2>&1
+                rc=$?
+                ;;
+            primary|p|primary)
+                parted_fstype=$(map_fstype_for_parted "$fstype")
+                log_msg "Creating primary partition with fstype (Tworzenie partycji primary z fstype): $parted_fstype (original: $fstype)"
+                parted_cmd "$disk" mkpart primary "$parted_fstype" "${free_start}s" "${partition_end}" >> "$LOG_FILE" 2>&1
+                rc=$?
+                ;;
+            *)
+                parted_fstype=$(map_fstype_for_parted "$fstype")
+                log_msg "Creating default primary partition with fstype (Tworzenie domyślnej partycji primary z fstype): $parted_fstype (original: $fstype)"
+                parted_cmd "$disk" mkpart primary "$parted_fstype" "${free_start}s" "${partition_end}" >> "$LOG_FILE" 2>&1
+                rc=$?
+                ;;
+        esac
+    fi
+
+    echo $rc > "$RESULT_FILE"
+    if [ $rc -ne 0 ]; then
+        log_msg "Failed to create partition (rc=$rc) (Nie udało się utworzyć partycji (rc=$rc))"
+        refresh_partitions "$disk"
+        return $rc
+    fi
+
+    refresh_partitions "$disk"
+    sleep 1
+    last_part_num=$(get_last_partition_number "$disk" || true)
+    if [ -n "$last_part_num" ]; then
+        log_msg "Created partition number (Utworzono partycję numer): $last_part_num"
+        log_msg "Partition creation completed successfully (Tworzenie partycji zakończone pomyślnie)"
+        log_msg "Summary: Type=$type, FS=$fstype, Size=$size_param, Label=${label:-<none>}, Reserved=${reserved_space:-0}${reserved_unit:-%}"
+    else
+        log_msg "WARNING: Could not determine partition number (OSTRZEŻENIE: Nie można określić numeru partycji)"
+    fi
+
+    /sbin/parted -s "$disk" print >> "$LOG_FILE" 2>&1 || true
+
+    return 0
+}
+
+##################################################################################################################
+# DELETE PARTITION / USUWANIE PARTYCJI
+##################################################################################################################
+delete_partition() {
+    partition_path="$1"
+
+    log_msg "=== Deleting partition (Usuwanie partycji): $partition_path ==="
+    log_msg "DELETE PARTITION PARAMETERS (PARAMETRY USUWANIA PARTYCJI):"
+    log_msg "  - Partition path (Ścieżka partycji): $partition_path"
+
+    if [ -z "$partition_path" ]; then
+        log_msg "ERROR: Missing partition path (BŁĄD: Brak ścieżki partycji)"
+        log_msg "Usage (Użycie): delete_partition <partition_path>"
+        log_msg "Example (Przykład): delete_partition /dev/sda1"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    if [ ! -b "$partition_path" ]; then
+        log_msg "ERROR: Partition $partition_path does not exist as block device (BŁĄD: Partycja $partition_path nie istnieje jako urządzenie blokowe)"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    DEVICE=""
+    NUM=""
+    BNAME=$(basename "$partition_path")
+    
+    log_msg "Parsing partition name (Parsowanie nazwy partycji): $BNAME"
+    
+    if [ "$BNAME" != "${BNAME#sd?}" ]; then
+        if [ -z "${BNAME#sd?}" ]; then
+            DEVICE="/dev/$BNAME"
+            NUM="1"
+        else
+            DEVICE="/dev/${BNAME:0:3}"
+            NUM="${BNAME#sd?}"
+        fi
+    elif [ "$BNAME" != "${BNAME#sata?}" ]; then
+        if [ -z "${BNAME#sata?}" ]; then
+            DEVICE="/dev/$BNAME"
+            NUM="1"
+        else
+            DEVICE="/dev/${BNAME:0:5}"
+            NUM="${BNAME#sata?}"
+        fi
+    elif [ "$BNAME" != "${BNAME#nvme}" ]; then
+        DEVICE="/dev/${BNAME%%p*}"
+        NUM="${BNAME##*p}"
+    elif [ "$BNAME" != "${BNAME#mmcblk?}" ]; then
+        DEVICE="/dev/${BNAME%%p*}"
+        NUM="${BNAME##*p}"
+    else
+        log_msg "ERROR: Unsupported device naming (BŁĄD: Nieobsługiwane nazewnictwo urządzenia): $partition_path"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    log_msg "Parsed (Sparsowano): DEVICE=$DEVICE NUM=$NUM"
+
+    if [ -z "$DEVICE" ] || [ -z "$NUM" ]; then
+        log_msg "ERROR: Failed to parse device and partition number (BŁĄD: Nie udało się sparsować urządzenia i numeru partycji)"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    if [ ! -b "$DEVICE" ]; then
+        log_msg "ERROR: Base device $DEVICE does not exist (BŁĄD: Urządzenie bazowe $DEVICE nie istnieje)"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    if ! /sbin/parted -s -m "$DEVICE" print 2>/dev/null | grep -q "^${NUM}:"; then
+        log_msg "ERROR: Partition $NUM does not exist on $DEVICE (BŁĄD: Partycja $NUM nie istnieje na $DEVICE)"
+        /sbin/parted -s "$DEVICE" print >> "$LOG_FILE" 2>&1 || true
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    is_extended=""
+    
+    is_extended=$(/sbin/parted -s -m "$DEVICE" print 2>/dev/null | awk -F: -v num="$NUM" '$1==num && tolower($5) ~ /extended/ {print "yes"}' || true)
+    
+    if [ -z "$is_extended" ]; then
+        is_extended=$(/sbin/parted -s -m "$DEVICE" print 2>/dev/null | awk -F: -v num="$NUM" '$1==num && tolower($6) ~ /extended/ {print "yes"}' || true)
+    fi
+    
+    if [ -z "$is_extended" ]; then
+        is_extended=$(/sbin/parted -s "$DEVICE" print 2>/dev/null | awk -v num="$NUM" '$1==num && tolower($5) ~ /extended/ {print "yes"}' || true)
+    fi
+    
+    log_msg "Is extended partition (Czy partycja rozszerzona): '$is_extended'"
+
+    if is_device_mounted "$partition_path"; then
+        log_msg "Unmounting partition $partition_path before deletion (Odmontowywanie partycji $partition_path przed usunięciem)"
+        umount -l "$partition_path" >> "$LOG_FILE" 2>&1 || umount -f "$partition_path" >> "$LOG_FILE" 2>&1
+        sleep 1
+    fi
+
+    base_name=$(basename "$DEVICE")
+    if [ "${base_name#nvme}" != "$base_name" ] || [ "${base_name#mmcblk}" != "$base_name" ]; then
+        partition_to_zero="${DEVICE}p${NUM}"
+    else
+        partition_to_zero="${DEVICE}${NUM}"
+    fi
+
+    log_msg "Partition to zero (Partycja do wyzerowania): $partition_to_zero"
+
+    if [ "$is_extended" = "yes" ]; then
+        log_msg "SKIPPING zeroing for extended partition (contains only metadata) (POMIJANIE zerowania dla partycji rozszerzonej (zawiera tylko metadane))"
+    else
+        SIZE_KB=$(grep "$(basename "$partition_to_zero")$" /proc/partitions 2>/dev/null | awk '{print $3}')
+        
+        if [ -n "$SIZE_KB" ]; then
+            log_msg "Partition size (Rozmiar partycji): ${SIZE_KB}KB"
+        else
+            log_msg "Could not determine partition size from /proc/partitions (Nie można określić rozmiaru partycji z /proc/partitions)"
+        fi
+
+        if [ -b "$partition_to_zero" ]; then
+            log_msg "Zeroing partition $partition_to_zero before deletion / Zerowanie partycji $partition_to_zero przed usunięciem"
+            
+            if [ -n "$SIZE_KB" ] && [ "$SIZE_KB" -ne 0 ] && [ "$SIZE_KB" -lt 10240 ]; then
+                log_msg "Partition smaller than 10MB, zeroing completely (Partycja mniejsza niż 10MB, zerowanie całkowite (${SIZE_KB}KB))"
+                dd if=/dev/zero of="$partition_to_zero" bs=1K count="$SIZE_KB" >> "$LOG_FILE" 2>&1 || true
+            else
+                log_msg "Zeroing first 10MB of partition (Zerowanie pierwszych 10MB partycji)"
+                dd if=/dev/zero of="$partition_to_zero" bs=1M count=10 >> "$LOG_FILE" 2>&1 || true
+            fi
+            sync
+            sleep 1
+        else
+            log_msg "Warning: partition $partition_to_zero not found as block device, skipping zeroing (Ostrzeżenie: partycja $partition_to_zero nie znaleziona jako urządzenie blokowe, pomijanie zerowania)"
+        fi
+    fi
+
+    log_msg "Executing (Wykonywanie): parted -s $DEVICE rm $NUM"
+    parted_cmd "$DEVICE" rm "$NUM" >> "$LOG_FILE" 2>&1
+    rc=$?
+
+    echo $rc > "$RESULT_FILE"
+
+    if [ $rc -eq 0 ]; then
+        log_msg "Partition $NUM deleted successfully from $DEVICE (Partycja $NUM usunięta pomyślnie z $DEVICE)"
+    else
+        log_msg "FAILED to delete partition $NUM from $DEVICE (rc=$rc) (NIE UDAŁO SIĘ usunąć partycji $NUM z $DEVICE (rc=$rc))"
+    fi
+
+    log_msg "Refreshing partition table on device $DEVICE (Odświeżanie tablicy partycji na urządzeniu $DEVICE)"
+    refresh_partitions "$DEVICE"
+    
+    sync
+    sleep 2
+    
+    if command -v partprobe >/dev/null 2>&1; then
+        partprobe "$DEVICE" >> "$LOG_FILE" 2>&1 || true
+    fi
+    
+    if ! disk_has_partitions "$DEVICE"; then
+        log_msg "No partitions left on $DEVICE - removing partition table (Brak partycji na $DEVICE - usuwanie tablicy partycji)"
+        dd if=/dev/zero of="$DEVICE" bs=512 count=1 >> "$LOG_FILE" 2>&1 || true
+        dd if=/dev/zero of="$DEVICE" bs=512 seek=1 count=2047 >> "$LOG_FILE" 2>&1 || true
+        sync
+        sleep 1
+        refresh_partitions "$DEVICE"
+        log_msg "Partition table removed from $DEVICE (Tablica partycji usunięta z $DEVICE)"
+    else
+        log_msg "Other partitions still exist on $DEVICE - keeping partition table (Inne partycje nadal istnieją na $DEVICE - zachowanie tablicy partycji)"
+    fi
+
+    sync
+    
+    log_msg "Partition deletion completed with rc=$rc (Usuwanie partycji zakończone z rc=$rc)"
+    
+    return $rc
+}
+
+##################################################################################################################
+# RESIZE PARTITION / POWIĘKSZANIE PARTYCJI
+##################################################################################################################
+resize_partition() {
+    partition="$1"
+    new_size="$2"
+    unit="$3"
+
+    log_msg "=== Resizing partition $partition to $new_size $unit (Powiększanie partycji $partition do $new_size $unit) ==="
+    log_msg "RESIZE PARTITION PARAMETERS (PARAMETRY POWIĘKSZANIA PARTYCJI):"
+    log_msg "  - Partition (Partycja): $partition"
+    log_msg "  - New size (Nowy rozmiar): $new_size"
+    log_msg "  - Unit (Jednostka): $unit"
+
+    if [ -z "$partition" ]; then
+        log_msg "ERROR: Partition parameter is empty (BŁĄD: Parametr partition jest pusty)"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    if [ -z "$new_size" ]; then
+        log_msg "ERROR: New size parameter is empty (BŁĄD: Parametr new_size jest pusty)"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    if [ -z "$unit" ]; then
+        log_msg "ERROR: Unit parameter is empty (BŁĄD: Parametr unit jest pusty)"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    parse_partition_name "$partition"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        log_msg "ERROR: Failed to parse partition name (BŁĄD: Nie udało się sparsować nazwy partycji)"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    fstype=$(blkid -o value -s TYPE "$partition" 2>/dev/null)
+    log_msg "Filesystem type: ${fstype:-unknown} (Typ systemu plików: ${fstype:-nieznany})"
+
+    if [ "$fstype" != "btrfs" ]; then
+        if is_device_mounted "$partition"; then
+            log_msg "ERROR: Cannot resize mounted partition (BŁĄD: Nie można powiększyć zamontowanej partycji)"
+            echo 1 > "$RESULT_FILE"
+            return 1
+        fi
+    fi
+
+    part_info=$(parted -s -m "$DEVICE" unit s print 2>/dev/null | grep "^${NUM}:")
+    if [ -z "$part_info" ]; then
+        log_msg "ERROR: Could not get partition info (BŁĄD: Nie można uzyskać informacji o partycji)"
+        echo 1 > "$RESULT_FILE"
+        return 1
+    fi
+
+    current_start=$(echo "$part_info" | cut -d: -f2 | sed 's/s$//')
+    current_end=$(echo "$part_info" | cut -d: -f3 | sed 's/s$//')
+    current_size=$(echo "$current_end - $current_start" | bc)
+
+    log_msg "Current partition: start=$current_start end=$current_end size=$current_size sectors"
+
+    case "$unit" in
+        MB)
+            new_size_bytes=$(echo "$new_size * 1024 * 1024" | bc)
+            ;;
+        GB)
+            new_size_bytes=$(echo "$new_size * 1024 * 1024 * 1024" | bc)
+            ;;
+        TB)
+            new_size_bytes=$(echo "$new_size * 1024 * 1024 * 1024 * 1024" | bc)
+            ;;
+        *)
+            log_msg "ERROR: Invalid unit '$unit' - supported: MB, GB, TB (BŁĄD: Nieprawidłowa jednostka '$unit' - obsługiwane: MB, GB, TB)"
+            echo 1 > "$RESULT_FILE"
+            return 1
+            ;;
+    esac
+
+    new_size_sectors=$(echo "$new_size_bytes / 512" | bc)
+    log_msg "New size in sectors: $new_size_sectors (Nowy rozmiar w sektorach: $new_size_sectors)"
+
+    new_end=$(echo "$current_start + $new_size_sectors - 1" | bc)
+    log_msg "New end sector: $new_end (current: $current_end) (Nowy sektor końcowy: $new_end (obecny: $current_end))"
+
+    if [ "$new_end" -le "$current_end" ]; then
+        log_msg "WARNING: New size ($new_end) is not larger than current size ($current_end), skipping resize (OSTRZEŻENIE: Nowy rozmiar nie jest większy od obecnego, pomijanie zmiany rozmiaru)"
+        echo 0 > "$RESULT_FILE"
+        return 0
+    fi
+
+    case "$fstype" in
+        ext2|ext3|ext4)
+            log_msg "Running e2fsck to check filesystem (Uruchamianie e2fsck w celu sprawdzenia systemu plików)"
+            e2fsck -f -y "$partition" >> "$LOG_FILE" 2>&1
+            fsck_rc=$?
+            
+            if [ $fsck_rc -ne 0 ] && [ $fsck_rc -ne 1 ]; then
+                log_msg "WARNING: e2fsck returned $fsck_rc, but continuing... (OSTRZEŻENIE: e2fsck zwrócił $fsck_rc, ale kontynuuję...)"
+            fi
+            ;;
+        btrfs)
+            if ! is_device_mounted "$partition"; then
+                log_msg "Running btrfs check for filesystem (Uruchamianie sprawdzania systemu plików btrfs)"
+                btrfs check "$partition" >> "$LOG_FILE" 2>&1
+                fsck_rc=$?
+                
+                if [ $fsck_rc -ne 0 ]; then
+                    log_msg "WARNING: btrfs check returned $fsck_rc, but continuing... (OSTRZEŻENIE: btrfs check zwrócił $fsck_rc, ale kontynuuję...)"
+                fi
+            else
+                log_msg "Btrfs partition is mounted, skipping check (Partycja btrfs jest zamontowana, pomijanie sprawdzania)"
+            fi
+            ;;
+    esac
+
+    log_msg "Resizing partition with parted (Powiększanie partycji za pomocą parted)"
+    parted -s "$DEVICE" resizepart "$NUM" "${new_end}s" >> "$LOG_FILE" 2>&1
+    rc=$?
+
+    if [ $rc -ne 0 ]; then
+        log_msg "ERROR: Failed to resize partition with parted (rc=$rc) (BŁĄD: Nie udało się powiększyć partycji za pomocą parted)"
+        echo $rc > "$RESULT_FILE"
+        return $rc
+    fi
+
+    log_msg "Partition resized successfully, refreshing kernel partition table (Partycja powiększona pomyślnie, odświeżanie tablicy partycji)"
+    refresh_partitions "$DEVICE"
+    sleep 2
+
+    wait_for_partition "$partition" 15
+
+    case "$fstype" in
+        ext2|ext3|ext4)
+            log_msg "Resizing ext filesystem with resize2fs (Powiększanie systemu plików ext za pomocą resize2fs)"
+            resize2fs "$partition" >> "$LOG_FILE" 2>&1
+            rc=$?
+            ;;
+        btrfs)
+            log_msg "Resizing btrfs filesystem (Powiększanie systemu plików btrfs)"
+            
+            existing_mount=$(grep "^${partition} " /proc/mounts | cut -d' ' -f2)
+            
+            if [ -n "$existing_mount" ]; then
+                log_msg "Btrfs partition is already mounted at $existing_mount (Partycja btrfs jest już zamontowana w $existing_mount)"
+                btrfs filesystem resize max "$existing_mount" >> "$LOG_FILE" 2>&1
+                rc=$?
+            else
+                log_msg "Mounting btrfs partition temporarily for resize (Tymczasowe montowanie partycji btrfs do zmiany rozmiaru)"
+                temp_mount="/tmp/btrfs_resize_$$"
+                mkdir -p "$temp_mount"
+                mount "$partition" "$temp_mount" >> "$LOG_FILE" 2>&1
+                
+                if [ $? -eq 0 ]; then
+                    btrfs filesystem resize max "$temp_mount" >> "$LOG_FILE" 2>&1
+                    rc=$?
+                    umount "$temp_mount" >> "$LOG_FILE" 2>&1
+                    rmdir "$temp_mount"
+                else
+                    log_msg "ERROR: Failed to mount btrfs partition for resize (BŁĄD: Nie udało się zamontować partycji btrfs do zmiany rozmiaru)"
+                    rc=1
+                fi
+            fi
+            ;;
+        *)
+            log_msg "WARNING: Automatic filesystem resize not supported for $fstype (OSTRZEŻENIE: Automatyczna zmiana rozmiaru systemu plików nie jest obsługiwana dla $fstype)"
+            rc=0
+            ;;
+    esac
+
+    echo $rc > "$RESULT_FILE"
+
+    if [ $rc -eq 0 ]; then
+        log_msg "Filesystem resized successfully (System plików powiększony pomyślnie)"
+    else
+        log_msg "ERROR: Failed to resize filesystem (rc=$rc) (BŁĄD: Nie udało się powiększyć systemu plików)"
+    fi
+
+    sync
+    return $rc
+}
+
+##################################################################################################################
+# FORMAT PARTITION / FORMATOWANIE PARTYCJI
+##################################################################################################################
+format_partition() {
+    device="$1"
+    fstype="$2"
+    label="$3"
+    reserved_space="$4"
+    reserved_unit="$5"
+
+    log_msg "=== Formatting $device as $fstype (Formatowanie $device jako $fstype) ==="
+    log_msg "FORMAT PARAMETERS (PARAMETRY FORMATOWANIA):"
+    log_msg "  - Device (Urządzenie): $device"
+    log_msg "  - Filesystem type (Typ systemu plików): $fstype"
+    log_msg "  - Label (Etykieta): ${label:-<none/brak>}"
+    log_msg "  - Reserved space value (Wartość zarezerwowanego miejsca): ${reserved_space:-<not set/nie ustawiono>}"
+    log_msg "  - Reserved space unit (Jednostka zarezerwowanego miejsca): ${reserved_unit:-<not set/nie ustawiono>}"
+
+    if is_device_mounted "$device"; then
+        umount -l "$device" >> "$LOG_FILE" 2>&1 || true
+        sleep 1
+    fi
+
+    case "$fstype" in
+        ext4|ext3|ext2)
+            cmd="mkfs.$fstype -F"
+            
+            if [ -n "$reserved_unit" ]; then
+                case "$reserved_unit" in
+                    "%")
+                        cmd="$cmd -m ${reserved_space:-0}"
+                        log_msg "Setting reserved space to ${reserved_space:-0}% (Ustawianie zarezerwowanego miejsca na ${reserved_space:-0}%)"
+                        ;;
+                    "MB"|"GB"|"TB")
+                        bytes=""
+                        rsv="${reserved_space:-0}"
+                        case "$reserved_unit" in
+                            "MB") bytes=$(( rsv * 1024 * 1024 / 4096 )) ;;  # Convert to 4K blocks
+                            "GB") bytes=$(( rsv * 1024 * 1024 * 1024 / 4096 )) ;;
+                            "TB") bytes=$(( rsv * 1024 * 1024 * 1024 * 1024 / 4096 )) ;;
+                        esac
+                        if [ "$bytes" -gt 0 ] 2>/dev/null; then
+                            cmd="$cmd -r $bytes"
+                            log_msg "Setting reserved blocks to $bytes (${rsv}${reserved_unit}) (Ustawianie zarezerwowanych bloków na $bytes)"
+                        else
+                            cmd="$cmd -m 0"
+                            log_msg "Setting reserved space to 0% (user specified 0${reserved_unit}) (Ustawianie zarezerwowanego miejsca na 0%)"
+                        fi
+                        ;;
+                esac
+            else
+                log_msg "No reserved space specified, using mkfs default (5%) (Nie określono zarezerwowanego miejsca, używanie domyślnych ustawień mkfs - 5%)"
+            fi
+            
+            [ -n "$label" ] && cmd="$cmd -L \"$label\""
+            
+            cmd="$cmd \"$device\""
+            log_msg "Running mkfs command (Uruchamianie polecenia mkfs): $cmd"
+            eval "$cmd" >> "$LOG_FILE" 2>&1
+            ;;
+        ntfs)
+            [ -n "$label" ] && mkfs.ntfs -f -L "$label" "$device" >> "$LOG_FILE" 2>&1 \
+                             || mkfs.ntfs -f "$device" >> "$LOG_FILE" 2>&1
+            ;;
+        vfat|fat32)
+            [ -n "$label" ] && mkfs.fat -F 32 -n "$label" "$device" >> "$LOG_FILE" 2>&1 \
+                             || mkfs.fat -F 32 "$device" >> "$LOG_FILE" 2>&1
+            ;;
+        f2fs)
+            [ -n "$label" ] && mkfs.f2fs -f -l "$label" "$device" >> "$LOG_FILE" 2>&1 \
+                             || mkfs.f2fs -f "$device" >> "$LOG_FILE" 2>&1
+            ;;
+        btrfs)
+            [ -n "$label" ] && mkfs.btrfs -f -L "$label" "$device" >> "$LOG_FILE" 2>&1 \
+                             || mkfs.btrfs -f "$device" >> "$LOG_FILE" 2>&1
+            ;;
+        swap)
+            [ -n "$label" ] && mkswap -L "$label" "$device" >> "$LOG_FILE" 2>&1 \
+                             || mkswap "$device" >> "$LOG_FILE" 2>&1
+            ;;
+        exfat)
+            [ -n "$label" ] && mkfs.exfat -n "$label" "$device" >> "$LOG_FILE" 2>&1 \
+                             || mkfs.exfat "$device" >> "$LOG_FILE" 2>&1
+            ;;
+        *)
+            log_msg "Unsupported filesystem (Nieobsługiwany system plików): $fstype"
+            echo 1 > "$RESULT_FILE"
+            return 1
+            ;;
+    esac
+
+    rc=$?
+    echo $rc > "$RESULT_FILE"
+    
+    if [ $rc -eq 0 ]; then
+        log_msg "Formatting completed successfully (Formatowanie zakończone pomyślnie) - rc=$rc"
+    else
+        log_msg "ERROR: Formatting failed (BŁĄD: Formatowanie nie powiodło się) - rc=$rc"
+    fi
+
+    base=$(echo "$device" | sed -E 's/p?[0-9]+$//')
+
+    refresh_partitions "$base"
+
+    return $rc
+}
+
+##################################################################################################################
+# WIPE DISK / WYMAZYWANIE DYSKU
+##################################################################################################################
+wipe_disk() {
+    device="$1"
+    
+    log_msg "=== Wiping disk $device (Wymazywanie dysku $device) ==="
+    log_msg "WIPE DISK PARAMETERS (PARAMETRY WYMAZYWANIA DYSKU):"
+    log_msg "  - Device (Urządzenie): $device"
+    
+    if [ -z "$device" ]; then
+        log_msg "ERROR: No device specified (BŁĄD: Nie podano urządzenia)"
+        echo "1" > "$RESULT_FILE"
+        return 1
+    fi
+
+    case "$device" in
+        /dev/*)
+            TARGET_DEVICE="$device"
+            ;;
+        *)
+            TARGET_DEVICE="/dev/$device"
+            ;;
+    esac
+    
+    log_msg "Target device: $TARGET_DEVICE (Urządzenie docelowe: $TARGET_DEVICE)"
+    
+    check_target_path "$TARGET_DEVICE"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+        log_msg "ERROR: Target path validation failed (BŁĄD: Walidacja ścieżki docelowej nie powiodła się)"
+        return $rc
+    fi
+    
+    log_msg "Unmounting all partitions on $TARGET_DEVICE (Odmontowywanie wszystkich partycji na $TARGET_DEVICE)"
+    unmount_device "$TARGET_DEVICE"
+    sleep 2
+    
+    log_msg "Wiping first 10MB of $TARGET_DEVICE (Wymazywanie pierwszych 10MB $TARGET_DEVICE)"
+    dd if=/dev/zero of="$TARGET_DEVICE" bs=1M count=10 >> "$LOG_FILE" 2>&1
+    rc=$?
+    
+    if [ $rc -ne 0 ]; then
+        log_msg "ERROR: Failed to wipe disk (rc=$rc) (BŁĄD: Nie udało się wyczyścić dysku)"
+        echo $rc > "$RESULT_FILE"
+        return $rc
+    fi
+    
+    log_msg "Disk wiped successfully, refreshing partition table (Dysk wyczyszczony pomyślnie, odświeżanie tablicy partycji)"
+    
+    refresh_partitions "$TARGET_DEVICE"
+    
+    log_msg "Wipe operation completed successfully (Operacja wymazywania zakończona pomyślnie)"
+    echo "0" > "$RESULT_FILE"
+    
+    sync
+    return 0
+}
+
+##################################################################################################################
+# JSON API INTERFACE / INTERFEJS API JSON
+##################################################################################################################
+case "$1" in
+    list)
+        json_init
+        json_add_object "create_partition"
+            json_add_string "device" "string"
+            json_add_string "type" "string"
+            json_add_string "fstype" "string"
+            json_add_string "size" "string"
+            json_add_string "layout" "string"
+            json_add_string "label" "string"
+            json_add_string "reserved_space" "string"
+            json_add_string "reserved_unit" "string"
+        json_close_object
+        json_add_object "delete_partition"
+            json_add_string "partition" "string"
+        json_close_object
+        json_add_object "format_partition"
+            json_add_string "device" "string"
+            json_add_string "fstype" "string"
+            json_add_string "label" "string"
+            json_add_string "reserved_space" "string"
+            json_add_string "reserved_unit" "string"
+        json_close_object
+        json_add_object "resize_partition"
+            json_add_string "partition" "string"
+            json_add_string "new_size" "string"
+            json_add_string "unit" "string"
+        json_close_object
+        json_add_object "wipe_disk"
+            json_add_string "device" "string"
+        json_close_object
+        json_add_object "check_operation"
+            json_add_string "pid" "string"
+        json_close_object
+        json_dump
+        ;;
+
+    call)
+        case "$2" in
+
+            create_partition)
+                read input
+                json_load "$input"
+                json_get_var device device
+                json_get_var type type
+                json_get_var fstype fstype
+                json_get_var size size
+                json_get_var layout layout
+                json_get_var label label
+                json_get_var reserved_space reserved_space
+                json_get_var reserved_unit reserved_unit
+
+                (
+                    create_partition_impl "$device" "$type" "${fstype:-ext2}" "${size:-0}" "${layout:-msdos}" "$label" "$reserved_space" "$reserved_unit"
+                    exit $?
+                ) &
+                pid=$!
+                echo $pid > "$PID_FILE"
+
+                json_init; json_add_boolean success 1; json_add_int pid $pid; json_dump
+                ;;
+
+            delete_partition)
+                read input
+                json_load "$input"
+                json_get_var partition partition
+
+                (
+                    delete_partition "$partition"
+                    exit $?
+                ) &
+                pid=$!
+                echo $pid > "$PID_FILE"
+
+                json_init; json_add_boolean success 1; json_add_int pid $pid; json_dump
+                ;;
+
+            format_partition)
+                read input
+                json_load "$input"
+                json_get_var device device
+                json_get_var fstype fstype
+                json_get_var label label
+                json_get_var reserved_space reserved_space
+                json_get_var reserved_unit reserved_unit
+
+                (
+                    format_partition "$device" "$fstype" "$label" "$reserved_space" "$reserved_unit"
+                    exit $?
+                ) &
+                pid=$!
+                echo $pid > "$PID_FILE"
+
+                json_init; json_add_boolean success 1; json_add_int pid $pid; json_dump
+                ;;
+
+            resize_partition)
+                read input
+                log_msg "DEBUG: Raw JSON input: $input"
+                json_load "$input"
+                json_get_var partition partition
+                json_get_var new_size new_size
+                json_get_var unit unit
+                log_msg "DEBUG: Parsed parameters - partition='$partition' new_size='$new_size' unit='$unit'"
+
+                (
+                    resize_partition "$partition" "$new_size" "$unit"
+                    exit $?
+                ) &
+                pid=$!
+                echo $pid > "$PID_FILE"
+
+                json_init; json_add_boolean success 1; json_add_int pid $pid; json_dump
+                ;;
+
+            wipe_disk)
+                read input
+                json_load "$input"
+                json_get_var device device
+
+                (
+                    wipe_disk "$device"
+                    exit $?
+                ) &
+                pid=$!
+                echo $pid > "$PID_FILE"
+
+                json_init; json_add_boolean success 1; json_add_int pid $pid; json_dump
+                ;;
+
+            check_operation)
+                read input
+                json_load "$input"
+                json_get_var pid pid
+
+                if kill -0 "$pid" 2>/dev/null; then
+                    json_init; json_add_boolean running 1; json_dump
+                else
+                    result=1
+                    [ -f "$RESULT_FILE" ] && result=$(cat "$RESULT_FILE")
+                    log=$(tail -n 200 "$LOG_FILE" 2>/dev/null)
+
+                    json_init
+                    json_add_boolean running 0
+                    json_add_int exitcode $result
+                    json_add_string log "$log"
+                    json_dump
+
+                    rm -f "$PID_FILE" "$RESULT_FILE"
+                fi
+                ;;
+
+        esac
+        ;;
+esac

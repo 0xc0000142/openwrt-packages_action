@@ -1,0 +1,220 @@
+#!/usr/bin/lua
+
+--  Copyright (C) 2021-2022 Jian Chang <aa65535@live.com>
+
+--  This is free software, licensed under the GNU General Public License v3.
+--  See /LICENSE for more information.
+
+require "luci.model.uci"
+require "luci.util"
+require "luci.sys"
+require "nixio"
+
+local config = "shadowsocks"
+local uci = luci.model.uci.cursor()
+local bit = tonumber(luci.sys.exec("cat /proc/sys/net/ipv4/tcp_fastopen 2>/dev/null"):trim()) or 0
+local tfo = nixio.bit.band(bit, 1) == 1
+
+function base64_decode(text)
+	if not text then
+		return ""
+	end
+	local data = text:gsub("_", "/"):gsub("-", "+")
+	local fix = #data % 4
+	if fix > 0 then
+		data = data .. string.sub("====", fix + 1)
+	end
+	data = nixio.bin.b64decode(data)
+	if data then
+		return data
+	end
+	return text
+end
+
+function http_get(url)
+	return luci.util.trim(luci.util.exec("/usr/bin/wget -q --no-check-certificate -O- '%s'" %{url}))
+end
+
+function resolveip(host)
+	local ret = luci.util.split(luci.util.exec("resolveip -4 -t 5 %s 2>/dev/null" %{host}), "\n")
+	return luci.util.trim(ret[1])
+end
+
+function parse_ss(data)
+	local pos = 0
+	local params = {}
+	local result = {type = "ss", timeout = 300, fast_open = tfo, no_delay = 0}
+	if data:find("#") then
+		pos = data:find("#")
+		local alias = data:sub(pos + 1, -1)
+		result.alias = luci.util.urldecode(alias)
+	end
+	data = data:sub(1, pos - 1)
+	data = luci.util.split(data, "/?")
+	local main = luci.util.split(data[1], "@")
+	local info = luci.util.split(base64_decode(main[1]), ":")
+	local host = luci.util.split(base64_decode(main[2]), ":")
+	result.encrypt_method = info[1]
+	result.password = info[2]
+	result.host = host[1]
+	result.server = resolveip(host[1])
+	result.server_port = host[2]
+	if data[2] ~= nil then
+		for _, v in pairs(luci.util.split(data[2], "&")) do
+			local t = luci.util.split(v, '=')
+			params[t[1]] = luci.util.urldecode(t[2])
+		end
+	end
+	if params.plugin then
+		pos = params.plugin:find(";")
+		if pos then
+			result.plugin = params.plugin:sub(1, pos - 1)
+			result.plugin_opts = params.plugin:sub(pos + 1, -1)
+		else
+			result.plugin = params.plugin
+		end
+	end
+	return result
+end
+
+function parse_ssr(data)
+	data = luci.util.split(base64_decode(data), "/?")
+	local main = luci.util.split(data[1], ":")
+	local result = {type = "ssr", timeout = 300, fast_open = tfo}
+	local params = {}
+	result.host = main[1]
+	result.server = resolveip(main[1])
+	result.server_port = main[2]
+	result.protocol = main[3]
+	result.encrypt_method = main[4]
+	result.obfs = main[5]
+	result.password = base64_decode(main[6])
+	if data[2] ~= nil then
+		for _, v in pairs(luci.util.split(data[2], "&")) do
+			local t = luci.util.split(v, '=')
+			params[t[1]] = t[2]
+		end
+	end
+	result.alias = base64_decode(params.remarks)
+	result.protocol_param = base64_decode(params.protoparam)
+	result.obfs_param = base64_decode(params.obfsparam)
+	return result
+end
+
+function check_filter_words(words, str)
+	for _, w in pairs(words) do
+		w = luci.util.trim(w)
+		if #w > 0 and str:find(w, 1, true) then
+			return false
+		end
+	end
+	return true
+end
+
+function exec_subscribe(section)
+	local url = uci:get(config, section, "subscription_url")
+	if not url then
+		return false
+	end
+	local configs = {}
+	local lines = luci.util.split(base64_decode(http_get(url)), "\n")
+	for _, v in pairs(lines) do
+		if v:find("://") then
+			local line = luci.util.split(v, "://")
+			if line[1] == 'ss' then
+				configs[#configs + 1] = parse_ss(line[2])
+			elseif line[1] == 'ssr' then
+				configs[#configs + 1] = parse_ssr(line[2])
+			end
+		end
+	end
+	if #configs == 0 then
+		return false
+	end
+	local group = uci:get(config, section, "name")
+	local words = uci:get(config, section, "filter_words")
+	uci:delete_all(config, "servers", function(s)
+		return s.group == group
+	end)
+	if words then
+		words = luci.util.split(words, "/")
+	end
+	for _, v in pairs(configs) do
+		if not words or check_filter_words(words, v.alias) then
+			v.group = group
+			uci:section(config, "servers", nil, v)
+		end
+	end
+	return true
+end
+
+function table_equal(t1, t2)
+	for k, v in pairs(t1) do
+		if "table" == type(v) then
+			if not table_equal(v, t2[k]) then
+				return false
+			end
+		else
+			if v ~= t2[k] then
+				return false
+			end
+		end
+	end
+	return true
+end
+
+function get_current_servers()
+	local name = ""
+	local servers = {}
+	local sections = {
+		{"transparent_proxy", "main_server"},
+		{"transparent_proxy", "udp_relay_server"},
+		{"socks5_proxy", "server"},
+		{"port_forward", "server"}
+	}
+	for _, v in pairs(sections) do
+		name = uci:get_first(config, v[1], v[2])
+		if name and name ~= "nil" and name ~= "same" then
+			servers[name] = uci:get_all(config, name)
+		end
+	end
+	return servers
+end
+
+if #arg > 0 then
+	local servers = get_current_servers()
+	if arg[1]:lower() == "all" then
+		uci:foreach(config, "subscription", function(s)
+			exec_subscribe(s[".name"])
+		end)
+	elseif arg[1]:lower() == "auto" then
+		local hour = os.date("%H")
+		uci:foreach(config, "subscription", function(s)
+			if s.auto_update == "1" and s.update_hour == hour then
+				exec_subscribe(s[".name"])
+			end
+		end)
+	else
+		if not exec_subscribe(arg[1]) then
+			os.exit(1)
+		end
+	end
+	local changes = uci:changes(config)
+	if #changes > 0 then
+		if uci:commit(config) then
+			local current = get_current_servers()
+			if not table_equal(servers, current) then
+				os.execute("/etc/init.d/%s restart" %{config})
+			end
+		end
+	end
+	os.exit(0)
+else
+	print("Syntax: ss-subscribe [command]")
+	print("\nAvailable commands:")
+	print("\tall                 force subscribe all subscription section")
+	print("\tauto                subscribe eligible subscription section")
+	print("\t[UCI section name]  subscribe a specific name subscription section")
+end
+
+os.exit(1)

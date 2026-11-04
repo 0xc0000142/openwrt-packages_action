@@ -1,0 +1,65 @@
+#!/bin/sh
+# luci-app-amlogic-js: post-install configuration tweaks.
+
+# Detect running platform from /etc/flippy-openwrt-release. The original Lua
+# controller hid the "Install OpenWrt" menu unless platform=="amlogic" or
+# SHOW_INSTALL_MENU=="yes", and hid "CPU Settings" on the qemu platform.
+# Since menu.d JSON cannot run shell logic, we mirror those checks once here
+# and store the result as uci flags that the menu entries depend on.
+
+PLATFORM=$(grep -E '^PLATFORM=' /etc/flippy-openwrt-release 2>/dev/null | \
+           awk -F= '{print $2}' | tr -d '"' | xargs)
+SHOW_INSTALL=$(grep -E '^SHOW_INSTALL_MENU=' /etc/flippy-openwrt-release 2>/dev/null | \
+               awk -F= '{print $2}' | tr -d '"' | xargs)
+
+# Detect whether the root fs is already on eMMC (mmcblk*p* with device/type == "MMC").
+# Mirrors root_on_internal_storage() in luci.amlogic: all other boot media
+# (TF/SD, NVMe, SATA, USB) keep the install menu visible.
+ROOT_PT=$(df / | tail -n1 | awk '{print $1}' | awk -F '/' '{print $3}')
+IS_INSTALLED=0
+case "$ROOT_PT" in
+	mmcblk*p*)
+		BASE_DEV="${ROOT_PT%p*}"
+		[ "$(cat /sys/block/${BASE_DEV}/device/type 2>/dev/null | xargs)" = "MMC" ] && IS_INSTALLED=1
+		;;
+esac
+
+case "$PLATFORM" in
+	*amlogic*|*allwinner*) CAN_INSTALL=yes ;;
+	*)         [ "$SHOW_INSTALL" = "yes" ] && CAN_INSTALL=yes || CAN_INSTALL=no ;;
+esac
+if [ "$CAN_INSTALL" = "yes" ] && [ "$IS_INSTALLED" = "0" ]; then
+	MENU_INSTALL=yes
+else
+	MENU_INSTALL=no
+fi
+
+case "$PLATFORM" in
+	*qemu*) MENU_ARMCPU=no ;;
+	*)      MENU_ARMCPU=yes ;;
+esac
+
+# Raise uhttpd max_requests (default 3 is too low for this plugin's concurrent
+# polling and can crash some uhttpd builds), but never override a higher value.
+cur_max="$(uci -q get uhttpd.main.max_requests 2>/dev/null)"
+if [ -z "$cur_max" ] || [ "$cur_max" -lt 50 ] 2>/dev/null; then
+	uci -q batch <<-EOF >/dev/null
+		set uhttpd.main.max_requests='50'
+		commit uhttpd
+	EOF
+	# Apply now (skip during image build).
+	[ -z "${IPKG_INSTROOT}" ] && /etc/init.d/uhttpd reload >/dev/null 2>&1 || true
+fi
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@amlogic[-1]
+	add ucitrack amlogic
+	set ucitrack.@amlogic[-1].init=amlogic
+	commit ucitrack
+	set amlogic.config.menu_install=${MENU_INSTALL}
+	set amlogic.config.menu_armcpu=${MENU_ARMCPU}
+	commit amlogic
+EOF
+
+rm -rf /tmp/luci-*
+exit 0

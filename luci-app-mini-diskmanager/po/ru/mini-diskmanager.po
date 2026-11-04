@@ -1,0 +1,1339 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-app-mini-diskmanager\n"
+"Language-Team: Rafał Wabik (IceG)\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Disk Manager"
+msgstr "Менеджер дисков"
+
+msgid "-- Select a disk --"
+msgstr "-- Выберите диск --"
+
+msgid "Disk"
+msgstr "Диск"
+
+msgid "Refresh"
+msgstr "Обновить"
+
+msgid "Mounting actions"
+msgstr "Действия монтирования"
+
+msgid "Actions on partitions"
+msgstr "Операции с разделами"
+
+msgid "Mount"
+msgstr "Монтировать"
+
+msgid "Unmount"
+msgstr "Размонтировать"
+
+msgid "Create"
+msgstr "Создать"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Format"
+msgstr "Форматировать"
+
+msgid "Please select a disk to view its partitions"
+msgstr "Выберите диск для просмотра его разделов"
+
+msgid "Please select a disk first"
+msgstr "Сначала выберите диск"
+
+msgid "Please select a partition first"
+msgstr "Сначала выберите раздел"
+
+msgid "Loading disk information..."
+msgstr "Загрузка информации о диске..."
+
+msgid "Error loading disk information: "
+msgstr "Ошибка загрузки информации о диске: "
+
+msgid "Disk Information"
+msgstr "Информация о диске"
+
+msgid "Temperature"
+msgstr "Температура"
+
+msgid "S.M.A.R.T."
+msgstr "S.M.A.R.T."
+
+msgid "S.M.A.R.T. Status"
+msgstr "Статус S.M.A.R.T."
+
+msgid "Partitions"
+msgstr "Разделы"
+
+msgid "Mount Status"
+msgstr "Статус монтирования"
+
+msgid "Mounted"
+msgstr "Смонтирован"
+
+msgid "Not mounted"
+msgstr "Не смонтирован"
+
+msgid "Partition Layout"
+msgstr "Схема разделов"
+
+msgid "Partition"
+msgstr "Раздел"
+
+msgid "Type / Filesystem"
+msgstr "Тип / Файловая система"
+
+msgid "Filesystem"
+msgstr "Файловая система"
+
+msgid "Mount Point"
+msgstr "Точка монтирования"
+
+msgid "Label"
+msgstr "Метка"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Used"
+msgstr "Использовано"
+
+msgid "Unused"
+msgstr "Свободно"
+
+msgid "Flags"
+msgstr "Флаги"
+
+msgid "No partitions found"
+msgstr "Разделы не найдены"
+
+msgid "Unallocated"
+msgstr "Не распределено"
+
+msgid "Area without partition table"
+msgstr "Область без таблицы разделов"
+
+msgid "Free Space"
+msgstr "Свободное место"
+
+msgid "Primary"
+msgstr "Первичный"
+
+msgid "Extended"
+msgstr "Расширенный"
+
+msgid "Logical"
+msgstr "Логический"
+
+msgid "Create partition"
+msgstr "Создать раздел"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "File system"
+msgstr "Файловая система"
+
+msgid "Volume label"
+msgstr "Метка тома"
+
+msgid "Partition size"
+msgstr "Размер раздела"
+
+msgid "Enter size"
+msgstr "Введите размер"
+
+msgid "Use all available space"
+msgstr "Использовать всё доступное место"
+
+msgid "Available: %s MB / %s GB / %s TB"
+msgstr "Доступно: %s МБ / %s ГБ / %s ТБ"
+
+msgid "Please enter a valid size"
+msgstr "Введите корректный размер"
+
+msgid "Size is too small"
+msgstr "Размер слишком мал"
+
+msgid "Creating partition..."
+msgstr "Создание раздела..."
+
+msgid "Partition created successfully"
+msgstr "Раздел успешно создан"
+
+msgid "Failed to create partition"
+msgstr "Не удалось создать раздел"
+
+msgid "Format Partition"
+msgstr "Форматировать раздел"
+
+msgid "Warning"
+msgstr "Предупреждение"
+
+msgid "This will erase all data on /dev/%s"
+msgstr "Это удалит все данные на /dev/%s"
+
+msgid "Formatting partition..."
+msgstr "Форматирование раздела..."
+
+msgid "Partition formatted successfully"
+msgstr "Раздел успешно отформатирован"
+
+msgid "Failed to format partition"
+msgstr "Не удалось отформатировать раздел"
+
+msgid "Delete Partition"
+msgstr "Удалить раздел"
+
+msgid "Are you sure you want to continue?"
+msgstr "Вы уверены, что хотите продолжить?"
+
+msgid "Deleting partition..."
+msgstr "Удаление раздела..."
+
+msgid "Partition deleted successfully"
+msgstr "Раздел успешно удалён"
+
+msgid "Failed to delete partition"
+msgstr "Не удалось удалить раздел"
+
+msgid "No partitions to mount"
+msgstr "Нет разделов для монтирования"
+
+msgid "No mounted partitions found"
+msgstr "Не найдено смонтированных разделов"
+
+msgid "No partitions to unmount"
+msgstr "Нет разделов для размонтирования"
+
+msgid "Mounted to %s"
+msgstr "Смонтировано в %s"
+
+msgid "Unmounted %s"
+msgstr "Размонтировано %s"
+
+msgid "Failed to mount: "
+msgstr "Не удалось смонтировать: "
+
+msgid "Failed to unmount: "
+msgstr "Не удалось размонтировать: "
+
+msgid "Failed to check operation status: "
+msgstr "Не удалось проверить статус операции: "
+
+msgid "Partition created but device node did not appear in time"
+msgstr "Раздел создан, но узел устройства не появился вовремя"
+
+msgid "Partition created but device node did not appear; please refresh manually"
+msgstr "Раздел создан, но узел устройства не появился; обновите вручную"
+
+msgid "PASSED"
+msgstr "ПРОЙДЕН"
+
+msgid "FAILED"
+msgstr "НЕ ПРОЙДЕН"
+
+msgid "Cannot create partition on mounted disk. Please unmount first."
+msgstr "Невозможно создать раздел на смонтированном диске. Сначала размонтируйте."
+
+msgid "No unallocated space available on this disk"
+msgstr "На этом диске нет нераспределённого места"
+
+msgid "Cannot format mounted partition. Please unmount first."
+msgstr "Невозможно отформатировать смонтированный раздел. Сначала размонтируйте."
+
+msgid "Failed to refresh partition data: "
+msgstr "Не удалось обновить данные раздела: "
+
+msgid "Cannot delete partition on mounted disk. Please unmount first."
+msgstr "Невозможно удалить раздел на смонтированном диске. Сначала размонтируйте."
+
+msgid "This will delete partition /dev/%s and all its data!"
+msgstr "Это удалит раздел /dev/%s и все его данные!"
+
+msgid "Failed to load disk information: "
+msgstr "Не удалось загрузить информацию о диске: "
+
+msgid "Click to select"
+msgstr "Нажмите для выбора"
+
+msgid "System partition cannot be selected"
+msgstr "Системный раздел не может быть выбран"
+
+msgid "Free"
+msgstr "Свободно"
+
+msgid "Select a disk"
+msgstr "Выберите диск"
+
+msgid "Create a new partition on the selected disk"
+msgstr "Создать новый раздел на выбранном диске"
+
+msgid "Partition layout"
+msgstr "Схема разделов"
+
+msgid "Partition type"
+msgstr "Тип раздела"
+
+msgid "Refresh partition data"
+msgstr "Обновить данные разделов"
+
+msgid "MBR (Master Boot Record)"
+msgstr "MBR (Главная загрузочная запись)"
+
+msgid "GPT (GUID Partition Table)"
+msgstr "GPT (Таблица разделов GUID)"
+
+msgid "The Mini Disk Manager package allows users to easily manage disks and partitions."
+msgstr "Пакет Mini Disk Manager позволяет пользователям легко управлять дисками и разделами."
+
+msgid "Configuration"
+msgstr "Конфигурация"
+
+msgid "Package and Driver Verification"
+msgstr "Проверка пакетов и драйверов"
+
+msgid "Check and install required drivers for storage devices."
+msgstr "Проверка и установка необходимых драйверов для устройств хранения."
+
+msgid "Filesystem Support"
+msgstr "Поддержка файловых систем"
+
+msgid "Check USB drivers"
+msgstr "Проверить драйверы USB"
+
+msgid "USB drivers"
+msgstr "Драйверы USB"
+
+msgid "Check NVMe drivers"
+msgstr "Проверить драйверы NVMe"
+
+msgid "NVMe drivers"
+msgstr "Драйверы NVMe"
+
+msgid "Check ATA/SATA drivers"
+msgstr "Проверить драйверы ATA/SATA"
+
+msgid "ATA/SATA drivers"
+msgstr "Драйверы ATA/SATA"
+
+msgid "Check Linux filesystem packages"
+msgstr "Проверить пакеты файловых систем Linux"
+
+msgid "Linux filesystems"
+msgstr "Файловые системы Linux"
+
+msgid "Check Windows filesystem packages"
+msgstr "Проверить пакеты файловых систем Windows"
+
+msgid "Windows filesystems"
+msgstr "Файловые системы Windows"
+
+msgid "Linux Filesystem Packages"
+msgstr "Пакеты файловых систем Linux"
+
+msgid "Windows Filesystem Packages"
+msgstr "Пакеты файловых систем Windows"
+
+msgid "Disk Manager Log"
+msgstr "Журнал менеджера дисков"
+
+msgid "Loading package data…"
+msgstr "Загрузка данных пакетов…"
+
+msgid "Loading log file…"
+msgstr "Загрузка файла журнала…"
+
+msgid "Log file content"
+msgstr "Содержимое файла журнала"
+
+msgid "Log file is empty"
+msgstr "Файл журнала пуст"
+
+msgid "Unable to read log file"
+msgstr "Невозможно прочитать файл журнала"
+
+msgid "Log file cleared successfully"
+msgstr "Файл журнала успешно очищен"
+
+msgid "Unable to clear the file"
+msgstr "Невозможно очистить файл"
+
+msgid "Installed"
+msgstr "Установлено"
+
+msgid "Install…"
+msgstr "Установить…"
+
+msgid "Clear"
+msgstr "Очистить"
+
+msgid "Download"
+msgstr "Скачать"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Failed to load package data"
+msgstr "Не удалось загрузить данные пакета"
+
+msgid "more info in log"
+msgstr "подробности в журнале"
+
+msgid "The tab allows users to support the package."
+msgstr "Вкладка позволяет пользователям поддержать пакет."
+
+msgid "Package support"
+msgstr "Поддержка пакета"
+
+msgid "Mini Disk Manager Info"
+msgstr "Информация о Mini Disk Manager"
+
+msgid "Luci-app-mdmanager"
+msgstr "Luci-app-mdmanager"
+
+msgid "Buy a coffee"
+msgstr "Угостить кофе"
+
+msgid "Buy a coffee if you want to support the development of the project and the author"
+msgstr "Угостите кофе, если хотите поддержать разработку проекта и автора"
+
+msgid "Become a sponsor"
+msgstr "Стать спонсором"
+
+msgid "Become a sponsor if you want to support the development of the project and the author"
+msgstr "Станьте спонсором, если хотите поддержать разработку проекта и автора"
+
+msgid "Write on forum"
+msgstr "Написать на форуме"
+
+msgid "Write in the topic of the package on the forum eko.one.pl"
+msgstr "Напишите в теме пакета на форуме eko.one.pl"
+
+msgid "Open discussion"
+msgstr "Открыть обсуждение"
+
+msgid "Open a package discussion on Github"
+msgstr "Открыть обсуждение пакета на Github"
+
+msgid "Report a bug"
+msgstr "Сообщить об ошибке"
+
+msgid "Report a bug on the package Github page"
+msgstr "Сообщить об ошибке на странице пакета в Github"
+
+msgid "Package name"
+msgstr "Название пакета"
+
+msgid "Author (package maintainer)"
+msgstr "Автор (сопровождающий пакета)"
+
+msgid "Information about package author and available support options."
+msgstr "Информация об авторе пакета и доступных вариантах поддержки."
+
+# --
+
+msgid "All available space"
+msgstr "Всё доступное место"
+
+msgid "Cannot delete mounted partition. Please unmount first."
+msgstr "Невозможно удалить смонтированный раздел. Сначала размонтируйте."
+
+msgid "Failed to create partition: "
+msgstr "Не удалось создать раздел: "
+
+msgid "Failed to detect supported filesystems"
+msgstr "Не удалось обнаружить поддерживаемые файловые системы"
+
+msgid "Failed to format partition: "
+msgstr "Не удалось отформатировать раздел: "
+
+msgid "Failed to parse JSON response: "
+msgstr "Не удалось разобрать JSON-ответ: "
+
+msgid "Failed to start formatting"
+msgstr "Не удалось начать форматирование"
+
+msgid "Failed to start partition creation"
+msgstr "Не удалось начать создание раздела"
+
+msgid "Failed to start partition deletion"
+msgstr "Не удалось начать удаление раздела"
+
+msgid "Fill in size"
+msgstr "Заполните размер"
+
+msgid "Linux Swap"
+msgstr "Linux Swap"
+
+msgid "Loading..."
+msgstr "Загрузка..."
+
+msgid "No filesystem packages detected — user cannot choose unsupported filesystem formats."
+msgstr "Пакеты файловых систем не обнаружены — пользователь не может выбрать неподдерживаемые форматы файловых систем."
+
+msgid "No partition types available. Maximum partitions reached."
+msgstr "Нет доступных типов разделов. Достигнуто максимальное количество разделов."
+
+msgid "No supported filesystems detected on this system"
+msgstr "В этой системе не обнаружено поддерживаемых файловых систем"
+
+msgid "Optional"
+msgstr "Необязательно"
+
+msgid "Partition created but selected filesystem is not available for formatting on this system"
+msgstr "Раздел создан, но выбранная файловая система недоступна для форматирования в этой системе"
+
+msgid "Partition data refreshed"
+msgstr "Данные раздела обновлены"
+
+msgid "Please select a filesystem"
+msgstr "Выберите файловую систему"
+
+msgid "RPC call failed: "
+msgstr "Вызов RPC не удался: "
+
+msgid "Refreshing..."
+msgstr "Обновление..."
+
+msgid "Selected filesystem is not supported on this system"
+msgstr "Выбранная файловая система не поддерживается в этой системе"
+
+msgid "Selected partition is not mounted"
+msgstr "Выбранный раздел не смонтирован"
+
+msgid "unknown error"
+msgstr "неизвестная ошибка"
+
+msgid "Packages & Drivers"
+msgstr "Пакеты и драйверы"
+
+msgid "Mini Disk Manager log"
+msgstr "Журнал Mini Disk Manager"
+
+msgid "Mini Disk Manager Log"
+msgstr "Журнал Mini Disk Manager"
+
+msgid "Packages required to support various file systems."
+msgstr "Пакеты, необходимые для поддержки различных файловых систем."
+
+msgid "Expand"
+msgstr "Расширить"
+
+msgid "Resize"
+msgstr "Изменить размер"
+
+msgid "Resize Partition"
+msgstr "Изменить размер раздела"
+
+msgid "Resize partition /dev/%s"
+msgstr "Изменить размер раздела /dev/%s"
+
+msgid "Resizing partition..."
+msgstr "Изменение размера раздела..."
+
+msgid "Resizing a partition can cause data loss if not done correctly."
+msgstr "Изменение размера раздела может привести к потере данных, если выполнено неправильно."
+
+msgid "Please ensure you have a backup of important data before proceeding."
+msgstr "Убедитесь, что у вас есть резервная копия важных данных перед продолжением."
+
+msgid "Current size: %s MB / %s GB / %s TB"
+msgstr "Текущий размер: %s МБ / %s ГБ / %s ТБ"
+
+msgid "Available space: %s MB / %s GB / %s TB"
+msgstr "Доступное место: %s МБ / %s ГБ / %s ТБ"
+
+msgid "Maximum size to be obtained: %s MB / %s GB / %s TB"
+msgstr "Максимальный размер для получения: %s МБ / %s ГБ / %s ТБ"
+
+msgid "Maximum new size"
+msgstr "Максимальный новый размер"
+
+msgid "New size"
+msgstr "Новый размер"
+
+msgid "Enter new size"
+msgstr "Введите новый размер"
+
+msgid "New size must be larger than current size"
+msgstr "Новый размер должен быть больше текущего размера"
+
+msgid "New size exceeds available space"
+msgstr "Новый размер превышает доступное место"
+
+msgid "Partition resized successfully"
+msgstr "Размер раздела успешно изменён"
+
+msgid "Failed to resize partition"
+msgstr "Не удалось изменить размер раздела"
+
+msgid "Failed to resize partition: "
+msgstr "Не удалось изменить размер раздела: "
+
+msgid "Failed to start partition resize"
+msgstr "Не удалось начать изменение размера раздела"
+
+msgid "Selected partition cannot be resized. Only unmounted Ext2/3/4 partitions with available space can be resized."
+msgstr "Выбранный раздел не может быть изменён. Изменять размер можно только для размонтированных разделов Ext2/3/4 с доступным местом."
+
+msgid "MB"
+msgstr "МБ"
+
+msgid "GB"
+msgstr "ГБ"
+
+msgid "TB"
+msgstr "ТБ"
+
+msgid "Cannot Create Partition"
+msgstr "Невозможно создать раздел"
+
+msgid "Insufficient Space"
+msgstr "Недостаточно места"
+
+msgid "Cannot read partition information"
+msgstr "Невозможно прочитать информацию о разделе"
+
+msgid "Invalid extended partition"
+msgstr "Неверный расширенный раздел"
+
+msgid "Extended partition not found or has invalid size"
+msgstr "Расширенный раздел не найден или имеет неверный размер"
+
+msgid "Extended partition size: %s MB"
+msgstr "Размер расширенного раздела: %s МБ"
+
+msgid "Used by logical partitions: %s MB"
+msgstr "Использовано логическими разделами: %s МБ"
+
+msgid "Available for new logical: %s MB"
+msgstr "Доступно для нового логического: %s МБ"
+
+msgid "Required minimum: 10 MB"
+msgstr "Требуемый минимум: 10 МБ"
+
+msgid "Not enough free space in extended partition /dev/%s"
+msgstr "Недостаточно свободного места в расширенном разделе /dev/%s"
+
+msgid "Extended partition already exists. You can create primary partitions or select the extended partition to create logical partitions inside."
+msgstr "Расширенный раздел уже существует. Вы можете создать первичные разделы или выбрать расширенный раздел для создания логических разделов внутри."
+
+msgid "Creating partition inside extended partition. Only logical partitions can be created here."
+msgstr "Создание раздела внутри расширенного раздела. Здесь можно создавать только логические разделы."
+
+msgid "No partition table detected. A primary partition will be created and a partition table will be initialized."
+msgstr "Таблица разделов не обнаружена. Будет создан первичный раздел и инициализирована таблица разделов."
+
+msgid "No partition table - select to create"
+msgstr "Нет таблицы разделов - выберите для создания"
+
+msgid "No partitions - select to create"
+msgstr "Нет разделов - выберите для создания"
+
+msgid "Select to enable partition creation"
+msgstr "Выберите для включения создания раздела"
+
+msgid "Select unallocated space"
+msgstr "Выберите нераспределённое место"
+
+msgid "Unallocated space"
+msgstr "Нераспределённое место"
+
+msgid "Expand Ext2/Ext3/Ext4"
+msgstr "Расширить Ext2/Ext3/Ext4"
+
+msgid "Wipe"
+msgstr "Очистить"
+
+msgid "Select all partitions for wiping"
+msgstr "Выбрать все разделы для очистки"
+
+msgid "Please enable wipe mode first"
+msgstr "Сначала включите режим стирания"
+
+msgid "Cannot wipe disk with mounted partitions. Please unmount all partitions first."
+msgstr "Невозможно стереть диск с подключёнными разделами. Сначала отключите все разделы."
+
+msgid "Wipe Disk"
+msgstr "Стереть диск"
+
+msgid "WARNING"
+msgstr "ПРЕДУПРЕЖДЕНИЕ"
+
+msgid "This will completely erase the partition table and all data on /dev/%s!"
+msgstr "Это полностью удалит таблицу разделов и все данные на /dev/%s!"
+
+msgid "All partitions will be deleted and the disk will be unallocated."
+msgstr "Все разделы будут удалены, и диск станет нераспределённым."
+
+msgid "THIS OPERATION CANNOT BE UNDONE!"
+msgstr "ЭТУ ОПЕРАЦИЮ НЕВОЗМОЖНО ОТМЕНИТЬ!"
+
+msgid "Number of partitions to be deleted: %d"
+msgstr "Количество разделов для удаления: %d"
+
+msgid "Are you absolutely sure you want to continue?"
+msgstr "Вы абсолютно уверены, что хотите продолжить?"
+
+msgid "Wiping disk partition table..."
+msgstr "Очистка таблицы разделов диска..."
+
+msgid "Disk partition table has been successfully erased"
+msgstr "Таблица разделов диска успешно удалена"
+
+msgid "Failed to wipe disk"
+msgstr "Не удалось стереть диск"
+
+msgid "Failed to start disk wipe"
+msgstr "Не удалось начать стирание диска"
+
+msgid "Failed to wipe disk: "
+msgstr "Не удалось стереть диск: "
+
+msgid "Disk Wipe Support"
+msgstr "Поддержка стирания диска"
+
+msgid "Packages required to support disk wiping functionality (clearing partition table)."
+msgstr "Пакеты, необходимые для поддержки функции очистки диска (очистка таблицы разделов)."
+
+msgid "Check Disk Wipe packages"
+msgstr "Проверить пакеты очистки диска"
+
+msgid "Disk Wipe"
+msgstr "Стирание диска"
+
+msgid "dd from BusyBox"
+msgstr "dd из BusyBox"
+
+msgid "Disk Wipe (dd command)"
+msgstr "Стирание диска (команда dd)"
+
+msgid "alternative"
+msgstr "альтернатива"
+
+# SMART
+
+msgid "Attribute"
+msgstr "Атрибут"
+
+msgid "Id"
+msgstr "Id"
+
+msgid "Raw"
+msgstr "Сырой"
+
+msgid "Value"
+msgstr "Значение"
+
+msgid "Worst"
+msgstr "Худшее"
+
+msgid "Thresh"
+msgstr "Порог"
+
+msgid "Value"
+msgstr "Значение"
+
+msgid "NVMe S.M.A.R.T. Health Status"
+msgstr "Состояние здоровья NVMe S.M.A.R.T."
+
+msgid "OK"
+msgstr "ОК"
+
+msgid "WARNING"
+msgstr "ПРЕДУПРЕЖДЕНИЕ"
+
+msgid "Power On Time"
+msgstr "Время работы"
+
+msgid "Power On Hours"
+msgstr "Часы работы"
+
+msgid "Disk Usage"
+msgstr "Использование диска"
+
+msgid "Disk Wear Level"
+msgstr "Уровень износа диска"
+
+msgid "Available Spare"
+msgstr "Доступный резерв"
+
+msgid "Available Spare Threshold"
+msgstr "Порог доступного резерва"
+
+msgid "hour"
+msgstr "час"
+
+msgid "hours"
+msgstr "часов"
+
+msgid "h"
+msgstr "ч"
+
+msgid "year"
+msgstr "год"
+
+msgid "years"
+msgstr "лет"
+
+msgid "month"
+msgstr "месяц"
+
+msgid "months"
+msgstr "месяцев"
+
+msgid "day"
+msgstr "день"
+
+msgid "days"
+msgstr "дней"
+
+msgid "worn"
+msgstr "изношено"
+
+msgid "remaining"
+msgstr "осталось"
+
+msgid "S.M.A.R.T. Health Status"
+msgstr "Общее состояние здоровья диска S.M.A.R.T."
+
+msgid "No S.M.A.R.T. attributes found."
+msgstr "Атрибуты S.M.A.R.T. не найдены."
+
+msgid "Loading S.M.A.R.T. data..."
+msgstr "Загрузка данных S.M.A.R.T..."
+
+msgid "Unable to read S.M.A.R.T. data."
+msgstr "Невозможно прочитать данные S.M.A.R.T."
+
+msgid "Error reading S.M.A.R.T. data."
+msgstr "Ошибка чтения данных S.M.A.R.T."
+
+# SMART & Disk Info
+
+msgid "Raw Read Error Rate"
+msgstr "Частота ошибок чтения"
+
+msgid "Throughput Performance"
+msgstr "Производительность пропускной способности"
+
+msgid "Spin Up Time"
+msgstr "Время раскрутки"
+
+msgid "Start Stop Count"
+msgstr "Количество запусков/остановок"
+
+msgid "Reallocated Sector Count"
+msgstr "Количество переназначенных секторов"
+
+msgid "Seek Error Rate"
+msgstr "Частота ошибок позиционирования"
+
+msgid "Seek Time Performance"
+msgstr "Производительность позиционирования"
+
+msgid "Power On Hours"
+msgstr "Время работы"
+
+msgid "Spin Retry Count"
+msgstr "Количество повторов раскрутки"
+
+msgid "Calibration Retry Count"
+msgstr "Количество повторов калибровки"
+
+msgid "Power Cycle Count"
+msgstr "Количество циклов питания"
+
+msgid "Read Soft Error Rate"
+msgstr "Частота мягких ошибок чтения"
+
+msgid "Airflow Temperature"
+msgstr "Температура воздушного потока"
+
+msgid "Temperature Celsius"
+msgstr "Температура"
+
+msgid "Hardware ECC Recovered"
+msgstr "Ошибки ECC исправлены аппаратно"
+
+msgid "Current Pending Sector"
+msgstr "Нестабильные сектора"
+
+msgid "Offline Uncorrectable"
+msgstr "Неисправимые сектора offline"
+
+msgid "UDMA CRC Error Count"
+msgstr "Количество ошибок CRC UDMA"
+
+msgid "Multi Zone Error Rate"
+msgstr "Частота многозонных ошибок"
+
+msgid "Wear Leveling Count"
+msgstr "Счетчик износа"
+
+msgid "Used Reserved Block Count Total"
+msgstr "Использованные резервные блоки (всего)"
+
+msgid "Used Reserved Block Count Chip"
+msgstr "Использованные резервные блоки (чип)"
+
+msgid "Unused Reserved Block Count Total"
+msgstr "Неиспользованные резервные блоки"
+
+msgid "Program Fail Count Total"
+msgstr "Количество ошибок записи"
+
+msgid "Erase Fail Count Total"
+msgstr "Количество ошибок стирания"
+
+msgid "Runtime Bad Block"
+msgstr "Поврежденные блоки"
+
+msgid "Uncorrectable Error Count"
+msgstr "Количество неисправимых ошибок"
+
+msgid "Temperature Exceed Count"
+msgstr "Количество превышений температуры"
+
+msgid "Erase Fail Count"
+msgstr "Количество ошибок стирания"
+
+msgid "Reported Uncorrectable Errors"
+msgstr "Зарегистрированные неисправимые ошибки"
+
+msgid "High Fly Writes"
+msgstr "Записи на большой высоте"
+
+msgid "G-Sense Error Rate"
+msgstr "Частота ошибок G-сенсора"
+
+msgid "Power-Off Retract Count"
+msgstr "Количество отводов головок при отключении"
+
+msgid "Load Cycle Count"
+msgstr "Количество циклов парковки головок"
+
+msgid "Temperature Case"
+msgstr "Температура корпуса"
+
+msgid "Reallocated Event Count"
+msgstr "Количество событий переназначения"
+
+msgid "Transfer Error Rate"
+msgstr "Частота ошибок передачи"
+
+msgid "Free Fall Sensor"
+msgstr "Датчик свободного падения"
+
+msgid "Total LBAs Written"
+msgstr "Всего записано LBA"
+
+msgid "Total LBAs Read"
+msgstr "Всего считано LBA"
+
+msgid "Read Error Retry Rate"
+msgstr "Частота повторов чтения"
+
+msgid "Minimum W/E Cycle"
+msgstr "Минимальный цикл записи/стирания"
+
+msgid "Maximum W/E Cycle"
+msgstr "Максимальный цикл записи/стирания"
+
+msgid "Average W/E Cycle"
+msgstr "Средний цикл записи/стирания"
+
+msgid "Media Wearout Indicator"
+msgstr "Индикатор износа носителя"
+
+msgid "Available Reserved Space"
+msgstr "Доступное резервное пространство"
+
+msgid "SSD Life Left"
+msgstr "Остаточный ресурс SSD"
+
+msgid "Remaining Lifetime Percentage"
+msgstr "Остаточный ресурс (процент)"
+
+msgid "Percentage Lifetime Remaining"
+msgstr "Процент остаточного ресурса"
+
+msgid "Remaining Life"
+msgstr "Остаточный ресурс"
+
+msgid "Lifetime Writes GiB"
+msgstr "Записано данных (ГиБ)"
+
+msgid "Lifetime Reads GiB"
+msgstr "Считано данных (ГиБ)"
+
+msgid "Program Fail Count"
+msgstr "Количество ошибок программирования"
+
+msgid "Unexpected Power Loss Count"
+msgstr "Количество неожиданных отключений питания"
+
+msgid "Thermal Throttle Status"
+msgstr "Состояние тепловой защиты"
+
+msgid "End-to-End Error"
+msgstr "Сквозная ошибка"
+
+msgid "Workload Host Reads Percentage"
+msgstr "Процент чтений хоста"
+
+msgid "Workload Media Wear Indicator"
+msgstr "Индикатор износа носителя (нагрузка)"
+
+msgid "Timed Workload Media Wear"
+msgstr "Износ носителя (временная нагрузка)"
+
+msgid "Workload Timer"
+msgstr "Таймер нагрузки"
+
+msgid "Percentage Rated Life Used"
+msgstr "Процент использованного ресурса"
+
+msgid "Head Flying Hours"
+msgstr "Часы полета головок"
+
+msgid "Read Channel Margin"
+msgstr "Запас канала чтения"
+
+msgid "Loaded Hours"
+msgstr "Часы работы с распаркованными головками"
+
+msgid "Load/Unload Retry Count"
+msgstr "Количество повторов парковки/распарковки"
+
+msgid "GMR Head Amplitude"
+msgstr "Амплитуда головки GMR"
+
+msgid "Drive Temperature"
+msgstr "Температура диска"
+
+msgid "Endurance Remaining"
+msgstr "Остаточная выносливость"
+
+msgid "Power On Hours and Milliseconds"
+msgstr "Время работы (часы и миллисекунды)"
+
+msgid "Head Health"
+msgstr "Состояние головок"
+
+msgid "POR Recovery Count"
+msgstr "Количество восстановлений POR"
+
+msgid "Unused Reserve NAND Blocks"
+msgstr "Неиспользованные резервные блоки NAND"
+
+msgid "SSD Protect Mode"
+msgstr "Режим защиты SSD"
+
+msgid "Host Writes 32MiB"
+msgstr "Записи хоста (32 МиБ)"
+
+msgid "NAND Writes 32MiB"
+msgstr "Записи NAND (32 МиБ)"
+
+msgid "Remaining Life Left"
+msgstr "Остаточный ресурс"
+
+msgid "Grown Bad Block Count"
+msgstr "Количество новых поврежденных блоков"
+
+msgid "Soft Read Error Rate"
+msgstr "Частота мягких ошибок чтения"
+
+msgid "Data Address Mark Errors"
+msgstr "Ошибки маркера адреса данных"
+
+msgid "Run Out Cancel"
+msgstr "Отмена переполнения"
+
+msgid "Soft ECC Correction"
+msgstr "Мягкая коррекция ECC"
+
+msgid "TA Increase Count"
+msgstr "Количество увеличений TA"
+
+msgid "Shock Count Write Operation"
+msgstr "Количество ударов при записи"
+
+msgid "Shock Rate Write Operation"
+msgstr "Частота ударов при записи"
+
+msgid "Flying Height"
+msgstr "Высота полета головок"
+
+msgid "Spin High Current"
+msgstr "Высокий ток запуска"
+
+msgid "Spin Buzz"
+msgstr "Жужжание при запуске"
+
+msgid "Offline Seek Performance"
+msgstr "Производительность позиционирования offline"
+
+msgid "Vibration During Write"
+msgstr "Вибрации при записи"
+
+msgid "Shock During Write"
+msgstr "Удары при записи"
+
+msgid "Disk Shift"
+msgstr "Смещение диска"
+
+msgid "Load Retry Count"
+msgstr "Количество повторов загрузки"
+
+msgid "Load Friction"
+msgstr "Трение при загрузке"
+
+msgid "Load-in Time"
+msgstr "Время загрузки"
+
+msgid "Torque Amplification Count"
+msgstr "Количество усилений крутящего момента"
+
+msgid "Write Error Rate"
+msgstr "Частота ошибок записи"
+
+msgid "Serial Number"
+msgstr "Серийный номер"
+
+msgid "LU WWN Device Id"
+msgstr "Идентификатор устройства LU WWN"
+
+msgid "Firmware Version"
+msgstr "Версия прошивки"
+
+msgid "User Capacity"
+msgstr "Полезная емкость"
+
+msgid "Capacity"
+msgstr "Емкость"
+
+msgid "Sector Size"
+msgstr "Размер сектора"
+
+msgid "Sector Sizes"
+msgstr "Размеры секторов"
+
+msgid "Rotation Rate"
+msgstr "Скорость вращения"
+
+msgid "Form Factor"
+msgstr "Форм-фактор"
+
+msgid "Device is"
+msgstr "Устройство"
+
+msgid "ATA Version is"
+msgstr "Версия ATA"
+
+msgid "SATA Version is"
+msgstr "Версия SATA"
+
+msgid "Local Time is"
+msgstr "Местное время"
+
+msgid "SMART support is"
+msgstr "Поддержка SMART"
+
+msgid "SMART Status"
+msgstr "Состояние SMART"
+
+msgid "Device"
+msgstr "Устройство"
+
+msgid "Model Number"
+msgstr "Модель"
+
+msgid "Firmware Revision"
+msgstr "Ревизия прошивки"
+
+msgid "PCI Vendor/Subsystem ID"
+msgstr "ID производителя/подсистемы PCI"
+
+msgid "IEEE OUI Identifier"
+msgstr "Идентификатор IEEE OUI"
+
+msgid "Total NVM Capacity"
+msgstr "Общая емкость NVM"
+
+msgid "Unallocated NVM Capacity"
+msgstr "Нераспределенная емкость NVM"
+
+msgid "Controller ID"
+msgstr "ID контроллера"
+
+msgid "Number of Namespaces"
+msgstr "Количество адресных пространств"
+
+msgid "Namespace 1 Size/Capacity"
+msgstr "Размер/емкость адресного пространства 1"
+
+msgid "Namespace 1 Formatted LBA Size"
+msgstr "Размер LBA адресного пространства 1"
+
+msgid "Namespace 1 IEEE EUI-64"
+msgstr "IEEE EUI-64 адресного пространства 1"
+
+msgid "logical/physical"
+msgstr "логический/физический"
+
+msgid "bytes"
+msgstr "байт"
+
+msgid "blocks"
+msgstr "блоков"
+
+msgid "Solid State Device"
+msgstr "Твердотельный накопитель"
+
+# Reserved space
+
+msgid "Reserved space"
+msgstr "Зарезервированное пространство"
+
+msgid "Space reserved for root (default: 5%)"
+msgstr "Пространство, зарезервированное для root (по умолчанию: 5%)"
+
+msgid "Used Reserved Block Count Total"
+msgstr "Общее количество использованных зарезервированных блоков"
+
+msgid "Used Reserved Block Count Chip"
+msgstr "Количество использованных зарезервированных блоков на микросхеме"
+
+msgid "Unused Reserved Block Count Total"
+msgstr "Общее количество неиспользованных зарезервированных блоков"
+
+msgid "Available Reserved Space"
+msgstr "Доступное зарезервированное пространство"
+
+# NVMe
+
+msgid "Critical Warning"
+msgstr "Критическое предупреждение"
+
+msgid "Percentage Used"
+msgstr "Процент использования"
+
+msgid "Data Units Read"
+msgstr "Прочитанные блоки данных"
+
+msgid "Data Units Written"
+msgstr "Записанные блоки данных"
+
+msgid "Host Read Commands"
+msgstr "Команды чтения хоста"
+
+msgid "Host Write Commands"
+msgstr "Команды записи хоста"
+
+msgid "Controller Busy Time"
+msgstr "Время занятости контроллера"
+
+msgid "Power Cycles"
+msgstr "Циклы питания"
+
+msgid "Unsafe Shutdowns"
+msgstr "Небезопасные отключения"
+
+msgid "Media Errors"
+msgstr "Ошибки носителя"
+
+msgid "Error Log Entries"
+msgstr "Записи журнала ошибок"
+
+# SMART
+
+msgid "S.M.A.R.T. Data Reading"
+msgstr "Чтение данных S.M.A.R.T."
+
+msgid "Packages required to read S.M.A.R.T. disk data."
+msgstr "Пакеты, необходимые для чтения данных S.M.A.R.T. диска."
+
+msgid "Check S.M.A.R.T. packages"
+msgstr "Проверить пакеты S.M.A.R.T."
+
+msgid "S.M.A.R.T. tools"
+msgstr "Инструменты S.M.A.R.T."
+
+# Mount
+
+msgid "Please select a partition first"
+msgstr "Сначала выберите раздел"
+
+msgid "UUID"
+msgstr "UUID"
+
+msgid "Device"
+msgstr "Устройство"
+
+msgid "Filesystem"
+msgstr "Файловая система"
+
+msgid "Mount point"
+msgstr "Точка монтирования"
+
+msgid "Use as root filesystem (/)"
+msgstr "Использовать как корневую файловую систему (/)"
+
+msgid "Use as external overlay (/overlay)"
+msgstr "Использовать как внешний оверлей (/overlay)"
+
+msgid "-- custom --"
+msgstr "-- пользовательский --"
+
+msgid "Enter custom mount point"
+msgstr "Введите пользовательскую точку монтирования"
+
+msgid "Mount options"
+msgstr "Параметры монтирования"
+
+msgid "See \"mount\" manpage for details."
+msgstr "См. man-страницу \"mount\" для подробностей."
+
+msgid "Mount Points - Mount Entry"
+msgstr "Точки монтирования - Запись монтирования"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Mount point cannot be empty"
+msgstr "Точка монтирования не может быть пустой"
+
+msgid "Mounted to %s"
+msgstr "Смонтировано в %s"
+
+msgid "Failed to mount: "
+msgstr "Не удалось смонтировать: "
+
+msgid "Mount failed: %s"
+msgstr "Монтирование не удалось: %s"
+
+msgid "Mount"
+msgstr "Монтировать"
+
+msgid "Selected partition is not mounted"
+msgstr "Выбранный раздел не смонтирован"
+
+msgid "Unmounted %s"
+msgstr "Размонтировано %s"
+
+msgid "Failed to unmount: "
+msgstr "Не удалось размонтировать: "
+
+msgid "Last selected disk has changed and did not pass verification. Data collection for: %s will be aborted. The page will be reloaded."
+msgstr "Последний выбранный диск был изменён и не прошёл проверку. Сбор данных для: %s будет прерван. Страница будет перезагружена."
+
+msgid "Last selected disk has changed. Refreshing the view..."
+msgstr "Последний выбранный диск был изменён. Обновление представления..."

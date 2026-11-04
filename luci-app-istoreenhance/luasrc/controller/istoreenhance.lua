@@ -1,0 +1,26 @@
+module("luci.controller.istoreenhance", package.seeall)
+
+function index()
+	if not nixio.fs.access("/etc/config/istoreenhance") then return end
+
+	entry({"admin", "services", "istoreenhance"}, cbi("istoreenhance"), _("KSpeeder"), 20).dependent = true
+	entry({"admin", "services", "istoreenhance_status"}, call("istoreenhance_status"))
+end
+
+local function compat()
+	local dispatcher = require "luci.dispatcher"
+	return require("luci.model.linkease.apps_compat").new({
+		http = require "luci.http",
+		resolver = require("luci.model.linkease.apps_openwrt").new(),
+		auth_url = dispatcher.build_url("admin", "services", "linkease_auth", "auth")
+	})
+end
+
+function istoreenhance_status()
+	local sys = require "luci.sys"
+	local uci = require "luci.model.uci".cursor()
+	compat():legacy_status("kspeeder", {
+		running = sys.call("pidof iStoreEnhance >/dev/null") == 0,
+		port = uci:get_first("istoreenhance", "istoreenhance", "adminport") or "5003"
+	})
+end

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+#uci set system.@system[0].timezone='CET-1CEST,M3.5.0,M10.5.0/3'
+uci set system.@system[0].zonename='Europe/Warsaw'
+uci commit system
+
+if [ ! -e /etc/profile.d/busybox-history-file.sh ]; then
+	echo "export HISTFILE=/tmp/.busybox_ash_history" > /etc/profile.d/busybox-history-file.sh
+	chmod 755 /etc/profile.d/busybox-history-file.sh
+fi
+
+if [ -e /etc/config/attendedsysupgrade ]; then
+	uci set attendedsysupgrade.server.url='https://sysupgrade.eko.one.pl'
+	uci commit attendedsysupgrade
+fi
+
+exit 0

@@ -1,0 +1,410 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-app-fakemesh\n"
+"PO-Revision-Date: 2026-06-19 00:00+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Mesh"
+msgstr "Mesh 组网"
+
+msgid "FakeMesh"
+msgstr "FakeMesh"
+
+msgid "FakeMesh Settings"
+msgstr "FakeMesh 设置"
+
+msgid "Configure the FakeMesh overlay network."
+msgstr "配置 FakeMesh 覆盖网络。"
+
+msgid "Enable"
+msgstr "启用"
+
+msgid "Mesh ID"
+msgstr "Mesh ID"
+
+msgid "Key"
+msgstr "密钥"
+
+msgid "No configured radio supports this backhaul band."
+msgstr "没有已配置的无线电支持此回程频段。"
+
+msgid "Leave empty if encryption is not required."
+msgstr "不需要加密时请留空。"
+
+msgid "Band"
+msgstr "频段"
+
+msgid "5G"
+msgstr "5G"
+
+msgid "2G"
+msgstr "2G"
+
+msgid "Role"
+msgstr "角色"
+
+msgid "Use the gateway router as the controller and all other nodes as agents."
+msgstr "将网关路由器设为控制器，其他节点设为卫星。"
+
+msgid "Wired AP (Ethernet backhaul)"
+msgstr "有线 AP（以太网回程）"
+
+msgid "Agent (Wi-Fi backhaul)"
+msgstr "卫星（Wi-Fi 回程）"
+
+msgid "Controller (AC)"
+msgstr "控制器（AC）"
+
+msgid "Controller Access IP"
+msgstr "控制器访问 IP"
+
+msgid "IP address used to access the controller."
+msgstr "用于访问控制器的 IP 地址。"
+
+msgid "Sync Configuration"
+msgstr "同步配置"
+
+msgid "Sync configuration from the controller."
+msgstr "从控制器同步配置。"
+
+msgid "Band Steering Helper"
+msgstr "频段引导辅助"
+
+msgid "None"
+msgstr "无"
+
+msgid "usteer"
+msgstr "usteer"
+
+msgid "DAWN"
+msgstr "DAWN"
+
+msgid "Disable Fronthaul"
+msgstr "禁用前传"
+
+msgid "Disable this node's fronthaul Wi-Fi so other AP nodes cannot connect through it."
+msgstr "禁用此节点的前传 Wi-Fi，使其他 AP 节点无法通过此节点接入。"
+
+msgid "Wireless Management"
+msgstr "无线管理"
+
+msgid "Managed by the controller; read-only on AP nodes."
+msgstr "由控制器管理；在 AP 节点上只读。"
+
+msgid "<abbr title=\"Extended Service Set Identifier\">ESSID</abbr>"
+msgstr "<abbr title=\"扩展服务集标识符\">ESSID</abbr>"
+
+msgid "Encryption"
+msgstr "加密方式"
+
+msgid "No Encryption"
+msgstr "不加密"
+
+msgid "WPA-PSK"
+msgstr "WPA-PSK"
+
+msgid "WPA2-PSK"
+msgstr "WPA2-PSK"
+
+msgid "WPA-PSK/WPA2-PSK Mixed Mode"
+msgstr "WPA-PSK/WPA2-PSK 混合模式"
+
+msgid "WPA3-SAE"
+msgstr "WPA3-SAE"
+
+msgid "WPA2-PSK/WPA3-SAE Mixed Mode"
+msgstr "WPA2-PSK/WPA3-SAE 混合模式"
+
+msgid "2G+5G"
+msgstr "2G+5G"
+
+msgid "2G+5G+6G"
+msgstr "2G+5G+6G"
+
+msgid "5G+6G"
+msgstr "5G+6G"
+
+msgid "6G"
+msgstr "6G"
+
+msgid "Topology"
+msgstr "网络拓扑"
+
+msgid "FakeMesh Network Topology"
+msgstr "FakeMesh 网络拓扑"
+
+msgid "Visual hierarchy of FakeMesh controller, agent nodes, and connected terminal devices."
+msgstr "可视化展示 FakeMesh 控制器、节点以及所有连接终端的层级关系。"
+
+msgid "FakeMesh ID"
+msgstr "FakeMesh ID"
+
+msgid "Not Configured"
+msgstr "未配置"
+
+msgid "Wireless Mesh"
+msgstr "无线 Mesh"
+
+msgid "Cascade Hop"
+msgstr "级联层级"
+
+msgid "Mesh Nodes"
+msgstr "组网节点"
+
+msgid "Agents"
+msgstr "卫星节点"
+
+msgid "Total Clients"
+msgstr "全网终端"
+
+msgid "6G / 5G / 2.4G / Wired / VPN"
+msgstr "6G / 5G / 2.4G / 有线 / VPN"
+
+msgid "VPN"
+msgstr "VPN"
+
+msgid "Wired"
+msgstr "有线"
+
+msgid "Realtime Traffic"
+msgstr "实时流量"
+
+msgid "Search by Hostname, IP, MAC..."
+msgstr "搜索设备名称、IP、MAC..."
+
+msgid "All Clients"
+msgstr "全部终端"
+
+msgid "Close"
+msgstr "关闭"
+
+msgid "Node Details"
+msgstr "节点详情"
+
+msgid "Client Details"
+msgstr "终端详情"
+
+msgid "Hostname"
+msgstr "主机名"
+
+msgid "IP Address"
+msgstr "IP 地址"
+
+msgid "MAC Address"
+msgstr "MAC 地址"
+
+msgid "Hardware Model"
+msgstr "硬件型号"
+
+msgid "Uptime"
+msgstr "运行时间"
+
+msgid "Backhaul Link"
+msgstr "回程链路"
+
+msgid "Wired Ethernet"
+msgstr "有线以太网"
+
+msgid "Root Gateway"
+msgstr "主控网关"
+
+msgid "Mesh BSSID"
+msgstr "Mesh BSSID"
+
+msgid "Open Web Admin"
+msgstr "打开管理后台"
+
+msgid "Device Name"
+msgstr "设备名称"
+
+msgid "Unknown"
+msgstr "未知设备"
+
+msgid "Connected Node"
+msgstr "挂载节点"
+
+msgid "Access Mode"
+msgstr "接入方式"
+
+msgid "Wi-Fi Signal"
+msgstr "Wi-Fi 信号"
+
+msgid "PHY Rate"
+msgstr "协商速率"
+
+msgid "Realtime Speed"
+msgstr "实时网速"
+
+msgid "Total Traffic"
+msgstr "累计流量"
+
+msgid "LAN"
+msgstr "LAN"
+
+msgid "Devices"
+msgstr "台设备"
+
+msgid "Manage"
+msgstr "管理"
+
+msgid "Hop Cascade Nodes"
+msgstr "级级联扩展节点"
+
+msgid "Sub-nodes"
+msgstr "个子节点"
+
+msgid "No matching devices"
+msgstr "暂无匹配设备"
+
+msgid "No FakeMesh nodes detected. Please verify FakeMesh configuration."
+msgstr "未检测到 FakeMesh 节点，请检查 FakeMesh 配置。"
+
+msgid "Internet Gateway"
+msgstr "互联网出口"
+
+msgid "Backhaul Links"
+msgstr "组网链路"
+
+msgid "Single Gateway"
+msgstr "独立网关"
+
+msgid "Wired AP"
+msgstr "有线 AP"
+
+msgid "Cascade Hops"
+msgstr "跳级联"
+
+msgid "Mesh Connected"
+msgstr "Mesh 已连接"
+
+msgid "Primary"
+msgstr "主 IP"
+
+msgid "IPv6 Addresses"
+msgstr "IPv6 地址"
+
+msgid "IPv4 Addresses"
+msgstr "IPv4 地址"
+
+msgid "Minimap View"
+msgstr "微缩拓扑视图"
+
+msgid "Expanded View"
+msgstr "完整展开视图"
+
+msgid "Upstream Node"
+msgstr "上级节点"
+
+msgid "Node Details & Connected Devices"
+msgstr "节点详情与挂载终端"
+
+msgid "Connected Devices on this Node"
+msgstr "本节点挂载终端"
+
+msgid "Click any node to zoom in and inspect connected terminals"
+msgstr "点击任意节点图标，放大展示该节点与挂载终端"
+
+msgid "No terminal devices currently connected to this node."
+msgstr "当前节点暂无连接的终端设备。"
+
+msgid "View Full Node Specs"
+msgstr "查看节点完整详情"
+
+msgid "Currently Selected"
+msgstr "当前选中"
+
+msgid "Upstream"
+msgstr "上级"
+
+msgid "IP"
+msgstr "IP"
+
+msgid "Model"
+msgstr "型号"
+
+msgid "Click to Inspect"
+msgstr "点击查看详情"
+
+msgid "Click any node in minimap above to switch inspection"
+msgstr "点击上方微缩图中的任意节点切换查看"
+
+msgid "Click to inspect upstream node"
+msgstr "点击切换查看上级节点"
+
+msgid "Role & Status"
+msgstr "角色与状态"
+
+msgid "Click any client to view deep details"
+msgstr "点击任意终端查看详细指标"
+
+msgid "Agent Node"
+msgstr "卫星节点"
+
+msgid "Root Node"
+msgstr "根节点"
+
+msgid "Hop %d"
+msgstr "第 %d 级"
+
+msgid "This Device"
+msgstr "本机"
+
+msgid "Current Device (This Node)"
+msgstr "当前访问设备 (本机)"
+
+msgid "Local Device"
+msgstr "本机标识"
+
+msgid "Last Active"
+msgstr "最后活跃"
+
+msgid "Just now"
+msgstr "刚刚"
+
+msgid "%d seconds ago"
+msgstr "%d 秒前"
+
+msgid "%dm %ds ago"
+msgstr "%d分 %d秒前"
+
+msgid "%d minutes ago"
+msgstr "%d 分钟前"
+
+msgid "%dh %dm ago"
+msgstr "%d小时 %d分前"
+
+msgid "%d hours ago"
+msgstr "%d 小时前"
+
+msgid "%dd %dh ago"
+msgstr "%d天 %d小时前"
+
+msgid "%d days ago"
+msgstr "%d 天前"
+
+
+msgid "Last successful refresh"
+msgstr "上次成功刷新"
+
+msgid "Waiting for topology data"
+msgstr "等待拓扑数据"
+
+msgid "Refresh failed; showing the last successful snapshot."
+msgstr "刷新失败，当前显示上次成功获取的数据。"
+
+msgid "Topology refresh failed."
+msgstr "拓扑刷新失败。"
+
+msgid "This device is no longer present in the latest topology."
+msgstr "最新拓扑中已没有此设备。"
+
+msgid "Unknown link"
+msgstr "未知链路"
+
+msgid "Offline"
+msgstr "离线"

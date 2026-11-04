@@ -1,0 +1,28 @@
+#
+# Copyright (C) 2008-2014 The LuCI Team <luci@lists.subsignal.org>
+#
+# This is free software, licensed under the Apache License, Version 2.0 .
+#
+
+include $(TOPDIR)/rules.mk
+
+LUCI_TITLE:=baidudrive
+PKG_VERSION:=1.0.2-r4
+PKG_RELEASE:=
+LUCI_DEPENDS:=+baidudrive +luci-compat +luci-lib-linkeaseauth +linkease-app-entry
+LUCI_MINIFY_CSS:=0
+LUCI_MINIFY_JS:=0
+
+define Package/luci-app-baidudrive/conffiles
+/etc/config/baidudrive
+endef
+
+define Package/luci-app-baidudrive/postrm
+#!/bin/sh
+rm -f /tmp/luci-indexcache
+exit 0
+endef
+
+include $(TOPDIR)/feeds/luci/luci.mk
+
+# call BuildPackage - OpenWrt buildroot signature

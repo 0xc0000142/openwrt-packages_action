@@ -1,0 +1,26 @@
+{
+  "luci-app-packagesync": {
+    "description": "Grant access to packagesync procedures",
+    "read": {
+      "file": {
+        "/etc/init.d/packagesync": [ "exec" ],
+        "/bin/df -hT": [ "exec" ],
+        "/var/packagesync/releaseslist": [ "read" ],
+        "/tmp/packagesync/releaseslist": [ "read" ],
+        "/var/packagesync/targetslist": [ "read" ],
+        "/tmp/packagesync/targetslist": [ "read" ],
+        "/var/packagesync/pkgarchslist": [ "read" ],
+        "/tmp/packagesync/pkgarchslist": [ "read" ],
+        "/var/run/packagesync.pid": [ "read" ],
+        "/tmp/run/packagesync.pid": [ "read" ]
+      },
+      "ubus": {
+        "service": [ "list" ]
+      },
+      "uci": [ "packagesync" ]
+    },
+    "write": {
+      "uci": [ "packagesync" ]
+    }
+  }
+}

@@ -1,0 +1,23 @@
+<%# rendered as a SimpleSection child of the cbi() map; only injects the
+    status poller. Never include("cbi/map") here: the nested template scope
+    has no "readable" var and would render a bogus permission warning. %>
+<script type="text/javascript">//<![CDATA[
+	XHR.poll(3, '<%=luci.dispatcher.build_url("admin", "services", "homeredirect", "status")%>', null,
+		function(x, result)
+		{
+			var els = document.querySelectorAll('div[id^=cbi-homeredirect-][id$=-rs]');
+			for (var i = 0; i < els.length; i++) {
+				var id = els[i].id.split('-')[2];
+				var state = result[id];
+				if (state == -1) {
+					els[i].innerHTML = '<%:Disabled%>';
+				} else if (state == 0) {
+					els[i].innerHTML = '<font color="red"><%:Not running%></font>';
+				} else {
+					els[i].innerHTML = '<font color="green"><b><%:Running%></b></font>';
+				}
+			}
+		}
+	)
+//]]>
+</script>

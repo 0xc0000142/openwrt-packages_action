@@ -1,0 +1,11 @@
+#!/bin/sh
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@mail[-1]
+	add ucitrack mail
+	set ucitrack.@mail[-1].init=msmtp
+	commit ucitrack
+EOF
+# The SMTP password is in there: root only, as /etc/msmtprc (uci commit
+# keeps the file mode)
+chmod 600 /etc/config/mail 2>/dev/null
+exit 0

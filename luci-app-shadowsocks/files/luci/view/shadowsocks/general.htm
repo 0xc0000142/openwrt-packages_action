@@ -1,0 +1,35 @@
+<%#
+ Copyright (C) 2017-2022 Jian Chang <aa65535@live.com>
+ Licensed to the public under the GNU General Public License v3.
+-%>
+
+<% include("cbi/map") %>
+
+<script type="text/javascript">//<![CDATA[
+	(function() {
+		var elements = {
+			redir: document.getElementById("_redir_status"),
+			local: document.getElementById("_local_status"),
+			tunnel: document.getElementById("_tunnel_status"),
+		};
+		var instances, keys;
+		XHR.poll(5, "<%=luci.dispatcher.build_url("admin", "services", "shadowsocks", "status")%>", null, function(xhr, data) {
+			if (xhr.status === 200) {
+				keys = {};
+				if (data.shadowsocks && data.shadowsocks.instances) {
+					instances = data.shadowsocks.instances;
+					for (var n in instances) {
+						if (instances.hasOwnProperty(n) && instances[n].running) {
+							keys[n.split('-')[1]] = true;
+						}
+					}
+				}
+				for (var k in elements) {
+					if (elements.hasOwnProperty(k) && elements[k]) {
+						elements[k].textContent = keys[k] ? "<%:RUNNING%>" : "<%:NOT RUNNING%>";
+					}
+				}
+			}
+		});
+	}());
+//]]></script>

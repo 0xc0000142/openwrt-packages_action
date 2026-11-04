@@ -1,0 +1,86 @@
+<%#
+ Copyright (C) 2017-2021 Jian Chang <aa65535@live.com>
+ Licensed to the public under the GNU General Public License v3.
+-%>
+
+<% include("cbi/map") %>
+
+<script type="text/javascript">//<![CDATA[
+	(function($) {
+		var ss_methods = [
+			"rc4-md5",
+			"aes-128-cfb",
+			"aes-192-cfb",
+			"aes-256-cfb",
+			"aes-128-ctr",
+			"aes-192-ctr",
+			"aes-256-ctr",
+			"aes-128-gcm",
+			"aes-192-gcm",
+			"aes-256-gcm",
+			"camellia-128-cfb",
+			"camellia-192-cfb",
+			"camellia-256-cfb",
+			"bf-cfb",
+			"salsa20",
+			"chacha20",
+			"chacha20-ietf",
+			"chacha20-ietf-poly1305",
+			"xchacha20-ietf-poly1305",
+		];
+		var ssr_methods = [
+			"none",
+			"table",
+			"rc4",
+			"rc4-md5",
+			"aes-128-cfb",
+			"aes-192-cfb",
+			"aes-256-cfb",
+			"aes-128-ctr",
+			"aes-192-ctr",
+			"aes-256-ctr",
+			"camellia-128-cfb",
+			"camellia-192-cfb",
+			"camellia-256-cfb",
+			"bf-cfb",
+			"salsa20",
+			"chacha20",
+			"chacha20-ietf",
+		];
+		var password = $("password");
+		var key = $("key");
+		var type = $("type");
+		var method = $("encrypt_method");
+		var form = key.form;
+		var checkCryptoConfig = function() {
+			password.className = password.className.replace(/ cbi-input-invalid/g, "");
+			key.className = key.className.replace(/ cbi-input-invalid/g, "");
+			if (password.value.length == 0 && key.value.length == 0) {
+				password.className += " cbi-input-invalid";
+				key.className += " cbi-input-invalid";
+				return false;
+			}
+			return true;
+		};
+		var switchEncryptMethod = function() {
+			var methods = type.value === 'ssr' ? ssr_methods : ss_methods
+			Array.from(method.options).forEach(function(option) {
+				option.disabled = methods.indexOf(option.value) === -1;
+			});
+			return true;
+		};
+		password.onkeyup = checkCryptoConfig;
+		key.onkeyup = checkCryptoConfig;
+		type.onchange = switchEncryptMethod;
+		if (form) {
+			if (!form.cbi_validators) {
+				form.cbi_validators = [];
+			}
+			form.cbi_validators.push(checkCryptoConfig);
+		}
+		checkCryptoConfig();
+		switchEncryptMethod();
+	}(function(id) {
+		return document.getElementById("cbid.<%=self.config%>.<%=self.sid%>." + id);
+	}));
+//]]></script>

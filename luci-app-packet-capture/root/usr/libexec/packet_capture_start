@@ -1,0 +1,95 @@
+#!/bin/sh
+
+. /usr/share/libubox/jshn.sh
+
+PIDFILE="/var/run/packet_capture.pid"
+WORKDIR="/var/run/packet_capture"
+FILTERFILE="$WORKDIR/tcpdump_filter"
+PCAPFILE="$WORKDIR/capture.pcap"
+
+if [ -f "$PIDFILE" ]; then
+	# a helper that died on an error never removed its pidfile
+	pid=$(cat "$PIDFILE" 2>/dev/null)
+	case "$pid" in ''|*[!0-9]*) pid="" ;; esac
+	if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null && grep -sq packet_capture "/proc/$pid/cmdline"; then
+		echo "error: Packet capture is running"
+		exit 1
+	fi
+	rm -f "$PIDFILE"
+fi
+
+mkdir -p "$WORKDIR"
+chmod 0700 "$WORKDIR"
+
+json_load "$1"
+json_get_var interface interface
+json_get_var filter filter
+json_get_var duration duration
+json_get_var packets packets
+json_get_var verbose verbose
+json_get_var domains domains
+json_get_var file file
+
+args="-n"
+
+if [ "$domains" = "1" ];then
+	args=""
+fi
+
+if  [ -n "$interface" ];then
+	case "$interface" in
+		*[!A-Za-z0-9_.:-]*)
+			echo "error: Incorrect format of an interface"
+			exit 1
+		;;
+	esac
+	ip a show "$interface" > /dev/null 2>&1
+	if [ "$?" -ne 0 ]; then
+        echo "error: Incorrect format of an interface"
+        exit 1
+    fi
+
+	args="$args -i $interface"
+fi
+
+if [ -n "$packets" ];then
+    echo "$packets" | egrep '^[0-9]+$' >/dev/null
+    if [ "$?" -eq 0 ];then
+        args="$args -c $packets"
+    else
+        echo "error: Incorrect packets argument"
+        exit 1
+    fi
+fi
+
+if [ -n "$duration" ];then
+	echo "$duration" | egrep '^[0-9]+$' >/dev/null
+	if [ "$?" -ne 0 ];then
+		echo "error: Incorrect duration argument"
+		exit 1
+	fi
+fi
+
+if [ "$verbose" = "1"  ];then
+	args="$args  -e"
+fi
+
+if [ "$file" = "1" ];then
+	mem=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
+	args="$args -W 2 -C $((mem/(1024 * 10))) -w $PCAPFILE -z /usr/libexec/packet_capture_stop"
+fi
+
+if [ -n "$filter" ];then
+    tcpdump -i lo -d "$filter" >/dev/null 2>/dev/null
+	if [ $? -eq 1 ];then
+		echo "error: Incorrect filter argument"
+		exit 1
+	fi
+	( umask 077; printf '%s\n' "$filter" > "$FILTERFILE" )
+fi
+
+(/usr/libexec/packet_capture "$args" "$duration")&
+
+echo $! > "$PIDFILE"
+
+exit 0

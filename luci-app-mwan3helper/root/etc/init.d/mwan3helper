@@ -1,0 +1,28 @@
+#!/bin/sh /etc/rc.common
+# Copyright (c) 2011-2015 OpenWrt.org
+
+START=60
+
+destroy_ipset() {
+	for i in "$@"; do
+		ipset -q -F $i
+		ipset -q -X $i
+	done
+}
+
+start(){
+	en=$(uci -q get mwan3helper.config.enabled || echo "0")
+	if [ $en -eq 1 ];  then
+		[ ! -x /etc/mwan3helper/genipset.sh ] && chmod +x /etc/mwan3helper/genipset.sh
+		/etc/mwan3helper/genipset.sh cn '/etc/mwan3helper/all_cn.txt'
+		/etc/mwan3helper/genipset.sh ct '/etc/mwan3helper/chinatelecom.txt'
+		/etc/mwan3helper/genipset.sh cnc '/etc/mwan3helper/unicom_cnc.txt'
+		/etc/mwan3helper/genipset.sh cmcc '/etc/mwan3helper/cmcc.txt'
+		/etc/mwan3helper/genipset.sh cbtn '/etc/mwan3helper/chinabtn.txt'
+		/etc/mwan3helper/genipset.sh cernet '/etc/mwan3helper/cernet.txt'
+		/etc/mwan3helper/genipset.sh gwbn '/etc/mwan3helper/gwbn.txt'
+		/etc/mwan3helper/genipset.sh othernet '/etc/mwan3helper/othernet.txt'
+	else
+		destroy_ipset cn ct cnc cmcc cbtn cernet gwbn othernet
+	fi
+}

@@ -1,0 +1,37 @@
+{
+	"admin/mesh": {
+		"title": "Mesh",
+		"order": 60,
+		"action": {
+			"type": "firstchild",
+			"recurse": true
+		},
+		"depends": {
+			"acl": [ "luci-app-fakemesh" ]
+		}
+	},
+	"admin/mesh/fakemesh": {
+		"title": "FakeMesh",
+		"order": 1,
+		"action": {
+			"type": "view",
+			"path": "fakemesh/fakemesh"
+		},
+		"depends": {
+			"acl": [ "luci-app-fakemesh" ],
+			"uci": { "fakemesh": true }
+		}
+	},
+	"admin/mesh/topology": {
+		"title": "Topology",
+		"order": 2,
+		"action": {
+			"type": "view",
+			"path": "fakemesh/topology"
+		},
+		"depends": {
+			"acl": [ "luci-app-fakemesh" ],
+			"uci": { "fakemesh": true }
+		}
+	}
+}

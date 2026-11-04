@@ -1,0 +1,130 @@
+{
+	"luci-app-mini-diskmanager": {
+		"description": "Grant access to LuCI JS Mini Disk Manager",
+		"read": {
+			"ubus": {
+				"minidiskmanager": [
+					"check_operation",
+					"list"
+				]
+			},
+			"cgi-io": ["exec"],
+			"uci": [ "mdmconfig" ],
+			"file": {
+				"/dev": ["list"],
+				"/proc/mounts": ["read"],
+				"/proc/partitions": ["read"],
+				"/sys/block/*/device/model": ["read"],
+				"/sys/block/*/device/vendor": ["read"],
+				"/sys/block/*/device/rescan": ["read", "write"],
+				"/tmp/mini-diskmanager.pid": ["read"],
+				"/tmp/mini-diskmanager.result": ["read"],
+				"/tmp/mini-diskmanager.log": ["read"],
+				"/tmp/diskop.pid": ["read"],
+				"/tmp/diskop.result": ["read"],
+				"/tmp/diskop.log": ["read"],
+				
+				"/etc/mdmconfig": [ "read" ],
+
+				"/usr/bin/lsblk -J -b -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT,MODEL /dev/*": ["exec"],
+				"/usr/bin/lsblk -J -b -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT,LABEL,UUID,PARTTYPENAME /dev/*": ["exec"],
+				"/usr/bin/lsblk -dno MODEL /dev/*": ["exec"],
+				"/usr/sbin/fdisk -l /dev/*": ["exec"],
+
+				"/sbin/parted /dev/* unit B print free": ["exec"],
+				"/sbin/parted -s /dev/* print": ["exec"],
+				"/sbin/parted -s /dev/* unit s print": ["exec"],
+				"/sbin/parted -s /dev/* unit s print free": ["exec"],
+				"/sbin/parted -s -m /dev/* print": ["exec"],
+				"/sbin/parted -s -m /dev/* unit s print": ["exec"],
+				"/sbin/parted -s -m /dev/* unit s print free": ["exec"],
+
+				"/usr/sbin/blkid -s TYPE -o value /dev/*": ["exec"],
+				"/bin/df -h *": ["exec"],
+				"/bin/df -B1 *": ["exec"],
+				"/bin/mount": ["exec"],
+
+				"/usr/sbin/smartctl --json=c -A /dev/*": ["exec"],
+				"/usr/sbin/smartctl --json=c -A -d sat /dev/*": ["exec"],
+				"/usr/sbin/smartctl --json=c -A -d ata /dev/*": ["exec"],
+				"/usr/sbin/smartctl -i /dev/*": ["exec"],
+				"/usr/sbin/smartctl -i -d sat /dev/*": ["exec"],
+				"/usr/sbin/smartctl -i -d ata /dev/*": ["exec"],
+				"/usr/sbin/smartctl -A /dev/*": ["exec"],
+				"/usr/sbin/smartctl -A -j /dev/*": ["exec"],
+				"/usr/sbin/smartctl -H /dev/*": ["exec"],
+				
+				"/usr/sbin/nvme smart-log /dev/* -o json": ["exec"],
+				"/usr/sbin/nvme id-ctrl /dev/*": ["exec"],
+				
+				"/usr/bin/bc": ["exec"],
+				"/usr/sbin/e2fsck": ["stat"],
+				"/usr/sbin/resize2fs": ["stat"],
+				"/sbin/parted": ["stat"],
+				
+				"/usr/bin/opkg list-installed": ["exec"],
+				"/usr/libexec/package-manager-call list-installed": [ "exec" ],
+				"/usr/libexec/opkg-list installed": [ "exec" ],
+				"/usr/libexec/opkg-call list-installed": [ "exec" ]
+			}
+		},
+		"write": {
+			"ubus": {
+				"minidiskmanager": [
+					"create_partition",
+					"delete_partition",
+					"format_partition",
+					"resize_partition",
+					"wipe_disk"
+				]
+			},
+			"cgi-io": ["exec"],
+			"uci": [ "mdmconfig" ],
+			"file": {
+				"/sys/block/*/device/rescan": ["write"],
+				"/tmp/mini-diskmanager.pid": ["write"],
+				"/tmp/mini-diskmanager.result": ["write"],
+				"/tmp/mini-diskmanager.log": ["write"],
+				
+				"/etc/mdmconfig": ["write"],
+
+				"/sbin/parted /dev/* mklabel *": ["exec"],
+				"/sbin/parted /dev/* mkpart *": ["exec"],
+				"/sbin/parted /dev/* rm *": ["exec"],
+
+				"/sbin/parted -s /dev/* mklabel *": ["exec"],
+				"/sbin/parted -s /dev/* mkpart *": ["exec"],
+				"/sbin/parted -s /dev/* rm *": ["exec"],
+
+				"/sbin/parted -s -m /dev/* mklabel *": ["exec"],
+				"/sbin/parted -s -m /dev/* mkpart *": ["exec"],
+				"/sbin/parted -s -m /dev/* rm *": ["exec"],
+
+				"/sbin/partprobe /dev/*": ["exec"],
+				"/sbin/blockdev --rereadpt /dev/*": ["exec"],
+
+				"/usr/sbin/mkfs.ext4 *": ["exec"],
+				"/usr/sbin/mkfs.ext3 *": ["exec"],
+				"/usr/sbin/mkfs.ext2 *": ["exec"],
+				"/usr/sbin/mkfs.f2fs *": ["exec"],
+				"/usr/sbin/mkfs.ntfs *": ["exec"],
+				"/usr/sbin/mkfs.fat *": ["exec"],
+				"/usr/sbin/mkfs.exfat *": ["exec"],
+				"/usr/sbin/mkswap *": ["exec"],
+
+				"/usr/sbin/e2fsck *": ["exec"],
+				"/usr/sbin/resize2fs *": ["exec"],
+				"/sbin/parted -s /dev/* resizepart *": ["exec"],
+				"/usr/bin/bc": ["exec"],
+
+				"/bin/dd *": ["exec"],
+				"/bin/sync": ["exec"],
+				"/bin/mount *": ["exec"],
+				"/bin/umount *": ["exec"],
+				"/bin/umount -l *": ["exec"],
+				"/bin/umount -f *": ["exec"],
+				"/bin/mkdir *": ["exec"]
+			}
+		}
+	}
+}

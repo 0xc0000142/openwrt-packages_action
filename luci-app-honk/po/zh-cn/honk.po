@@ -1,0 +1,1378 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-app-honk\n"
+"PO-Revision-Date: 2026-10-03 13:32+0800\n"
+"Last-Translator: Kenzo <kenzok8@gmail.com>\n"
+"Language-Team: Chinese (Simplified)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+
+msgid "%d node(s) imported."
+msgstr "已导入 %d 个节点。"
+
+msgid "%s (code: %s)"
+msgstr "%s（错误码：%s）"
+
+msgid "%s imported and Honk is running."
+msgstr "%s 已导入，Honk 正在运行。"
+
+msgid "/etc/honk/config.dae 不存在或不是普通文件。"
+msgstr "/etc/honk/config.dae 不存在或不是普通文件。"
+
+msgid "A compatible update is available, but a complete verified rollback package set is not available yet."
+msgstr "发现兼容更新，但尚无完整且已验证的回滚软件包组。"
+
+msgid "A compatible update is available."
+msgstr "发现兼容更新。"
+
+msgid "A previous operation did not finish cleanly."
+msgstr "上一次操作未能正常结束。"
+
+msgid "A private upload location could not be prepared."
+msgstr "无法准备私有上传目录。"
+
+msgid "A secret is required when enabling Clash API."
+msgstr "启用 Clash API 时需要设置密钥。"
+
+msgid "A secret is required when enabling Clash API. Use 6–128 letters, numbers, dots, underscores or hyphens."
+msgstr "启用 Clash API 必须设置密钥，6–128 位字母、数字、点、下划线或连字符。"
+
+msgid "A secret is set. Leave blank to keep it."
+msgstr "已设置密钥，留空则保持原值。"
+
+msgid "A secret is set. Leave blank to keep it. Use your existing HTTPS reverse proxy for external access."
+msgstr "已设置密钥，留空则保持原值；外网访问请使用现有 HTTPS 反向代理。"
+
+msgid "A share link is invalid or conflicts with an existing node. Review the input and try again."
+msgstr "分享链接无效或与现有节点冲突，请检查内容后重试。"
+
+msgid "A valid HTTP or HTTPS URL is required."
+msgstr "请输入有效的 HTTP 或 HTTPS 链接。"
+
+msgid "API and UI settings"
+msgstr "API 与界面设置"
+
+msgid "Adapted in the editor: %s"
+msgstr "已在编辑器里适配：%s"
+
+msgid "Add nodes"
+msgstr "添加节点"
+
+msgid "Add subscription"
+msgstr "添加订阅"
+
+msgid "Add subscriptions and nodes, or import and edit a complete configuration."
+msgstr "添加订阅和节点，或导入、编辑完整配置。"
+
+msgid "Adding subscription…"
+msgstr "正在添加订阅…"
+
+msgid "Administrator cleared. Open the Overview page and run the first setup again."
+msgstr "管理员已清空，请到「概览」页重新完成首次设置。"
+
+msgid "All levels"
+msgstr "所有级别"
+
+msgid "An old manual draft from a previous version is kept on disk."
+msgstr "磁盘上保留了旧版本的手动草稿。"
+
+msgid "An unapplied draft exists."
+msgstr "存在未应用的草稿。"
+
+msgid "An unmanaged Honk core process is running."
+msgstr "检测到非托管的 Honk 核心进程正在运行。"
+
+msgid "Another Honk operation is in progress."
+msgstr "Honk 正在执行其他操作。"
+
+msgid "Append keeps your rules · validated before applying · rolled back when startup fails"
+msgstr "追加不覆盖规则 · 应用前先校验 · 启动失败自动回滚"
+
+msgid "Apply them in the editor now?"
+msgstr "现在就在编辑器里改掉吗？"
+
+msgid "Applying configuration…"
+msgstr "正在应用配置……"
+
+msgid "Applying the reviewed configuration…"
+msgstr "正在应用已审核的配置……"
+
+msgid "Applying the staged data…"
+msgstr "正在应用暂存的数据……"
+
+msgid "Auto-update"
+msgstr "自动更新"
+
+msgid "Backup created."
+msgstr "备份已创建。"
+
+msgid "Backup downloaded."
+msgstr "备份已下载。"
+
+msgid "Backup failed."
+msgstr "备份失败。"
+
+msgid "Backup restored."
+msgstr "备份已恢复。"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Check configuration"
+msgstr "校验配置"
+
+msgid "Check for updates again to refresh the signed manifest."
+msgstr "请重新检查更新，以刷新签名清单。"
+
+msgid "Checking the configuration…"
+msgstr "正在校验配置…"
+
+msgid "Checking the signed update source…"
+msgstr "正在检查签名更新源……"
+
+msgid "Checking the subscription before saving…"
+msgstr "保存前先检查订阅…"
+
+msgid "Checking the updated configuration…"
+msgstr "正在检查更新后的配置……"
+
+msgid "Checking…"
+msgstr "正在检查……"
+
+msgid "Checks Honk system components and reports detected issues."
+msgstr "检查 Honk 系统组件并报告发现的问题。"
+
+msgid "Choose a .dae file first."
+msgstr "请先选择 .dae 文件。"
+
+msgid "Choose a LAN network and a port from 1024 to 65535."
+msgstr "请选择 LAN 网络，并将端口设置为 1024 至 65535。"
+
+msgid "Choose file"
+msgstr "选择文件"
+
+msgid "Choose the LAN interface"
+msgstr "选择 LAN 网卡"
+
+msgid "Clash API %s"
+msgstr "Clash API %s"
+
+msgid "Clash API port"
+msgstr "Clash API 端口"
+
+msgid "Clash API port must be between 1024 and 65535."
+msgstr "Clash API 端口需要在 1024～65535 之间。"
+
+msgid "Clash API secret"
+msgstr "Clash API 密钥"
+
+msgid "Clear the Honk administrator account so the first-setup page opens again? Subscriptions, nodes and routing are kept. Honk will be stopped."
+msgstr "清掉 Honk 管理员账号、让首次设置页面重新出现？订阅、节点与路由都会保留；Honk 会被停止。"
+
+msgid "Complete initial setup before enabling Honk."
+msgstr "请先完成首次设置，再启用 Honk。"
+
+msgid "Complete initial setup before starting Honk."
+msgstr "请先完成首次设置，再启动 Honk。"
+
+msgid "Config backup"
+msgstr "配置备份"
+
+msgid "Configuration"
+msgstr "配置"
+
+msgid "Configuration applied and Honk is running."
+msgstr "配置已生效，Honk 已启动。"
+
+msgid "Configuration applied."
+msgstr "配置已应用。"
+
+msgid "Configuration file loaded into the editor."
+msgstr "Configuration file loaded into the editor."
+
+msgid "Configuration imported and Honk reloaded."
+msgstr "配置已导入并重载 Honk。"
+
+msgid "Configuration is valid."
+msgstr "配置校验通过。"
+
+msgid "Configuration is valid: %s"
+msgstr "配置校验通过：%s"
+
+msgid "Configuration loaded."
+msgstr "Configuration loaded."
+
+msgid "Configuration management"
+msgstr "配置管理"
+
+msgid "Configuration saved. The running service is unchanged until you apply it."
+msgstr "Configuration saved. The running service is unchanged until you apply it."
+
+msgid "Configuration validation failed."
+msgstr "配置校验失败。"
+
+msgid "Configuration was written, but Honk is not running: %s"
+msgstr "配置已写入，但 Honk 没有运行：%s"
+
+msgid "Core"
+msgstr "核心"
+
+msgid "Core version"
+msgstr "核心版本"
+
+msgid "Could not add the subscription."
+msgstr "无法添加订阅。"
+
+msgid "Could not apply the configuration."
+msgstr "无法应用配置。"
+
+msgid "Could not confirm that Honk stopped. The operation was aborted and the snapshot was kept."
+msgstr "无法确认 Honk 已停止，操作已中止，快照已保留。"
+
+msgid "Could not import nodes."
+msgstr "无法导入节点。"
+
+msgid "Could not load LAN networks: %s"
+msgstr "无法读取 LAN 网络：%s"
+
+msgid "Could not read Honk logs."
+msgstr "无法读取 Honk 日志。"
+
+msgid "Could not read Honk status."
+msgstr "无法读取 Honk 状态。"
+
+msgid "Could not read current settings: %s"
+msgstr "无法读取当前设置：%s"
+
+msgid "Could not read the configuration file."
+msgstr "无法读取配置文件。"
+
+msgid "Could not read the draft."
+msgstr "读取草稿失败。"
+
+msgid "Could not read the list of network interfaces."
+msgstr "无法读取当前网络接口列表。"
+
+msgid "Could not read the saved configuration."
+msgstr "无法读取已保存的配置。"
+
+msgid "Could not reset the administrator."
+msgstr "无法重置管理员。"
+
+msgid "Could not save Honk settings."
+msgstr "无法保存 Honk 设置。"
+
+msgid "Could not save the configuration."
+msgstr "无法保存配置。"
+
+msgid "Could not save the draft."
+msgstr "保存草稿失败。"
+
+msgid "Could not write the configuration file."
+msgstr "无法写入配置文件。"
+
+msgid "Could not write the configuration. The snapshot was kept."
+msgstr "无法写入配置，快照已保留。"
+
+msgid "Create the Honk administrator account. The password is sent only for this request and is not saved by this page."
+msgstr "创建 Honk 管理员账号。密码只会随本次请求发送，本页面不会保存密码。"
+
+msgid "Creating backup…"
+msgstr "正在创建备份……"
+
+msgid "Current configuration loaded from /etc/honk/config.dae."
+msgstr "已载入 /etc/honk/config.dae 的当前配置。"
+
+msgid "Custom"
+msgstr "自定义"
+
+msgid "Daily"
+msgstr "每天"
+
+msgid "Data source and auto-update"
+msgstr "数据源与自动更新"
+
+msgid "Debug and above"
+msgstr "调试及以上"
+
+msgid "Detected %s · %d node(s): %s"
+msgstr "识别为 %s · %d 个节点：%s"
+
+msgid "Detected %s."
+msgstr "识别为 %s。"
+
+msgid "Disabled"
+msgstr "关闭"
+
+msgid "Discard the unsaved editor changes?"
+msgstr "放弃编辑器中未保存的修改？"
+
+msgid "Doona"
+msgstr "Doona"
+
+msgid "Doona %s"
+msgstr "Doona 面板 %s"
+
+msgid "Doona is not ready yet. Check the overview for status."
+msgstr "Doona 尚未就绪，请在概况页查看状态。"
+
+msgid "Doona version"
+msgstr "Doona 版本"
+
+msgid "Download redacted log"
+msgstr "下载脱敏日志"
+
+msgid "Downloading the signed package set…"
+msgstr "正在下载签名软件包组……"
+
+msgid "Draft loaded into the editor. It is not active until you apply it."
+msgstr "草稿已载入编辑器，应用前不会生效。"
+
+msgid "Draft saved. It is not active until you apply it."
+msgstr "草稿已保存，应用前不会生效。"
+
+msgid "Edit config"
+msgstr "编辑配置"
+
+msgid "Enable Clash API"
+msgstr "启用 Clash API"
+
+msgid "Enter a different Clash API port and a secret of 6–128 letters, numbers, dots, underscores or hyphens."
+msgstr "请设置不同的 Clash API 端口，以及 6～128 位英文字母、数字、点、下划线或短横线组成的密钥。"
+
+msgid "Enter both a username and password."
+msgstr "请输入用户名和密码。"
+
+msgid "Errors only"
+msgstr "仅错误"
+
+msgid "Export"
+msgstr "导出"
+
+msgid "Export a backup archive, import one from your computer, or restore Honk to its default configuration."
+msgstr "导出备份归档、从电脑导入，或将 Honk 恢复为默认配置。"
+
+msgid "Finish the first setup first: Honk does not start without an administrator."
+msgstr "请先完成首次设置：没有管理员账号时 Honk 不会启动。"
+
+msgid "Finishing the transaction…"
+msgstr "正在完成事务……"
+
+msgid "For a complete configuration, check lan_interface and the group names against your nodes."
+msgstr "完整配置请核对 lan_interface 与分组名称是否对得上节点。"
+
+msgid "Full dae configuration"
+msgstr "完整 dae 配置"
+
+msgid "Geo data"
+msgstr "Geo 数据"
+
+msgid "Geo data source saved."
+msgstr "Geo 数据源已保存。"
+
+msgid "GeoIP URL"
+msgstr "GeoIP 地址"
+
+msgid "GeoIP and GeoSite routing data can be updated here. Updates run in the background and reload Honk when done."
+msgstr "可在此更新 GeoIP 与 GeoSite 路由数据。更新在后台运行，完成后自动重载 Honk。"
+
+msgid "GeoSite URL"
+msgstr "GeoSite 地址"
+
+msgid "Go to overview"
+msgstr "前往概况页"
+
+msgid "Honk"
+msgstr "Honk"
+
+msgid "Honk configuration is unavailable."
+msgstr "Honk 配置不可用。"
+
+msgid "Honk core and LuCI can be upgraded here without leaving the management page. The package index refreshes in the background."
+msgstr "无需离开管理页面即可升级 Honk 核心与 LuCI。软件包索引会在后台刷新。"
+
+msgid "Honk could not load the proposed configuration."
+msgstr "Honk 无法加载准备写入的配置。"
+
+msgid "Honk could not prepare a private configuration upload directory."
+msgstr "Honk could not prepare a private configuration upload directory."
+
+msgid "Honk could not prepare the upload location. Check the upload directory permissions and try again."
+msgstr "Honk could not prepare the upload location. Check the upload directory permissions and try again."
+
+msgid "Honk could not read the current configuration."
+msgstr "Honk could not read the current configuration."
+
+msgid "Honk could not restart or restore the previous service. Check its status and backup."
+msgstr "Honk 未能重启，也未能恢复原服务，请检查服务状态和备份。"
+
+msgid "Honk could not restart."
+msgstr "Honk 重启失败。"
+
+msgid "Honk could not restart. The previous configuration and service were restored."
+msgstr "Honk 未能重启，已恢复原配置和服务。"
+
+msgid "Honk could not start with this configuration. The previous file was restored."
+msgstr "Honk 用这份配置起不来，已自动恢复上一版配置。"
+
+msgid "Honk could not start."
+msgstr "Honk 启动失败。"
+
+msgid "Honk could not stop."
+msgstr "Honk 停止失败。"
+
+msgid "Honk data reset. The service is stopped."
+msgstr "Honk 数据已重置，服务已停止。"
+
+msgid "Honk initialized."
+msgstr "Honk 已完成初始化。"
+
+msgid "Honk is already running."
+msgstr "Honk 已在运行。"
+
+msgid "Honk is already up to date."
+msgstr "Honk 已是最新版本。"
+
+msgid "Honk is disabled."
+msgstr "Honk 当前未启用。"
+
+msgid "Honk is enabled but currently stopped."
+msgstr "Honk 已启用，但当前未运行。"
+
+msgid "Honk is running, but its management interface is not ready."
+msgstr "Honk 正在运行，但管理界面尚未就绪。"
+
+msgid "Honk is stopped. Start it from the overview to open Doona."
+msgstr "Honk 已停止，请先到概况页启动服务，再打开 Doona。"
+
+msgid "Honk logs are unavailable."
+msgstr "Honk 日志暂不可用。"
+
+msgid "Honk or Doona changed the configuration during this operation. Try again."
+msgstr "操作期间 Honk 或 Doona 修改了配置，请重试。"
+
+msgid "Honk reported a system issue: %s"
+msgstr "Honk 报告了系统问题：%s"
+
+msgid "Honk restarted."
+msgstr "Honk 已重启。"
+
+msgid "Honk settings"
+msgstr "Honk 设置"
+
+msgid "Honk started."
+msgstr "Honk 已启动。"
+
+msgid "Honk stopped."
+msgstr "Honk 已停止。"
+
+msgid "Honk system configuration is unavailable."
+msgstr "Honk 系统配置不可用。"
+
+msgid "Import"
+msgstr "导入"
+
+msgid "Import and start"
+msgstr "导入并启动"
+
+msgid "Import cancelled."
+msgstr "已取消导入。"
+
+msgid "Import config"
+msgstr "导入配置"
+
+msgid "Import nodes"
+msgstr "导入节点"
+
+msgid "Importing %d node(s)…"
+msgstr "正在导入 %d 个节点…"
+
+msgid "Importing a complete configuration replaces the current one; back it up first, startup failures roll back."
+msgstr "导入完整配置会替换当前配置，先备份；启动失败自动回滚。"
+
+msgid "In the editor, checking only parses; a draft stays inactive until you save and apply."
+msgstr "编辑器里：校验只查语法，草稿不生效，保存并应用才写入。"
+
+msgid "Info and above"
+msgstr "信息及以上"
+
+msgid "Initial setup"
+msgstr "首次设置"
+
+msgid "Initialization failed."
+msgstr "初始化失败。"
+
+msgid "Initialization failed. Check the system status."
+msgstr "初始化失败，请检查系统状态。"
+
+msgid "Initialize Honk"
+msgstr "初始化 Honk"
+
+msgid "Initializing…"
+msgstr "正在初始化……"
+
+msgid "Invalid %s: must be an http(s) URL."
+msgstr "无效的 %s：必须是 http(s) 链接。"
+
+msgid "Kernel"
+msgstr "内核"
+
+msgid "LAN %s"
+msgstr "局域网接口 %s"
+
+msgid "LAN network"
+msgstr "LAN 网络"
+
+msgid "Line %d"
+msgstr "第 %d 行"
+
+msgid "Listen port"
+msgstr "监听端口"
+
+msgid "Live log"
+msgstr "实时日志"
+
+msgid "Load draft"
+msgstr "载入草稿"
+
+msgid "Load old draft"
+msgstr "载入旧草稿"
+
+msgid "Loaded %s into the editor."
+msgstr "已把 %s 载入编辑器。"
+
+msgid "Loading logs…"
+msgstr "正在读取日志……"
+
+msgid "Log polling is paused."
+msgstr "日志自动刷新已暂停。"
+
+msgid "Log polling resumed."
+msgstr "日志自动刷新已恢复。"
+
+msgid "Log source"
+msgstr "日志来源"
+
+msgid "Logs"
+msgstr "日志"
+
+msgid "Maintenance"
+msgstr "维护"
+
+msgid "Minimum level"
+msgstr "最低级别"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "Name is required."
+msgstr "请输入名称。"
+
+msgid "Name, e.g. MyAirport"
+msgstr "名称，例如 MyAirport"
+
+msgid "Needs your attention:"
+msgstr "需要你处理："
+
+msgid "Network interface, listen port and boot behaviour for the Honk service."
+msgstr "Honk 服务的网络接口、监听端口与开机启动行为。"
+
+msgid "No compatible update is available."
+msgstr "没有可用的兼容更新。"
+
+msgid "No file chosen"
+msgstr "未选择任何文件"
+
+msgid "No matching Honk log entries."
+msgstr "没有匹配的 Honk 日志。"
+
+msgid "No network interfaces found"
+msgstr "未找到网络接口"
+
+msgid "No nodes could be parsed from the input."
+msgstr "无法从输入中解析出节点。"
+
+msgid "No trusted update source is configured."
+msgstr "尚未配置可信更新源。"
+
+msgid "Nodes saved."
+msgstr "节点已保存。"
+
+msgid "None of the active interfaces belongs to the configured LAN network. Pick the one Honk should see as LAN:"
+msgstr "当前活跃的网卡都不属于 LuCI 里配置的 LAN 网络。请挑一个 Honk 应该当作 LAN 的网卡："
+
+msgid "Not initialized yet. Finish the first setup below, then Honk can be started."
+msgstr "还没完成首次设置。先做完下面的首次设置，Honk 才能启动。"
+
+msgid "Open Clash panel"
+msgstr "打开 Clash 面板"
+
+msgid "Open Doona"
+msgstr "打开 Doona"
+
+msgid "Operation completed."
+msgstr "操作已完成。"
+
+msgid "Operation failed. Check Honk status."
+msgstr "操作失败，请检查 Honk 状态。"
+
+msgid "Output was capped; showing the latest %d entries."
+msgstr "日志输出已达到上限，当前显示最新的 %d 条。"
+
+msgid "Package updates"
+msgstr "软件包更新"
+
+msgid "Package updates, config backup and system recovery for the Honk installation."
+msgstr "Honk 安装的软件包更新、配置备份与系统恢复。"
+
+msgid "Parsing nodes…"
+msgstr "正在解析节点…"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "Paste Clash YAML, Surge INI, Base64 or share links."
+msgstr "粘贴 Clash YAML、Surge INI、Base64 或分享链接。"
+
+msgid "Paste nodes or subscription content first."
+msgstr "请先粘贴节点或订阅内容。"
+
+msgid "Pause"
+msgstr "暂停"
+
+msgid "Preparing backup…"
+msgstr "正在准备备份……"
+
+msgid "Preparing configuration apply…"
+msgstr "正在准备应用配置……"
+
+msgid "Preparing download…"
+msgstr "正在准备下载……"
+
+msgid "Preparing maintenance…"
+msgstr "正在准备维护操作……"
+
+msgid "Probing…"
+msgstr "检查中…"
+
+msgid "Read before use"
+msgstr "使用前确认"
+
+msgid "Reading %s…"
+msgstr "正在读取 %s…"
+
+msgid "Recovery is required before another operation."
+msgstr "需要先完成恢复，才能执行其他操作。"
+
+msgid "Recovery is required before another write operation."
+msgstr "需要先完成恢复，才能进行其他写入操作。"
+
+msgid "Recovery is required. Run system recovery before starting another maintenance operation."
+msgstr "需要先恢复系统，再执行其他维护操作。"
+
+msgid "Refresh now"
+msgstr "立即刷新"
+
+msgid "Refreshing status…"
+msgstr "正在刷新状态……"
+
+msgid "Repair"
+msgstr "修复"
+
+msgid "Repair completed."
+msgstr "修复已完成。"
+
+msgid "Repair failed."
+msgstr "修复失败。"
+
+msgid "Repair replaces missing or damaged Honk system files and does not overwrite user configuration."
+msgstr "修复会补齐或替换缺失、损坏的 Honk 系统文件，不会覆盖用户配置。"
+
+msgid "Repairing…"
+msgstr "正在修复……"
+
+msgid "Required when enabling. Use 6–128 letters, numbers, dots, underscores or hyphens."
+msgstr "启用时必填，6–128 位字母、数字、点、下划线或连字符。"
+
+msgid "Reset administrator"
+msgstr "重置管理员"
+
+msgid "Reset failed and automatic recovery did not finish. Run system recovery before retrying."
+msgstr "重置失败，自动恢复未能完成。请先恢复系统，再重试。"
+
+msgid "Reset failed."
+msgstr "重置失败。"
+
+msgid "Reset failed; the previous service state was restored."
+msgstr "重置失败，服务已恢复到之前的状态。"
+
+msgid "Resetting the administrator…"
+msgstr "正在重置管理员…"
+
+msgid "Restart"
+msgstr "重启"
+
+msgid "Restore config"
+msgstr "恢复配置"
+
+msgid "Restore failed and automatic recovery did not finish. Run system recovery before retrying."
+msgstr "恢复失败，自动恢复未能完成。请先恢复系统，再重试。"
+
+msgid "Restore failed."
+msgstr "恢复失败。"
+
+msgid "Restoring Honk data…"
+msgstr "正在恢复 Honk 数据……"
+
+msgid "Restoring default config…"
+msgstr "正在恢复默认配置…"
+
+msgid "Restoring the previous configuration…"
+msgstr "正在恢复之前的配置……"
+
+msgid "Restoring the previous service state…"
+msgstr "正在恢复之前的服务状态……"
+
+msgid "Restoring the previous state…"
+msgstr "正在恢复之前的状态……"
+
+msgid "Restoring…"
+msgstr "正在恢复……"
+
+msgid "Resume"
+msgstr "继续"
+
+msgid "Run system check"
+msgstr "运行系统检查"
+
+msgid "Running"
+msgstr "运行中"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Save and apply"
+msgstr "保存并应用"
+
+msgid "Save cancelled."
+msgstr "已取消保存。"
+
+msgid "Save draft"
+msgstr "保存草稿"
+
+msgid "Save failed"
+msgstr "保存失败"
+
+msgid "Save failed. Check the settings and system status."
+msgstr "保存失败，请检查设置和系统状态。"
+
+msgid "Save service settings"
+msgstr "保存服务设置"
+
+msgid "Save settings"
+msgstr "保存设置"
+
+msgid "Save the subscription anyway?"
+msgstr "仍然保存这份订阅吗？"
+
+msgid "Saving draft…"
+msgstr "正在保存草稿…"
+
+msgid "Saving will adapt for this router: %s"
+msgstr "保存时会按本机适配：%s"
+
+msgid "Saving…"
+msgstr "正在保存……"
+
+msgid "Service"
+msgstr "服务状态"
+
+msgid "Service settings"
+msgstr "服务设置"
+
+msgid "Service settings saved."
+msgstr "服务设置已保存。"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Settings could not be applied."
+msgstr "设置应用失败。"
+
+msgid "Settings could not be applied. The previous settings were restored."
+msgstr "设置应用失败，已恢复到之前的设置。"
+
+msgid "Settings saved and applied."
+msgstr "设置已保存并应用。"
+
+msgid "Share links exceed the 16 KiB per request limit."
+msgstr "分享链接超过单次 16 KiB 的限制。"
+
+msgid "Showing the latest %d matching entries."
+msgstr "当前显示最新的 %d 条匹配日志。"
+
+msgid "Shows up to 200 Honk-specific lines, capped at 32 KiB, and refreshes every 5 seconds while live. Sensitive URLs and credentials are redacted before display."
+msgstr "最多显示 200 行 Honk 日志，数据上限为 32 KiB；实时模式下每 5 秒刷新，并在显示前隐藏敏感网址和凭据。"
+
+msgid "Source"
+msgstr "数据源"
+
+msgid "Start"
+msgstr "启动"
+
+msgid "Starting Honk…"
+msgstr "正在启动 Honk……"
+
+msgid "Startup failed and the automatic rollback did not finish. The snapshot was kept; run system recovery."
+msgstr "启动失败且自动回滚未完成，快照已保留，请到「维护」执行系统恢复。"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Stop"
+msgstr "停止"
+
+msgid "Stop Honk before restoring. Restoring replaces Honk user data. Continue?"
+msgstr "恢复前请先停止 Honk 服务。恢复操作会替换 Honk 用户数据，是否继续？"
+
+msgid "Stopped"
+msgstr "已停止"
+
+msgid "Stopping Honk safely…"
+msgstr "正在安全停止 Honk……"
+
+msgid "Stopping Honk…"
+msgstr "正在停止 Honk……"
+
+msgid "Subscription URL"
+msgstr "订阅地址"
+
+msgid "Subscription saved with usable nodes."
+msgstr "订阅已保存，检测到可用节点。"
+
+msgid "Subscriptions and nodes must use a protocol Honk supports; SSR is not supported."
+msgstr "订阅与节点需使用 Honk 支持的协议，不支持 SSR。"
+
+msgid "System check and repair"
+msgstr "系统检查与修复"
+
+msgid "System check failed."
+msgstr "系统检查失败。"
+
+msgid "System check passed."
+msgstr "系统检查通过。"
+
+msgid "System check: %s"
+msgstr "系统检查结果：%s"
+
+msgid "Temporary upload cleared."
+msgstr "Temporary upload cleared."
+
+msgid "The Clash API listener is unavailable. Check the service logs."
+msgstr "Clash API 监听不可用，请检查服务日志。"
+
+msgid "The Clash API port is already in use."
+msgstr "Clash API 端口已被占用。"
+
+msgid "The Clash API port must differ from the listen port."
+msgstr "Clash API 端口不能和监听端口相同。"
+
+msgid "The backend did not confirm the check."
+msgstr "后端未确认检查结果。"
+
+msgid "The backend did not confirm the operation."
+msgstr "后端未确认操作结果。"
+
+msgid "The configuration changed during the operation. Nothing was applied."
+msgstr "操作期间配置被其他进程改动，本次没有写入。"
+
+msgid "The configuration did not pass static validation."
+msgstr "The configuration did not pass static validation."
+
+msgid "The configuration file exceeds the 2 MiB limit."
+msgstr "The configuration file exceeds the 2 MiB limit."
+
+msgid "The configuration file is missing."
+msgstr "配置文件不存在。"
+
+msgid "The configuration request is empty or invalid."
+msgstr "The configuration request is empty or invalid."
+
+msgid "The core could not prepare this import preview."
+msgstr "核心程序无法准备此导入预览。"
+
+msgid "The core validator did not return a result."
+msgstr "The core validator did not return a result."
+
+msgid "The curl command is missing. Install the curl package and try again."
+msgstr "缺少 curl 命令，请先安装 curl 包（apk add curl 或 opkg install curl）后重试。"
+
+msgid "The dae file contains invalid sections or unsupported includes."
+msgstr "dae 文件包含无效配置段或不支持的 include。"
+
+msgid "The dae file exceeds the 2 MiB limit."
+msgstr "dae 文件超过 2 MiB 限制。"
+
+msgid "The dae upload is missing or unavailable. Upload the file again."
+msgstr "dae 上传文件缺失或不可用，请重新上传。"
+
+msgid "The editor changed while checking. Nothing was applied; check again."
+msgstr "检查期间编辑器内容被改动了，没有应用任何修改，请重新检查。"
+
+msgid "The editor changed while checking. Nothing was applied; import the file again."
+msgstr "检查期间编辑器内容被改动了，没有应用任何修改，请重新导入文件。"
+
+msgid "The editor is empty."
+msgstr "编辑器内容为空。"
+
+msgid "The file is empty."
+msgstr "文件内容为空。"
+
+msgid "The import request is incomplete or invalid."
+msgstr "导入请求不完整或无效。"
+
+msgid "The imported configuration failed core validation."
+msgstr "导入配置未通过核心程序校验。"
+
+msgid "The listen port is already in use."
+msgstr "监听端口已被占用。"
+
+msgid "The listen port is invalid."
+msgstr "监听端口无效。"
+
+msgid "The maintenance operation failed."
+msgstr "维护操作失败。"
+
+msgid "The maintenance operation timed out."
+msgstr "维护操作超时。"
+
+msgid "The maintenance worker stopped unexpectedly; check system recovery status before retrying."
+msgstr "维护进程意外停止。请先检查系统恢复状态，再重试。"
+
+msgid "The managed Honk service is not healthy."
+msgstr "Honk 托管服务状态异常。"
+
+msgid "The operation failed."
+msgstr "操作失败。"
+
+msgid "The password must be between 8 and 128 characters."
+msgstr "密码长度必须在 8 到 128 个字符之间。"
+
+msgid "The pasted content is too large."
+msgstr "粘贴内容过大。"
+
+msgid "The preview expired. Create a new preview."
+msgstr "预览已过期，请重新预览。"
+
+msgid "The saved draft is not a valid regular file."
+msgstr "保存的草稿不是普通文件。"
+
+msgid "The saved preview is damaged. Create a new preview."
+msgstr "已保存的预览已损坏，请重新预览。"
+
+msgid "The secret must be 6-128 letters, numbers, dots, underscores or hyphens."
+msgstr "密钥需要 6～128 位，只能包含字母、数字、点、下划线或短横线。"
+
+msgid "The selected LAN network is invalid or unavailable."
+msgstr "所选 LAN 网络无效或不可用。"
+
+msgid "The selected LAN network is unavailable."
+msgstr "所选 LAN 网络不可用。"
+
+msgid "The signed manifest expired. Check for updates again."
+msgstr "签名清单已过期，请重新检查更新。"
+
+msgid "The signed update could not be verified for this device."
+msgstr "无法验证适用于此设备的签名更新。"
+
+msgid "The signed update did not finish. Keep Honk stopped and reinstall a complete verified package set before retrying."
+msgstr "签名更新未能完成。请保持 Honk 停止，重新安装完整且已验证的软件包组后再试。"
+
+msgid "The signed update manifest could not be fetched or verified."
+msgstr "无法下载或验证签名更新清单。"
+
+msgid "The signed update manifest does not match this device."
+msgstr "签名更新清单与此设备不兼容。"
+
+msgid "The subscription could not be added: the name must be 1-64 characters without single quotes, and the URL must be a valid http(s) link."
+msgstr "无法添加订阅：名称 1-64 个字符且不能含单引号；链接必须是有效的 http(s) 地址。"
+
+msgid "The subscription is invalid or its name already exists."
+msgstr "订阅无效或名称已存在。"
+
+msgid "The subscription returned no usable nodes. The configuration was not changed."
+msgstr "订阅没有返回可用节点，配置未改动。"
+
+msgid "The system check did not finish (interface timeout or error). Retry, or check the core log under Maintenance → Logs."
+msgstr "系统检查没有跑完（接口超时或出错），请重试；或到「维护 → 日志」查看核心日志。"
+
+msgid "The system check did not finish. Retry, or check the core log under Maintenance → Logs."
+msgstr "系统检查没有跑完，请重试；或到「维护 → 日志」查看核心日志。"
+
+msgid "The system check passed. If it keeps failing, check the core log under Maintenance → Logs and report the code above."
+msgstr "系统检查通过。若反复失败，请到「维护 → 日志」查看核心日志并把上面的错误码发给维护者。"
+
+msgid "The temporary configuration upload is unavailable. Try again."
+msgstr "The temporary configuration upload is unavailable. Try again."
+
+msgid "The update could not be installed."
+msgstr "无法安装更新。"
+
+msgid "The uploaded dae file changed. Upload it again."
+msgstr "上传的 dae 文件已更改，请重新上传。"
+
+msgid "The uploaded dae file is invalid."
+msgstr "上传的 dae 文件无效。"
+
+msgid "There is no saved draft to apply."
+msgstr "没有可应用的已保存草稿。"
+
+msgid "These lines will be changed for this router:"
+msgstr "这几行会按本机修改："
+
+msgid "This core cannot use any of these nodes, so the subscription was not saved."
+msgstr "这份订阅里的节点本内核一个都用不了，所以没有保存。"
+
+msgid "This file replaces the current configuration.\n\nIt defines: %s\n\nBack up the current configuration first if you are unsure. Continue?"
+msgstr "这个文件会替换当前配置。\n\n包含：%s\n\n不确定的话先备份当前配置。继续吗？"
+
+msgid "This installed core does not support the requested import operation."
+msgstr "当前安装的核心程序不支持此导入操作。"
+
+msgid "This permanently clears Honk subscriptions, nodes, policies, DNS data, history, and cache, then restores the default configuration. The administrator account is kept, and Honk will be stopped. Continue?"
+msgstr "此操作会永久清除 Honk 订阅、节点、策略、DNS 数据、历史记录和缓存，并恢复默认配置，但保留管理员账号并停止 Honk。是否继续？"
+
+msgid "Transparent proxy core for OpenWrt. Start, stop and manage the Honk service."
+msgstr "OpenWrt 的透明代理核心。启动、停止并管理 Honk 服务。"
+
+msgid "Unavailable"
+msgstr "不可用"
+
+msgid "Update"
+msgstr "更新"
+
+msgid "Upgrade"
+msgstr "升级"
+
+msgid "Upload location ready."
+msgstr "Upload location ready."
+
+msgid "Use this interface"
+msgstr "就用这个网卡"
+
+msgid "Use your existing HTTPS reverse proxy for external access. Enter the secret in Zashboard when connecting."
+msgstr "外网访问请使用现有 HTTPS 反向代理，并在 Zashboard 中填写密钥。"
+
+msgid "Username"
+msgstr "用户名"
+
+msgid "Username may only contain letters, digits, underscore, dot or hyphen (max 64 characters)."
+msgstr "用户名只能包含字母、数字、下划线、点、连字符，最长 64 个字符。"
+
+msgid "Username: letters, digits, underscore, dot or hyphen (max 64 characters). Password: 8 to 128 characters."
+msgstr "用户名：字母、数字、下划线、点、连字符（最长 64 个字符）。密码：8 到 128 个字符。"
+
+msgid "Validating the candidate in an isolated runtime…"
+msgstr "正在隔离环境中验证候选配置……"
+
+msgid "Validating the new state…"
+msgstr "正在检查更新后的状态……"
+
+msgid "Waiting for the operation to start…"
+msgstr "正在等待操作开始……"
+
+msgid "Warnings and errors"
+msgstr "警告和错误"
+
+msgid "Weekly"
+msgstr "每周"
+
+msgid "Working…"
+msgstr "正在处理……"
+
+msgid "Write this configuration to /etc/honk/config.dae and start Honk? The previous file is restored if startup fails."
+msgstr "将把这份配置写入 /etc/honk/config.dae 并启动 Honk。启动失败会自动恢复原文件，继续？"
+
+msgid "Writing the configuration…"
+msgstr "正在写入配置…"
+
+msgid "YAML parser failed to load"
+msgstr "YAML 解析器加载失败"
+
+msgid "Zashboard is still downloading or unavailable."
+msgstr "Zashboard 仍在下载或暂不可用。"
+
+msgid "global settings"
+msgstr "全局设置"
+
+msgid "groups"
+msgstr "分组"
+
+msgid "honk-core 已经在运行，请先停止服务。"
+msgstr "honk-core 已经在运行，请先停止服务。"
+
+msgid "included files"
+msgstr "被 include 的文件"
+
+msgid "installed"
+msgstr "已安装"
+
+msgid "lan_interface: cannot tell which interface is the LAN here (candidates: %s); set it yourself"
+msgstr "lan_interface：无法判断本机哪块网卡是 LAN（候选：%s），请自行确认"
+
+msgid "latest"
+msgstr "最新"
+
+msgid "latest version unknown"
+msgstr "最新版本未知"
+
+msgid "luci-app-honk 的软件包配置不完整，请重新安装。"
+msgstr "luci-app-honk 的软件包配置不完整，请重新安装。"
+
+msgid "missing — click Update to fetch"
+msgstr "缺失 — 点击更新获取"
+
+msgid "no recognised sections"
+msgstr "未识别到段落"
+
+msgid "nodes"
+msgstr "节点"
+
+msgid "not installed via package manager"
+msgstr "未通过软件包管理器安装"
+
+msgid "routing"
+msgstr "路由"
+
+msgid "subscriptions"
+msgstr "订阅"
+
+msgid "system.dae 不是普通文件（可能是软链），拒绝操作。"
+msgstr "system.dae 不是普通文件（可能是软链），拒绝操作。"
+
+msgid "unknown format"
+msgstr "未知格式"
+
+msgid "unknown reason"
+msgstr "原因未知"
+
+msgid "unsupported"
+msgstr "不支持"
+
+msgid "up to date"
+msgstr "已是最新"
+
+msgid "上传目录已准备好。"
+msgstr "上传目录已准备好。"
+
+msgid "临时目录 /tmp 不可写或空间不足。"
+msgstr "临时目录 /tmp 不可写或空间不足。"
+
+msgid "任务存储不可用（/tmp 空间不足？）。"
+msgstr "任务存储不可用（/tmp 空间不足？）。"
+
+msgid "任务编号不合法。"
+msgstr "任务编号不合法。"
+
+msgid "修复 system.dae 失败且回滚未完成，快照已保留。"
+msgstr "修复 system.dae 失败且回滚未完成，快照已保留。"
+
+msgid "修复 system.dae 失败，已回滚。"
+msgstr "修复 system.dae 失败，已回滚。"
+
+msgid "修复后重启失败且回滚未完成，快照已保留。"
+msgstr "修复后重启失败且回滚未完成，快照已保留。"
+
+msgid "修复后重启失败，已回滚。"
+msgstr "修复后重启失败，已回滚。"
+
+msgid "停止服务失败且回滚未完成，快照已保留。"
+msgstr "停止服务失败且回滚未完成，快照已保留。"
+
+msgid "停止服务失败，已回滚。"
+msgstr "停止服务失败，已回滚。"
+
+msgid "写入 UCI 失败，已恢复原来的监听配置。"
+msgstr "写入 UCI 失败，已恢复原来的监听配置。"
+
+msgid "写入 system.dae 失败。"
+msgstr "写入 system.dae 失败。"
+
+msgid "写入 system.dae 失败且回滚未完成，快照已保留。"
+msgstr "写入 system.dae 失败且回滚未完成，快照已保留。"
+
+msgid "写入 system.dae 失败，已回滚。"
+msgstr "写入 system.dae 失败，已回滚。"
+
+msgid "写入 system.dae 的监听地址失败，请检查文件权限。"
+msgstr "写入 system.dae 的监听地址失败，请检查文件权限。"
+
+msgid "创建 Doona 管理员失败，请到「维护 → 日志」查看核心日志。"
+msgstr "创建 Doona 管理员失败，请到「维护 → 日志」查看核心日志。"
+
+msgid "创建目录失败，请检查磁盘空间与权限。"
+msgstr "创建目录失败，请检查磁盘空间与权限。"
+
+msgid "初始化后登录验证失败，请重试或查看日志。"
+msgstr "初始化后登录验证失败，请重试或查看日志。"
+
+msgid "初始化后的自检没通过，请查看日志。"
+msgstr "初始化后的自检没通过，请查看日志。"
+
+msgid "初始化结果没有落盘（可能磁盘空间不足）。"
+msgstr "初始化结果没有落盘（可能磁盘空间不足）。"
+
+msgid "备份 UCI 配置失败，请检查磁盘空间。"
+msgstr "备份 UCI 配置失败，请检查磁盘空间。"
+
+msgid "备份现有 system.dae 失败，请检查磁盘空间。"
+msgstr "备份现有 system.dae 失败，请检查磁盘空间。"
+
+msgid "备份系统配置失败，请检查磁盘空间。"
+msgstr "备份系统配置失败，请检查磁盘空间。"
+
+msgid "应用设置失败且回滚未完成，快照已保留，请执行系统恢复。"
+msgstr "应用设置失败且回滚未完成，快照已保留，请执行系统恢复。"
+
+msgid "开关类设置取值不合法。"
+msgstr "开关类设置取值不合法。"
+
+msgid "找不到 /usr/bin/honk-core，请重新安装 honk 包。"
+msgstr "找不到 /usr/bin/honk-core，请重新安装 honk 包。"
+
+msgid "找不到该任务。"
+msgstr "找不到该任务。"
+
+msgid "抓不到这个订阅地址：网络不通、需要代理，或链接已失效。"
+msgstr "抓不到这个订阅地址：网络不通、需要代理，或链接已失效。"
+
+msgid "拿不到任务编号。"
+msgstr "拿不到任务编号。"
+
+msgid "提交的设置数据过大。"
+msgstr "提交的设置数据过大。"
+
+msgid "操作期间 LAN 网络被改动，已中止。"
+msgstr "操作期间 LAN 网络被改动，已中止。"
+
+msgid "操作期间 config.dae 被其他进程改动，已中止。"
+msgstr "操作期间 config.dae 被其他进程改动，已中止。"
+
+msgid "操作期间服务状态发生变化，已中止。"
+msgstr "操作期间服务状态发生变化，已中止。"
+
+msgid "操作期间设置被改动，已中止。"
+msgstr "操作期间设置被改动，已中止。"
+
+msgid "操作期间配置被改动且重启失败，快照已保留。"
+msgstr "操作期间配置被改动且重启失败，快照已保留。"
+
+msgid "日志来源不合法。"
+msgstr "日志来源不合法。"
+
+msgid "日志级别不合法。"
+msgstr "日志级别不合法。"
+
+msgid "日志行数不合法。"
+msgstr "日志行数不合法。"
+
+msgid "更新开机自启链接失败且回滚未完成，快照已保留。"
+msgstr "更新开机自启链接失败且回滚未完成，快照已保留。"
+
+msgid "更新开机自启链接失败，已回滚。"
+msgstr "更新开机自启链接失败，已回滚。"
+
+msgid "未知的接口方法。"
+msgstr "未知的接口方法。"
+
+msgid "未知的操作类型。"
+msgstr "未知的操作类型。"
+
+msgid "测试核心停止失败，已恢复原来的监听配置。"
+msgstr "测试核心停止失败，已恢复原来的监听配置。"
+
+msgid "测试用核心启动失败：通常是内核缺 BTF（/sys/kernel/btf/vmlinux）或 eBPF 依赖模块。"
+msgstr "测试用核心启动失败：通常是内核缺 BTF（/sys/kernel/btf/vmlinux）或 eBPF 依赖模块。"
+
+msgid "测试用核心无法正常停止，请稍后重试。"
+msgstr "测试用核心无法正常停止，请稍后重试。"
+
+msgid "测试用核心重启失败，请查看日志。"
+msgstr "测试用核心重启失败，请查看日志。"
+
+msgid "生成的配置校验不通过，已恢复原来的监听配置。"
+msgstr "生成的配置校验不通过，已恢复原来的监听配置。"
+
+msgid "用局域网地址访问 API 验证失败（网卡或 IP 可能对不上），已恢复。"
+msgstr "用局域网地址访问 API 验证失败（网卡或 IP 可能对不上），已恢复。"
+
+msgid "用户名只能包含字母、数字、下划线、点、连字符（不超过 64 个字符）；密码长度必须是 8 到 128 个字符，可以包含空格。"
+msgstr "用户名只能包含字母、数字、下划线、点、连字符（不超过 64 个字符）；密码长度必须是 8 到 128 个字符，可以包含空格。"
+
+msgid "系统里还留着 dae0 / daens 等运行痕迹，请先停止服务或执行系统恢复。"
+msgstr "系统里还留着 dae0 / daens 等运行痕迹，请先停止服务或执行系统恢复。"
+
+msgid "缺少 Doona 静态文件（/usr/share/doona），请重新安装 luci-app-honk。"
+msgstr "缺少 Doona 静态文件（/usr/share/doona），请重新安装 luci-app-honk。"
+
+msgid "缺少 libubox 组件（/usr/share/libubox/jshn.sh），请检查固件是否完整。"
+msgstr "缺少 libubox 组件（/usr/share/libubox/jshn.sh），请检查固件是否完整。"
+
+msgid "订阅内容是空的。"
+msgstr "订阅内容是空的。"
+
+msgid "订阅内容超过 4 MiB，拒绝处理。"
+msgstr "订阅内容超过 4 MiB，拒绝处理。"
+
+msgid "设置写入失败且回滚未完成，快照已保留，请执行系统恢复。"
+msgstr "设置写入失败且回滚未完成，快照已保留，请执行系统恢复。"
+
+msgid "设置写入失败，已回滚到原值。"
+msgstr "设置写入失败，已回滚到原值。"
+
+msgid "设置的请求格式不正确。"
+msgstr "设置的请求格式不正确。"
+
+msgid "请先停止 Honk 服务再初始化。"
+msgstr "请先停止 Honk 服务再初始化。"
+
+msgid "读不到任务状态。"
+msgstr "读不到任务状态。"
+
+msgid "读不到核心的 API 状态，请查看日志。"
+msgstr "读不到核心的 API 状态，请查看日志。"
+
+msgid "选中的 LAN 网络没有 IPv4 地址。"
+msgstr "选中的 LAN 网络没有 IPv4 地址。"
+
+msgid "配置没有通过静态校验。"
+msgstr "配置没有通过静态校验。"
+
+msgid "配置路径不是 /etc/honk/config.dae，拒绝操作。"
+msgstr "配置路径不是 /etc/honk/config.dae，拒绝操作。"
+
+msgid "预检失败，请稍后重试。"
+msgstr "预检失败，请稍后重试。"
+
+msgid "DNS"
+msgstr "DNS"
+
+msgid "已经初始化过了，请用原来的账号登录 Doona。忘记密码：到「维护 → 重置管理员」清掉管理员记录（不动订阅和规则），再回到本页重新初始化。"
+msgstr "已经初始化过了，请用原来的账号登录 Doona。忘记密码：到「维护 → 重置管理员」清掉管理员记录（不动订阅和规则），再回到本页重新初始化。"
+
+msgid "当前配置没有 include { system.dae }，这些设置请到「编辑配置」里修改。"
+msgstr "当前配置没有 include { system.dae }，这些设置请到「编辑配置」里修改。"
+
+msgid "这些设置由当前配置文件决定，请到「配置 → 编辑配置」里修改。"
+msgstr "这些设置由当前配置文件决定，请到「配置 → 编辑配置」里修改。"
+
+msgid "配置没有通过校验。"
+msgstr "配置没有通过校验。"
+
+msgid "配置通过校验。"
+msgstr "配置通过校验。"
+
+msgid "当前配置不支持快捷追加，请在「编辑配置」中修改。"
+msgstr "当前配置不支持快捷追加，请在「编辑配置」中修改。"

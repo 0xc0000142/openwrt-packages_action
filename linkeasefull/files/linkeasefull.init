@@ -1,0 +1,61 @@
+#!/bin/sh /etc/rc.common
+
+# Compatibility control shim. linkease-app-entry is the only owner of port
+# 19290 and the only procd instance allowed to launch linkease-full.
+
+START=100
+STOP=10
+
+ENTRY_INIT=/etc/init.d/linkease-app-entry
+FORCE_GATEWAY=/var/run/linkease-app-entry/force-gateway
+STATE_FILE=/var/run/linkease-app-entry/state.json
+
+sync_force_gateway() {
+	mkdir -p "$(dirname "$FORCE_GATEWAY")"
+	enabled="$(uci -q get linkeasefull.@linkeasefull[0].enabled 2>/dev/null || echo 0)"
+	if [ "$enabled" = 1 ]; then
+		rm -f "$FORCE_GATEWAY"
+	else
+		: > "$FORCE_GATEWAY"
+	fi
+}
+
+start() {
+	mkdir -p "$(dirname "$FORCE_GATEWAY")"
+	rm -f "$FORCE_GATEWAY"
+	uci -q set linkeasefull.@linkeasefull[0].enabled='1'
+	uci -q commit linkeasefull
+	"$ENTRY_INIT" restart
+}
+
+stop() {
+	mkdir -p "$(dirname "$FORCE_GATEWAY")"
+	: > "$FORCE_GATEWAY"
+	"$ENTRY_INIT" restart
+}
+
+restart() {
+	start
+}
+
+reload() {
+	sync_force_gateway
+	"$ENTRY_INIT" restart
+}
+
+running() {
+	[ -r "$STATE_FILE" ] && grep -q '"active":"linkeasefull"' "$STATE_FILE"
+}
+
+status() {
+	if running; then
+		echo "running"
+		return 0
+	fi
+	if [ -r "$STATE_FILE" ]; then
+		cat "$STATE_FILE"
+	else
+		echo "stopped"
+	fi
+	return 1
+}

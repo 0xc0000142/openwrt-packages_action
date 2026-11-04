@@ -1,0 +1,26 @@
+{
+	"luci-app-pcap-dnsproxy": {
+		"description": "Grant UCI and file access for luci-app-pcap-dnsproxy",
+		"read": {
+			"cgi-io": [
+				"exec"
+			],
+			"file": {
+				"/etc/init.d/pcap-dnsproxy *": [
+					"exec"
+				],
+				"/usr/bin/pcap-dnsproxy.sh *": [
+					"exec"
+				]
+			},
+			"uci": [
+				"pcap-dnsproxy"
+			]
+		},
+		"write": {
+			"uci": [
+				"pcap-dnsproxy"
+			]
+		}
+	}
+}

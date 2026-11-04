@@ -1,0 +1,58 @@
+{
+	"admin/services/honk": {
+		"title": "Honk",
+		"order": 35,
+		"action": {
+			"type": "firstchild"
+		},
+		"depends": {
+			"acl": [ "luci-app-honk" ]
+		}
+	},
+	"admin/services/honk/overview": {
+		"title": "Overview",
+		"order": 10,
+		"action": {
+			"type": "view",
+			"path": "honk/overview"
+		}
+	},
+	"admin/services/honk/configuration": {
+		"title": "Configuration",
+		"order": 20,
+		"action": {
+			"type": "view",
+			"path": "honk/configuration"
+		}
+	},
+	"admin/services/honk/logs": {
+		"title": "Logs",
+		"order": 30,
+		"action": {
+			"type": "view",
+			"path": "honk/logs"
+		}
+	},
+	"admin/services/honk/maintenance": {
+		"title": "Maintenance",
+		"order": 40,
+		"action": {
+			"type": "view",
+			"path": "honk/maintenance"
+		}
+	},
+	"admin/services/honk/dashboard": {
+		"hidden": true,
+		"action": {
+			"type": "alias",
+			"path": "admin/services/honk/overview"
+		}
+	},
+	"admin/services/honk/settings": {
+		"hidden": true,
+		"action": {
+			"type": "alias",
+			"path": "admin/services/honk/overview"
+		}
+	}
+}

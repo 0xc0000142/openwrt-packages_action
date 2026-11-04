@@ -1,0 +1,13 @@
+{
+	"admin/services/webdav": {
+		"title": "WebDAV",
+		"action": {
+			"type": "view",
+			"path": "webdav"
+		},
+		"depends": {
+			"acl": [ "luci-app-webdav" ],
+			"uci": { "webdav": true }
+		}
+	}
+}
