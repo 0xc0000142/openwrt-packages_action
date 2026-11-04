@@ -289,7 +289,7 @@ real_manifest="$repo_dir/sources-25.12.tsv"
 coverage="$repo_dir/sources-25.12-coverage.tsv"
 [[ -f "$real_manifest" && -f "$coverage" ]]
 awk '/^[[:space:]]*git[[:space:]]+clone[[:space:]]/ { print NR }' \
-	"$repo_dir/packages-21.02.sh" > "$test_dir/expected-source-lines"
+	"$repo_dir/tests/fixtures/legacy-packages-21.02.sh.txt" > "$test_dir/expected-source-lines"
 awk -F '\t' 'NR > 1 { print $1 }' "$coverage" | sort -n > "$test_dir/covered-source-lines"
 diff -u "$test_dir/expected-source-lines" "$test_dir/covered-source-lines"
 awk -F '\t' '

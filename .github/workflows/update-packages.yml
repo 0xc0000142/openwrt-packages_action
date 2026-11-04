@@ -61,9 +61,15 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           sudo -E apt-get -qq update
-          sudo -E apt-get -qq install git subversion wget rsync
+          sudo -E apt-get -qq install git rsync
           git config --local user.name 'github-actions[bot]'
           git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Validate generation scripts
+        run: |
+          bash tests/test-packages-25.12.sh
+          bash tests/test-package-entrypoints.sh
+          bash tests/test-workflow-publish.sh
 
       - name: Generate packages in a temporary directory
         id: generate
@@ -77,11 +83,16 @@ jobs:
           fi
           cp "$GITHUB_WORKSPACE/LICENSE" "$staging/LICENSE"
           cp "$GITHUB_WORKSPACE/README.md" "$staging/README.md"
-          if [[ "$TARGET" == packages-25.12 ]]; then
-            cp "$GITHUB_WORKSPACE/packages-25.12.sh" \
-              "$GITHUB_WORKSPACE/sources-25.12.tsv" \
-              "$GITHUB_WORKSPACE/sources-25.12-coverage.tsv" "$staging/"
-            cp -a "$GITHUB_WORKSPACE/docs" "$staging/"
+          if [[ "$TARGET" == packages ]]; then
+            version=18.06
+          else
+            version="${TARGET#packages-}"
+          fi
+          cp "$GITHUB_WORKSPACE/${TARGET}.sh" \
+            "$GITHUB_WORKSPACE/sources-${version}.tsv" \
+            "$GITHUB_WORKSPACE/sources-${version}-coverage.tsv" "$staging/"
+          cp -a "$GITHUB_WORKSPACE/scripts" "$GITHUB_WORKSPACE/docs" "$staging/"
+          if [[ "$version" == 25.12 ]]; then
             cp -a "$GITHUB_WORKSPACE/packages-25.12-overrides" "$staging/"
           fi
           printf 'directory=%s\n' "$staging" >> "$GITHUB_OUTPUT"
@@ -110,7 +121,7 @@ jobs:
           fi
 
           rsync --archive --delete --exclude=.git "$STAGING/" "$publish/"
-          git -C "$publish" add --all
+          git -C "$publish" add --all --force
           if git -C "$publish" diff --cached --quiet; then
             echo "No package changes for $TARGET."
             exit 0

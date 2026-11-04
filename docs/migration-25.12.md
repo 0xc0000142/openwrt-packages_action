@@ -1,10 +1,10 @@
 # OpenWrt 25.12 软件包迁移说明
 
-25.12 分支以 `packages-21.02.sh` 的全部 **195 条非注释 `git clone` 命令**为来源基线。该数字包含重复获取；可用的独立来源、集合 feed、不可达来源的替代和历史补全都纳入清单。
+25.12 分支以修复前 `packages-21.02.sh`（保存在 `tests/fixtures/legacy-packages-21.02.sh.txt`）的全部 **195 条非注释 `git clone` 命令**为来源基线。该数字包含重复获取；可用的独立来源、集合 feed、不可达来源的替代和历史补全都纳入清单。
 
 - [sources-25.12.tsv](../sources-25.12.tsv) 决定实际获取和导入的来源、ref、路径及顺序。
 - [sources-25.12-coverage.tsv](../sources-25.12-coverage.tsv) 将旧脚本的获取命令映射到新来源或替代处理，供逐项核对。
-- [packages-25.12.sh](../packages-25.12.sh) 根据清单获取源码、识别包目录并生成报告。
+- [packages-25.12.sh](../packages-25.12.sh) 固定 25.12 配置，再调用 [共享生成器](../scripts/generate-packages.sh) 获取源码、识别包目录并生成报告。
 
 ## 来源顺序与覆盖范围
 
