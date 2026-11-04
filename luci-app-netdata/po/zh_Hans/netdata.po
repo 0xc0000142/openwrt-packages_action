@@ -1,47 +1,55 @@
 msgid ""
-msgstr "Content-Type: text/plain; charset=UTF-8"
+msgstr ""
 
-msgid "Running state"
-msgstr "运行状态"
-
-msgid "The Netdata service is running."
-msgstr "NetData服务已启动"
-
-msgid "The Netdata service is not running."
-msgstr "NetData服务未启动"
-
-msgid "NetData Status"
-msgstr "NetData服务状态"
-
-msgid "Please enable the NetData service"
-msgstr "请将NetData服务启用"
-
-msgid "NetData"
+msgid "Netdata"
 msgstr "实时监控"
 
-msgid "Set the netdata access port"
-msgstr "设置访问端口"
-
-msgid "Base Setting"
+msgid "Basic Setting"
 msgstr "基本设置"
 
-msgid "Netdata is high-fidelity infrastructure monitoring and troubleshooting.Open-source, free, preconfigured, opinionated, and always real-time."
-msgstr "Netdata是高保真的基础设施监控和故障排除。开源、免费、预配置、始终实时."
-
-msgid "The content of the config file in<code>/etc/netdata/netdata. conf</code>"
-msgstr "在<code>/etc/netdata/netdata.conf</code>下的config文件内容"
-
-msgid "</br>For specific usage, see:"
-msgstr "</br>具体使用方法参见："
-
-msgid "File does not exist."
-msgstr "文件不存在"
-
-msgid "Empty file."
-msgstr "空文件。"
-
-msgid "NetData Monitoring"
-msgstr "NetData监控台"
-
-msgid "Netdata Config"
+msgid "Config Setting"
 msgstr "配置文件"
+
+msgid "Edit Netdata main config: <code>/etc/netdata/netdata.conf</code>"
+msgstr "编辑 Netdata 主配置: <code>/etc/netdata/netdata.conf</code>"
+
+msgid "Enable"
+msgstr "启用"
+
+
+
+msgid "Enable SSL"
+msgstr "SSL启用https访问"
+
+msgid "Enable logger"
+msgstr "启用日志记录器"
+
+msgid "An open-source real-time performance monitoring and visualization tool"
+msgstr "一款开源的实时性能监控与可视化工具"
+
+msgid "Open Web UI"
+msgstr "打开Web网页"
+
+msgid "Service port"
+msgstr "服务端口"
+
+msgid "NOT RUNNING"
+msgstr "未运行"
+
+msgid "RUNNING"
+msgstr "运行中"
+
+msgid "Netdata Service Not Running"
+msgstr "Netdata服务未启用"
+
+msgid "Cert file"
+msgstr "Cert文件"
+
+msgid "Cert Key file"
+msgstr "Cert密钥文件"
+
+msgid ""
+msgstr ""
+
+msgid ""
+msgstr ""

@@ -1,9 +1,9 @@
 #!/bin/sh
 [ "$(uci get syncdial.config.enabled)" = "1" ] && \
 	[ "$(uci get syncdial.config.old_frame)" = "1" ] && \
-	[ "$DEVICE" = "$(uci get network.wan.device)" ] && \
+	[ "$DEVICE" = "$(uci get network.wan.ifname)" ] && \
 	[ "$ACTION" = "ifup" ] && {
-	ifname=$(uci get network.wan.device)
+	ifname=$(uci get network.wan.ifname)
 	wannum=$(uci get syncdial.config.wannum)
 	for i in $(seq 1 $wannum)
 	do

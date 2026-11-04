@@ -14,8 +14,8 @@ msgstr "未运行"
 msgid "Running"
 msgstr "已运行"
 
-msgid "Users can limit the network speed for uploading/downloading through MAC, IP.The speed unit is MB/second."
-msgstr "可以通过MAC，IP限制用户上传/下载的网速。速度单位为<font color=\"red\"><b> MB/秒 </b></font>。"
+msgid "Users can limit the network speed for uploading/downloading through MAC, IP, and IP segments (192.168.110.00-192.168.10.200). The speed unit is MB/second."
+msgstr "用户可以通过MAC、IP、IP段（192.168.10.100-192.168.10.200),限制上传/下载的网络速度。速度单位为MB/秒。。"
 
 msgid "MAC/IP"
 msgstr "MAC/IP"

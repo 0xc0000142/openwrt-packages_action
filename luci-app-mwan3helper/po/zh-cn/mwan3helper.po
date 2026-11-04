@@ -1,0 +1,5 @@
+msgid "MWAN3 Helper"
+msgstr "MWAN3 分流助手"
+
+msgid "MWAN3 Helper generate IPSets"
+msgstr "自动生成中国地址段和各大ISP运营商的 IPSet 地址段"

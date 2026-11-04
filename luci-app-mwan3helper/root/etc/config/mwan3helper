@@ -1,0 +1,3 @@
+
+config mwan3helper 'config'
+	option enabled '0'

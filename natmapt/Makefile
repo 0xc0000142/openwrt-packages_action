@@ -1,23 +1,23 @@
 # SPDX-License-Identifier: MIT
 #
-# Copyright (C) 2023-2025 Anya Lin <hukk1996@gmail.com>
+# Copyright (C) 2023-2026 Anya Lin <hukk1996@gmail.com>
 
 include $(TOPDIR)/rules.mk
 
 PKG_UPSTREAM_NAME:=natmap
 PKG_NAME:=natmapt
-PKG_UPSTREAM_VERSION:=20250512
+PKG_UPSTREAM_VERSION:=20260214
 PKG_UPSTREAM_GITHASH:=
 PKG_VERSION:=$(PKG_UPSTREAM_VERSION)$(if $(PKG_UPSTREAM_GITHASH),~$(call version_abbrev,$(PKG_UPSTREAM_GITHASH)))
-PKG_RELEASE:=1
-SCRIPTS_VERSION:=0.2025.2.19
+PKG_RELEASE:=5
+SCRIPTS_VERSION:=0.2026.01.24
 
 PKG_SOURCE_SUBDIR:=$(PKG_UPSTREAM_NAME)-$(PKG_UPSTREAM_VERSION)
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_SOURCE_SUBDIR)
 
 ifeq ($(PKG_UPSTREAM_GITHASH),)
 PKG_SOURCE_URL:=https://github.com/heiher/natmap/releases/download/$(PKG_UPSTREAM_VERSION)
-PKG_HASH:=dd94e361483c693f9eaa7cf55818523d928393a761f7f3146796be3faec18e63
+PKG_HASH:=1562f16b2e222690c32ed6f69d25aa7a59a4319d00d63b1bd4b98010db035159
 
 PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.xz
 else
@@ -45,6 +45,7 @@ define Package/natmapt
   TITLE:=TCP/UDP port mapping tool for full cone NAT
   URL:=https://github.com/heiher/natmap
   DEPENDS:=+curl +jsonfilter +bash
+  PROVIDES:=natmap
 endef
 
 MAKE_FLAGS += REV_ID="$(PKG_VERSION)"
@@ -74,6 +75,7 @@ define Package/natmapt/install
 	$(INSTALL_BIN) ./files/natmap.defaults $(1)/etc/uci-defaults/97_natmap
 	$(INSTALL_DIR) $(1)/etc/natmap/client
 	$(INSTALL_BIN) ./files/client/qBittorrent $(1)/etc/natmap/client/
+	$(LN)          qBittorrent                $(1)/etc/natmap/client/qBittorrent-announce_port
 	$(INSTALL_DIR) $(1)/etc/natmap/notify
 	$(INSTALL_BIN) ./files/notify/ntfy $(1)/etc/natmap/notify/
 	$(INSTALL_DIR) $(1)/etc/natmap/ddns
@@ -85,7 +87,7 @@ define Package/natmapt-scripts/Default
 	CATEGORY:=Network
 	TITLE:=NATMap $(1) scripts ($(2))
 	DEPENDS:=+natmapt
-	PROVIDES:=natmapt-$(1)-scripts
+	PROVIDES:=@natmapt-$(1)-scripts @natmapt-$(1)-script-$(2)
 	VERSION:=$(SCRIPTS_VERSION)
 	PKGARCH:=all
 endef

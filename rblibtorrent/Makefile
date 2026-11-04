@@ -1,19 +1,18 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=rblibtorrent
-PKG_VERSION:=2.0.11
+PKG_VERSION:=2.0.8
 PKG_RELEASE:=1
 
 PKG_SOURCE:=libtorrent-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/arvidn/libtorrent/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=a317b4b4352bf1b846072dfacee30cd0afccf1ebc04a84273f1ecba930acb802
+PKG_HASH:=29e5c5395de8126ed1b24d0540a9477fbb158b536021cd65aaf9de34d0aadb46
 PKG_BUILD_DIR:=$(BUILD_DIR)/libtorrent-$(PKG_VERSION)
 
 PKG_LICENSE:=BSD
 PKG_LICENSE_FILES:=COPYING
 
 PKG_USE_MIPS16:=0
-PKG_BUILD_FLAGS:=no-mips16
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
 
@@ -35,8 +34,26 @@ define Package/rblibtorrent/description
   full featured client, although it comes with a working example client.
 endef
 
-TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections
-TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed
+TRY_SIGNAL_VERSION:=751a7e5a5be14892bcfdff1e63c653bcbf71cf39
+TRY_SIGNAL_FILE:=$(PKG_NAME)-try_signal-$(TRY_SIGNAL_VERSION).tar.xz
+define Download/try_signal
+	VERSION:=$(TRY_SIGNAL_VERSION)
+	SUBDIR:=deps/try_signal
+	FILE:=$(TRY_SIGNAL_FILE)
+	URL:=https://github.com/arvidn/try_signal.git
+	MIRROR_HASH:=32a432e35e81c79f21c49744f00696c112e0deab45d15d91c61ceb63fe25a5f8
+	PROTO:=git
+endef
+
+$(eval $(call Download,try_signal))
+
+define Build/Prepare
+	$(Build/Prepare/Default)
+	xzcat $(DL_DIR)/$(TRY_SIGNAL_FILE) | tar -C $(PKG_BUILD_DIR) $(TAR_OPTIONS)
+endef
+
+TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections -flto
+TARGET_LDFLAGS += -Wl,--gc-sections,--as-needed -flto
 
 CMAKE_OPTIONS += \
 	-DBUILD_SHARED_LIBS=ON \

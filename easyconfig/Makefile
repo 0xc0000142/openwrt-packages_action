@@ -5,7 +5,7 @@ define findrev
 		if git log -1 >/dev/null 2>/dev/null; then \
 			git log -1 --format=%ad --date=format:'%Y%m%d' -- .; \
 		else \
-			find . -type f -printf '%T@\n' 2>/dev/null | sort -rn | head -n1 | cut -d. -f1 | awk '{print strftime("%Y%m%d", $1)}'; \
+			find . -type f -printf '%T@\n' 2>/dev/null | sort -rn | head -n1 | cut -d. -f1 | awk '{print strftime("%Y%m%d", $$1)}'; \
 		fi \
 	)
 endef

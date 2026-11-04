@@ -17,6 +17,10 @@ LOCK_FILE=/var/lock/ssrplus.lock
 LOG_FILE=/var/log/ssrplus.log
 TMP_PATH=/var/etc/ssrplus
 TMP_BIN_PATH=$TMP_PATH/bin
+PERSIST_DIR="/usr/share/nftables.d/ruleset-post"
+PERSIST_FILE="$PERSIST_DIR/99-shadowsocksr.nft"
+BACKUP_DIR="/etc/ssrplus/ssrplus-persist"
+BACKUP_FILE="$BACKUP_DIR/99-shadowsocksr.save"
 # 设置 DNSMASQ_CONF_DIR 和 TMP_DNSMASQ_PATH
 if [ -f /etc/openwrt_release ]; then
     # 获取默认的 DNSMASQ 配置 ID
@@ -57,6 +61,15 @@ redir_udp=0
 local_enable=0
 kcp_enable_flag=0
 pdnsd_enable_flag=0
+
+USE_TABLES=""
+HAS_NFT=0
+HAS_IPSET=0
+HAS_IPT=0
+HAS_FW4=0
+DNSMASQ_IPSET=0
+DNSMASQ_NFTSET=0
+
 switch_server=$1
 CRON_FILE=/etc/crontabs/root
 EXTRA_COMMANDS='reset'
@@ -95,7 +108,7 @@ get_host_ip() {
 	if [ -z "$(echo $host | grep -E "([0-9]{1,3}[\.]){3}[0-9]{1,3}")" ]; then
 		if [ "$host" == "${host#*:[0-9a-fA-F]}" ]; then
 			ip=$(resolveip -4 -t 3 $host | awk 'NR==1{print}')
-			[ -z "$ip" ] && ip=$(wget -q -O- http://119.29.29.29/d?dn=$host | awk -F ';' '{print $1}')
+			[ -z "$ip" ] && ip=$(curl -sSL "http://119.29.29.29/d?dn=$host" | awk -F ';' '{print $1}')
 		fi
 	fi
 	[ -z "$ip" ] || uci_set_by_name $1 ip $ip
@@ -190,6 +203,65 @@ ln_start_bin() {
 	${file_func:-echolog "  - ${ln_name}"} "$@" >/dev/null 2>&1 &
 }
 
+check_run_environment() {
+	local prefer_nft="$(uci_get_by_type global prefer_nft 1)"
+	local dnsmasq_info=$(dnsmasq -v 2>/dev/null)
+	local dnsmasq_ver=$(echo "$dnsmasq_info" | sed -n '1s/.*version \([0-9.]*\).*/\1/p')
+
+	DNSMASQ_IPSET=0; [[ "$dnsmasq_info" == *" ipset"* ]] && DNSMASQ_IPSET=1
+	DNSMASQ_NFTSET=0; [[ "$dnsmasq_info" == *" nftset"* ]] && DNSMASQ_NFTSET=1
+	HAS_IPT=0; { command -v iptables-legacy || command -v iptables; } >/dev/null && HAS_IPT=1
+	HAS_IPSET=$(command -v ipset >/dev/null && echo 1 || echo 0)
+	HAS_FW4=$(command -v fw4 >/dev/null && echo 1 || echo 0)
+	HAS_NFT=$(command -v nft >/dev/null && echo 1 || echo 0)
+
+	# 重置 USE_TABLES
+	USE_TABLES=""
+
+	if [ "$prefer_nft" = "1" ]; then
+		echolog "提示：优先使用 nftables..."
+		if [ "$DNSMASQ_NFTSET" -eq 1 ] && [ "$HAS_NFT" -eq 1 ] && [ "$HAS_FW4" -eq 1 ]; then
+			USE_TABLES="nftables"
+		elif [ "$HAS_IPSET" -eq 1 ] && [ "$HAS_IPT" -eq 1 ] && [ "$DNSMASQ_IPSET" -eq 1 ]; then
+			echolog "警告：nftables (fw4) 应用环境不完整，切换至 iptables。(has_fw4:$HAS_FW4/dnsmasq_nftset:$DNSMASQ_NFTSET)"
+			USE_TABLES="iptables"
+		fi
+	else
+		echolog "提示：优先使用 iptables..."
+		if [ "$HAS_IPSET" -eq 1 ] && [ "$HAS_IPT" -eq 1 ] && [ "$DNSMASQ_IPSET" -eq 1 ]; then
+			USE_TABLES="iptables"
+		elif [ "$DNSMASQ_NFTSET" -eq 1 ] && [ "$HAS_FW4" -eq 1 ]; then
+			echolog "警告：iptables (fw3) 应用环境不完整，切换至 nftables。(has_ipt:$HAS_IPT/has_ipset:$HAS_IPSET/dnsmasq_ipset:$DNSMASQ_IPSET)"
+			USE_TABLES="nftables"
+		fi
+	fi
+
+	if [ -n "$USE_TABLES" ]; then
+		local dep_list
+		local file_path="/usr/lib/opkg/info"
+		local file_ext=".control"
+		[ -d "/lib/apk/packages" ] && { file_path="/lib/apk/packages"; file_ext=".list"; }
+
+		if [ "$USE_TABLES" = "iptables" ]; then
+			dep_list="iptables-mod-tproxy iptables-mod-socket iptables-mod-iprange iptables-mod-conntrack-extra kmod-ipt-nat"
+		else
+			dep_list="kmod-nft-socket kmod-nft-tproxy kmod-nft-nat"
+			local v_num=$(echo "$dnsmasq_ver" | tr -cd '0-9')
+			if [ "${v_num:-0}" -lt 290 ]; then
+				echolog "提示：Dnsmasq ($dnsmasq_ver) 低于 2.90，建议升级以增强稳定性。"
+			fi
+		fi
+		local pkg
+		for pkg in $dep_list; do
+			if [ ! -s "${file_path}/${pkg}${file_ext}" ]; then
+				echolog "警告：${USE_TABLES} 透明代理缺失基础依赖 ${pkg}！"
+			fi
+		done
+	else
+		echolog "警告：不满足任何透明代理系统环境。"
+	fi
+}
+
 add_dns_into_ipset() {
 	case "$1" in
 	gfw) ipset add gfwlist ${2%:*} 2>/dev/null ;;
@@ -211,8 +283,10 @@ start_dns() {
 	local run_mode="$(uci_get_by_type global run_mode)"
 
 	if [ "$ssrplus_dns" != "0" ]; then
-		if [ -n "$dnsserver" ]; then
-			add_dns_into_ipset $run_mode $dnsserver
+		if [ "$HAS_IPSET" -eq 1 ]; then
+			if [ -n "$dnsserver" ]; then
+				add_dns_into_ipset $run_mode $dnsserver
+			fi
 		fi
 		case "$ssrplus_dns" in
 		1)
@@ -236,12 +310,14 @@ start_dns() {
 			output=$(for i in $(echo $mosdns_dnsserver | sed "s/,/ /g"); do
 				dnsserver=${i%:*}
 				dnsserver=${i##*/}
-				add_dns_into_ipset $run_mode $dnsserver
+				if [ "$HAS_IPSET" -eq 1 ]; then
+					add_dns_into_ipset $run_mode $dnsserver
+				fi
 				echo "            - addr: $i"
 				echo "              enable_pipeline: true"
 			done)
 
-			awk -v line=14 -v text="$output" 'NR == line+1 {print text} 1' /etc/ssrplus/mosdns-config.yaml | sed "s/DNS_PORT/$dns_port/g" > $TMP_PATH/mosdns-config.yaml
+			awk -v line=14 -v text="$output" 'NR == line+1 {print text} 1' /etc/ssrplus/mosdns-config.yaml | sed "s/DNS_PORT/$dns_port/g" | sed "s/\(concurrent:\).*/\1 $(echo "$mosdns_dnsserver" | sed 's/,/ /g' | wc -w)/g"> $TMP_PATH/mosdns-config.yaml
 			if [ "$mosdns_ipv6" == "0" ]; then
 				sed -i "s/DNS_MODE/main_sequence_with_IPv6/g" $TMP_PATH/mosdns-config.yaml
 			else
@@ -535,15 +611,18 @@ gen_config_file() { #server1 type2 code3 local_port4 socks_port5 chain6 threads5
 }
 
 start_udp() {
-	local type=$(uci_get_by_name $UDP_RELAY_SERVER type)
-	local has_ss_type=$(uci_get_by_type server_subscribe ss_type)
+	local udp_relay_server_type=$(uci_get_by_name $UDP_RELAY_SERVER type)
+	local type=$udp_relay_server_type
+	if [ "$udp_relay_server_type" = "ss-rust" ] || [ "$udp_relay_server_type" = "ss-libev" ]; then
+		type="ss"
+	fi
 	redir_udp=1
 	case "$type" in
 	ss | ssr)
 		gen_config_file $UDP_RELAY_SERVER $type 2 $tmp_udp_port
-		if [ "$has_ss_type" = "ss-libev" -o "$type" = "ssr" ]; then
+		if [ "$udp_relay_server_type" = "ss-libev" ] || [ "$udp_relay_server_type" = "ssr" ]; then
 			ss_program="$(first_type ${type}-redir)"
-		elif [ "$has_ss_type" = "ss-rust" ]; then
+		elif [ "$udp_relay_server_type" = "ss-rust" ]; then
 			ss_program="$(first_type ${type}local)"
 		fi
 		echolog "$(get_name $type) program is: $ss_program"
@@ -583,7 +662,7 @@ start_udp() {
 		gen_config_file $UDP_RELAY_SERVER $type 2 $tmp_udp_local_port
 		ln_start_bin $(first_type tuic-client) tuic-client --config $udp_config_file
 		ln_start_bin $(first_type ipt2socks) ipt2socks -U -b 0.0.0.0 -4 -s 127.0.0.1 -p $tmp_udp_local_port -l $tmp_udp_port
-		echolog "UDP TPROXY Relay:tuic-client $($(first_type tuic-client) --version) Started!"
+		echolog "UDP TPROXY Relay:$($(first_type tuic-client) --version) Started!"
 		echolog "TUIC UDP TPROXY Relay not supported!"
 		#redir_udp=0
 		#ARG_UDP=""
@@ -648,7 +727,7 @@ shunt_dns_command() {
 			echo "              socks5: \"127.0.0.1:$tmp_port\""
 			echo "              enable_pipeline: true"
 		done)
-		awk -v line=14 -v text="$output" 'NR == line+1 {print text} 1' /etc/ssrplus/mosdns-config.yaml | sed "s/DNS_PORT/$tmp_shunt_dns_port/g" > $TMP_PATH/mosdns-config-shunt.yaml
+		awk -v line=14 -v text="$output" 'NR == line+1 {print text} 1' /etc/ssrplus/mosdns-config.yaml | sed "s/DNS_PORT/$tmp_shunt_dns_port/g" | sed "s/\(concurrent:\).*/\1 $(echo "$mosdns_dnsserver" | sed 's/,/ /g' | wc -w)/g" > $TMP_PATH/mosdns-config-shunt.yaml
 
 		if [ "$shunt_mosdns_ipv6" == "0" ]; then
 			sed -i "s/DNS_MODE/main_sequence_with_IPv6/g" $TMP_PATH/mosdns-config-shunt.yaml
@@ -782,14 +861,17 @@ shunt_dns_config_file_port() {
 }
 
 start_shunt() {
-	local type=$(uci_get_by_name $SHUNT_SERVER type)
-	local has_ss_type=$(uci_get_by_type server_subscribe ss_type)
+	local shunt_server_type=$(uci_get_by_name $SHUNT_SERVER type)
+	local type=$shunt_server_type
+	if [ "$shunt_server_type" = "ss-rust" ] || [ "$shunt_server_type" = "ss-libev" ]; then
+		type="ss"
+	fi
 	case "$type" in
 	ss | ssr)
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_shunt_port
-		if [ "$has_ss_type" = "ss-libev" -o "$type" = "ssr" ]; then
+		if [ "$shunt_server_type" = "ss-libev" ] || [ "$shunt_server_type" = "ssr" ]; then
 			ss_program="$(first_type ${type}-redir)"
-		elif [ "$has_ss_type" = "ss-rust" ]; then
+		elif [ "$shunt_server_type" = "ss-rust" ]; then
 			ss_program="$(first_type ${type}local)"
 		fi
 		echolog "$(get_name $type) program is: $ss_program"
@@ -804,9 +886,9 @@ start_shunt() {
 			local tmp_port=$tmp_local_port
 		else
 			local tmp_port=$tmp_shunt_local_port
-			if [ "$has_ss_type" = "ss-libev" -o "$type" = "ssr" ]; then
+			if [ "$shunt_server_type" = "ss-libev" ] || [ "$shunt_server_type" = "ssr" ]; then
 				dns_ss_program="$(first_type ${type}-local)"
-			elif [ "$has_ss_type" = "ss-rust" ]; then
+			elif [ "$shunt_server_type" = "ss-rust" ]; then
 				dns_ss_program="$(first_type ${type}local)"
 			fi
 			# 获取当前软链接指向的执行文件路径
@@ -875,7 +957,7 @@ start_shunt() {
 		gen_config_file $SHUNT_SERVER $type 3 $tmp_port		# make a tuic socks :304
 		ln_start_bin $(first_type tuic-client) tuic-client --config $shunt_dns_config_file
 		shunt_dns_command $tmp_port
-		echolog "Netflix Separated Shunt Server:tuic-client $($(first_type tuic-client) --version) Started!"
+		echolog "Netflix Separated Shunt Server:$($(first_type tuic-client) --version) Started!"
 		# FIXME: ipt2socks cannot handle udp reply from tuic
 		#redir_udp=0
 		;;
@@ -933,14 +1015,17 @@ start_local() {
 	[ "$LOCAL_SERVER" = "nil" ] && return 1
 	local local_port=$(uci_get_by_type socks5_proxy local_port)
 	[ "$LOCAL_SERVER" == "$SHUNT_SERVER" ] && tmp_local_port=$local_port
-	local type=$(uci_get_by_name $LOCAL_SERVER type)
-	local has_ss_type=$(uci_get_by_type server_subscribe ss_type)
+	local local_server_type=$(uci_get_by_name $LOCAL_SERVER type)
+	local type=$local_server_type
+	if [ "$local_server_type" = "ss-rust" ] || [ "$local_server_type" = "ss-libev" ]; then
+		type="ss"
+	fi
 	case "$type" in
 	ss | ssr)
 		gen_config_file $LOCAL_SERVER $type 4 $local_port
-		if [ "$has_ss_type" = "ss-libev" -o "$type" = "ssr" ]; then
+		if [ "$local_server_type" = "ss-libev" ] || [ "$local_server_type" = "ssr" ]; then
 			ss_program="$(first_type ${type}-local)"
-		elif [ "$has_ss_type" = "ss-rust" ]; then
+		elif [ "$local_server_type" = "ss-rust" ]; then
 			ss_program="$(first_type ${type}local)"
 		fi
 		echolog "$(get_name $type) program is: $ss_program"
@@ -981,7 +1066,7 @@ start_local() {
 		if [ "$_local" == "2" ]; then
 			gen_config_file $LOCAL_SERVER $type 4 $local_port
 			ln_start_bin $(first_type tuic-client) tuic-client --config $local_config_file
-			echolog "Global Socks5:tuic-client $($(first_type tuic-client) --version) Started!"
+			echolog "Global Socks5:$($(first_type tuic-client) --version) Started!"
 		fi
 		;;
 	shadowtls)
@@ -1037,16 +1122,28 @@ Start_Run() {
 		local socks_port=$(uci_get_by_type socks5_proxy local_port)
 		tcp_config_file=$TMP_PATH/local-ssr-retcp.json
 		[ "$mode" == "tcp,udp" ] && tcp_config_file=$TMP_PATH/local-udp-ssr-retcp.json
+		#[ "$mode" == "tcp,udp" ] && {
+		#	if [ "$USE_TABLES" = "nftables" ]; then
+		#		# nftables / fw4
+		#		tcp_config_file=$TMP_PATH/local-nft-ssr-retcp.json
+		#	elif [ "$USE_TABLES" = "iptables" ]; then
+		#		# iptables / fw3
+		#		tcp_config_file=$TMP_PATH/local-udp-ssr-retcp.json
+		#	fi
+		#}
 	fi
 	local tcp_port=$(uci_get_by_name $GLOBAL_SERVER local_port)
-	local type=$(uci_get_by_name $GLOBAL_SERVER type)
-	local has_ss_type=$(uci_get_by_type server_subscribe ss_type)
+	local global_server_type=$(uci_get_by_name $GLOBAL_SERVER type)
+	local type=$global_server_type
+	if [ "$global_server_type" = "ss-rust" ] || [ "$global_server_type" = "ss-libev" ]; then
+		type="ss"
+	fi
 	case "$type" in
 	ss | ssr)
 		gen_config_file $GLOBAL_SERVER $type 1 $tcp_port
-		if [ "$has_ss_type" = "ss-libev" -o "$type" = "ssr" ]; then
+		if [ "$global_server_type" = "ss-libev" ] || [ "$global_server_type" = "ssr" ]; then
 			ss_program="$(first_type ${type}-redir)"
-		elif [ "$has_ss_type" = "ss-rust" ]; then
+		elif [ "$global_server_type" = "ss-rust" ]; then
 			ss_program="$(first_type ${type}local)"
 		fi
 		echolog "$(get_name $type) program is: $ss_program"
@@ -1092,9 +1189,9 @@ Start_Run() {
 		if [ -n $socks_port ] && [ $GLOBAL_SERVER == $LOCAL_SERVER ]; then #start a new tuic instance
 			gen_config_file $GLOBAL_SERVER $type 4 $socks_port
 			ln_start_bin $(first_type tuic-client) tuic-client --config $local_config_file
-			echolog "Global Socks5:tuic-client $($(first_type tuic-client) --version) Started!"
+			echolog "Global Socks5:$($(first_type tuic-client) --version) Started!"
 		fi
-		echolog "Main node:tuic-client $($(first_type tuic-client) --version) Started!"
+		echolog "Main node:$($(first_type tuic-client) --version) Started!"
 		;;
 	shadowtls)
 		if [ -z "$socks_port" ]; then
@@ -1169,10 +1266,14 @@ load_config() {
 		# 没有开启 设置为 nil
 		SHUNT_SERVER=nil
 	fi
+	#tcp_config_file=$TMP_PATH/tcp-udp-dual-ssr-retcp.json
 	tcp_config_file=$TMP_PATH/tcp-only-ssr-retcp.json
 	case "$UDP_RELAY_SERVER" in
 	nil)
+		#mode="tcp,udp"
 		mode="tcp"
+		ARG_UDP=""
+		udp_config_file=""
 		;;
 	$GLOBAL_SERVER | same)
 		mode="tcp,udp"
@@ -1185,6 +1286,7 @@ load_config() {
 		udp_config_file=$TMP_PATH/udp-only-ssr-reudp.json
 		ARG_UDP="-U"
 		start_udp
+		#mode="tcp,udp"
 		mode="tcp"
 		;;
 	esac
@@ -1258,18 +1360,36 @@ start_server() {
 		[ "$(uci_get_by_name $1 enable 0)" == "0" ] && return 1
 		let server_count=server_count+1
 		if [ "$server_count" == "1" ]; then
-			if ! (iptables-save -t filter | grep SSR-SERVER-RULE >/dev/null); then
-				iptables -N SSR-SERVER-RULE && iptables -t filter -I INPUT -j SSR-SERVER-RULE
+			if [ "$USE_TABLES" = "nftables" ]; then
+				# nftables / fw4
+				if nft list table inet fw4 >/dev/null 2>&1; then
+					if ! nft list chain inet fw4 SSR-SERVER-RULE >/dev/null 2>&1; then
+						nft add chain inet fw4 SSR-SERVER-RULE 2>/dev/null
+					fi
+					if ! nft list chain inet fw4 input 2>/dev/null | grep -q "jump SSR-SERVER-RULE"; then
+						nft insert rule inet fw4 input jump SSR-SERVER-RULE comment \"SSR Server Input Hook\" 2>/dev/null
+					fi
+					nft flush chain inet fw4 SSR-SERVER-RULE 2>/dev/null
+				fi
+			elif [ "$USE_TABLES" = "iptables" ]; then
+				# iptables / fw3
+				if ! (iptables-save -t filter | grep -q "SSR-SERVER-RULE"); then
+					iptables -N SSR-SERVER-RULE
+					iptables -t filter -I INPUT -j SSR-SERVER-RULE
+				fi
 			fi
 		fi
-		local type=$(uci_get_by_name $1 type)
-		local has_ss_type=$(uci_get_by_type server_subscribe ss_type)
+		local node_type=$(uci_get_by_name $1 type)
+		local type=$node_type
+		if [ "$node_type" = "ss-rust" ] || [ "$node_type" = "ss-libev" ]; then
+			type="ss"
+		fi
 		case "$type" in
 		ss | ssr)
 			gen_service_file ${type} $1 $TMP_PATH/ssr-server$server_count.json
-			if [ "$has_ss_type" = "ss-libev" -o "$type" = "ssr" ]; then
+			if [ "$node_type" = "ss-libev" ] || [ "$node_type" = "ssr" ]; then
 				ss_program="$(first_type ${type}-server)"
-			elif [ "$has_ss_type" = "ss-rust" ]; then
+			elif [ "$node_type" = "ss-rust" ]; then
 				ss_program="$(first_type ${type}server)"
 			fi
 			# 获取当前软链接指向的执行文件路径
@@ -1283,12 +1403,26 @@ start_server() {
 			;;
 		socks5)
 			[ -e /proc/sys/net/ipv6 ] && local listenip='-i ::'
-			ln_start_bin $(first_type microsocks) microsocks $listenip -p $(uci_get_by_name $1 server_port) -1 -u $(uci_get_by_name $1 username) -P $(uci_get_by_name $1 password) ssr-server$server_count
+			local username=$(uci_get_by_name $1 username)
+			local password=$(uci_get_by_name $1 password)
+			local auth_opts=""
+			if [ -n "$username" ] && [ -n "$password" ]; then
+				auth_opts="-u $username -P $password"
+			fi
+			ln_start_bin $(first_type microsocks) microsocks $listenip -p $(uci_get_by_name $1 server_port) -1 $auth_opts ssr-server$server_count
 			echolog "Server:Socks5 Server$server_count Started!"
 			;;
 		esac
-		iptables -t filter -A SSR-SERVER-RULE -p tcp --dport $(uci_get_by_name $1 server_port) -j ACCEPT
-		iptables -t filter -A SSR-SERVER-RULE -p udp --dport $(uci_get_by_name $1 server_port) -j ACCEPT
+		server_port=$(uci_get_by_name $1 server_port)
+		if [ "$USE_TABLES" = "nftables" ]; then
+			# nftables / fw4
+			nft add rule inet fw4 SSR-SERVER-RULE tcp dport $server_port accept
+			nft add rule inet fw4 SSR-SERVER-RULE udp dport $server_port accept
+		elif [ "$USE_TABLES" = "iptables" ]; then
+			# iptables / fw3
+			iptables -t filter -A SSR-SERVER-RULE -p tcp --dport $server_port -j ACCEPT
+			iptables -t filter -A SSR-SERVER-RULE -p udp --dport $server_port -j ACCEPT
+		fi
 		return 0
 	}
 	gen_serv_include() {
@@ -1297,17 +1431,37 @@ start_server() {
 		if [ ! -f $FWI ]; then
 			echo '#!/bin/sh' >$FWI
 		fi
-		extract_rules() {
-			echo "*filter"
-			iptables-save -t filter | grep SSR-SERVER-RULE | sed -e "s/^-A INPUT/-I INPUT/"
-			echo 'COMMIT'
-		}
-		cat <<-EOF >>$FWI
-			iptables-save -c | grep -v "SSR-SERVER" | iptables-restore -c
-			iptables-restore -n <<-EOT
-			$(extract_rules)
-			EOT
-		EOF
+		if [ "$USE_TABLES" = "nftables" ]; then
+			# nftables / fw4
+			cat <<-'EOF' >>"$FWI"
+				# 确保表存在
+				if nft list table inet fw4 >/dev/null 2>&1; then
+					# 如果不存在 SSR-SERVER-RULE 链，则创建
+					if ! nft list chain inet fw4 SSR-SERVER-RULE >/dev/null 2>&1; then
+						nft add chain inet fw4 SSR-SERVER-RULE 2>/dev/null
+					fi
+					# 从 input 链跳转到 SSR-SERVER-RULE（如果未添加）
+					if ! nft list chain inet fw4 input | grep -q 'jump SSR-SERVER-RULE'; then
+						nft insert rule inet fw4 input jump SSR-SERVER-RULE comment \"SSR Server Input Hook\" 2>/dev/null
+					fi
+					# 已存在则清空链
+					nft flush chain inet fw4 SSR-SERVER-RULE 2>/dev/null
+				fi
+			EOF
+		elif [ "$USE_TABLES" = "iptables" ]; then
+			# iptables / fw3
+			extract_rules() {
+				echo "*filter"
+				iptables-save -t filter | grep SSR-SERVER-RULE | sed -e "s/^-A INPUT/-I INPUT/"
+				echo 'COMMIT'
+			}
+			cat <<-EOF >>$FWI
+				iptables-save -c | grep -v "SSR-SERVER" | iptables-restore -c
+				iptables-restore -n <<-EOT
+				$(extract_rules)
+				EOT
+			EOF
+		fi
 	}
 
 	config_load $NAME
@@ -1332,6 +1486,44 @@ start_monitor() {
 		if [ $total_count -gt 0 ]; then
 			service_start /usr/bin/ssr-monitor $server_count $redir_tcp $redir_udp $kcp_enable_flag $local_enable $pdnsd_enable_flag
 		fi
+	fi
+}
+
+start_xhttp_addr() {
+	local xhttp_addr_file="/etc/ssrplus/xhttp_address.txt"
+	local tmp_file="/tmp/.xhttp_addr.tmp"
+
+	# 收集所有节点的 download_address 值，去掉空行并去重排序
+	{
+		for sec in "$GLOBAL_SERVER" "$SHUNT_SERVER" "$UDP_RELAY_SERVER"; do
+			local addr
+			addr=$(uci_get_by_name "$sec" download_address)
+			[ -n "$addr" ] && echo "$addr"
+		done
+	} | grep -v '^$' | sort -u > "$tmp_file"
+
+	# 如果没有 download_address 地址，删除旧文件并退出
+	if [ ! -s "$tmp_file" ]; then
+		[ -f "$xhttp_addr_file" ] && rm -f "$xhttp_addr_file"
+		rm -f "$tmp_file"
+		return 0
+	fi
+
+	# 比较 MD5 判断 download_address 地址是否有变化
+	local md5_new md5_old
+	md5_new=$(md5sum "$tmp_file" | awk '{print $1}')
+	if [ -f "$xhttp_addr_file" ]; then
+		md5_old=$(md5sum "$xhttp_addr_file" | awk '{print $1}')
+	else
+		md5_old=""
+	fi
+
+	# MD5 不同更新 download_address 地址文件
+	if [ "$md5_new" != "$md5_old" ]; then
+		mv -f "$tmp_file" "$xhttp_addr_file"
+		logger -t ssrplus-xhttp "download_address.txt updated"
+	else
+		rm -f "$tmp_file"
 	fi
 }
 
@@ -1377,6 +1569,17 @@ start_rules() {
 		2) echo "-O" ;;
 		esac
 	}
+	if [ "$USE_TABLES" = "nftables" ]; then
+		ARG_A="-A"
+		# Restore nft persistence rules
+		if [ -f "$BACKUP_FILE" ]; then
+			mkdir -p "$PERSIST_DIR"
+			mv "$BACKUP_FILE" "$PERSIST_FILE"
+			rm -rf "$BACKUP_DIR"
+		fi
+	elif [ "$USE_TABLES" = "iptables" ]; then
+		ARG_A=""
+	fi
 	/usr/share/shadowsocksr/gfw2ipset.sh
 	/usr/bin/ssr-rules \
 		-s "$server" \
@@ -1396,7 +1599,8 @@ start_rules() {
 		-N "$shunt_ip" \
 		-M "$(uci_get_by_type global netflix_proxy 0)" \
 		-I "/etc/ssrplus/netflixip.list" \
-		$(get_arg_out) $(gfwmode) $ARG_UDP
+		$(get_arg_out) $(gfwmode) $ARG_UDP $ARG_A
+
 	return $?
 }
 
@@ -1405,10 +1609,21 @@ start() {
 	echolog "----------start------------"
 	mkdir -p /var/run /var/lock /var/log $DNSMASQ_CONF_DIR $TMP_BIN_PATH $TMP_DNSMASQ_PATH
 	echo "conf-dir=${TMP_DNSMASQ_PATH}" >"$DNSMASQ_CONF_DIR/dnsmasq-ssrplus.conf"
+	check_run_environment
 	if load_config; then
 		Start_Run
+		start_xhttp_addr
 		start_rules
 		start_dns
+		# Restore ipsets after rules creation
+		if [ "$HAS_IPSET" -eq 1 ]; then
+			for setname in gfwlist china blacklist whitelist netflix; do
+				[ "$setname" = "gfwlist" ] && [ "$run_mode" != "gfw" ] && continue
+				if [ -f "/tmp/ssrplus_save/${setname}.save" ]; then
+					ipset restore -! < "/tmp/ssrplus_save/${setname}.save" 2>/dev/null
+				fi
+			done
+		fi
 		add_cron
 		start_switch
 	else
@@ -1419,15 +1634,31 @@ start() {
 			echolog "未启动主节点，广告过滤正在加载。"
 			cp -f /etc/ssrplus/ad.conf $TMP_DNSMASQ_PATH/
 			if [ -f "$TMP_DNSMASQ_PATH/ad.conf" ]; then
-				for line in $(cat /etc/ssrplus/black.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/ad.conf; done
-				for line in $(cat /etc/ssrplus/white.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/ad.conf; done
-				for line in $(cat /etc/ssrplus/deny.list); do sed -i "/$line/d" $TMP_DNSMASQ_PATH/ad.conf; done
+				# Optimize: Batch filter using grep instead of looping sed
+				for list_file in /etc/ssrplus/black.list /etc/ssrplus/white.list /etc/ssrplus/deny.list; do
+					if [ -s "$list_file" ]; then
+						# Clean list file (remove comments and empty lines)
+						grep -vE '^\s*#|^\s*$' "$list_file" > "${list_file}.clean"
+						if [ -s "${list_file}.clean" ]; then
+							grep -v -F -f "${list_file}.clean" "$TMP_DNSMASQ_PATH/ad.conf" > "$TMP_DNSMASQ_PATH/ad.conf.tmp"
+							mv "$TMP_DNSMASQ_PATH/ad.conf.tmp" "$TMP_DNSMASQ_PATH/ad.conf"
+						fi
+						rm -f "${list_file}.clean"
+					fi
+				done
 			fi
 			echolog "广告过滤加载完毕。"
 		fi
 	fi
 	/etc/init.d/dnsmasq restart >/dev/null 2>&1
 	check_server
+	if [ "$USE_TABLES" = "nftables" ]; then
+		local CURRENT_SERVER="$(uci_get_by_type global global_server nil)"
+		if [ "$CURRENT_SERVER" != "nil" ]; then
+			uci set shadowsocksr.@global[0].old_global_server="$CURRENT_SERVER"
+			uci commit shadowsocksr
+		fi
+	fi
 	start_server
 	start_monitor
 	clean_log
@@ -1444,12 +1675,67 @@ boot() {
 stop() {
 	unlock
 	set_lock
+	check_run_environment
+	# Save ipsets before stopping to persist transparent proxy state
+	if [ "$HAS_IPSET" -eq 1 ]; then
+		mkdir -p /tmp/ssrplus_save
+		local run_mode="$(uci_get_by_type global run_mode)"
+		if [ "$run_mode" = "gfw" ]; then
+			ipset save gfwlist > /tmp/ssrplus_save/gfwlist.save 2>/dev/null
+		fi
+		for setname in china blacklist whitelist netflix; do
+			ipset save $setname > /tmp/ssrplus_save/$setname.save 2>/dev/null
+		done
+	fi
+	if [ "$USE_TABLES" = "nftables" ]; then
+		# Save nft rules before stopping to persist transparent proxy state
+		if [ -f "$PERSIST_FILE" ]; then
+			mkdir -p "$BACKUP_DIR"
+			mv "$PERSIST_FILE" "$BACKUP_FILE"
+		fi
+		/usr/bin/ssr-rules -K
+		local OLD_SERVER="$(uci_get_by_type global old_global_server nil)"
+		local NEW_SERVER="$(uci_get_by_type global global_server nil)"
+		if [ "$OLD_SERVER" != "nil" ] && [ "$NEW_SERVER" != "nil" ] && [ "$OLD_SERVER" != "$NEW_SERVER" ]; then
+			/usr/bin/ssr-rules -X
+		fi
+		uci delete shadowsocksr.@global[0].old_global_server 2>/dev/null
+		uci commit shadowsocksr
+	fi
 	/usr/bin/ssr-rules -f
-	local srulecount=$(iptables -L | grep SSR-SERVER-RULE | wc -l)
+	local srulecount=0
+	if [ "$USE_TABLES" = "nftables" ]; then
+		# nftables / fw4
+		#local srulecount=$(nft list ruleset 2>/dev/null | grep -c 'SSR-SERVER-RULE')
+		if nft list chain inet fw4 SSR-SERVER-RULE >/dev/null 2>&1; then
+			srulecount=$(nft list chain inet fw4 SSR-SERVER-RULE | grep SSR-SERVER-RULE | wc -l)
+		fi
+	elif [ "$USE_TABLES" = "iptables" ]; then
+		# iptables / fw3
+		srulecount=$(iptables -L | grep SSR-SERVER-RULE | wc -l)
+	fi
 	if [ $srulecount -gt 0 ]; then
-		iptables -F SSR-SERVER-RULE
-		iptables -t filter -D INPUT -j SSR-SERVER-RULE
-		iptables -X SSR-SERVER-RULE 2>/dev/null
+		if [ "$USE_TABLES" = "nftables" ]; then
+			# nftables / fw4
+			if nft list table inet fw4 >/dev/null 2>&1; then
+				if nft list chain inet fw4 SSR-SERVER-RULE >/dev/null 2>&1; then
+					for handle in $(nft --handle list chain inet fw4 input 2>/dev/null | \
+						grep 'jump SSR-SERVER-RULE' | awk '{for(i=1;i<=NF;i++) if($i=="handle") print $(i+1)}'); do
+						nft delete rule inet fw4 input handle $handle 2>/dev/null || true
+					done
+					nft flush chain inet fw4 SSR-SERVER-RULE 2>/dev/null || true
+					nft delete chain inet fw4 SSR-SERVER-RULE 2>/dev/null || true
+				fi
+			fi
+		elif [ "$USE_TABLES" = "iptables" ]; then
+			# iptables / fw3
+			if iptables-save -t filter | grep -q "SSR-SERVER-RULE"; then
+				logger -t ssr-rules "Flushing and deleting SSR-SERVER-RULE chain (iptables)"
+				iptables -F SSR-SERVER-RULE 2>/dev/null || true
+				iptables -t filter -D INPUT -j SSR-SERVER-RULE 2>/dev/null || true
+				iptables -X SSR-SERVER-RULE 2>/dev/null || true
+			fi
+		fi
 	fi
 	if [ -z "$switch_server" ]; then
 		$PS -w | grep -v "grep" | grep ssr-switch | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
@@ -1457,6 +1743,7 @@ stop() {
 		killall -q -9 kcptun-client
 	fi
 	$PS -w | grep -v "grep" | grep ssr-monitor | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
+	$PS -w | grep -v "grep" | grep ssr-rules | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	$PS -w | grep -v "grep" | grep "sleep 0000" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 &
 	( \
 		# Graceful kill first, so programs have the chance to stop its subprocesses
@@ -1465,7 +1752,7 @@ stop() {
 		# Force kill hanged programs
 		$PS -w | grep -v "grep" | grep "$TMP_PATH" | awk '{print $1}' | xargs kill -9 >/dev/null 2>&1 ; \
 	)
-	killall -q -9 v2ray-plugin obfs-local xray-plugin
+	killall -q -9 v2ray-plugin obfs-local xray-plugin shadow-tls
 	rm -f /var/lock/ssr-monitor.lock
 	if [ "$(uci -q get "dhcp.@dnsmasq[0]._unused_ssrp_changed")" = "1" ]; then
 		uci -q del "dhcp.@dnsmasq[0].noresolv"
@@ -1492,8 +1779,8 @@ reset() {
 	stop
 	set_lock
 	rm -rf /etc/config/shadowsocksr $LOG_FILE
+	[ -f "/etc/ssrplus/xhttp_address.txt" ] && rm -f /etc/ssrplus/xhttp_address.txt
 	touch /etc/config/shadowsocksr $LOG_FILE
 	cp /usr/share/shadowsocksr/shadowsocksr.config /etc/config/shadowsocksr
 	unset_lock
 }
-

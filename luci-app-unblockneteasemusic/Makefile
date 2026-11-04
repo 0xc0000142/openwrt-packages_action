@@ -1,23 +1,14 @@
-# SPDX-License-Identifier: GPL-3.0-only
-#
-# Copyright (C) 2019-2022 Tianling Shen <cnsztl@immortalwrt.org>
-
+# Copyright (C) 2020 Silvan
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for UnblockNeteaseMusic
-LUCI_DEPENDS:=+dnsmasq-full +ipset +node \
-	@(PACKAGE_libustream-mbedtls||PACKAGE_libustream-openssl||PACKAGE_libustream-wolfssl)
+LUCI_DEPENDS:= +bash +busybox +unzip +coreutils +coreutils-nohup +curl +dnsmasq-full +ipset +luci-compat +openssl-util +UnblockNeteaseMusic
 LUCI_PKGARCH:=all
-
 PKG_NAME:=luci-app-unblockneteasemusic
-PKG_VERSION:=2.14
-PKG_RELEASE:=3
+PKG_VERSION:=1.14
+PKG_RELEASE:=1
 
-PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
-
-define Package/luci-app-unblockneteasemusic/conffiles
-/etc/config/unblockneteasemusic
-endef
+PKG_MAINTAINER:=https://github.com/cnsilvan/luci-app-unblockneteasemusic
 
 include $(TOPDIR)/feeds/luci/luci.mk
 

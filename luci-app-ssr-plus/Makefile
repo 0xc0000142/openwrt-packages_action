@@ -1,10 +1,14 @@
 include $(TOPDIR)/rules.mk
 
+LUCI_TITLE:=luci-app-ssr-plus
+LUCI_PKGARCH:=all
 PKG_NAME:=luci-app-ssr-plus
-PKG_VERSION:=189
-PKG_RELEASE:=7
+PKG_VERSION:=190
+PKG_RELEASE:=3
 
 PKG_CONFIG_DEPENDS:= \
+	CONFIG_PACKAGE_$(PKG_NAME)_Iptables_Transparent_Proxy \
+	CONFIG_PACKAGE_$(PKG_NAME)_Nftables_Transparent_Proxy \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_NONE_V2RAY \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_V2ray \
 	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_Xray \
@@ -36,9 +40,9 @@ PKG_CONFIG_DEPENDS:= \
 LUCI_TITLE:=SS/SSR/V2Ray/Trojan/NaiveProxy/Tuic/ShadowTLS/Hysteria/Socks5/Tun LuCI interface
 LUCI_PKGARCH:=all
 LUCI_DEPENDS:= \
-	+coreutils +coreutils-base64 +dns2tcp +dnsmasq-full +@PACKAGE_dnsmasq_full_ipset +ipset +kmod-ipt-nat +jq \
-	+ip-full +iptables +iptables-mod-tproxy +lua +lua-neturl +libuci-lua +microsocks \
-	+tcping +resolveip +shadowsocksr-libev-ssr-check +wget-ssl \
+	+coreutils +coreutils-base64 +dns2tcp +dnsmasq-full \
+	+jq +ip-full +lua +lua-neturl +libuci-lua +microsocks \
+	+tcping +resolveip +shadowsocksr-libev-ssr-check +curl +nping \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:curl \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_V2ray:v2ray-core \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Xray:curl \
@@ -60,7 +64,7 @@ LUCI_DEPENDS:= \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Libev_Server:shadowsocks-libev-ss-server \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Rust_Client:shadowsocks-rust-sslocal \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Rust_Server:shadowsocks-rust-ssserver \
-	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Simple_Obfs:simple-obfs \
+	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Simple_Obfs:simple-obfs-client \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_V2ray_Plugin:v2ray-plugin \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Client:shadowsocksr-libev-ssr-local \
 	+PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Client:shadowsocksr-libev-ssr-redir \
@@ -69,7 +73,33 @@ LUCI_DEPENDS:= \
 
 
 define Package/$(PKG_NAME)/config
-select PACKAGE_luci-lib-ipkg if PACKAGE_$(PKG_NAME)
+select PACKAGE_luci-lua-runtime if PACKAGE_$(PKG_NAME)
+
+choice
+	prompt "Transparent Proxy Backend"
+	default PACKAGE_$(PKG_NAME)_Iptables_Transparent_Proxy if ! PACKAGE_firewall4
+	default PACKAGE_$(PKG_NAME)_Nftables_Transparent_Proxy if PACKAGE_firewall4
+
+config PACKAGE_$(PKG_NAME)_Iptables_Transparent_Proxy
+	bool "Iptables Transparent Proxy"
+	select PACKAGE_dnsmasq_full_ipset
+	select PACKAGE_ipset
+	select PACKAGE_iptables
+	select PACKAGE_iptables-zz-legacy
+	select PACKAGE_iptables-mod-conntrack-extra
+	select PACKAGE_iptables-mod-iprange
+	select PACKAGE_iptables-mod-socket
+	select PACKAGE_iptables-mod-tproxy
+	select PACKAGE_kmod-ipt-nat
+
+config PACKAGE_$(PKG_NAME)_Nftables_Transparent_Proxy
+	bool "Nftables Transparent Proxy"
+	select PACKAGE_dnsmasq_full_nftset
+	select PACKAGE_nftables
+	select PACKAGE_kmod-nft-socket
+	select PACKAGE_kmod-nft-tproxy
+	select PACKAGE_kmod-nft-nat
+endchoice
 
 choice
 	prompt "Shadowsocks Client Selection"

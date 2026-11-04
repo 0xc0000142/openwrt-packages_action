@@ -2,8 +2,10 @@ module("luci.controller.fileassistant", package.seeall)
 
 function index()
 
+    entry({"admin", "nas"}, firstchild(), "NAS", 44).dependent = false
+
     local page
-    page = entry({"admin", "system", "fileassistant"}, template("fileassistant"), _("文件管理"), 50)
+    page = entry({"admin", "nas", "fileassistant"}, template("fileassistant"), _("文件助手"), 1)
     page.i18n = "base"
     page.dependent = true
 
@@ -166,13 +168,13 @@ end
 function scandir(directory)
     local i, t, popen = 0, {}, io.popen
 
-    local pfile = popen("ls -lh \""..directory.."\" | grep -E '^d' ; ls -lh \""..directory.."\" | grep -E -v '^d|^l'")
+    local pfile = popen("ls -lh \""..directory.."\" | egrep '^d' ; ls -lh \""..directory.."\" | egrep -v '^d|^l'")
     for fileinfo in pfile:lines() do
         i = i + 1
         t[i] = fileinfo
     end
     pfile:close()
-    pfile = popen("ls -lh \""..directory.."\" | grep -E '^l' ;")
+    pfile = popen("ls -lh \""..directory.."\" | egrep '^l' ;")
     for fileinfo in pfile:lines() do
         i = i + 1
         linkindex, _, linkpath = string.find(fileinfo, "->%s+(.+)$")

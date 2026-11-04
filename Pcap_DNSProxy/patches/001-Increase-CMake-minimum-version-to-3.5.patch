@@ -1,0 +1,22 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -18,7 +18,7 @@
+ 
+ 
+ # CMake minimum version
+-cmake_minimum_required(VERSION 3.1)
++cmake_minimum_required(VERSION 3.5)
+ 
+ # Sub directories
+ add_subdirectory(Source/Pcap_DNSProxy)
+--- a/Source/Pcap_DNSProxy/CMakeLists.txt
++++ b/Source/Pcap_DNSProxy/CMakeLists.txt
+@@ -18,7 +18,7 @@
+ 
+ 
+ # CMake minimum version
+-cmake_minimum_required(VERSION 3.1)
++cmake_minimum_required(VERSION 3.5)
+ 
+ # Project name, build type and list all source files.
+ project(Pcap_DNSProxy)

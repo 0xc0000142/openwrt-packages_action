@@ -7,17 +7,28 @@ document.head.append(E('style', {'type': 'text/css'},
 .cpu-status-view-mode-entry {
 	display: inline-block;
 	cursor: pointer;
-	margin: 2px !important;
-	padding: 2px 4px;
-	border: 1px dotted;
+	margin: 2px 4px 2px 0 !important;
+	padding: 3px 5px;
+	border: 1px solid;
+	border-color: transparent;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	opacity: 0.7;
+	background-color: rgba(100 100 100 / 0.2);
+}
+.cpu-status-view-mode-entry:hover {
+	opacity: 0.9;
+}
+.cpu-status-view-mode-entry:active {
+	opacity: 1.0;
 }
 .cpu-status-view-mode-entry-checked {
 	border: 1px solid;
-	opacity: 1;
+	opacity: 1.0;
+}
+.cpu-status-view-mode-entry-checked:hover {
+	opacity: 1.0;
 }
 `));
 
@@ -57,11 +68,12 @@ return baseclass.extend({
 
 		for(let str of statItemsArray) {
 			let arr = str.split(/\s+/).slice(0, 8);
-			arr[0]  = (arr[0] === 'cpu') ? Infinity : arr[0].replace('cpu', '');
+			arr[0]  = (arr[0] == 'cpu') ? Infinity : arr[0].replace('cpu', '');
 			cpuStatArray.push(arr.map(e => Number(e)));
 		};
 
 		cpuStatArray.sort((a, b) => a[0] - b[0]);
+
 		return cpuStatArray;
 	},
 
@@ -76,7 +88,7 @@ return baseclass.extend({
 			    loadIrq  = 0,
 			    loadSirq = 0,
 			    loadAvg  = 0;
-			if(this.lastStatArray !== null && this.lastStatArray.cpuNum === c.cpuNum) {
+			if(this.lastStatArray !== null && this.lastStatArray.cpuNum == c.cpuNum) {
 				let user = c[1] - this.lastStatArray[i][1],
 				    nice = c[2] - this.lastStatArray[i][2],
 				    sys  = c[3] - this.lastStatArray[i][3],
@@ -105,7 +117,7 @@ return baseclass.extend({
 			this.table = E('table', { 'class': 'table' });
 		},
 		append(cpuNum, cpuLoadObj, cpuLoadFlag) {
-			if(cpuNum === Infinity) {
+			if(cpuNum == Infinity) {
 				this.table.append(
 					E('tr', { 'class': 'tr' }, [
 						E('td', { 'class': 'td left', 'width': '33%' },
@@ -154,7 +166,7 @@ return baseclass.extend({
 			);
 		},
 		append(cpuNum, cpuLoadObj, cpuLoadFlag) {
-			if(cpuNum === Infinity) {
+			if(cpuNum == Infinity) {
 				this.table.append(
 					E('tr', { 'class': 'tr' }, [
 						E('td', { 'class': 'td left', 'data-title': this.cpuTableTitles[0] },
@@ -198,7 +210,7 @@ return baseclass.extend({
 			this.table.append(
 				E('tr', { 'class': 'tr' }, [
 					E('td', { 'class': 'td left', 'width': '33%' },
-						(cpuNum === Infinity) ? _('Total load') : _('CPU') + ' ' + cpuNum),
+						(cpuNum == Infinity) ? _('Total load') : _('CPU') + ' ' + cpuNum),
 					E('td', { 'class': 'td' },
 						E('div', {
 								'class': 'cbi-progressbar',
@@ -245,7 +257,7 @@ return baseclass.extend({
 			this.table.append(
 				E('tr', { 'class': 'tr' }, [
 					E('td', { 'class': 'td left', 'data-title': this.cpuTableTitles[0] },
-						(cpuNum === Infinity) ? _('Total load') : _('CPU') + ' ' + cpuNum),
+						(cpuNum == Infinity) ? _('Total load') : _('CPU') + ' ' + cpuNum),
 					E('td', { 'class': 'td left', 'data-title': this.cpuTableTitles[1] },
 						E('div', {
 								'class': 'cbi-progressbar',
@@ -298,7 +310,7 @@ return baseclass.extend({
 		let cpuStatArray = this.parseProcData(cpuData);
 
 		// For single-core CPU
-		if(cpuStatArray.length === 2) {
+		if(cpuStatArray.length == 2) {
 			cpuStatArray = cpuStatArray.slice(1, 2);
 			delete this.availableViewModes[2];
 			delete this.availableViewModes[3];
@@ -331,7 +343,6 @@ return baseclass.extend({
 			viewModeEntries.push(
 				E('span', {
 					'class'     : 'cpu-status-view-mode-entry',
-					'href'      : 'javascript:void(0)',
 					'data-value': i,
 					'click'     : viewModeSelectOnClick,
 				}, v[1])
@@ -343,8 +354,7 @@ return baseclass.extend({
 		this.lastStatArray = cpuStatArray;
 
 		return E('div', { 'class': 'cbi-section' }, [
-			E('div',
-				{ 'style': 'margin-bottom:1em; padding:0 4px;' },
+			E('div', { 'style': 'margin-bottom:1em' },
 				viewModeEntries
 			),
 			cpuTable,

@@ -1,0 +1,869 @@
+source	path	destination	status	detail
+lisaac__luci-app-diskman	Parted.Makefile	parted/Makefile	imported	standalone recipe or build helper
+jerrykuku__luci-theme-argon	.	luci-theme-argon	imported	not-build-tested
+legacy-21.02	luci-app-argon-config	luci-app-argon-config	imported	legacy-fallback-needs-porting-review
+52014app__luci-theme-edge	.	luci-theme-edge	imported	not-build-tested
+sirpdboy__luci-theme-opentopd	.	luci-theme-opentopd	imported	not-build-tested
+cnsilvan__luci-app-unblockneteasemusic	./UnblockNeteaseMusic	UnblockNeteaseMusic	imported	not-build-tested
+cnsilvan__luci-app-unblockneteasemusic	./luci-app-unblockneteasemusic	luci-app-unblockneteasemusic	imported	not-build-tested
+cnsilvan__luci-app-unblockneteasemusic	./UnblockNeteaseMusic	UnblockNeteaseMusic	duplicate	selected cnsilvan__luci-app-unblockneteasemusic/./UnblockNeteaseMusic
+cnsilvan__luci-app-unblockneteasemusic	./luci-app-unblockneteasemusic	luci-app-unblockneteasemusic	duplicate	selected cnsilvan__luci-app-unblockneteasemusic/./luci-app-unblockneteasemusic
+CCnut__feed-netkeeper	./luci-app-netkeeper-interception	luci-app-netkeeper-interception	imported	not-build-tested
+CCnut__feed-netkeeper	./luci-proto-netkeeper	luci-proto-netkeeper	imported	not-build-tested
+CCnut__feed-netkeeper	./netkeeper-interception	netkeeper-interception	imported	not-build-tested
+CCnut__feed-netkeeper	./netkeeper	netkeeper	imported	not-build-tested
+EOYOHOO__UA2F	.	UA2F	imported	not-build-tested
+EOYOHOO__rkp-ipid	.	rkp-ipid	imported	not-build-tested
+0xc0000142__openwrt-r8168	.	openwrt-r8168	imported	not-build-tested
+legacy-21.02	luci-app-passwall	luci-app-passwall	imported	legacy-fallback-needs-porting-review
+kiddin9__luci-app-dnsfilter	.	luci-app-dnsfilter	imported	not-build-tested
+kiddin9__aria2	.	aria2	imported	not-build-tested
+kiddin9__luci-app-baidupcs-web	.	luci-app-baidupcs-web	imported	not-build-tested
+kiddin9__qBittorrent-Enhanced-Edition	.	qBittorrent-Enhanced-Edition	imported	not-build-tested
+kiddin9__autoshare	./autoshare-ksmbd	autoshare-ksmbd	imported	not-build-tested
+kiddin9__autoshare	./autoshare-samba	autoshare-samba	imported	not-build-tested
+kiddin9__openwrt-openvpn	./luci-app-openvpn-server	luci-app-openvpn-server	imported	not-build-tested
+kiddin9__openwrt-openvpn	./openvpn-easy-rsa-whisky	openvpn-easy-rsa-whisky	imported	not-build-tested
+BoringCat__luci-app-mentohust	.	luci-app-mentohust	imported	not-build-tested
+kiddin9__luci-app-xlnetacc	.	luci-app-xlnetacc	imported	not-build-tested
+KyleRicardo__MentoHUST-OpenWrt-ipk	.	MentoHUST-OpenWrt-ipk	imported	not-build-tested
+rufengsuixing__luci-app-autoipsetadder	.	luci-app-autoipsetadder	imported	not-build-tested
+NateLol__luci-app-beardropper	.	luci-app-beardropper	imported	not-build-tested
+riverscn__openwrt-iptvhelper	./iptvhelper	iptvhelper	imported	not-build-tested
+riverscn__openwrt-iptvhelper	./luci-app-iptvhelper	luci-app-iptvhelper	imported	not-build-tested
+project-lede__luci-app-godproxy	.	luci-app-godproxy	imported	not-build-tested
+BoringCat__luci-app-minieap	.	luci-app-minieap	imported	not-build-tested
+rufengsuixing__luci-app-onliner	.	luci-app-onliner	imported	not-build-tested
+tty228__luci-app-serverchan	.	luci-app-serverchan	imported	not-build-tested
+4IceG__luci-app-sms-tool	./luci-app-sms-tool	luci-app-sms-tool	imported	not-build-tested
+rufengsuixing__luci-app-usb3disable	.	luci-app-usb3disable	imported	not-build-tested
+alvazhang79__luci-app-advancedsetting	.	luci-app-advancedsetting	imported	not-build-tested
+silime__luci-app-xunlei	.	luci-app-xunlei	imported	not-build-tested
+ysc3839__luci-proto-minieap	.	luci-proto-minieap	imported	not-build-tested
+zzsj0928__luci-app-pushbot	.	luci-app-pushbot	imported	not-build-tested
+shanglanxin__luci-app-homebridge	.	luci-app-homebridge	imported	not-build-tested
+jerrykuku__luci-app-ttnode	.	luci-app-ttnode	imported	not-build-tested
+sirpdboy__luci-app-autotimeset	./luci-app-taskplan	luci-app-taskplan	imported	not-build-tested
+sirpdboy__luci-app-poweroffdevice	./luci-app-poweroffdevice	luci-app-poweroffdevice	imported	not-build-tested
+sirpdboy__luci-theme-kucat	.	luci-theme-kucat	imported	not-build-tested
+sirpdboy__luci-app-advancedplus	.	luci-app-advancedplus	imported	not-build-tested
+sirpdboy__luci-app-wizard	./luci-app-netwizard	luci-app-netwizard	imported	not-build-tested
+sirpdboy__luci-app-partexp	./luci-app-partexp	luci-app-partexp	imported	not-build-tested
+gSpotx2f__luci-app-cpu-status	.	luci-app-cpu-status	imported	not-build-tested
+gSpotx2f__luci-app-cpu-status-mini	.	luci-app-cpu-status-mini	imported	not-build-tested
+asvow__luci-app-tailscale	.	luci-app-tailscale	imported	not-build-tested
+lucikap__luci-app-ua2f	./luci-app-ua2f	luci-app-ua2f	imported	not-build-tested
+zhengmz__luci-app-zerotier	.	luci-app-zerotier	imported	not-build-tested
+Ardentwheel__luci-app-cifs	.	luci-app-cifs	imported	not-build-tested
+immortalwrt__luci-21.02	applications/luci-app-cifs-mount	luci-app-cifs-mount	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+immortalwrt__luci-21.02	applications/luci-app-cifs-mount	luci-app-cifs-mount	imported	legacy-fallback-needs-porting-review
+tcsr200722__luci-app-samba	.	luci-app-samba	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+tcsr200722__luci-app-samba	.	luci-app-samba	imported	not-build-tested
+tty228__luci-app-wechatpush	.	luci-app-wechatpush	duplicate	recipe luci-app-wechatpush selected tty228__luci-app-serverchan/.
+sbwml__luci-app-alist	./alist	alist	imported	not-build-tested
+sbwml__luci-app-alist	./luci-app-alist	luci-app-alist	imported	not-build-tested
+sbwml__luci-app-mosdns	./luci-app-mosdns	luci-app-mosdns	imported	legacy-fallback-needs-porting-review
+sbwml__luci-app-mosdns	./mosdns	mosdns	imported	legacy-fallback-needs-porting-review
+sbwml__luci-app-mosdns	./v2dat	v2dat	imported	legacy-fallback-needs-porting-review
+mingxiaoyu__luci-app-cloudflarespeedtest	./applications/luci-app-cloudflarespeedtest	luci-app-cloudflarespeedtest	imported	not-build-tested
+ophub__luci-app-amlogic	./luci-app-amlogic	luci-app-amlogic	imported	not-build-tested
+immortalwrt__luci-21.02	applications/luci-app-smartdns	luci-app-smartdns	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+immortalwrt__luci-21.02	applications/luci-app-smartdns	luci-app-smartdns	imported	legacy-fallback-needs-porting-review
+kuoruan__openwrt-frp	.	openwrt-frp	imported	not-build-tested
+kuoruan__openwrt-v2ray	.	openwrt-v2ray	imported	not-build-tested
+4IceG__luci-app-3ginfo-lite	./luci-app-3ginfo-lite	luci-app-3ginfo-lite	imported	not-build-tested
+4IceG__luci-app-sms-tool-js	./luci-app-sms-tool-js	luci-app-sms-tool-js	imported	not-build-tested
+4IceG__luci-app-sms-tool-js	./sms-tool	sms-tool	imported	not-build-tested
+4IceG__luci-app-modemband	./luci-app-modemband	luci-app-modemband	imported	not-build-tested
+liudf0716__luci-app-xfrpc	.	luci-app-xfrpc	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+liudf0716__luci-app-xfrpc	.	luci-app-xfrpc	imported	not-build-tested
+legacy-21.02	luci-app-xupnpd	luci-app-xupnpd	imported	legacy-fallback-needs-porting-review
+liudf0716__luci-app-apfree-wifidog	.	luci-app-apfree-wifidog	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+liudf0716__luci-app-apfree-wifidog	.	luci-app-apfree-wifidog	imported	not-build-tested
+fonlan__luci-app-poddns	.	luci-app-poddns	imported	not-build-tested
+blueberry-pie-11__luci-app-natmap	./luci-app-natmap	luci-app-natmap	imported	not-build-tested
+blueberry-pie-11__luci-app-natmap	./natmap	natmap	imported	not-build-tested
+animegasan__luci-app-droidnet	.	luci-app-droidnet	imported	not-build-tested
+danchexiaoyang__luci-app-kodexplore	.	luci-app-kodexplore	imported	not-build-tested
+legacy-21.02	luci-app-log	luci-app-log	imported	legacy-fallback-needs-porting-review
+messense__aliyundrive-webdav	./openwrt/aliyundrive-webdav	aliyundrive-webdav	imported	not-build-tested
+messense__aliyundrive-webdav	./openwrt/luci-app-aliyundrive-webdav	luci-app-aliyundrive-webdav	imported	not-build-tested
+frainzy1477__luci-app-clash	.	luci-app-clash	imported	not-build-tested
+rufengsuixing__luci-app-adguardhome	.	luci-app-adguardhome	imported	not-build-tested
+shadowsocks__luci-app-shadowsocks	.	luci-app-shadowsocks	imported	not-build-tested
+shadowsocks__openwrt-shadowsocks	.	shadowsocksr-libev	imported	not-build-tested
+lisaac__luci-app-dockerman	./applications/luci-app-dockerman	luci-app-dockerman	imported	not-build-tested
+ilxp__luci-app-ikoolproxy	.	luci-app-ikoolproxy	duplicate	recipe luci-app-ikoolproxy selected project-lede__luci-app-godproxy/.
+brvphoenix__wrtbwmon	./wrtbwmon	wrtbwmon	imported	not-build-tested
+brvphoenix__luci-app-wrtbwmon	./luci-app-wrtbwmon	luci-app-wrtbwmon	imported	not-build-tested
+jefferymvp__luci-app-koolproxyR	.	luci-app-koolproxyR	imported	not-build-tested
+peter-tank__luci-app-dnscrypt-proxy2	.	luci-app-dnscrypt-proxy2	imported	not-build-tested
+sirpdboy__luci-app-advanced	.	luci-app-advanced	imported	not-build-tested
+sirpdboy__luci-app-netdata	./luci-app-netdata	luci-app-netdata	imported	not-build-tested
+noiver__luci-app-jd-dailybonus	.	luci-app-jd-dailybonus	imported	not-build-tested
+NateLol__luci-app-oled	./luci-app-oled	luci-app-oled	imported	not-build-tested
+destan19__OpenAppFilter	./luci-app-oaf	luci-app-oaf	imported	not-build-tested
+destan19__OpenAppFilter	./oaf	oaf	imported	not-build-tested
+destan19__OpenAppFilter	./open-app-filter	open-app-filter	imported	not-build-tested
+esirplayground__luci-app-poweroff	.	luci-app-poweroff	imported	not-build-tested
+lvqier__luci-app-dnsmasq-ipset	.	luci-app-dnsmasq-ipset	imported	not-build-tested
+walkingsky__luci-wifidog	.	luci-app-wifidog	imported	not-build-tested
+peter-tank__luci-app-autorepeater	.	luci-app-autorepeater	imported	not-build-tested
+linkease__ddnsto-openwrt	./ddnsto	ddnsto	imported	not-build-tested
+linkease__ddnsto-openwrt	./luci-app-ddnsto	luci-app-ddnsto	imported	not-build-tested
+sensec__luci-app-udp2raw	.	luci-app-udp2raw	imported	not-build-tested
+LGA1150__openwrt-sysuh3c	./luci-app-sysuh3c	luci-app-sysuh3c	imported	not-build-tested
+LGA1150__openwrt-sysuh3c	./sysuh3c	sysuh3c	imported	not-build-tested
+gdck__luci-app-cupsd	./cups/cups-bjnp	cups-bjnp	imported	not-build-tested
+gdck__luci-app-cupsd	./cups/cups	cups	imported	not-build-tested
+gdck__luci-app-cupsd	./luci-app-cupsd	luci-app-cupsd	imported	not-build-tested
+4IceG__luci-app-socat	./luci-app-socat	luci-app-socat	imported	not-build-tested
+muink__luci-app-natmapt	.	luci-app-natmapt	imported	not-build-tested
+muink__openwrt-stuntman	.	stuntman	imported	not-build-tested
+muink__openwrt-natmapt	.	natmapt	imported	not-build-tested
+4IceG__luci-app-modeminfo	.	luci-app-modeminfo	imported	not-build-tested
+immortalwrt__packages-21.02	net/gowebdav	gowebdav	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+immortalwrt__packages-21.02	net/gowebdav	gowebdav	imported	legacy-fallback-needs-porting-review
+firkerword__openwrt-wrtbwmon	./luci-app-wrtbwmon-zh	luci-app-wrtbwmon-zh	imported	not-build-tested
+firkerword__openwrt-wrtbwmon	./wrtbwmon	wrtbwmon	duplicate	selected brvphoenix__wrtbwmon/./wrtbwmon
+muink__luci-app-alwaysonline	.	luci-app-alwaysonline	imported	not-build-tested
+muink__luci-app-change-mac	.	luci-app-change-mac	imported	not-build-tested
+legacy-21.02	luci-app-cpu-perf	luci-app-cpu-perf	imported	legacy-fallback-needs-porting-review
+lisaac__luci-app-diskman	./applications/luci-app-diskman	luci-app-diskman	imported	not-build-tested
+legacy-21.02	luci-app-disks-info	luci-app-disks-info	imported	legacy-fallback-needs-porting-review
+muink__luci-app-dnsproxy	.	luci-app-dnsproxy	imported	not-build-tested
+muink__luci-app-einat	.	luci-app-einat	imported	not-build-tested
+legacy-21.02	luci-app-homeproxy	luci-app-homeproxy	imported	legacy-fallback-needs-porting-review
+gSpotx2f__luci-app-interfaces-statistics	.	luci-app-interfaces-statistics	imported	not-build-tested
+gSpotx2f__luci-app-internet-detector	./internet-detector	internet-detector	imported	not-build-tested
+gSpotx2f__luci-app-internet-detector	./luci-app-internet-detector	luci-app-internet-detector	imported	not-build-tested
+animegasan__luci-app-ipinfo	.	luci-app-ipinfo	imported	not-build-tested
+muink__luci-app-natter	.	luci-app-natter	imported	not-build-tested
+muink__luci-app-netdata	.	luci-app-netdata	duplicate	selected sirpdboy__luci-app-netdata/./luci-app-netdata
+muink__luci-app-netspeedtest	.	luci-app-netspeedtest	imported	not-build-tested
+muink__luci-app-packagesync	.	luci-app-packagesync	imported	not-build-tested
+muink__luci-app-pcap-dnsproxy	.	luci-app-pcap-dnsproxy	imported	not-build-tested
+sbwml__luci-app-qbittorrent	./luci-app-qbittorrent	luci-app-qbittorrent	imported	not-build-tested
+sbwml__luci-app-qbittorrent	./qBittorrent-static	qBittorrent-static	imported	not-build-tested
+sbwml__luci-app-qbittorrent	./qBittorrent	qBittorrent	imported	not-build-tested
+sbwml__luci-app-qbittorrent	./qt6base	qt6base	imported	not-build-tested
+sbwml__luci-app-qbittorrent	./qt6tools	qt6tools	imported	not-build-tested
+sbwml__luci-app-qbittorrent	./rblibtorrent	rblibtorrent	imported	not-build-tested
+legacy-21.02	luci-app-temp-status	luci-app-temp-status	imported	legacy-fallback-needs-porting-review
+muink__luci-app-tinyfilemanager	.	luci-app-tinyfilemanager	imported	not-build-tested
+muink__luci-app-tn-netports	.	luci-app-tn-netports	imported	not-build-tested
+yichya__luci-app-xray	./core	core	imported	not-build-tested
+yichya__luci-app-xray	./geodata	geodata	imported	not-build-tested
+yichya__luci-app-xray	./status	status	imported	not-build-tested
+muink__openwrt-alwaysonline	.	alwaysonline	imported	not-build-tested
+muink__openwrt-einat-ebpf	.	einat-ebpf	imported	not-build-tested
+muink__openwrt-chinadns-ng	.	chinadns-ng	imported	not-build-tested
+muink__openwrt-go-stun	.	go-stun	imported	not-build-tested
+muink__openwrt-Natter	.	Natter	imported	not-build-tested
+muink__openwrt-netdata-ssl	.	netdata-ssl	imported	not-build-tested
+muink__openwrt-Pcap_DNSProxy	.	Pcap_DNSProxy	imported	not-build-tested
+muink__openwrt-php-nginx	.	php-nginx	imported	not-build-tested
+muink__openwrt-rgmac	.	rgmac	imported	not-build-tested
+muink__openwrt-speedtest-go	.	speedtest-go	imported	not-build-tested
+muink__openwrt-Toolkit	.	openwrt-Toolkit	imported	not-build-tested
+msylgj__luci-app-tencentddns	.	luci-app-tencentddns	imported	not-build-tested
+KFERMercer__luci-app-tcpdump	.	luci-app-tcpdump	imported	not-build-tested
+tty228__luci-app-nodogsplash	.	luci-app-nodogsplash	imported	not-build-tested
+SankySyS__luci-app-atinout	.	luci-app-atinout	imported	not-build-tested
+4IceG__luci-app-atinout-mod	./atinout	atinout	imported	not-build-tested
+4IceG__luci-app-atinout-mod	./luci-app-atinout-mod	luci-app-atinout-mod	imported	not-build-tested
+0xcFFFF142__luci-app-pcap-dnsproxy	.	luci-app-pcap-dnsproxy	duplicate	selected muink__luci-app-pcap-dnsproxy/.
+osnosn__3proxy-openwrt	.	3proxy	imported	not-build-tested
+4IceG__luci-app-3ginfo	./3ginfo	3ginfo	imported	not-build-tested
+4IceG__luci-app-3ginfo	./luci-app-3ginfo	luci-app-3ginfo	imported	not-build-tested
+lisaac__luci-lib-docker	./collections/luci-lib-docker	luci-lib-docker	imported	not-build-tested
+cnzd__luci-app-koolproxyR	.	luci-app-koolproxyR	duplicate	selected jefferymvp__luci-app-koolproxyR/.
+MiRouter__luci-app-vssr-plus	.	luci-app-vssr-plus	imported	not-build-tested
+jerrykuku__node-request	.	node-request	imported	not-build-tested
+jerrykuku__lua-maxminddb	.	lua-maxminddb	imported	not-build-tested
+Huangjoe123__luci-app-eqos	.	luci-app-eqos	imported	not-build-tested
+sirpdboy__luci-app-eqosplus	.	luci-app-eqosplus	imported	not-build-tested
+chenmozhijin__turboacc	./luci-app-turboacc	luci-app-turboacc	imported	not-build-tested
+siwind__luci-app-usb_printer	.	luci-app-usb_printer	imported	not-build-tested
+immortalwrt__luci-21.02	applications/luci-app-ramfree	luci-app-ramfree	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+immortalwrt__luci-21.02	applications/luci-app-ramfree	luci-app-ramfree	imported	legacy-fallback-needs-porting-review
+animefansxj__luci-app-vsftpd	./Source/luci-dir/applications/luci-vsftpd	luci-vsftpd	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+animefansxj__luci-app-vsftpd	./Source/luci-dir/applications/luci-vsftpd	luci-vsftpd	imported	not-build-tested
+animefansxj__luci-app-vsftpd	./Source/op-dir/feeds/packages/net/vsftpd	vsftpd	imported	not-build-tested
+openwrt-xiaomi__luci-app-cpufreq	.	luci-app-cpufreq	imported	not-build-tested
+sensec__luci-app-xlnetacc	.	luci-app-xlnetacc	duplicate	selected kiddin9__luci-app-xlnetacc/.
+sensec__ddns-scripts_aliyun	.	ddns-scripts_aliyun	imported	not-build-tested
+starsunyzl__ddns-scripts-dnspod	usr/lib/ddns/update_dnspod.sh	ddns-scripts-dnspod/usr/lib/ddns/update_dnspod.sh	imported	standalone recipe or build helper
+starsunyzl__ddns-scripts-dnspod	usr/share/ddns/custom/dnspod.json	ddns-scripts-dnspod/usr/share/ddns/custom/dnspod.json	imported	standalone recipe or build helper
+starsunyzl__ddns-scripts-dnspod	LICENSE	ddns-scripts-dnspod/LICENSE	imported	standalone recipe or build helper
+KFERMercer__luci-app-baidupcs-web	.	luci-app-baidupcs-web	duplicate	selected kiddin9__luci-app-baidupcs-web/.
+KFERMercer__openwrt-baidupcs-web	.	baidupcs-web	imported	not-build-tested
+ghostnup__default-settings	.	default-settings	imported	not-build-tested
+kuoruan__openwrt-kcptun	.	kcptun	imported	not-build-tested
+aa65535__openwrt-chinadns	.	chinadns	imported	not-build-tested
+pexcn__openwrt-udpspeeder	.	udpspeeder	imported	not-build-tested
+gw826943555__openwrt-cpufreq	./luci-app-cpufreq	luci-app-cpufreq	duplicate	selected openwrt-xiaomi__luci-app-cpufreq/.
+openwrt__packages-21.02	utils/bandwidthd	bandwidthd	imported	legacy-fallback-needs-porting-review
+qiuweichao__luci-app-modem-info	./luci-app-3ginfo-lite	luci-app-3ginfo-lite	duplicate	selected 4IceG__luci-app-3ginfo-lite/./luci-app-3ginfo-lite
+qiuweichao__luci-app-modem-info	./sms-tool	sms-tool	duplicate	selected 4IceG__luci-app-sms-tool-js/./sms-tool
+Lienol__openwrt-package	./luci-app-control-timewol	luci-app-control-timewol	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-control-webrestriction	luci-app-control-webrestriction	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-control-weburl	luci-app-control-weburl	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-fileassistant	luci-app-fileassistant	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-filebrowser	luci-app-filebrowser	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-guest-wifi	luci-app-guest-wifi	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-ipsec-server	luci-app-ipsec-server	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-kodexplorer	luci-app-kodexplorer	duplicate	recipe luci-app-kodexplorer selected danchexiaoyang__luci-app-kodexplore/.
+Lienol__openwrt-package	./luci-app-nginx-pingos	luci-app-nginx-pingos	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-openvpn-client	luci-app-openvpn-client	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-openvpn-server	luci-app-openvpn-server	duplicate	selected kiddin9__openwrt-openvpn/./luci-app-openvpn-server
+Lienol__openwrt-package	./luci-app-pppoe-relay	luci-app-pppoe-relay	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-pppoe-server	luci-app-pppoe-server	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-pptp-server	luci-app-pptp-server	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-ramfree	luci-app-ramfree	duplicate	selected immortalwrt__luci-21.02/applications/luci-app-ramfree
+Lienol__openwrt-package	./luci-app-socat	luci-app-socat	duplicate	selected 4IceG__luci-app-socat/./luci-app-socat
+Lienol__openwrt-package	./luci-app-softethervpn	luci-app-softethervpn	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-ssr-mudb-server	luci-app-ssr-mudb-server	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-syncthing	luci-app-syncthing	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-timecontrol	luci-app-timecontrol	imported	not-build-tested
+Lienol__openwrt-package	./luci-app-verysync	luci-app-verysync	imported	not-build-tested
+Lienol__openwrt-package	./other/k3wifi	k3wifi	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/adbyby	adbyby	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/autocore	autocore	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/ddns-scripts_aliyun	ddns-scripts_aliyun	duplicate	selected sensec__ddns-scripts_aliyun/.
+Lienol__openwrt-package	./other/lean/ddns-scripts_dnspod	ddns-scripts_dnspod	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/dsmboot	dsmboot	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/ipv6-helper	ipv6-helper	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/k3screenctrl	k3screenctrl	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-adbyby-plus	luci-app-adbyby-plus	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-arpbind	luci-app-arpbind	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-autoreboot	luci-app-autoreboot	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-cifs-mount	luci-app-cifs-mount	duplicate	selected immortalwrt__luci-21.02/applications/luci-app-cifs-mount
+Lienol__openwrt-package	./other/lean/luci-app-filetransfer	luci-app-filetransfer	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-frpc	luci-app-frpc	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-frps	luci-app-frps	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-mwan3helper	luci-app-mwan3helper	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-netdata	luci-app-netdata	duplicate	selected sirpdboy__luci-app-netdata/./luci-app-netdata
+Lienol__openwrt-package	./other/lean/luci-app-nfs	luci-app-nfs	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-qbittorrent	luci-app-qbittorrent	duplicate	selected sbwml__luci-app-qbittorrent/./luci-app-qbittorrent
+Lienol__openwrt-package	./other/lean/luci-app-syncdial	luci-app-syncdial	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-turboacc	luci-app-turboacc	duplicate	selected chenmozhijin__turboacc/./luci-app-turboacc
+Lienol__openwrt-package	./other/lean/luci-app-usb-printer	luci-app-usb-printer	duplicate	recipe luci-app-usb-printer selected siwind__luci-app-usb_printer/.
+Lienol__openwrt-package	./other/lean/luci-app-uugamebooster	luci-app-uugamebooster	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-vlmcsd	luci-app-vlmcsd	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-vsftpd	luci-app-vsftpd	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/luci-app-wrtbwmon	luci-app-wrtbwmon	duplicate	selected brvphoenix__luci-app-wrtbwmon/./luci-app-wrtbwmon
+Lienol__openwrt-package	./other/lean/luci-app-zerotier	luci-app-zerotier	duplicate	selected zhengmz__luci-app-zerotier/.
+Lienol__openwrt-package	./other/lean/luci-lib-fs	luci-lib-fs	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/qBittorrent-static	qBittorrent-static	duplicate	selected sbwml__luci-app-qbittorrent/./qBittorrent-static
+Lienol__openwrt-package	./other/lean/uugamebooster	uugamebooster	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/vlmcsd	vlmcsd	imported	not-build-tested
+Lienol__openwrt-package	./other/lean/vsftpd-alt	vsftpd-alt	imported	not-build-tested
+Lienol__openwrt-package	./other/luci-app-adguardhome	luci-app-adguardhome	duplicate	selected rufengsuixing__luci-app-adguardhome/.
+Lienol__openwrt-package	./other/luci-app-diskman	luci-app-diskman	duplicate	selected lisaac__luci-app-diskman/./applications/luci-app-diskman
+Lienol__openwrt-package	./other/luci-app-dockerman	luci-app-dockerman	duplicate	selected lisaac__luci-app-dockerman/./applications/luci-app-dockerman
+Lienol__openwrt-package	./other/luci-app-tcpdump	luci-app-tcpdump	duplicate	selected KFERMercer__luci-app-tcpdump/.
+Lienol__openwrt-package	./other/luci-lib-docker	luci-lib-docker	duplicate	selected lisaac__luci-lib-docker/./collections/luci-lib-docker
+Lienol__openwrt-package	./other/mt/luci-app-mtwifi	luci-app-mtwifi	imported	not-build-tested
+Lienol__openwrt-package	./other/mt/mt_wifi	mt_wifi	imported	not-build-tested
+Lienol__openwrt-package	./other/mt/wifi-l1profile	wifi-l1profile	imported	not-build-tested
+Lienol__openwrt-package	./verysync	verysync	imported	not-build-tested
+fw876__helloworld	./chinadns-ng	chinadns-ng	duplicate	selected muink__openwrt-chinadns-ng/.
+fw876__helloworld	./dns2socks-rust	dns2socks-rust	imported	not-build-tested
+fw876__helloworld	./dns2socks	dns2socks	imported	not-build-tested
+fw876__helloworld	./dns2tcp	dns2tcp	imported	not-build-tested
+fw876__helloworld	./dnsproxy	dnsproxy	imported	not-build-tested
+fw876__helloworld	./gn	gn	imported	not-build-tested
+fw876__helloworld	./hysteria	hysteria	imported	not-build-tested
+fw876__helloworld	./ipt2socks	ipt2socks	imported	not-build-tested
+fw876__helloworld	./lua-neturl	lua-neturl	imported	not-build-tested
+fw876__helloworld	./luci-app-ssr-plus	luci-app-ssr-plus	imported	not-build-tested
+fw876__helloworld	./microsocks	microsocks	imported	not-build-tested
+fw876__helloworld	./mosdns	mosdns	duplicate	selected sbwml__luci-app-mosdns/./mosdns
+fw876__helloworld	./naiveproxy	naiveproxy	imported	not-build-tested
+fw876__helloworld	./redsocks2	redsocks2	imported	not-build-tested
+fw876__helloworld	./shadow-tls	shadow-tls	imported	not-build-tested
+fw876__helloworld	./shadowsocks-libev	shadowsocks-libev	duplicate	recipe shadowsocks-libev selected shadowsocks__openwrt-shadowsocks/.
+fw876__helloworld	./shadowsocks-rust	shadowsocks-rust	imported	not-build-tested
+fw876__helloworld	./shadowsocksr-libev	shadowsocksr-libev	duplicate	selected shadowsocks__openwrt-shadowsocks/.
+fw876__helloworld	./simple-obfs	simple-obfs	imported	not-build-tested
+fw876__helloworld	./tcping	tcping	imported	not-build-tested
+fw876__helloworld	./trojan	trojan	imported	not-build-tested
+fw876__helloworld	./tuic-client	tuic-client	imported	not-build-tested
+fw876__helloworld	./v2ray-core	v2ray-core	duplicate	recipe v2ray-core selected kuoruan__openwrt-v2ray/.
+fw876__helloworld	./v2ray-plugin	v2ray-plugin	imported	not-build-tested
+fw876__helloworld	./v2raya	v2raya	imported	not-build-tested
+fw876__helloworld	./xray-core	xray-core	imported	not-build-tested
+fw876__helloworld	./xray-plugin	xray-plugin	imported	not-build-tested
+legacy-21.02	luci-app-rtorrent	luci-app-rtorrent	preserved	source archive without an OpenWrt recipe; not buildable as a feed package
+legacy-21.02	./3ginfo	3ginfo	duplicate	selected 4IceG__luci-app-3ginfo/./3ginfo
+legacy-21.02	./3proxy	3proxy	duplicate	selected osnosn__3proxy-openwrt/.
+legacy-21.02	./LingTiGameAcc	LingTiGameAcc	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./MentoHUST-OpenWrt-ipk	MentoHUST-OpenWrt-ipk	duplicate	selected KyleRicardo__MentoHUST-OpenWrt-ipk/.
+legacy-21.02	./Natter	Natter	duplicate	selected muink__openwrt-Natter/.
+legacy-21.02	./OpenAppFilter/luci-app-oaf	luci-app-oaf	duplicate	selected destan19__OpenAppFilter/./luci-app-oaf
+legacy-21.02	./OpenAppFilter/oaf	oaf	duplicate	selected destan19__OpenAppFilter/./oaf
+legacy-21.02	./OpenAppFilter/open-app-filter	open-app-filter	duplicate	selected destan19__OpenAppFilter/./open-app-filter
+legacy-21.02	./UA2F	UA2F	duplicate	selected EOYOHOO__UA2F/.
+legacy-21.02	./UnblockNeteaseMusic-Go/UnblockNeteaseMusic	UnblockNeteaseMusic	duplicate	selected cnsilvan__luci-app-unblockneteasemusic/./UnblockNeteaseMusic
+legacy-21.02	./UnblockNeteaseMusic-Go/luci-app-unblockneteasemusic	luci-app-unblockneteasemusic	duplicate	selected cnsilvan__luci-app-unblockneteasemusic/./luci-app-unblockneteasemusic
+legacy-21.02	./UnblockNeteaseMusic	UnblockNeteaseMusic	duplicate	selected cnsilvan__luci-app-unblockneteasemusic/./UnblockNeteaseMusic
+legacy-21.02	./adguardhome	adguardhome	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./airconnect	airconnect	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./alac	alac	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./alist	alist	duplicate	selected sbwml__luci-app-alist/./alist
+legacy-21.02	./aliyundrive-fuse	aliyundrive-fuse	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./aliyundrive-webdav/openwrt/aliyundrive-webdav	aliyundrive-webdav	duplicate	selected messense__aliyundrive-webdav/./openwrt/aliyundrive-webdav
+legacy-21.02	./aliyundrive-webdav/openwrt/luci-app-aliyundrive-webdav	luci-app-aliyundrive-webdav	duplicate	selected messense__aliyundrive-webdav/./openwrt/luci-app-aliyundrive-webdav
+legacy-21.02	./alwaysonline	alwaysonline	duplicate	selected muink__openwrt-alwaysonline/.
+legacy-21.02	./amule	amule	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./aria2	aria2	duplicate	selected kiddin9__aria2/.
+legacy-21.02	./ariang	ariang	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./autoshare-ksmbd	autoshare-ksmbd	duplicate	selected kiddin9__autoshare/./autoshare-ksmbd
+legacy-21.02	./autoshare-samba	autoshare-samba	duplicate	selected kiddin9__autoshare/./autoshare-samba
+legacy-21.02	./autoshare/autoshare-ksmbd	autoshare-ksmbd	duplicate	selected kiddin9__autoshare/./autoshare-ksmbd
+legacy-21.02	./autoshare/autoshare-samba	autoshare-samba	duplicate	selected kiddin9__autoshare/./autoshare-samba
+legacy-21.02	./autoupdate	autoupdate	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./backupandrestore-apk	backupandrestore-apk	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./backupandrestore-opkg	backupandrestore-opkg	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./baidupcs-web	baidupcs-web	duplicate	selected KFERMercer__openwrt-baidupcs-web/.
+legacy-21.02	./bitmeteros	bitmeteros	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./brook	brook	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./btop	btop	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./cdnspeedtest	cdnspeedtest	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./cgroupfs-mount	cgroupfs-mount	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./chinadns-ng	chinadns-ng	duplicate	selected muink__openwrt-chinadns-ng/.
+legacy-21.02	./comgt-hso	comgt-hso	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./coremark	coremark	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./cpufreq/luci-app-cpufreq	luci-app-cpufreq	duplicate	selected openwrt-xiaomi__luci-app-cpufreq/.
+legacy-21.02	./cpulimit	cpulimit	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./cups	cups	duplicate	selected gdck__luci-app-cupsd/./cups/cups
+legacy-21.02	./cxxopts	cxxopts	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./dae	dae	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./daed-next	daed-next	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./daed	daed	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ddns-go	ddns-go	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ddns-scripts	ddns-scripts	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ddns-scripts_aliyun	ddns-scripts_aliyun	duplicate	selected sensec__ddns-scripts_aliyun/.
+legacy-21.02	./ddnsto-openwrt/ddnsto	ddnsto	duplicate	selected linkease__ddnsto-openwrt/./ddnsto
+legacy-21.02	./ddnsto-openwrt/luci-app-ddnsto	luci-app-ddnsto	duplicate	selected linkease__ddnsto-openwrt/./luci-app-ddnsto
+legacy-21.02	./ddnsto	ddnsto	duplicate	selected linkease__ddnsto-openwrt/./ddnsto
+legacy-21.02	./default-settings	default-settings	duplicate	selected ghostnup__default-settings/.
+legacy-21.02	./dns2socks	dns2socks	duplicate	selected fw876__helloworld/./dns2socks
+legacy-21.02	./dns2tcp	dns2tcp	duplicate	selected fw876__helloworld/./dns2tcp
+legacy-21.02	./dnsforwarder	dnsforwarder	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./dnsproxy	dnsproxy	duplicate	selected fw876__helloworld/./dnsproxy
+legacy-21.02	./docker	docker	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./dockerd	dockerd	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./downloadmanager	downloadmanager	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./easyconfig	easyconfig	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+legacy-21.02	./easyconfig	easyconfig	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./einat-ebpf	einat-ebpf	duplicate	selected muink__openwrt-einat-ebpf/.
+legacy-21.02	./ekooneplconfigs	ekooneplconfigs	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ekooneplluciprofiles	ekooneplluciprofiles	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ekooneplstat	ekooneplstat	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ekooneplusbprofiles	ekooneplusbprofiles	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ffmpeg-remux	ffmpeg-remux	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ffmpeg-static	ffmpeg-static	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./filebrowser	filebrowser	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./floatip	floatip	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./frp	frp	duplicate	recipe frp selected kuoruan__openwrt-frp/.
+legacy-21.02	./geoview	geoview	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./gmediarender	gmediarender	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./gn	gn	duplicate	selected fw876__helloworld/./gn
+legacy-21.02	./go-aliyundrive-webdav	go-aliyundrive-webdav	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./go-stun	go-stun	duplicate	selected muink__openwrt-go-stun/.
+legacy-21.02	./gost	gost	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./gowebdav/gowebdav	gowebdav	duplicate	selected immortalwrt__packages-21.02/net/gowebdav
+legacy-21.02	./gowebdav/luci-app-gowebdav	luci-app-gowebdav	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./haproxy	haproxy	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./headscale	headscale	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./helloworld/chinadns-ng	chinadns-ng	duplicate	selected muink__openwrt-chinadns-ng/.
+legacy-21.02	./helloworld/dns2socks-rust	dns2socks-rust	duplicate	selected fw876__helloworld/./dns2socks-rust
+legacy-21.02	./helloworld/dns2socks	dns2socks	duplicate	selected fw876__helloworld/./dns2socks
+legacy-21.02	./helloworld/dns2tcp	dns2tcp	duplicate	selected fw876__helloworld/./dns2tcp
+legacy-21.02	./helloworld/dnsproxy	dnsproxy	duplicate	selected fw876__helloworld/./dnsproxy
+legacy-21.02	./helloworld/gn	gn	duplicate	selected fw876__helloworld/./gn
+legacy-21.02	./helloworld/hysteria	hysteria	duplicate	selected fw876__helloworld/./hysteria
+legacy-21.02	./helloworld/ipt2socks	ipt2socks	duplicate	selected fw876__helloworld/./ipt2socks
+legacy-21.02	./helloworld/lua-neturl	lua-neturl	duplicate	selected fw876__helloworld/./lua-neturl
+legacy-21.02	./helloworld/luci-app-ssr-plus	luci-app-ssr-plus	duplicate	selected fw876__helloworld/./luci-app-ssr-plus
+legacy-21.02	./helloworld/microsocks	microsocks	duplicate	selected fw876__helloworld/./microsocks
+legacy-21.02	./helloworld/mosdns	mosdns	duplicate	selected sbwml__luci-app-mosdns/./mosdns
+legacy-21.02	./helloworld/naiveproxy	naiveproxy	duplicate	selected fw876__helloworld/./naiveproxy
+legacy-21.02	./helloworld/redsocks2	redsocks2	duplicate	selected fw876__helloworld/./redsocks2
+legacy-21.02	./helloworld/shadow-tls	shadow-tls	duplicate	selected fw876__helloworld/./shadow-tls
+legacy-21.02	./helloworld/shadowsocks-libev	shadowsocks-libev	duplicate	recipe shadowsocks-libev selected shadowsocks__openwrt-shadowsocks/.
+legacy-21.02	./helloworld/shadowsocks-rust	shadowsocks-rust	duplicate	selected fw876__helloworld/./shadowsocks-rust
+legacy-21.02	./helloworld/shadowsocksr-libev	shadowsocksr-libev	duplicate	selected shadowsocks__openwrt-shadowsocks/.
+legacy-21.02	./helloworld/simple-obfs	simple-obfs	duplicate	selected fw876__helloworld/./simple-obfs
+legacy-21.02	./helloworld/tcping	tcping	duplicate	selected fw876__helloworld/./tcping
+legacy-21.02	./helloworld/trojan	trojan	duplicate	selected fw876__helloworld/./trojan
+legacy-21.02	./helloworld/tuic-client	tuic-client	duplicate	selected fw876__helloworld/./tuic-client
+legacy-21.02	./helloworld/v2ray-core	v2ray-core	duplicate	recipe v2ray-core selected kuoruan__openwrt-v2ray/.
+legacy-21.02	./helloworld/v2ray-plugin	v2ray-plugin	duplicate	selected fw876__helloworld/./v2ray-plugin
+legacy-21.02	./helloworld/v2raya	v2raya	duplicate	selected fw876__helloworld/./v2raya
+legacy-21.02	./helloworld/xray-core	xray-core	duplicate	selected fw876__helloworld/./xray-core
+legacy-21.02	./helloworld/xray-plugin	xray-plugin	duplicate	selected fw876__helloworld/./xray-plugin
+legacy-21.02	./homebox	homebox	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./homeredirect	homeredirect	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./hysteria	hysteria	duplicate	selected fw876__helloworld/./hysteria
+legacy-21.02	./ipt2socks	ipt2socks	duplicate	selected fw876__helloworld/./ipt2socks
+legacy-21.02	./iptvhelper	iptvhelper	duplicate	selected riverscn__openwrt-iptvhelper/./iptvhelper
+legacy-21.02	./istoreenhance	istoreenhance	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./jpcre2	jpcre2	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./kcptun	kcptun	duplicate	selected kuoruan__openwrt-kcptun/.
+legacy-21.02	./libcron	libcron	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./libdouble-conversion	libdouble-conversion	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./libtorrent-rasterbar	libtorrent-rasterbar	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./linkease	linkease	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./linkmount	linkmount	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./lua-ipops	lua-ipops	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./lua-maxminddb	lua-maxminddb	duplicate	selected jerrykuku__lua-maxminddb/.
+legacy-21.02	./lua-neturl	lua-neturl	duplicate	selected fw876__helloworld/./lua-neturl
+legacy-21.02	./luci-app-3ginfo-lite/luci-app-3ginfo-lite	luci-app-3ginfo-lite	duplicate	selected 4IceG__luci-app-3ginfo-lite/./luci-app-3ginfo-lite
+legacy-21.02	./luci-app-3ginfo-lite/sms-tool	sms-tool	duplicate	selected 4IceG__luci-app-sms-tool-js/./sms-tool
+legacy-21.02	./luci-app-3ginfo/3ginfo	3ginfo	duplicate	selected 4IceG__luci-app-3ginfo/./3ginfo
+legacy-21.02	./luci-app-3ginfo/luci-app-3ginfo	luci-app-3ginfo	duplicate	selected 4IceG__luci-app-3ginfo/./luci-app-3ginfo
+legacy-21.02	./luci-app-LingTiGameAcc	luci-app-LingTiGameAcc	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-UUGameAcc	luci-app-UUGameAcc	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-UnblockNeteaseMusicGo/UnblockNeteaseMusic	UnblockNeteaseMusic	duplicate	selected cnsilvan__luci-app-unblockneteasemusic/./UnblockNeteaseMusic
+legacy-21.02	./luci-app-UnblockNeteaseMusicGo/luci-app-unblockneteasemusic	luci-app-unblockneteasemusic	duplicate	selected cnsilvan__luci-app-unblockneteasemusic/./luci-app-unblockneteasemusic
+legacy-21.02	./luci-app-adguardhome	luci-app-adguardhome	duplicate	selected rufengsuixing__luci-app-adguardhome/.
+legacy-21.02	./luci-app-advanced	luci-app-advanced	duplicate	selected sirpdboy__luci-app-advanced/.
+legacy-21.02	./luci-app-advancedplus	luci-app-advancedplus	duplicate	selected sirpdboy__luci-app-advancedplus/.
+legacy-21.02	./luci-app-advancedsetting	luci-app-advancedsetting	duplicate	selected alvazhang79__luci-app-advancedsetting/.
+legacy-21.02	./luci-app-airconnect	luci-app-airconnect	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-aliddns	luci-app-aliddns	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-alist/alist	alist	duplicate	selected sbwml__luci-app-alist/./alist
+legacy-21.02	./luci-app-alist/luci-app-alist	luci-app-alist	duplicate	selected sbwml__luci-app-alist/./luci-app-alist
+legacy-21.02	./luci-app-aliyundrive-fuse	luci-app-aliyundrive-fuse	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-aliyundrive-webdav	luci-app-aliyundrive-webdav	duplicate	selected messense__aliyundrive-webdav/./openwrt/luci-app-aliyundrive-webdav
+legacy-21.02	./luci-app-alpha-config	luci-app-alpha-config	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-alwaysonline	luci-app-alwaysonline	duplicate	selected muink__luci-app-alwaysonline/.
+legacy-21.02	./luci-app-amlogic/luci-app-amlogic	luci-app-amlogic	duplicate	selected ophub__luci-app-amlogic/./luci-app-amlogic
+legacy-21.02	./luci-app-ap-modem	luci-app-ap-modem	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-apfree-wifidog	luci-app-apfree-wifidog	duplicate	selected liudf0716__luci-app-apfree-wifidog/.
+legacy-21.02	./luci-app-arcadia	luci-app-arcadia	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-argon-config	luci-app-argon-config	duplicate	selected legacy-21.02/luci-app-argon-config
+legacy-21.02	./luci-app-argone-config	luci-app-argone-config	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-arpbind	luci-app-arpbind	duplicate	selected Lienol__openwrt-package/./other/lean/luci-app-arpbind
+legacy-21.02	./luci-app-atinout-mod/atinout	atinout	duplicate	selected 4IceG__luci-app-atinout-mod/./atinout
+legacy-21.02	./luci-app-atinout-mod/luci-app-atinout-mod	luci-app-atinout-mod	duplicate	selected 4IceG__luci-app-atinout-mod/./luci-app-atinout-mod
+legacy-21.02	./luci-app-atinout	luci-app-atinout	duplicate	selected SankySyS__luci-app-atinout/.
+legacy-21.02	./luci-app-autoipsetadder	luci-app-autoipsetadder	duplicate	selected rufengsuixing__luci-app-autoipsetadder/.
+legacy-21.02	./luci-app-autorepeater	luci-app-autorepeater	duplicate	selected peter-tank__luci-app-autorepeater/.
+legacy-21.02	./luci-app-autoshell	luci-app-autoshell	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-autotimeset/luci-app-taskplan	luci-app-taskplan	duplicate	selected sirpdboy__luci-app-autotimeset/./luci-app-taskplan
+legacy-21.02	./luci-app-autoupdate	luci-app-autoupdate	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-baidupcs-web	luci-app-baidupcs-web	duplicate	selected kiddin9__luci-app-baidupcs-web/.
+legacy-21.02	./luci-app-bandwidthd	luci-app-bandwidthd	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-beardropper	luci-app-beardropper	duplicate	selected NateLol__luci-app-beardropper/.
+legacy-21.02	./luci-app-bmtedge	luci-app-bmtedge	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-bypass	luci-app-bypass	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-change-mac	luci-app-change-mac	duplicate	selected muink__luci-app-change-mac/.
+legacy-21.02	./luci-app-chatgpt-web	luci-app-chatgpt-web	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-chatgpt	luci-app-chatgpt	duplicate	recipe luci-app-chatgpt-web selected legacy-21.02/./luci-app-chatgpt-web
+legacy-21.02	./luci-app-chinesesubfinder	luci-app-chinesesubfinder	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-chongyoung	luci-app-chongyoung	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-chongyoung2.0	luci-app-chongyoung2.0	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-cifs-mount	luci-app-cifs-mount	duplicate	selected immortalwrt__luci-21.02/applications/luci-app-cifs-mount
+legacy-21.02	./luci-app-cifs	luci-app-cifs	duplicate	selected Ardentwheel__luci-app-cifs/.
+legacy-21.02	./luci-app-clash	luci-app-clash	duplicate	selected frainzy1477__luci-app-clash/.
+legacy-21.02	./luci-app-clouddrive2	luci-app-clouddrive2	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-cloudflarespeedtest/applications/luci-app-cloudflarespeedtest	luci-app-cloudflarespeedtest	duplicate	selected mingxiaoyu__luci-app-cloudflarespeedtest/./applications/luci-app-cloudflarespeedtest
+legacy-21.02	./luci-app-codeserver	luci-app-codeserver	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-control-timewol	luci-app-control-timewol	duplicate	selected Lienol__openwrt-package/./luci-app-control-timewol
+legacy-21.02	./luci-app-control-webrestriction	luci-app-control-webrestriction	duplicate	selected Lienol__openwrt-package/./luci-app-control-webrestriction
+legacy-21.02	./luci-app-control-weburl	luci-app-control-weburl	duplicate	selected Lienol__openwrt-package/./luci-app-control-weburl
+legacy-21.02	./luci-app-cpu-perf	luci-app-cpu-perf	duplicate	selected legacy-21.02/luci-app-cpu-perf
+legacy-21.02	./luci-app-cpu-status-mini	luci-app-cpu-status-mini	duplicate	selected gSpotx2f__luci-app-cpu-status-mini/.
+legacy-21.02	./luci-app-cpu-status	luci-app-cpu-status	duplicate	selected gSpotx2f__luci-app-cpu-status/.
+legacy-21.02	./luci-app-cpufreq	luci-app-cpufreq	duplicate	selected openwrt-xiaomi__luci-app-cpufreq/.
+legacy-21.02	./luci-app-cupsd	luci-app-cupsd	duplicate	selected gdck__luci-app-cupsd/./luci-app-cupsd
+legacy-21.02	./luci-app-daed-next	luci-app-daed-next	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-daed	luci-app-daed	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ddns-go	luci-app-ddns-go	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ddnsto	luci-app-ddnsto	duplicate	selected linkease__ddnsto-openwrt/./luci-app-ddnsto
+legacy-21.02	./luci-app-design-config	luci-app-design-config	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-diskman/applications/luci-app-diskman	luci-app-diskman	duplicate	selected lisaac__luci-app-diskman/./applications/luci-app-diskman
+legacy-21.02	./luci-app-disks-info	luci-app-disks-info	duplicate	selected legacy-21.02/luci-app-disks-info
+legacy-21.02	./luci-app-dnscrypt-proxy2	luci-app-dnscrypt-proxy2	duplicate	selected peter-tank__luci-app-dnscrypt-proxy2/.
+legacy-21.02	./luci-app-dnsfilter	luci-app-dnsfilter	duplicate	selected kiddin9__luci-app-dnsfilter/.
+legacy-21.02	./luci-app-dnsmasq-ipset	luci-app-dnsmasq-ipset	duplicate	selected lvqier__luci-app-dnsmasq-ipset/.
+legacy-21.02	./luci-app-dnsproxy	luci-app-dnsproxy	duplicate	selected muink__luci-app-dnsproxy/.
+legacy-21.02	./luci-app-dockerman/applications/luci-app-dockerman	luci-app-dockerman	duplicate	selected lisaac__luci-app-dockerman/./applications/luci-app-dockerman
+legacy-21.02	./luci-app-dogcom	luci-app-dogcom	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-drawio	luci-app-drawio	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-droidnet	luci-app-droidnet	duplicate	selected animegasan__luci-app-droidnet/.
+legacy-21.02	./luci-app-easymesh	luci-app-easymesh	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-easytier/easytier	easytier	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-easytier/luci-app-easytier	luci-app-easytier	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-easyupdate	luci-app-easyupdate	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-einat	luci-app-einat	duplicate	selected muink__luci-app-einat/.
+legacy-21.02	./luci-app-ekooneplstat	luci-app-ekooneplstat	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-emby	luci-app-emby	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-eqos	luci-app-eqos	duplicate	selected Huangjoe123__luci-app-eqos/.
+legacy-21.02	./luci-app-eqosplus	luci-app-eqosplus	duplicate	selected sirpdboy__luci-app-eqosplus/.
+legacy-21.02	./luci-app-excalidraw	luci-app-excalidraw	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-fakemesh	luci-app-fakemesh	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-fancontrol	luci-app-fancontrol	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-fchomo	luci-app-fchomo	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-feishuvpn	luci-app-feishuvpn	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-fileassistant	luci-app-fileassistant	duplicate	selected Lienol__openwrt-package/./luci-app-fileassistant
+legacy-21.02	./luci-app-filebrowser	luci-app-filebrowser	duplicate	selected Lienol__openwrt-package/./luci-app-filebrowser
+legacy-21.02	./luci-app-floatip	luci-app-floatip	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-fullconenat	luci-app-fullconenat	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-gecoosac	luci-app-gecoosac	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-go-aliyundrive-webdav	luci-app-go-aliyundrive-webdav	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-godproxy	luci-app-godproxy	duplicate	selected project-lede__luci-app-godproxy/.
+legacy-21.02	./luci-app-gogs	luci-app-gogs	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-gost	luci-app-gost	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-gowebdav	luci-app-gowebdav	duplicate	selected legacy-21.02/./gowebdav/luci-app-gowebdav
+legacy-21.02	./luci-app-guest-wifi	luci-app-guest-wifi	duplicate	selected Lienol__openwrt-package/./luci-app-guest-wifi
+legacy-21.02	./luci-app-heimdall	luci-app-heimdall	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-homeassistant	luci-app-homeassistant	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-homebridge	luci-app-homebridge	duplicate	selected shanglanxin__luci-app-homebridge/.
+legacy-21.02	./luci-app-homeproxy	luci-app-homeproxy	duplicate	selected legacy-21.02/luci-app-homeproxy
+legacy-21.02	./luci-app-homeredirect	luci-app-homeredirect	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-htreader	luci-app-htreader	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ikoolproxy	luci-app-ikoolproxy	duplicate	recipe luci-app-ikoolproxy selected project-lede__luci-app-godproxy/.
+legacy-21.02	./luci-app-immich	luci-app-immich	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-interfaces-statistics	luci-app-interfaces-statistics	duplicate	selected gSpotx2f__luci-app-interfaces-statistics/.
+legacy-21.02	./luci-app-internet-detector/internet-detector-mod-email	internet-detector-mod-email	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-internet-detector/internet-detector-mod-modem-restart	internet-detector-mod-modem-restart	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-internet-detector/internet-detector	internet-detector	duplicate	selected gSpotx2f__luci-app-internet-detector/./internet-detector
+legacy-21.02	./luci-app-internet-detector/luci-app-internet-detector	luci-app-internet-detector	duplicate	selected gSpotx2f__luci-app-internet-detector/./luci-app-internet-detector
+legacy-21.02	./luci-app-iperf3-server	luci-app-iperf3-server	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ipinfo	luci-app-ipinfo	duplicate	selected animegasan__luci-app-ipinfo/.
+legacy-21.02	./luci-app-ipsec-server	luci-app-ipsec-server	duplicate	selected Lienol__openwrt-package/./luci-app-ipsec-server
+legacy-21.02	./luci-app-iptvhelper	luci-app-iptvhelper	duplicate	selected riverscn__openwrt-iptvhelper/./luci-app-iptvhelper
+legacy-21.02	./luci-app-istoredup	luci-app-istoredup	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-istoreenhance	luci-app-istoreenhance	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-istorego	luci-app-istorego	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-istorepanel	luci-app-istorepanel	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-istorex	luci-app-istorex	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ittools	luci-app-ittools	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-jackett	luci-app-jackett	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-jd-dailybonus	luci-app-jd-dailybonus	duplicate	selected noiver__luci-app-jd-dailybonus/.
+legacy-21.02	./luci-app-jellyfin	luci-app-jellyfin	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-kodexplore	luci-app-kodexplore	duplicate	selected danchexiaoyang__luci-app-kodexplore/.
+legacy-21.02	./luci-app-kodexplorer	luci-app-kodexplorer	duplicate	recipe luci-app-kodexplorer selected danchexiaoyang__luci-app-kodexplore/.
+legacy-21.02	./luci-app-koolproxyR	luci-app-koolproxyR	duplicate	selected jefferymvp__luci-app-koolproxyR/.
+legacy-21.02	./luci-app-lanraragi	luci-app-lanraragi	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-linkease	luci-app-linkease	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-log	luci-app-log	duplicate	selected legacy-21.02/luci-app-log
+legacy-21.02	./luci-app-lucky	luci-app-lucky	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-mac	luci-app-mac	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-macvlan	luci-app-macvlan	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-mail	luci-app-mail	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-memos	luci-app-memos	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-mentohust	luci-app-mentohust	duplicate	selected BoringCat__luci-app-mentohust/.
+legacy-21.02	./luci-app-mfun	luci-app-mfun	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-minieap	luci-app-minieap	duplicate	selected BoringCat__luci-app-minieap/.
+legacy-21.02	./luci-app-modem-info/luci-app-3ginfo-lite	luci-app-3ginfo-lite	duplicate	selected 4IceG__luci-app-3ginfo-lite/./luci-app-3ginfo-lite
+legacy-21.02	./luci-app-modem-info/sms-tool	sms-tool	duplicate	selected 4IceG__luci-app-sms-tool-js/./sms-tool
+legacy-21.02	./luci-app-modemband/luci-app-modemband	luci-app-modemband	duplicate	selected 4IceG__luci-app-modemband/./luci-app-modemband
+legacy-21.02	./luci-app-modemband/modemband	modemband	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-modemband/sms-tool	sms-tool	duplicate	selected 4IceG__luci-app-sms-tool-js/./sms-tool
+legacy-21.02	./luci-app-modeminfo	luci-app-modeminfo	duplicate	selected 4IceG__luci-app-modeminfo/.
+legacy-21.02	./luci-app-mosdns/luci-app-mosdns	luci-app-mosdns	duplicate	selected sbwml__luci-app-mosdns/./luci-app-mosdns
+legacy-21.02	./luci-app-mosdns/mosdns	mosdns	duplicate	selected sbwml__luci-app-mosdns/./mosdns
+legacy-21.02	./luci-app-mosdns/v2dat	v2dat	duplicate	selected sbwml__luci-app-mosdns/./v2dat
+legacy-21.02	./luci-app-msd_lite	luci-app-msd_lite	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-mtphotos	luci-app-mtphotos	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-multiaccountdial	luci-app-multiaccountdial	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-mymind	luci-app-mymind	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-nastools	luci-app-nastools	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-natmap/luci-app-natmap	luci-app-natmap	duplicate	selected blueberry-pie-11__luci-app-natmap/./luci-app-natmap
+legacy-21.02	./luci-app-natmap/natmap	natmap	duplicate	selected blueberry-pie-11__luci-app-natmap/./natmap
+legacy-21.02	./luci-app-natmapt	luci-app-natmapt	duplicate	selected muink__luci-app-natmapt/.
+legacy-21.02	./luci-app-natter	luci-app-natter	duplicate	selected muink__luci-app-natter/.
+legacy-21.02	./luci-app-natter2	luci-app-natter2	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-navidrome	luci-app-navidrome	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-nekobox	luci-app-nekobox	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-netdata	luci-app-netdata	duplicate	selected sirpdboy__luci-app-netdata/./luci-app-netdata
+legacy-21.02	./luci-app-netkeeper-interception	luci-app-netkeeper-interception	duplicate	selected CCnut__feed-netkeeper/./luci-app-netkeeper-interception
+legacy-21.02	./luci-app-netspeedtest	luci-app-netspeedtest	duplicate	selected muink__luci-app-netspeedtest/.
+legacy-21.02	./luci-app-nextcloud	luci-app-nextcloud	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-nft-timecontrol	luci-app-nft-timecontrol	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-nginx-manager	luci-app-nginx-manager	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-nginx-pingos	luci-app-nginx-pingos	duplicate	selected Lienol__openwrt-package/./luci-app-nginx-pingos
+legacy-21.02	./luci-app-nikki	luci-app-nikki	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-nodogsplash	luci-app-nodogsplash	duplicate	selected tty228__luci-app-nodogsplash/.
+legacy-21.02	./luci-app-npc	luci-app-npc	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-oaf	luci-app-oaf	duplicate	selected destan19__OpenAppFilter/./luci-app-oaf
+legacy-21.02	./luci-app-oled/luci-app-oled	luci-app-oled	duplicate	selected NateLol__luci-app-oled/./luci-app-oled
+legacy-21.02	./luci-app-oneapi	luci-app-oneapi	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-onliner	luci-app-onliner	duplicate	selected rufengsuixing__luci-app-onliner/.
+legacy-21.02	./luci-app-openclash	luci-app-openclash	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-openvpn-client	luci-app-openvpn-client	duplicate	selected Lienol__openwrt-package/./luci-app-openvpn-client
+legacy-21.02	./luci-app-openvpn-server	luci-app-openvpn-server	duplicate	selected kiddin9__openwrt-openvpn/./luci-app-openvpn-server
+legacy-21.02	./luci-app-openwebui	luci-app-openwebui	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ota	luci-app-ota	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-owntone	luci-app-owntone	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-packagesync	luci-app-packagesync	duplicate	selected muink__luci-app-packagesync/.
+legacy-21.02	./luci-app-packet-capture	luci-app-packet-capture	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-parentcontrol	luci-app-parentcontrol	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-partexp/luci-app-partexp	luci-app-partexp	duplicate	selected sirpdboy__luci-app-partexp/./luci-app-partexp
+legacy-21.02	./luci-app-passwall	luci-app-passwall	duplicate	selected legacy-21.02/luci-app-passwall
+legacy-21.02	./luci-app-passwall2	luci-app-passwall2	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-penpot	luci-app-penpot	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-photoprism	luci-app-photoprism	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-plex	luci-app-plex	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-poddns	luci-app-poddns	duplicate	selected fonlan__luci-app-poddns/.
+legacy-21.02	./luci-app-poweroff	luci-app-poweroff	duplicate	selected esirplayground__luci-app-poweroff/.
+legacy-21.02	./luci-app-poweroffdevice/luci-app-poweroffdevice	luci-app-poweroffdevice	duplicate	selected sirpdboy__luci-app-poweroffdevice/./luci-app-poweroffdevice
+legacy-21.02	./luci-app-pppoe-relay	luci-app-pppoe-relay	duplicate	selected Lienol__openwrt-package/./luci-app-pppoe-relay
+legacy-21.02	./luci-app-pppoe-server	luci-app-pppoe-server	duplicate	selected Lienol__openwrt-package/./luci-app-pppoe-server
+legacy-21.02	./luci-app-pptp-server	luci-app-pptp-server	duplicate	selected Lienol__openwrt-package/./luci-app-pptp-server
+legacy-21.02	./luci-app-pushbot	luci-app-pushbot	duplicate	selected zzsj0928__luci-app-pushbot/.
+legacy-21.02	./luci-app-pve	luci-app-pve	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-qbittorrent/luci-app-qbittorrent	luci-app-qbittorrent	duplicate	selected sbwml__luci-app-qbittorrent/./luci-app-qbittorrent
+legacy-21.02	./luci-app-qbittorrent/qbittorrent	qbittorrent	duplicate	recipe qbittorrent selected sbwml__luci-app-qbittorrent/./qBittorrent
+legacy-21.02	./luci-app-qbittorrent/qt6base	qt6base	duplicate	selected sbwml__luci-app-qbittorrent/./qt6base
+legacy-21.02	./luci-app-qbittorrent/qt6tools	qt6tools	duplicate	selected sbwml__luci-app-qbittorrent/./qt6tools
+legacy-21.02	./luci-app-qbittorrent/rblibtorrent	rblibtorrent	duplicate	selected sbwml__luci-app-qbittorrent/./rblibtorrent
+legacy-21.02	./luci-app-quickstart	luci-app-quickstart	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ramfree	luci-app-ramfree	duplicate	selected immortalwrt__luci-21.02/applications/luci-app-ramfree
+legacy-21.02	./luci-app-routerdog	luci-app-routerdog	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-rtbwmon	luci-app-rtbwmon	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-runmynas	luci-app-runmynas	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-samba	luci-app-samba	duplicate	selected tcsr200722__luci-app-samba/.
+legacy-21.02	./luci-app-serverchan	luci-app-serverchan	duplicate	selected tty228__luci-app-serverchan/.
+legacy-21.02	./luci-app-shadowsocks	luci-app-shadowsocks	duplicate	selected shadowsocks__luci-app-shadowsocks/.
+legacy-21.02	./luci-app-shanligong	luci-app-shanligong	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-shortcutmenu	luci-app-shortcutmenu	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-shutdown	luci-app-shutdown	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-smartdns	luci-app-smartdns	duplicate	selected immortalwrt__luci-21.02/applications/luci-app-smartdns
+legacy-21.02	./luci-app-sms-tool-js/luci-app-sms-tool-js	luci-app-sms-tool-js	duplicate	selected 4IceG__luci-app-sms-tool-js/./luci-app-sms-tool-js
+legacy-21.02	./luci-app-sms-tool	luci-app-sms-tool	duplicate	selected 4IceG__luci-app-sms-tool/./luci-app-sms-tool
+legacy-21.02	./luci-app-socat/luci-app-socat	luci-app-socat	duplicate	selected 4IceG__luci-app-socat/./luci-app-socat
+legacy-21.02	./luci-app-softethervpn	luci-app-softethervpn	duplicate	selected Lienol__openwrt-package/./luci-app-softethervpn
+legacy-21.02	./luci-app-speedtest-web	luci-app-speedtest-web	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ssr-mudb-server	luci-app-ssr-mudb-server	duplicate	selected Lienol__openwrt-package/./luci-app-ssr-mudb-server
+legacy-21.02	./luci-app-ssr-plus	luci-app-ssr-plus	duplicate	selected fw876__helloworld/./luci-app-ssr-plus
+legacy-21.02	./luci-app-store	luci-app-store	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-sunpanel	luci-app-sunpanel	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-supervisord	luci-app-supervisord	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-suselogin	luci-app-suselogin	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-switch-lan-play	luci-app-switch-lan-play	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-syncdial	luci-app-syncdial	duplicate	selected Lienol__openwrt-package/./other/lean/luci-app-syncdial
+legacy-21.02	./luci-app-syncthing	luci-app-syncthing	duplicate	selected Lienol__openwrt-package/./luci-app-syncthing
+legacy-21.02	./luci-app-systools	luci-app-systools	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-sysuh3c	luci-app-sysuh3c	duplicate	selected LGA1150__openwrt-sysuh3c/./luci-app-sysuh3c
+legacy-21.02	./luci-app-tailscale	luci-app-tailscale	duplicate	selected asvow__luci-app-tailscale/.
+legacy-21.02	./luci-app-tcpdump	luci-app-tcpdump	duplicate	selected KFERMercer__luci-app-tcpdump/.
+legacy-21.02	./luci-app-temp-status	luci-app-temp-status	duplicate	selected legacy-21.02/luci-app-temp-status
+legacy-21.02	./luci-app-tencentcloud-cos	luci-app-tencentcloud-cos	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-tencentddns	luci-app-tencentddns	duplicate	selected msylgj__luci-app-tencentddns/.
+legacy-21.02	./luci-app-timecontrol	luci-app-timecontrol	duplicate	selected Lienol__openwrt-package/./luci-app-timecontrol
+legacy-21.02	./luci-app-tinyfilemanager	luci-app-tinyfilemanager	duplicate	selected muink__luci-app-tinyfilemanager/.
+legacy-21.02	./luci-app-tn-netports	luci-app-tn-netports	duplicate	selected muink__luci-app-tn-netports/.
+legacy-21.02	./luci-app-torbp	luci-app-torbp	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-transmission	luci-app-transmission	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ttnode	luci-app-ttnode	duplicate	selected jerrykuku__luci-app-ttnode/.
+legacy-21.02	./luci-app-typecho	luci-app-typecho	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ua2f/luci-app-ua2f	luci-app-ua2f	duplicate	selected lucikap__luci-app-ua2f/./luci-app-ua2f
+legacy-21.02	./luci-app-ubuntu	luci-app-ubuntu	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-ubuntu2	luci-app-ubuntu2	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-udp2raw	luci-app-udp2raw	duplicate	selected sensec__luci-app-udp2raw/.
+legacy-21.02	./luci-app-unblockmusic	luci-app-unblockmusic	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-unblockneteasemusic	luci-app-unblockneteasemusic	duplicate	selected cnsilvan__luci-app-unblockneteasemusic/./luci-app-unblockneteasemusic
+legacy-21.02	./luci-app-unifi	luci-app-unifi	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-unishare	luci-app-unishare	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-upnp	luci-app-upnp	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-uptimekuma	luci-app-uptimekuma	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-usb-printer	luci-app-usb-printer	duplicate	recipe luci-app-usb-printer selected siwind__luci-app-usb_printer/.
+legacy-21.02	./luci-app-usb3disable	luci-app-usb3disable	duplicate	selected rufengsuixing__luci-app-usb3disable/.
+legacy-21.02	./luci-app-usb_printer	luci-app-usb_printer	duplicate	selected siwind__luci-app-usb_printer/.
+legacy-21.02	./luci-app-v2raya	luci-app-v2raya	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-vaultwarden	luci-app-vaultwarden	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-verysync	luci-app-verysync	duplicate	selected Lienol__openwrt-package/./luci-app-verysync
+legacy-21.02	./luci-app-virtualhere	luci-app-virtualhere	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-vlmcsd	luci-app-vlmcsd	duplicate	selected Lienol__openwrt-package/./other/lean/luci-app-vlmcsd
+legacy-21.02	./luci-app-vsftpd/Source/luci-dir/applications/luci-vsftpd	luci-vsftpd	duplicate	selected animefansxj__luci-app-vsftpd/./Source/luci-dir/applications/luci-vsftpd
+legacy-21.02	./luci-app-vsftpd/Source/op-dir/feeds/packages/net/vsftpd	vsftpd	duplicate	selected animefansxj__luci-app-vsftpd/./Source/op-dir/feeds/packages/net/vsftpd
+legacy-21.02	./luci-app-vusb/luci-app-vusb	luci-app-vusb	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-vusb/vusb	vusb	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-wan-mac	luci-app-wan-mac	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-watchcat-plus	luci-app-watchcat-plus	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-watchdog	luci-app-watchdog	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-webd	luci-app-webd	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-webviewdev	luci-app-webviewdev	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-webvirtcloud	luci-app-webvirtcloud	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-wechatpush	luci-app-wechatpush	duplicate	recipe luci-app-wechatpush selected tty228__luci-app-serverchan/.
+legacy-21.02	./luci-app-wifidog	luci-app-wifidog	duplicate	selected walkingsky__luci-wifidog/.
+legacy-21.02	./luci-app-wizard/luci-app-netwizard	luci-app-netwizard	duplicate	selected sirpdboy__luci-app-wizard/./luci-app-netwizard
+legacy-21.02	./luci-app-wolplus	luci-app-wolplus	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-wxedge	luci-app-wxedge	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-xfrpc	luci-app-xfrpc	duplicate	selected liudf0716__luci-app-xfrpc/.
+legacy-21.02	./luci-app-xlnetacc	luci-app-xlnetacc	duplicate	selected kiddin9__luci-app-xlnetacc/.
+legacy-21.02	./luci-app-xray/core	core	duplicate	selected yichya__luci-app-xray/./core
+legacy-21.02	./luci-app-xray/geodata	geodata	duplicate	selected yichya__luci-app-xray/./geodata
+legacy-21.02	./luci-app-xray/status	status	duplicate	selected yichya__luci-app-xray/./status
+legacy-21.02	./luci-app-xteve	luci-app-xteve	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-xunlei	luci-app-xunlei	duplicate	selected silime__luci-app-xunlei/.
+legacy-21.02	./luci-app-xunyou	luci-app-xunyou	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-xupnpd	luci-app-xupnpd	duplicate	selected legacy-21.02/luci-app-xupnpd
+legacy-21.02	./luci-app-zerotier	luci-app-zerotier	duplicate	selected zhengmz__luci-app-zerotier/.
+legacy-21.02	./luci-lib-docker/collections/luci-lib-docker	luci-lib-docker	duplicate	selected lisaac__luci-lib-docker/./collections/luci-lib-docker
+legacy-21.02	./luci-lib-fs	luci-lib-fs	duplicate	selected Lienol__openwrt-package/./other/lean/luci-lib-fs
+legacy-21.02	./luci-lib-iform	luci-lib-iform	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-lib-ipkg	luci-lib-ipkg	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-lib-taskd	luci-lib-taskd	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-lib-xterm	luci-lib-xterm	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-nginxer	luci-nginxer	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-proto-minieap	luci-proto-minieap	duplicate	selected ysc3839__luci-proto-minieap/.
+legacy-21.02	./luci-proto-netkeeper	luci-proto-netkeeper	duplicate	selected CCnut__feed-netkeeper/./luci-proto-netkeeper
+legacy-21.02	./luci-proto-wwan	luci-proto-wwan	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-theme-alpha	luci-theme-alpha	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-theme-argon	luci-theme-argon	duplicate	selected jerrykuku__luci-theme-argon/.
+legacy-21.02	./luci-theme-argone	luci-theme-argone	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-theme-atmaterial_new	luci-theme-atmaterial_new	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-theme-design	luci-theme-design	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-theme-edge	luci-theme-edge	duplicate	selected 52014app__luci-theme-edge/.
+legacy-21.02	./luci-theme-ifit	luci-theme-ifit	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-theme-inas	luci-theme-inas	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-theme-kucat/luci-theme-kucat	luci-theme-kucat	duplicate	selected sirpdboy__luci-theme-kucat/.
+legacy-21.02	./luci-theme-opentopd	luci-theme-opentopd	duplicate	selected sirpdboy__luci-theme-opentopd/.
+legacy-21.02	./luci-theme-tomato	luci-theme-tomato	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-themedog	luci-themedog	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./lucky	lucky	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./megatools	megatools	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./mentohust/luci-app-mentohust	luci-app-mentohust	duplicate	selected BoringCat__luci-app-mentohust/.
+legacy-21.02	./mentohust/mentohust	mentohust	duplicate	recipe mentohust selected KyleRicardo__MentoHUST-OpenWrt-ipk/.
+legacy-21.02	./mhz	mhz	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./microsocks	microsocks	duplicate	selected fw876__helloworld/./microsocks
+legacy-21.02	./mihomo	mihomo	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./miniupnpd-iptables	miniupnpd-iptables	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./modemband	modemband	duplicate	selected legacy-21.02/./luci-app-modemband/modemband
+legacy-21.02	./mosdns	mosdns	duplicate	selected sbwml__luci-app-mosdns/./mosdns
+legacy-21.02	./motion-ffmpeg	motion-ffmpeg	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./msd_lite	msd_lite	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./msmtp	msmtp	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./mwan3	mwan3	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./my-packages/luci-app-gpsysupgrade	luci-app-gpsysupgrade	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./my-packages/luci-lighttpd	luci-lighttpd	adapted	OpenWrt 21.02 recipe/include/dependency fixes
+legacy-21.02	./my-packages/luci-lighttpd	luci-lighttpd	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./my-packages/my-default-settings	my-default-settings	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./n2n-2.4-stable	n2n-2.4-stable	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./naiveproxy	naiveproxy	duplicate	selected fw876__helloworld/./naiveproxy
+legacy-21.02	./nanohatoled	nanohatoled	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./natflow	natflow	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./natmapt	natmapt	duplicate	selected muink__openwrt-natmapt/.
+legacy-21.02	./natter	natter	duplicate	recipe natter selected muink__openwrt-Natter/.
+legacy-21.02	./natter2	natter2	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./netatalk	netatalk	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./netdata-ssl	netdata-ssl	duplicate	selected muink__openwrt-netdata-ssl/.
+legacy-21.02	./netdata	netdata	duplicate	recipe netdata selected muink__openwrt-netdata-ssl/.
+legacy-21.02	./netkeeper-interception	netkeeper-interception	duplicate	selected CCnut__feed-netkeeper/./netkeeper-interception
+legacy-21.02	./netkeeper	netkeeper	duplicate	selected CCnut__feed-netkeeper/./netkeeper
+legacy-21.02	./netmaker	netmaker	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./nginx	nginx	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ngrokc	ngrokc	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./nikki	nikki	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./njitclient	njitclient	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./node-request	node-request	duplicate	selected jerrykuku__node-request/.
+legacy-21.02	./nps	nps	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./oaf	oaf	duplicate	selected destan19__OpenAppFilter/./oaf
+legacy-21.02	./open-app-filter	open-app-filter	duplicate	selected destan19__OpenAppFilter/./open-app-filter
+legacy-21.02	./openvpn-easy-rsa-whisky	openvpn-easy-rsa-whisky	duplicate	selected kiddin9__openwrt-openvpn/./openvpn-easy-rsa-whisky
+legacy-21.02	./openwrt-Toolkit	openwrt-Toolkit	duplicate	selected muink__openwrt-Toolkit/.
+legacy-21.02	./openwrt-frp	openwrt-frp	duplicate	selected kuoruan__openwrt-frp/.
+legacy-21.02	./openwrt-iptvhelper/iptvhelper	iptvhelper	duplicate	selected riverscn__openwrt-iptvhelper/./iptvhelper
+legacy-21.02	./openwrt-iptvhelper/luci-app-iptvhelper	luci-app-iptvhelper	duplicate	selected riverscn__openwrt-iptvhelper/./luci-app-iptvhelper
+legacy-21.02	./openwrt-minieap	openwrt-minieap	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./openwrt-minisign	openwrt-minisign	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./openwrt-openvpn/luci-app-openvpn-server	luci-app-openvpn-server	duplicate	selected kiddin9__openwrt-openvpn/./luci-app-openvpn-server
+legacy-21.02	./openwrt-openvpn/openvpn-easy-rsa-whisky	openvpn-easy-rsa-whisky	duplicate	selected kiddin9__openwrt-openvpn/./openvpn-easy-rsa-whisky
+legacy-21.02	./openwrt-passwall/luci-app-passwall	luci-app-passwall	duplicate	selected legacy-21.02/luci-app-passwall
+legacy-21.02	./openwrt-sysuh3c/luci-app-sysuh3c	luci-app-sysuh3c	duplicate	selected LGA1150__openwrt-sysuh3c/./luci-app-sysuh3c
+legacy-21.02	./openwrt-sysuh3c/sysuh3c	sysuh3c	duplicate	selected LGA1150__openwrt-sysuh3c/./sysuh3c
+legacy-21.02	./openwrt-v2ray	openwrt-v2ray	duplicate	selected kuoruan__openwrt-v2ray/.
+legacy-21.02	./oscam	oscam	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./parted	parted	duplicate	selected lisaac__luci-app-diskman/Parted.Makefile
+legacy-21.02	./pdnsd-alt	pdnsd-alt	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./pgyvpn	pgyvpn	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./php-nginx	php-nginx	duplicate	selected muink__openwrt-php-nginx/.
+legacy-21.02	./phtunnel	phtunnel	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./qBittorrent-Enhanced-Edition	qBittorrent-Enhanced-Edition	duplicate	selected kiddin9__qBittorrent-Enhanced-Edition/.
+legacy-21.02	./qbittorrent	qbittorrent	duplicate	recipe qbittorrent selected sbwml__luci-app-qbittorrent/./qBittorrent
+legacy-21.02	./qt6base	qt6base	duplicate	selected sbwml__luci-app-qbittorrent/./qt6base
+legacy-21.02	./qt6tools	qt6tools	duplicate	selected sbwml__luci-app-qbittorrent/./qt6tools
+legacy-21.02	./quickjspp	quickjspp	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./quickstart	quickstart	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./rapidjson	rapidjson	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./rblibtorrent	rblibtorrent	duplicate	selected sbwml__luci-app-qbittorrent/./rblibtorrent
+legacy-21.02	./redsocks2	redsocks2	duplicate	selected fw876__helloworld/./redsocks2
+legacy-21.02	./repo-4iceg	repo-4iceg	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./rgmac	rgmac	duplicate	selected muink__openwrt-rgmac/.
+legacy-21.02	./rkp-ipid	rkp-ipid	duplicate	selected EOYOHOO__rkp-ipid/.
+legacy-21.02	./routergo	routergo	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./rp-pppoe	rp-pppoe	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./scutclient	scutclient	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./shadow-tls	shadow-tls	duplicate	selected fw876__helloworld/./shadow-tls
+legacy-21.02	./shadowsocks-libev	shadowsocks-libev	duplicate	recipe shadowsocks-libev selected shadowsocks__openwrt-shadowsocks/.
+legacy-21.02	./shadowsocks-rust	shadowsocks-rust	duplicate	selected fw876__helloworld/./shadowsocks-rust
+legacy-21.02	./shadowsocksr-libev	shadowsocksr-libev	duplicate	selected shadowsocks__openwrt-shadowsocks/.
+legacy-21.02	./simple-obfs	simple-obfs	duplicate	selected fw876__helloworld/./simple-obfs
+legacy-21.02	./simplefailover	simplefailover	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./sing-box	sing-box	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./smartdns	smartdns	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./sms-tool	sms-tool	duplicate	selected 4IceG__luci-app-sms-tool-js/./sms-tool
+legacy-21.02	./smstool/luci-app-sms-tool	luci-app-sms-tool	duplicate	selected 4IceG__luci-app-sms-tool/./luci-app-sms-tool
+legacy-21.02	./smstool/sms-tool	sms-tool	duplicate	selected 4IceG__luci-app-sms-tool-js/./sms-tool
+legacy-21.02	./speedtest-cli	speedtest-cli	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./speedtest-go	speedtest-go	duplicate	selected muink__openwrt-speedtest-go/.
+legacy-21.02	./speedtest-web	speedtest-web	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./speedtestcli	speedtestcli	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./ssocks	ssocks	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./stuntman	stuntman	duplicate	selected muink__openwrt-stuntman/.
+legacy-21.02	./sub-web	sub-web	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./subconverter	subconverter	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./sunpanel	sunpanel	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./sunwait	sunwait	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./switch-lan-play	switch-lan-play	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./sysinfo	sysinfo	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./sysuh3c	sysuh3c	duplicate	selected LGA1150__openwrt-sysuh3c/./sysuh3c
+legacy-21.02	./tailscale	tailscale	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./taskd	taskd	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./tcping	tcping	duplicate	selected fw876__helloworld/./tcping
+legacy-21.02	./tcpping	tcpping	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./telemetry	telemetry	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./toml11	toml11	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./tplinkmodem-helper	tplinkmodem-helper	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./transmission-web-control	transmission-web-control	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./transmission	transmission	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./trojan-go	trojan-go	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./trojan-plus	trojan-plus	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./trojan	trojan	duplicate	selected fw876__helloworld/./trojan
+legacy-21.02	./tuic-client	tuic-client	duplicate	selected fw876__helloworld/./tuic-client
+legacy-21.02	./turboacc/luci-app-turboacc	luci-app-turboacc	duplicate	selected chenmozhijin__turboacc/./luci-app-turboacc
+legacy-21.02	./ucl	ucl	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./udp2raw	udp2raw	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./udpspeeder	udpspeeder	duplicate	selected pexcn__openwrt-udpspeeder/.
+legacy-21.02	./ugps-helper	ugps-helper	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./unishare	unishare	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./upx-static	upx-static	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./upx	upx	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./uwsgi	uwsgi	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./v2dat	v2dat	duplicate	selected sbwml__luci-app-mosdns/./v2dat
+legacy-21.02	./v2ray-core	v2ray-core	duplicate	recipe v2ray-core selected kuoruan__openwrt-v2ray/.
+legacy-21.02	./v2ray-geodata	v2ray-geodata	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./v2ray-geoview	v2ray-geoview	duplicate	recipe geoview selected legacy-21.02/./geoview
+legacy-21.02	./v2ray-plugin	v2ray-plugin	duplicate	selected fw876__helloworld/./v2ray-plugin
+legacy-21.02	./v2raya	v2raya	duplicate	selected fw876__helloworld/./v2raya
+legacy-21.02	./verysync	verysync	duplicate	selected Lienol__openwrt-package/./verysync
+legacy-21.02	./vlmcsd	vlmcsd	duplicate	selected Lienol__openwrt-package/./other/lean/vlmcsd
+legacy-21.02	./vmease	vmease	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./vsftpd	vsftpd	duplicate	selected animefansxj__luci-app-vsftpd/./Source/op-dir/feeds/packages/net/vsftpd
+legacy-21.02	./watchcat	watchcat	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./webd	webd	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./webdav2	webdav2	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./wrtbwmon-openwrt/luci-app-wrtbwmon-zh	luci-app-wrtbwmon-zh	duplicate	selected firkerword__openwrt-wrtbwmon/./luci-app-wrtbwmon-zh
+legacy-21.02	./wrtbwmon-openwrt/wrtbwmon	wrtbwmon	duplicate	selected brvphoenix__wrtbwmon/./wrtbwmon
+legacy-21.02	./wxbase	wxbase	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./xray-core	xray-core	duplicate	selected fw876__helloworld/./xray-core
+legacy-21.02	./xray-plugin	xray-plugin	duplicate	selected fw876__helloworld/./xray-plugin
+legacy-21.02	./xunyou	xunyou	imported	legacy-fallback-needs-porting-review

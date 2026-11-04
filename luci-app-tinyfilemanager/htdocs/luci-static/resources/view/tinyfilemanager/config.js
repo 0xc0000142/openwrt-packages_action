@@ -38,8 +38,6 @@ return view.extend({
 			return fs.exec('/etc/init.d/tinyfilemanager', ['reload'])
 				.catch((e) => { ui.addNotification(null, E('p', e.message), 'error') });
 		};
-		if (! has_location)
-			o.description = _('To enable SSL support, you may need to install <b>%s</b><br/>').format(['php-nginx']);
 
 		o = s.option(form.Flag, 'use_auth', _('Enable Authentication'));
 		o.rmempty = false;
@@ -60,6 +58,21 @@ return view.extend({
 		o.default = 'user';
 		o.rmempty = false;
 		o.retain = true;
+		o.depends('use_auth', '1');
+
+		o = s.option(form.ListValue, 'autologin_user', _('Auto login user'),
+			_('Automatically login/logout of the specified user based on LuCI credentials.'));
+		o.load = function(section_id) {
+			delete this.keylist;
+			delete this.vallist;
+
+			const users = uci.get(this.config, section_id, 'auth_users');
+			this.value('', _('none'));
+			for (const userpw of users)
+				this.value(userpw.split(':')[0]);
+
+			return this.super('load', section_id);
+		}
 		o.depends('use_auth', '1');
 
 		o = s.option(form.Flag, 'global_readonly', _('Global Readonly'));

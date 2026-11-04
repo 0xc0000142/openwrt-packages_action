@@ -9,28 +9,33 @@ PKG_AUTOLOAD:=oaf
 RSTRIP:=:
 
 define KernelPackage/oaf
-  SECTION:=TT Apps
-  CATEGORY:=TT Apps
-  TITLE:=open app filter kernel module
+  SUBMENU:=Netfilter Extensions
+  TITLE:=OAF netfilter module
   FILES:=$(PKG_BUILD_DIR)/oaf.ko 
-  DEPENDS:=+kmod-ipt-conntrack
+  DEPENDS:=+kmod-nf-conntrack +kmod-nf-reject
   KCONFIG:=
-  # AUTOLOAD:=$(call AutoLoad,0,$(PKG_AUTOLOAD))
 endef
 
 define KernelPackage/oaf/description
-  open appfilter kernel module 
+  oaf netfilter module 
 endef
 
-
-EXTRA_CFLAGS:=-Wno-declaration-after-statement -Wno-strict-prototypes -Wno-unused-variable -Wno-implicit-fallthrough -Wno-missing-braces -Wno-parentheses -Wno-format -Wno-missing-prototypes -Wno-missing-declarations
-
+KCFLAGS := -Wno-error=missing-prototypes \
+           -Wno-error=strict-prototypes \
+           -Wno-error=missing-declarations \
+           -Wno-error=unused-variable \
+           -Wno-error=declaration-after-statement \
+           -Wno-error=implicit-fallthrough \
+           -Wno-error=missing-braces \
+           -Wno-error=parentheses \
+           -Wno-error=format \
+           -Wno-frame-larger-than
 
 
 MAKE_OPTS:= \
 	$(KERNEL_MAKE_FLAGS) \
 	M="$(PKG_BUILD_DIR)" \
-	EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+	KCFLAGS="$(KCFLAGS)" \
 	$(EXTRA_KCONFIG)
 
 define Build/Compile

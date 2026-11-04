@@ -8,14 +8,22 @@ local uci = require "luci.model.uci".cursor()
 -- 获取 LAN IP 地址
 function lanip()
 	local lan_ip
-	lan_ip = luci.sys.exec("uci -q get network.lan.ipaddr 2>/dev/null | awk -F '/' '{print $1}' | tr -d '\n'")
 
+	-- 尝试从 UCI 直接读取
+	lan_ip = luci.sys.exec("uci -q get network.lan.ipaddr 2>/dev/null | awk -F'/' '{print $1}' | tr -d '\\n'")
+
+	-- 尝试从 LAN 接口信息中读取（优先 ifname，再 fallback 到 device）
 	if not lan_ip or lan_ip == "" then
-    	lan_ip = luci.sys.exec("ip address show $(uci -q -p /tmp/state get network.lan.ifname || uci -q -p /tmp/state get network.lan.device) | grep -w 'inet' | grep -Eo 'inet [0-9\.]+' | awk '{print $2}' | head -1 | tr -d '\n'")
+		lan_ip = luci.sys.exec([[
+ip -4 addr show $(uci -q -p /tmp/state get network.lan.ifname || uci -q -p /tmp/state get network.lan.device) 2>/dev/null \
+  | grep -w 'inet' | awk '{print $2}' | cut -d'/' -f1 | grep -v '^127\.' | head -n1 | tr -d '\n']])
 	end
 
+	-- 取任意一个 global IPv4 地址
 	if not lan_ip or lan_ip == "" then
-    	lan_ip = luci.sys.exec("ip addr show | grep -w 'inet' | grep 'global' | grep -Eo 'inet [0-9\.]+' | awk '{print $2}' | head -n 1 | tr -d '\n'")
+		lan_ip = luci.sys.exec([[
+ip -4 addr show scope global 2>/dev/null \
+  | grep -w 'inet' | awk '{print $2}' | cut -d'/' -f1 | grep -v '^127\.' | head -n1 | tr -d '\n']])
 	end
 
 	return lan_ip
@@ -27,7 +35,7 @@ local function is_finded(e)
 	return luci.sys.exec(string.format('type -t -p "%s" 2>/dev/null', e)) ~= ""
 end
 
-m = Map("shadowsocksr", translate("ShadowSocksR Plus+ Settings"), translate("<h3>Support SS/SSR/V2RAY/XRAY/TROJAN/NAIVEPROXY/SOCKS5/TUN etc.</h3>"))
+m = Map("shadowsocksr", translate("ShadowSocksR Plus+ Settings"), translate("<h3>Support SS/SSR/V2RAY/XRAY/TROJAN/TUIC/HYSTERIA2/NAIVEPROXY/SOCKS5/TUN etc.</h3>"))
 m:section(SimpleSection).template = "shadowsocksr/status"
 
 local server_table = {}
@@ -80,6 +88,12 @@ if uci:get_first("shadowsocksr", 'global', 'netflix_enable', '0') == '1' then
 	o.description = translate("Forward Netflix Proxy through Main Proxy")
 	o.default = "0"
 end
+
+-- [[ Use nftables/iptables ]]--
+o = s:option(ListValue, "prefer_nft", translate("Prefer firewall tools"))
+o.default = "1"
+o:value("0", "Iptables")
+o:value("1", "Nftables")
 
 o = s:option(ListValue, "threads", translate("Multi Threads Option"))
 o:value("0", translate("Auto Threads"))
@@ -151,8 +165,9 @@ o:depends("pdnsd_enable", "2")
 o:depends("pdnsd_enable", "3")
 o.description = translate("Custom DNS Server format as IP:PORT (default: 8.8.4.4:53)")
 o.datatype = "ip4addrport"
+o.default = "8.8.4.4:53"
 
-o = s:option(ListValue, "tunnel_forward_mosdns", translate("Anti-pollution DNS Server"))
+o = s:option(Value, "tunnel_forward_mosdns", translate("Anti-pollution DNS Server"))
 o:value("tcp://8.8.4.4:53,tcp://8.8.8.8:53", translate("Google Public DNS"))
 o:value("tcp://208.67.222.222:53,tcp://208.67.220.220:53", translate("OpenDNS"))
 o:value("tcp://209.244.0.3:53,tcp://209.244.0.4:53", translate("Level 3 Public DNS-1 (209.244.0.3-4)"))
@@ -160,7 +175,7 @@ o:value("tcp://4.2.2.1:53,tcp://4.2.2.2:53", translate("Level 3 Public DNS-2 (4.
 o:value("tcp://4.2.2.3:53,tcp://4.2.2.4:53", translate("Level 3 Public DNS-3 (4.2.2.3-4)"))
 o:value("tcp://1.1.1.1:53,tcp://1.0.0.1:53", translate("Cloudflare DNS"))
 o:depends("pdnsd_enable", "4")
-o.description = translate("Custom DNS Server for MosDNS")
+o.description = translate("Custom DNS Server format as tcp://IP:PORT or tls://DOMAIN:PORT (tcp://8.8.8.8 or tls://dns.google:853)")
 
 o = s:option(Flag, "mosdns_ipv6", translate("Disable IPv6 in MOSDNS query mode"))
 o:depends("pdnsd_enable", "4")
@@ -279,4 +294,3 @@ if is_finded("chinadns-ng") then
 end
 
 return m
-

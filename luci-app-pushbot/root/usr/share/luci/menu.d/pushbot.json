@@ -1,0 +1,183 @@
+{
+	"admin/services/pushbot": {
+		"title": "PushBot",
+		"order": 30,
+		"action": {
+			"type": "template",
+			"path": "pushbot/pushbot_status"
+		},
+		"depends": {
+			"fs": {
+				"/etc/config/pushbot": "file"
+			}
+		}
+	},
+	"admin/services/pushbot/status": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_status"
+		}
+	},
+	"admin/services/pushbot/client_list": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_client_list"
+		}
+	},
+	"admin/services/pushbot/send_test": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_send_test"
+		}
+	},
+	"admin/services/pushbot/send_manual": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_send_manual"
+		}
+	},
+	"admin/services/pushbot/soc_test": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_soc_test"
+		}
+	},
+	"admin/services/pushbot/soc_result": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_soc_result"
+		}
+	},
+	"admin/services/pushbot/get_ip": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_get_ip"
+		}
+	},
+	"admin/services/pushbot/get_log": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "get_log"
+		}
+	},
+	"admin/services/pushbot/clear_log": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "clear_log"
+		}
+	},
+	"admin/services/pushbot/restart": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_restart"
+		}
+	},
+	"admin/services/pushbot/check_firewall": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_check_firewall"
+		}
+	},
+	"admin/services/pushbot/check_traffic": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_check_traffic"
+		}
+	},
+	"admin/services/pushbot/check_wireless": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_check_wireless"
+		}
+	},
+	"admin/services/pushbot/get_config": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_get_config"
+		}
+	},
+	"admin/services/pushbot/save_config": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_save_config"
+		}
+	},
+	"admin/services/pushbot/version": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_version"
+		}
+	},
+	"admin/services/pushbot/detect_pkgmgr": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_detect_pkgmgr"
+		}
+	},
+	"admin/services/pushbot/download": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_download"
+		}
+	},
+	"admin/services/pushbot/download_progress": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_download_progress"
+		}
+	},
+	"admin/services/pushbot/install": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_install"
+		}
+	},
+	"admin/services/pushbot/install_progress": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_install_progress"
+		}
+	},
+	"admin/services/pushbot/clear_packages": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_clear_packages"
+		}
+	},
+	"admin/services/pushbot/reset_config": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_reset_config"
+		}
+	},
+	"admin/services/pushbot/reset_config_keep_token": {
+		"action": {
+			"type": "function",
+			"module": "luci.controller.pushbot",
+			"function": "act_reset_config_keep_token"
+		}
+	}
+}

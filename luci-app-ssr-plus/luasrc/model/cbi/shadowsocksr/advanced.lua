@@ -1,17 +1,26 @@
 local m, s, o
+local cbi = require "luci.cbi"
 local uci = require "luci.model.uci".cursor()
 
 -- 获取 LAN IP 地址
 function lanip()
 	local lan_ip
-	lan_ip = luci.sys.exec("uci -q get network.lan.ipaddr 2>/dev/null | awk -F '/' '{print $1}' | tr -d '\n'")
 
+	-- 尝试从 UCI 直接读取
+	lan_ip = luci.sys.exec("uci -q get network.lan.ipaddr 2>/dev/null | awk -F'/' '{print $1}' | tr -d '\\n'")
+
+	-- 尝试从 LAN 接口信息中读取（优先 ifname，再 fallback 到 device）
 	if not lan_ip or lan_ip == "" then
-    	lan_ip = luci.sys.exec("ip address show $(uci -q -p /tmp/state get network.lan.ifname || uci -q -p /tmp/state get network.lan.device) | grep -w 'inet' | grep -Eo 'inet [0-9\.]+' | awk '{print $2}' | head -1 | tr -d '\n'")
+		lan_ip = luci.sys.exec([[
+ip -4 addr show $(uci -q -p /tmp/state get network.lan.ifname || uci -q -p /tmp/state get network.lan.device) 2>/dev/null \
+  | grep -w 'inet' | awk '{print $2}' | cut -d'/' -f1 | grep -v '^127\.' | head -n1 | tr -d '\n']])
 	end
 
+	-- 取任意一个 global IPv4 地址
 	if not lan_ip or lan_ip == "" then
-    	lan_ip = luci.sys.exec("ip addr show | grep -w 'inet' | grep 'global' | grep -Eo 'inet [0-9\.]+' | awk '{print $2}' | head -n 1 | tr -d '\n'")
+		lan_ip = luci.sys.exec([[
+ip -4 addr show scope global 2>/dev/null \
+  | grep -w 'inet' | awk '{print $2}' | cut -d'/' -f1 | grep -v '^127\.' | head -n1 | tr -d '\n']])
 	end
 
 	return lan_ip
@@ -130,7 +139,7 @@ o:depends("shunt_dns_mode", "2")
 o.description = translate("Custom DNS Server format as IP:PORT (default: 8.8.4.4:53)")
 o.datatype = "ip4addrport"
 
-o = s:option(ListValue, "shunt_mosdns_dnsserver", translate("Anti-pollution DNS Server"))
+o = s:option(Value, "shunt_mosdns_dnsserver", translate("Anti-pollution DNS Server"))
 o:value("tcp://8.8.4.4:53,tcp://8.8.8.8:53", translate("Google Public DNS"))
 o:value("tcp://208.67.222.222:53,tcp://208.67.220.220:53", translate("OpenDNS"))
 o:value("tcp://209.244.0.3:53,tcp://209.244.0.4:53", translate("Level 3 Public DNS-1 (209.244.0.3-4)"))
@@ -138,7 +147,7 @@ o:value("tcp://4.2.2.1:53,tcp://4.2.2.2:53", translate("Level 3 Public DNS-2 (4.
 o:value("tcp://4.2.2.3:53,tcp://4.2.2.4:53", translate("Level 3 Public DNS-3 (4.2.2.3-4)"))
 o:value("tcp://1.1.1.1:53,tcp://1.0.0.1:53", translate("Cloudflare DNS"))
 o:depends("shunt_dns_mode", "3")
-o.description = translate("Custom DNS Server for MosDNS")
+o.description = translate("Custom DNS Server format as tcp://IP:PORT or tls://DOMAIN:PORT (tcp://8.8.8.8 or tls://dns.google:853)")
 
 o = s:option(Flag, "shunt_mosdns_ipv6", translate("Disable IPv6 In MosDNS Query Mode (Shunt Mode)"))
 o:depends("shunt_dns_mode", "3")
@@ -241,10 +250,9 @@ o = s:option(Flag, "adblock", translate("Enable adblock"))
 o.rmempty = false
 
 o = s:option(Value, "adblock_url", translate("adblock_url"))
-o:value("https://raw.githubusercontent.com/neodevpro/neodevhost/master/lite_dnsmasq.conf", translate("NEO DEV HOST Lite"))
-o:value("https://raw.githubusercontent.com/neodevpro/neodevhost/master/dnsmasq.conf", translate("NEO DEV HOST Full"))
+o:value("https://raw.githubusercontent.com/neodevpro/neodevhost/master/dnsmasq.conf", translate("NEO DEV HOST"))
 o:value("https://anti-ad.net/anti-ad-for-dnsmasq.conf", translate("anti-AD"))
-o.default = "https://raw.githubusercontent.com/neodevpro/neodevhost/master/lite_dnsmasq.conf"
+o.default = "https://raw.githubusercontent.com/neodevpro/neodevhost/master/dnsmasq.conf"
 o:depends("adblock", "1")
 o.description = translate("Support AdGuardHome and DNSMASQ format list")
 
@@ -268,33 +276,33 @@ o.rmempty = false
 o = s:option(ListValue, "server", translate("Server"))
 o:value("same", translate("Same as Global Server"))
 for _, key in pairs(key_table) do
-    o:value(key, server_table[key])
+	o:value(key, server_table[key])
 end
 o.default = "same"
 o.rmempty = false
 
 -- Dynamic value handling based on enabled/disabled state
 o.cfgvalue = function(self, section)
-    local enabled = m:get(section, "enabled")
-    if enabled == "0" then
-        return m:get(section, "old_server")
-    end
-    return Value.cfgvalue(self, section)-- Default to `same` when enabled
+	local enabled = m:get(section, "enabled")
+	if enabled == "0" then
+		return m:get(section, "old_server")
+	end
+	return Value.cfgvalue(self, section)-- Default to `same` when enabled
 end
 
 o.write = function(self, section, value)
-    local enabled = m:get(section, "enabled")
-    if enabled == "0" then
-        local old_server = Value.cfgvalue(self, section)
-        if old_server ~= "nil" then
-            m:set(section, "old_server", old_server)
-        end
-        m:set(section, "server", "nil")
-    else
-        m:del(section, "old_server")
-        -- Write the value normally when enabled
-        Value.write(self, section, value)
-    end
+	local enabled = m:get(section, "enabled")
+	if enabled == "0" then
+		local old_server = Value.cfgvalue(self, section)
+		if old_server ~= "nil" then
+			m:set(section, "old_server", old_server)
+		end
+		m:set(section, "server", "nil")
+	else
+		m:del(section, "old_server")
+		-- Write the value normally when enabled
+		Value.write(self, section, value)
+	end
 end
 
 -- Socks Auth
@@ -305,10 +313,10 @@ o:value("noauth", "NOAUTH")
 o:value("password", "PASSWORD")
 o.rmempty = true
 for key, server_type in pairs(type_table) do
-    if server_type == "v2ray" then
-        -- 如果服务器类型是 v2ray，则设置依赖项显示
-        o:depends("server", key)
-    end
+	if server_type == "v2ray" then
+		-- 如果服务器类型是 v2ray，则设置依赖项显示
+		o:depends("server", key)
+	end
 end
 o:depends({server = "same", disable = true})
 
@@ -328,10 +336,10 @@ o = s:option(Flag, "socks5_mixed", translate("Enabled Mixed"), translate("Mixed 
 o.default = "1"
 o.rmempty = false
 for key, server_type in pairs(type_table) do
-    if server_type == "v2ray" then
-        -- 如果服务器类型是 v2ray，则设置依赖项显示
-        o:depends("server", key)
-    end
+	if server_type == "v2ray" then
+		-- 如果服务器类型是 v2ray，则设置依赖项显示
+		o:depends("server", key)
+	end
 end
 o:depends({server = "same", disable = true})
 end
@@ -344,78 +352,88 @@ o.rmempty = false
 
 -- [[ fragmen Settings ]]--
 if is_finded("xray") then
-s = m:section(TypedSection, "global_xray_fragment", translate("Xray Fragment Settings"))
-s.anonymous = true
+	s = m:section(TypedSection, "global_xray_fragment", translate("Xray Fragment Settings"))
+	s.anonymous = true
 
-o = s:option(Flag, "fragment", translate("Fragment"), translate("TCP fragments, which can deceive the censorship system in some cases, such as bypassing SNI blacklists."))
-o.default = 0
+	o = s:option(Flag, "fragment", translate("Fragment"), translate("TCP fragments, which can deceive the censorship system in some cases, such as bypassing SNI blacklists."))
+	o.default = 0
 
-o = s:option(ListValue, "fragment_packets", translate("Fragment Packets"), translate("\"1-3\" is for segmentation at TCP layer, applying to the beginning 1 to 3 data writes by the client. \"tlshello\" is for TLS client hello packet fragmentation."))
-o.default = "tlshello"
-o:value("tlshello", "tlshello")
-o:value("1-1", "1-1")
-o:value("1-2", "1-2")
-o:value("1-3", "1-3")
-o:value("1-5", "1-5")
-o:depends("fragment", true)
+	o = s:option(ListValue, "fragment_packets", translate("Fragment Packets"), translate("\"1-3\" is for segmentation at TCP layer, applying to the beginning 1 to 3 data writes by the client. \"tlshello\" is for TLS client hello packet fragmentation."))
+	o.default = "tlshello"
+	o:value("tlshello", "tlshello")
+	o:value("1-1", "1-1")
+	o:value("1-2", "1-2")
+	o:value("1-3", "1-3")
+	o:value("1-5", "1-5")
+	o:depends("fragment", true)
 
-o = s:option(Value, "fragment_length", translate("Fragment Length"), translate("Fragmented packet length (byte)"))
-o.default = "100-200"
-o:depends("fragment", true)
+	o = s:option(Value, "fragment_length", translate("Fragment Length"), translate("Fragmented packet length (byte)"))
+	o.datatype = "or(uinteger,portrange)"
+	o.default = "100-200"
+	o:depends("fragment", true)
 
-o = s:option(Value, "fragment_interval", translate("Fragment Interval"), translate("Fragmentation interval (ms)"))
-o.default = "10-20"
-o:depends("fragment", true)
+	o = s:option(Value, "fragment_delay", translate("Fragment Delay"), translate("Fragmentation interval (ms)"))
+	o.datatype = "or(uinteger,portrange)"
+	o.default = "10-20"
+	o:depends("fragment", true)
 
-o = s:option(Flag, "noise", translate("Noise"), translate("UDP noise, Under some circumstances it can bypass some UDP based protocol restrictions."))
-o.default = 0
+	o = s:option(Value, "fragment_maxSplit", translate("Max Split"), translate("Limit the maximum number of splits."))
+	o.datatype = "or(uinteger,portrange)"
+	o.default = "100-200"
+	o:depends("fragment", true)
 
-s = m:section(TypedSection, "xray_noise_packets", translate("Xray Noise Packets"))
-s.description = translate(
-    "<font style='color:red'>" .. translate("To send noise packets, select \"Noise\" in Xray Settings.") .. "</font>" ..
-    "<br/><font><b>" .. translate("For specific usage, see:") .. "</b></font>" ..
-    "<a href='https://xtls.github.io/config/outbounds/freedom.html' target='_blank'>" ..
-    "<font style='color:green'><b>" .. translate("Click to the page") .. "</b></font></a>")
-s.template = "cbi/tblsection"
-s.sortable = true
-s.anonymous = true
-s.addremove = true
+	o = s:option(Flag, "noise", translate("Noise"), translate("UDP noise, Under some circumstances it can bypass some UDP based protocol restrictions."))
+	o.default = 0
 
-s.remove = function(self, section)
-	for k, v in pairs(self.children) do
-		v.rmempty = true
-		v.validate = nil
+	s = m:section(TypedSection, "xray_noise_packets", translate("Xray Noise Packets"))
+	s.description = translate(
+		"<font style='color:red'>" .. translate("To send noise packets, select \"Noise\" in Xray Settings.") .. "</font>" ..
+		"<br/><font><b>" .. translate("Packet or Rand length as a string, e.g., 10-20.") .. "</b></font>" ..
+		"<br/><font><b>" .. translate("For specific usage, see:") .. "</b></font>" ..
+		"<a href='https://xtls.github.io/config/outbounds/freedom.html' target='_blank'>" ..
+		"<font style='color:green'><b>" .. translate("Click to the page") .. "</b></font></a>")
+	s.template = "cbi/tblsection"
+	s.sortable = true
+	s.anonymous = true
+	s.addremove = true
+
+	s.remove = function(self, section)
+		for k, v in pairs(self.children) do
+			v.rmempty = true
+			v.validate = nil
+		end
+		TypedSection.remove(self, section)
 	end
-	TypedSection.remove(self, section)
-end
 
-o = s:option(Flag, "enabled", translate("Enable"))
-o.default = 1
-o.rmempty = false
+	o = s:option(Flag, "enabled", translate("Enable"))
+	o.default = 1
+	o.rmempty = false
 
-o = s:option(ListValue, "type", translate("Type"))
-o.default = "base64"
-o:value("rand", "rand")
-o:value("str", "str")
-o:value("hex", "hex")
-o:value("base64", "base64")
+	o = s:option(ListValue, "type", translate("Type"))
+	o.default = "base64"
+	o:value("rand", "rand")
+	o:value("str", "str")
+	o:value("hex", "hex")
+	o:value("base64", "base64")
 
-o = s:option(Value, "domainStrategy", translate("Domain Strategy"))
-o.default = "UseIP"
-o:value("AsIs", "AsIs")
-o:value("UseIP", "UseIP")
-o:value("UseIPv4", "UseIPv4")
-o:value("ForceIP", "ForceIP")
-o:value("ForceIPv4", "ForceIPv4")
-o.rmempty = false
+	o = s:option(Value, "domainStrategy", translate("Domain Strategy"))
+	o.default = "AsIs"
+	o:value("AsIs", "AsIs")
+	o:value("UseIP", "UseIP")
+	o:value("UseIPv4", "UseIPv4")
+	o:value("ForceIP", "ForceIP")
+	o:value("ForceIPv4", "ForceIPv4")
+	o.rmempty = false
 
-o = s:option(Value, "packet", translate("Packet"))
-o.datatype = "minlength(1)"
-o.rmempty = false
+	o = s:option(Value, "packet", translate("Packet | Rand Length"))
+	o.datatype = "minlength(1)"
+	o.rmempty = false
 
-o = s:option(Value, "delay", translate("Delay (ms)"))
-o.datatype = "or(uinteger,portrange)"
-o.rmempty = false
+	o = s:option(Value, "delay", translate("Delay (ms)"))
+	o.datatype = "or(uinteger,portrange)"
+	o.rmempty = false
+	
+	s:append(cbi.Template("shadowsocksr/optimize_cbi_ui"))
 end
 
 return m

@@ -27,6 +27,12 @@ const callHostHints = rpc.declare({
 	expect: { '': {} }
 });
 
+const callGetCongestions = rpc.declare({
+	object: 'luci.natmap',
+	method: 'get_congestions',
+	expect: { '': {} }
+});
+
 function getInstances() {
 	return L.resolveDefault(callServiceList(conf), {}).then((res) => {
 		try {
@@ -105,6 +111,7 @@ return view.extend({
 		L.resolveDefault(fs.list(etc_path + '/client'), []),
 		L.resolveDefault(fs.list(etc_path + '/notify'), []),
 		L.resolveDefault(fs.list(etc_path + '/ddns'), []),
+		callGetCongestions().then((res) => { return res.algorithm }),
 		uci.load('firewall'),
 		uci.load('natmap')
 	]);
@@ -119,6 +126,7 @@ return view.extend({
 		const scripts_client = res[5] ? res[5] : [];
 		const scripts_notify = res[6] ? res[6] : [];
 		const scripts_ddns = res[7] ? res[7] : [];
+		const congestions = res[8];
 
 		let m, s, o;
 
@@ -139,6 +147,10 @@ return view.extend({
 		o = s.option(form.Flag, 'enable', _('Enable'));
 		o.default = o.disabled;
 		o.rmempty = false;
+
+		o = s.option(form.Value, 'boot_delay', _('Boot delay'),
+			_('Delay in seconds before starting the service.'));
+		o.datatype = 'uinteger';
 
 		o = s.option(form.Value, 'def_tcp_stun', _('Default ') + _('TCP STUN ') + _('Server'),
 			_('Available server <a href="%s" target="_blank">references</a>')
@@ -169,7 +181,7 @@ return view.extend({
 		o.default = 15;
 		o.rmempty = false;
 
-		o = s.option(form.Value, 'def_udp_stun_cycle', _('Default ') + _('UDP ') + _('STUN check cycle'));
+		o = s.option(form.Value, 'def_udp_stun_cycle', _('Default ') + _('UDP ') + _('STUN check cycle (once every n intervals)'));
 		o.datatype = 'uinteger';
 		o.default = 5;
 		o.rmempty = false;
@@ -304,7 +316,7 @@ return view.extend({
 		o.rmempty = true;
 		o.modalonly = true;
 
-		o = s.taboption('general', form.Value, 'stun_cycle', _('STUN check cycle'), _('For UDP mode'));
+		o = s.taboption('general', form.Value, 'stun_cycle', _('STUN check cycle (once every n intervals)'), _('For UDP mode'));
 		o.datatype = 'uinteger';
 		o.rmempty = true;
 		o.modalonly = true;
@@ -376,7 +388,7 @@ return view.extend({
 		o.datatype = "or(port, portrange)";
 		o.rmempty = false;
 		o.validate = function(section_id, value) {
-			let regexp = new RegExp(/^([1-9]\d*)(-([1-9]\d*))*$/)
+			let regexp = new RegExp(/^([1-9]\d*)(-([1-9]\d*))?$/)
 
 			if (!regexp.test(value))
 				return _('Expecting: %s').format(_('Non-0 port'));
@@ -384,21 +396,27 @@ return view.extend({
 			return true;
 		};
 
+		o = s.taboption('general', form.Flag, 'port_pointer', _('Randomly allocation ports'),
+			_('Allocation ports randomly instead of sequentially.'));
+		o.default = o.disabled;
+		o.depends({port: /^[1-9]\d*-[1-9]\d*$/});
+		o.modalonly = true;
+
 		o = s.taboption('forward', form.Flag, 'forward', _('Forward mode'));
 		o.default = o.disabled;
 		o.rmempty = false;
 		o.textvalue = function(section_id) {
 			let cval = this.cfgvalue(section_id) || this.default;
-			let mode = L.bind(function() {
+			let mode = function() {
 				let cval = this.cfgvalue(section_id) || this.default;
 				let i = this.keylist.indexOf(cval);
 				return [this.vallist[i], cval];
-			}, s.getOption('forward_mode'))
-			let loopback = L.bind(function() {
+			}.call(s.getOption('forward_mode'));
+			let loopback = function() {
 				let cval = this.cfgvalue(section_id) || this.default;
 				return (cval == this.enabled) ? ' L' : '';
-			}, s.getOption('natloopback'))
-			return (cval == this.enabled) ? mode()[0] + (mode()[1] === 'dnat' ? loopback() : '') : _('No');
+			}.call(s.getOption('natloopback'));
+			return (cval == this.enabled) ? mode[0] + (mode[1] === 'dnat' ? loopback : '') : _('No');
 		};
 
 		o = s.taboption('forward', form.ListValue, 'forward_mode', _('Forward method'), _('The DNAT method not support under IPv6'));
@@ -410,13 +428,13 @@ return view.extend({
 		o.depends('forward', '1');
 		o.modalonly = true;
 		o.validate = function(section_id, value) {
-			let family = L.bind(function() {
+			let family = function() {
 				let E = document.getElementById('widget.' + this.cbid(section_id).match(/.+\./) + 'family');
 				let i = E ? E.selectedIndex : null;
 				return E ? E.options[i].value : null;
-			}, s.getOption('family'))
+			}.call(s.getOption('family'));
 
-			if (value == 'dnat' && family() == 'ipv6')
+			if (value == 'dnat' && family == 'ipv6')
 				return _('The DNAT method not support under IPv6');
 
 			return true;
@@ -429,19 +447,35 @@ return view.extend({
 		o.depends('forward_mode', 'dnat');
 		o.modalonly = true;
 
+		o = s.taboption('forward', form.ListValue, 'forward_congestion', _('TCP Congestion control'), _('For TCP mode'));
+		o.value('', _('Default'));
+		congestions.forEach((res) => {
+			o.value.apply(o, [res]);
+		})
+		o.rmempty = true;
+		o.depends('forward_mode', 'via');
+		o.modalonly = true;
+
 		o = s.taboption('forward', form.Value, 'forward_timeout', _('Forward timeout'), _('Port forwarding session idle timeout in seconds'));
 		o.datatype = "and(uinteger, min(1))";
-		o.placeholder = '120000';
+		o.placeholder = '300000';
 		o.rmempty = true;
-		o.retain = true;
 		o.depends('forward_mode', 'via');
 		o.modalonly = true;
 
 		o = s.taboption('forward', form.Value, 'forward_target', _('Forward target'));
-		o.datatype = 'ipaddr(1)';
+		o.datatype = 'or(hostname,ipaddr(1))';
 		o.value('127.0.0.1', '127.0.0.1/::1 (%s)'.format(_('This device default Lan')));
 		o.value('0.0.0.0', '0.0.0.0/:: (%s)'.format(_('This device default Wan')));
 		o.default = '127.0.0.1';
+		o.validate = function(section_id, value) {
+			const forward_mode = this.section.getUIElement(section_id, 'forward_mode').getValue();
+
+			if (new RegExp(/^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})*\.?$/).test(value) && !new RegExp(/^[0-9]+(\.[0-9]+){3}$/).test(value) && forward_mode === 'dnat')
+				return _('Expecting: %s').format(_('The hostname not support under DNAT mode'));
+
+			return true;
+		}
 		o.rmempty = false;
 		o.retain = true;
 		o.depends('forward', '1');
@@ -454,11 +488,11 @@ return view.extend({
 		o.textvalue = function(section_id) {
 			let cval = this.cfgvalue(section_id);
 			let i = this.keylist.indexOf(cval);
-			let enforward = L.bind(function() {
+			let enforward = function() {
 				let cval = this.cfgvalue(section_id) || this.default;
 				return (cval == this.enabled) ? true : false;
-			}, s.getOption('forward'))
-			return enforward() ? this.vallist[i] : _('No');
+			}.call(s.getOption('forward'));
+			return enforward ? this.vallist[i] ?? cval : _('No');
 		};
 
 		o = s.taboption('forward', form.Value, 'forward_port', _('Forward target port'), _('Set 0 will follow Public port'));
@@ -468,27 +502,27 @@ return view.extend({
 		o.depends('forward', '1');
 		o.textvalue = function(section_id) {
 			let cval = this.cfgvalue(section_id) || this.default;
-			let enforward = L.bind(function() {
+			let enforward = function() {
 				let cval = this.cfgvalue(section_id) || this.default;
 				return (cval == this.enabled) ? true : false;
-			}, s.getOption('forward'))
-			let refresh = L.bind(function() {
+			}.call(s.getOption('forward'));
+			let refresh = function() {
 				let cval = this.cfgvalue(section_id) || this.default;
 				return (cval == this.enabled) ? true : false;
-			}, s.getOption('refresh'))
-			let cltname = L.bind(function() {
+			}.call(s.getOption('refresh'));
+			let cltname = function() {
 				let cval = this.cfgvalue(section_id) || this.default;
 				let i = this.keylist.indexOf(cval);
 				return this.vallist[i];
-			}, s.getOption('clt_script'))
-			return enforward() ? ((cval == '0' && refresh()) ? cltname() : cval) : _('No');
+			}.call(s.getOption('clt_script'));
+			return enforward ? ((cval == '0' && refresh) ? cltname : cval) : _('No');
 		};
 
-		o = s.taboption('forward', form.Flag, 'refresh', _('Refresh client listen port'));
-		o.default = o.enabled;
+		o = s.taboption('forward', form.Flag, 'refresh', _('Refresh client'), _('%s set 0 will rewrite client listen port').format(_('Forward target port')));
+		o.default = o.disabled;
 		o.rmempty = false;
 		o.retain = true;
-		o.depends('forward_port', '0');
+		o.depends('forward', '1');
 		o.modalonly = true;
 
 		o = s.taboption('forward', form.ListValue, 'clt_script', _('Refresh Scripts'));

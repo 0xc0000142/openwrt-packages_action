@@ -110,11 +110,13 @@ validate_section_natmap() {
 		'family:or("ipv4", "ipv6"):ipv4' \
 		'bind_ifname:network' \
 		'port:or(port, portrange)' \
+		'port_pointer:bool:0' \
 		'forward:bool:0' \
 		'forward_mode:or("dnat", "via"):via' \
 		'natloopback:bool:1' \
+		'forward_congestion:string' \
 		'forward_timeout:and(uinteger, min(1))' \
-		'forward_target:ipaddr(1)' \
+		'forward_target:or(hostname,ipaddr(1))' \
 		'forward_port:port' \
 		'refresh:bool:0' \
 		'clt_script:file' \
@@ -145,6 +147,14 @@ validate_section_natmap() {
 		'custom_script:file' \
 		'log_stdout:bool:1' \
 		'log_stderr:bool:1'
+}
+
+# ip_match <hostname>
+hostname_match() {
+	[ "$#" -ge 1 ] || return 1
+	local _hostname="$1"
+
+	echo "$_hostname" | grep -E "^[[:alnum:]][-[:alnum:]]{0,62}(\.[[:alnum:]][-[:alnum:]]{0,62})*\.?$"
 }
 
 # ip_match <family> <ipaddr>
@@ -178,7 +188,7 @@ natmap_instance() {
 		${stun_server:+-s "$stun_server"} \
 		${http_server:+-h "$http_server"} \
 		${fwmark_value:+-f "$fwmark_value"} \
-		${port:+-b "$port"} \
+		${port:+-b "$([ "$port_pointer" = 1 ] && echo ${port/-/\~} || echo $port)"} \
 
 	[ "${family}" = ipv4 ] && procd_append_param command -4
 	[ "${family}" = ipv6 ] && procd_append_param command -6
@@ -195,13 +205,15 @@ natmap_instance() {
 	}
 
 	if [ "$forward" = 1 -a "$forward_mode" = "via" -a -n "${forward_target}" ]; then
-		procd_append_param command ${forward_timeout:+-T "$forward_timeout"} -t "$forward_target" -p "$forward_port"
+		procd_append_param command ${forward_congestion:+-C "$forward_congestion"} ${forward_timeout:+-T "$forward_timeout"} -t "$forward_target" -p "$forward_port"
 	fi
 
 	procd_set_param env "SECTIONID=$1"
 	procd_append_param env "COMMENT=$comment"
-	if [ "$forward" = 1 -a "$forward_port" = 0 ]; then
-		[ "$forward_mode" = "dnat" ] && procd_append_param env "RWFW=1"
+	if [ "$forward" = 1 ]; then
+		# Rewrite the dest_port(forward port) using a public port
+		[ "$forward_port" = 0 -a "$forward_mode" = "dnat" ] && procd_append_param env "RWFW=1"
+
 		if [ "$refresh" = 1 ]; then
 			procd_append_param env "REFRESH=$clt_script"
 			json_init
@@ -209,7 +221,7 @@ natmap_instance() {
 			json_add_int web_port "$clt_web_port"
 			json_add_string username "$clt_username"
 			json_add_string password "$clt_password"
-			json_add_string ip "$forward_target"
+			json_add_string host "$forward_target"
 			procd_append_param env "REFRESH_PARAM=$(json_dump)"
 		fi
 	fi
@@ -264,7 +276,7 @@ natmap_instance() {
 			json_add_string family "$family"
 			json_add_string proto "$proto"
 			json_add_string src "$($FW -q device $bind_ifname)"
-			json_add_string src_dip "$bind_ip"
+			#json_add_string src_dip "$bind_ip" # fix for #11 (The external address of the firewall will not be updated), fw4 cannot add `iifname` rule in `<action>_<fw zone>` chain
 			json_add_string src_dport "$port"
 			#json_add_string dest '' # zlan or zwan
 			json_add_string dest_ip "$forward_target"
@@ -281,9 +293,10 @@ natmap_instance() {
 			json_add_string name "$1"
 			json_add_string family "$family"
 			json_add_string proto "$proto"
+			json_add_string direction in
 			json_add_string src "$($FW -q device $bind_ifname)"
 			#json_add_string dest '' # '' = input
-			json_add_string dest_ip "$bind_ip"
+			#json_add_string dest_ip "$bind_ip" # fix for #11 (The external address of the firewall will not be updated), fw4 cannot add `iifname` rule in `<action>_<fw zone>` chain
 			json_add_string dest_port "$port"
 			json_close_object
 		fi
@@ -355,19 +368,25 @@ launcher() {
 	esac
 	[ -z "$bind_ip" ] && >&2 echo "$(basename $0): section $1 option bind_ip parsing failed, there may be no $family network connection" && let error++
 	[ -z "$port" ] && err_msg__empty $1 port && let error++
-	grep -qE '^([1-9]\d*)(-([1-9]\d*))*$' <<< "$port" || { >&2 echo "$(basename $0): section $1 option port '$port' is invalid"; let error++; }
+	grep -qE '^([1-9]\d*)(-([1-9]\d*))?$' <<< "$port" || { >&2 echo "$(basename $0): section $1 option port '$port' is invalid"; let error++; }
 	[ -z "$fwmark_value" -o -n "$(fwmark_match "$fwmark_value")" ] || { >&2 echo "$(basename $0): section $1 option fwmark_value '$fwmark_value' is invalid"; let error++; }
 	## forward
 	if   [ "$forward" = 1 ]; then
 		[ "$forward_mode" = "dnat" -a "$family" = "ipv6" ] && >&2 echo "$(basename $0): section $1 option forward_mode 'dnat' not support under IPv6" && let error++
 		[ "$forward_mode" != "dnat" ] && natloopback=0
 		if [ -n "$forward_target" ]; then
-			[ -n "$(grep -E "^127(\.\d+){3}" <<< $forward_target)" -o "$forward_target" = "::1" ] && forward_target="$lan_addr"
-			[ -n "$(grep -E "^0(\.\d+){3}"   <<< $forward_target)" -o "$forward_target" = "::" ] && forward_target="$bind_ip"
-			if [ -n "$forward_target" ]; then
-				[ -z "$(ip_match "$family" "$forward_target")" ] && >&2 echo "$(basename $0): section $1 option forward_target '$forward_target' not a $family address" && let error++
+			if [ -n "$(hostname_match "$forward_target")" -a -z "$(ip_match ipv4 "$forward_target")" ]; then
+				# hostname
+				[ "$forward_mode" = "dnat" ] && >&2 echo "$(basename $0): section $1 option forward_target '$forward_target', hostname not support under DNAT mode" && let error++
 			else
-				>&2 echo "$(basename $0): section $1 option forward_target parsing failed, there may be no $family network connection"; let error++
+				# ipaddr(1)
+				[ -n "$(grep -E "^127(\.\d+){3}" <<< $forward_target)" -o "$forward_target" = "::1" ] && forward_target="$lan_addr"
+				[ -n "$(grep -E "^0(\.\d+){3}"   <<< $forward_target)" -o "$forward_target" = "::" ] && forward_target="$bind_ip"
+				if [ -n "$forward_target" ]; then
+					[ -z "$(ip_match "$family" "$forward_target")" ] && >&2 echo "$(basename $0): section $1 option forward_target '$forward_target' not a $family address" && let error++
+				else
+					>&2 echo "$(basename $0): section $1 option forward_target parsing failed, there may be no $family network connection"; let error++
+				fi
 			fi
 		else
 			err_msg__empty $1 forward_target; let error++
@@ -397,7 +416,7 @@ launcher() {
 
 	# review
 	[ -n "$NATMAP_DEBUG" ] && {
-		local v ucivv="enable interval stun_cycle stun_server http_server fwmark_value comment udp_mode proto family bind_ifname ifname bind_ip lan_addr port forward forward_mode natloopback forward_timeout forward_target forward_port refresh clt_script clt_scheme clt_web_port clt_username clt_password notify_enable notify_script notify_tokens notify_custom_domain notify_text ddns_enable ddns_script ddns_tokens ddns_a ddns_aaaa ddns_srv ddns_srv_serv ddns_srv_proto ddns_srv_target ddns_srv_priority ddns_srv_weight ddns_https ddns_https_target ddns_https_svcparams ddns_https_priority custom_script"
+		local v ucivv="enable interval stun_cycle stun_server http_server fwmark_value comment udp_mode proto family bind_ifname ifname bind_ip lan_addr port port_pointer forward forward_mode natloopback forward_congestion forward_timeout forward_target forward_port refresh clt_script clt_scheme clt_web_port clt_username clt_password notify_enable notify_script notify_tokens notify_custom_domain notify_text ddns_enable ddns_script ddns_tokens ddns_a ddns_aaaa ddns_srv ddns_srv_serv ddns_srv_proto ddns_srv_target ddns_srv_priority ddns_srv_weight ddns_https ddns_https_target ddns_https_svcparams ddns_https_priority custom_script"
 		for v in $ucivv; do eval "echo $1 $v=\'\$$v\'"; done # ash not support ${!v}
 	}
 	[ "$error" -gt 0 ] && return 1
@@ -434,6 +453,13 @@ service_triggers() {
 start_service() {
 	local sid="$1"
 
+	if [ -z "$DEF_WAN$DEF_WAN6" ]; then
+		>&2 echo "$(basename $0): default WAN not detected. service startup will be delayed."
+		sleep $(uci -q get $NAME.@$GLOBALSECTION[0].boot_delay || echo 0)
+		network_flush_cache
+		define_nic
+	fi
+
 	config_foreach validate_section_global "$GLOBALSECTION" define_global || return $?
 	[ "${GLOBAL_enable:=0}" == "0" ] && return 1
 
@@ -454,7 +480,7 @@ stop_service() {
 service_stopped() {
 	sleep 1s # Wait for procd_kill complete
 
-	ps | grep natmap | awk '{print $1}' | xargs kill -9 
+	ps | grep natmap | awk '{print $1}' | xargs kill -9
 }
 
 reload_service() {

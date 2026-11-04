@@ -8,11 +8,13 @@
 				"/etc/natmap/ddns": [ "list" ],
 				"/etc/init.d/natmap reload *": [ "exec" ],
 				"/var/run/natmap/*": [ "read" ],
+				"/tmp/run/natmap/*": [ "read" ],
 				"/tmp/natmap-natBehavior": [ "read" ],
 				"/usr/libexec/natmap/natcheck.sh": [ "exec" ]
 			},
 			"ubus": {
-				"service": [ "list" ]
+				"service": [ "list" ],
+				"luci.natmap": [ "*" ]
 			},
 			"uci": ["natmap"]
 		},
