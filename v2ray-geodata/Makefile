@@ -43,6 +43,7 @@ define Package/v2ray-geoip
   TITLE:=GeoIP List for V2Ray
   VERSION:=$(GEOIP_VER).$(PKG_RELEASE)
   LICENSE:=CC-BY-SA-4.0
+  PROVIDES+=@v2ray-geodata @xray-geodata @xray-geoip
 endef
 
 define Package/v2ray-geosite
@@ -50,6 +51,7 @@ define Package/v2ray-geosite
   TITLE:=Geosite List for V2Ray
   VERSION:=$(GEOSITE_VER).$(PKG_RELEASE)
   LICENSE:=MIT
+  PROVIDES+=@v2ray-geodata @xray-geodata @xray-geosite
 endef
 
 define Build/Prepare
@@ -68,11 +70,15 @@ endef
 define Package/v2ray-geoip/install
 	$(INSTALL_DIR) $(1)/usr/share/v2ray
 	$(INSTALL_DATA) $(DL_DIR)/$(GEOIP_FILE) $(1)/usr/share/v2ray/geoip.dat
+	$(INSTALL_DIR) $(1)/usr/share/xray
+	$(LN) ../v2ray/geoip.dat $(1)/usr/share/xray/geoip.dat
 endef
 
 define Package/v2ray-geosite/install
 	$(INSTALL_DIR) $(1)/usr/share/v2ray
 	$(INSTALL_DATA) $(DL_DIR)/$(GEOSITE_FILE) $(1)/usr/share/v2ray/geosite.dat
+	$(INSTALL_DIR) $(1)/usr/share/xray
+	$(LN) ../v2ray/geosite.dat $(1)/usr/share/xray/geosite.dat
 endef
 
 $(eval $(call BuildPackage,v2ray-geoip))

@@ -134,7 +134,7 @@ line	original_repository	original_destination	action	source	detail
 148	gSpotx2f/luci-app-temp-status	luci-app-temp-status	retained	gSpotx2f__luci-app-temp-status	递归导入全部OpenWrt配方
 149	muink/luci-app-tinyfilemanager	luci-app-tinyfilemanager	retained	muink__luci-app-tinyfilemanager	递归导入全部OpenWrt配方
 150	muink/luci-app-tn-netports	luci-app-tn-netports	retained	muink__luci-app-tn-netports	递归导入全部OpenWrt配方
-151	yichya/luci-app-xray	luci-app-xray	retained	yichya__luci-app-xray	递归导入全部OpenWrt配方
+151	yichya/luci-app-xray	luci-app-xray	retained	yichya__luci-app-xray	显式导入core/geodata/status到luci-app-xray、luci-app-xray-geodata、luci-app-xray-status，并保留每包LICENSE
 152	jerrykuku/luci-theme-argon	luci-theme-argon	deduplicated	jerrykuku__luci-theme-argon	原重复clone调用；递归导入全部OpenWrt配方
 153	jerrykuku/luci-app-argon-config	luci-app-argon-config	deduplicated	jerrykuku__luci-theme-argon	原重复clone调用；由主题内嵌同名兼容配方提供，避免重复定义
 154	muink/openwrt-alwaysonline	alwaysonline	retained	muink__openwrt-alwaysonline	递归导入全部OpenWrt配方

@@ -9,7 +9,11 @@ OpenWrt 25.12 请使用 `packages-25.12` 分支，由 `packages-25.12.sh` 按 `s
 
 21.\* 版 LuCI 请使用 `packages-21.02` 分支（历史版本）。
 
-历史版本的旧获取链路仍包含失效来源，不能保证更新脚本和生成的软件包可用。
+四个版本均使用 Git 获取源码，由独立的来源清单和共享生成器处理下载、去重与失败检查。18.06、19.07、21.02 优先使用对应版本的可用分支；无法继续获取的来源用明确记录的历史源码补全，不使用 25.12 的清单代替旧版。
+
+历史版本已停止维护，修复源码获取不代表上游重新提供版本支持或全部插件已经通过编译。历史分支、固定提交和替代关系记录在各版本的 `sources-版本.tsv`、`sources-版本-coverage.tsv` 及生成报告中。
+
+修复后的完整生成已验证：18.06 为 **117** 个包目录，19.07 为 **456** 个，21.02 为 **523** 个。来源恢复、旧版本分支选择及原始源码归档说明见 [历史版本迁移记录](docs/migration-legacy.md)。
 
 ### 25.12 软件包范围
 
@@ -66,12 +70,12 @@ OpenWrt 25.12.5 SDK 已解析 **612 个源码配方、1243 个二进制包定义
 
 1. 确认 `.github/workflows/update-packages.yml` 已提交到 GitHub 仓库的默认分支。如果 GitHub 已停用该工作流，请先点击 **Enable workflow**。
 2. 打开仓库的 **Actions → Update packages → Run workflow**。
-3. 在 `target` 中选择目标：默认是 `packages-25.12`；也可选择一个历史版本，或选择 `all` 同时运行全部目标。历史版本仍有失效来源，选择 `all` 不代表这些版本已经修复。
+3. 在 `target` 中选择目标：默认是 `packages-25.12`；也可选择 `packages`（18.06）、`packages-19.07`、`packages-21.02`，或选择 `all` 同时运行全部目标。
 4. 点击 **Run workflow** 开始更新，查看各步骤日志；首次成功运行会自动创建对应发布分支，例如 `packages-25.12`。
 
 工作流用于整理并发布软件包源码，不执行固件编译。25.12 的实际来源以 `sources-25.12.tsv` 为准，包级结果请查看发布分支的 `PACKAGES.tsv` 和 `MIGRATION.tsv`。
 
-生成在临时目录内完成，下载失败或必需的包目录缺失会停止发布；没有内容变化则正常结束。自动触发仍运行全部版本，历史版本的失败不会阻止 25.12 任务单独完成。
+生成在临时目录内完成，下载失败或必需的包目录缺失会停止发布；没有内容变化则正常结束。自动触发运行全部版本，各版本任务互不取消。工作流不再安装或调用 SVN，也不再依赖未定义的 `mvdir` 辅助命令。
 
 ## 本地生成与检查
 
@@ -83,8 +87,15 @@ git switch master
 # 输出目录必须不存在或为空，避免覆盖现有源码。
 bash packages-25.12.sh /tmp/packages-25.12
 
+# 其他版本使用各自清单，输出目录同样必须为空。
+bash packages.sh /tmp/packages-18.06
+bash packages-19.07.sh /tmp/packages-19.07
+bash packages-21.02.sh /tmp/packages-21.02
+
 # 离线检查成功生成、下载失败、目录变化和覆盖保护。
 bash tests/test-packages-25.12.sh
+bash tests/test-package-entrypoints.sh
+bash tests/test-workflow-publish.sh
 ```
 
 ## 不要为了下载而Fork这个项目

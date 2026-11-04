@@ -26,6 +26,7 @@ Openwrt-Passwall__openwrt-passwall-packages	./simple-obfs	simple-obfs	imported	n
 Openwrt-Passwall__openwrt-passwall-packages	./sing-box	sing-box	imported	not-build-tested
 Openwrt-Passwall__openwrt-passwall-packages	./smartdns	smartdns	imported	not-build-tested
 Openwrt-Passwall__openwrt-passwall-packages	./tcping	tcping	imported	not-build-tested
+Openwrt-Passwall__openwrt-passwall-packages	./v2ray-geodata	v2ray-geodata	adapted	OpenWrt 25.12 recipe/include/dependency fixes
 Openwrt-Passwall__openwrt-passwall-packages	./v2ray-geodata	v2ray-geodata	imported	not-build-tested
 Openwrt-Passwall__openwrt-passwall-packages	./v2ray-plugin	v2ray-plugin	imported	not-build-tested
 Openwrt-Passwall__openwrt-passwall-packages	./xray-core	xray-core	imported	not-build-tested
@@ -186,9 +187,13 @@ sbwml__luci-app-qbittorrent	./rblibtorrent	rblibtorrent	imported	not-build-teste
 gSpotx2f__luci-app-temp-status	.	luci-app-temp-status	imported	not-build-tested
 muink__luci-app-tinyfilemanager	.	luci-app-tinyfilemanager	imported	not-build-tested
 muink__luci-app-tn-netports	.	luci-app-tn-netports	imported	not-build-tested
-yichya__luci-app-xray	./core	core	imported	not-build-tested
-yichya__luci-app-xray	./geodata	geodata	imported	not-build-tested
-yichya__luci-app-xray	./status	status	imported	not-build-tested
+yichya__luci-app-xray	core	luci-app-xray	imported	not-build-tested
+yichya__luci-app-xray	LICENSE	luci-app-xray/LICENSE	imported	standalone recipe or build helper
+yichya__luci-app-xray	geodata	luci-app-xray-geodata	adapted	OpenWrt 25.12 recipe/include/dependency fixes
+yichya__luci-app-xray	geodata	luci-app-xray-geodata	imported	not-build-tested
+yichya__luci-app-xray	LICENSE	luci-app-xray-geodata/LICENSE	imported	standalone recipe or build helper
+yichya__luci-app-xray	status	luci-app-xray-status	imported	not-build-tested
+yichya__luci-app-xray	LICENSE	luci-app-xray-status/LICENSE	imported	standalone recipe or build helper
 muink__openwrt-alwaysonline	.	alwaysonline	imported	not-build-tested
 muink__openwrt-einat-ebpf	.	einat-ebpf	imported	not-build-tested
 muink__openwrt-chinadns-ng	.	chinadns-ng	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./chinadns-ng
@@ -580,9 +585,9 @@ kenzok8__small-package	./luci-app-wolplus	luci-app-wolplus	imported	not-build-te
 kenzok8__small-package	./luci-app-wrtbwmon	luci-app-wrtbwmon	duplicate	selected brvphoenix__luci-app-wrtbwmon/./luci-app-wrtbwmon
 kenzok8__small-package	./luci-app-wxedge	luci-app-wxedge	imported	not-build-tested
 kenzok8__small-package	./luci-app-xlnetacc	luci-app-xlnetacc	duplicate	selected kiddin9__luci-app-xlnetacc/.
-kenzok8__small-package	./luci-app-xray/core	core	duplicate	selected yichya__luci-app-xray/./core
-kenzok8__small-package	./luci-app-xray/geodata	geodata	duplicate	selected yichya__luci-app-xray/./geodata
-kenzok8__small-package	./luci-app-xray/status	status	duplicate	selected yichya__luci-app-xray/./status
+kenzok8__small-package	./luci-app-xray/core	core	duplicate	recipe luci-app-xray selected yichya__luci-app-xray/core
+kenzok8__small-package	./luci-app-xray/geodata	geodata	duplicate	recipe luci-app-xray-geodata selected yichya__luci-app-xray/geodata
+kenzok8__small-package	./luci-app-xray/status	status	duplicate	recipe luci-app-xray-status selected yichya__luci-app-xray/status
 kenzok8__small-package	./luci-app-xteve	luci-app-xteve	imported	not-build-tested
 kenzok8__small-package	./luci-app-xunlei	luci-app-xunlei	duplicate	selected silime__luci-app-xunlei/.
 kenzok8__small-package	./luci-app-xunyou	luci-app-xunyou	imported	not-build-tested
@@ -1289,9 +1294,9 @@ legacy-21.02	./luci-app-wolplus	luci-app-wolplus	duplicate	selected kenzok8__sma
 legacy-21.02	./luci-app-wxedge	luci-app-wxedge	duplicate	selected kenzok8__small-package/./luci-app-wxedge
 legacy-21.02	./luci-app-xfrpc	luci-app-xfrpc	duplicate	selected liudf0716__luci-app-xfrpc/.
 legacy-21.02	./luci-app-xlnetacc	luci-app-xlnetacc	duplicate	selected kiddin9__luci-app-xlnetacc/.
-legacy-21.02	./luci-app-xray/core	core	duplicate	selected yichya__luci-app-xray/./core
-legacy-21.02	./luci-app-xray/geodata	geodata	duplicate	selected yichya__luci-app-xray/./geodata
-legacy-21.02	./luci-app-xray/status	status	duplicate	selected yichya__luci-app-xray/./status
+legacy-21.02	./luci-app-xray/core	core	duplicate	recipe luci-app-xray selected yichya__luci-app-xray/core
+legacy-21.02	./luci-app-xray/geodata	geodata	duplicate	recipe luci-app-xray-geodata selected yichya__luci-app-xray/geodata
+legacy-21.02	./luci-app-xray/status	status	duplicate	recipe luci-app-xray-status selected yichya__luci-app-xray/status
 legacy-21.02	./luci-app-xteve	luci-app-xteve	duplicate	selected kenzok8__small-package/./luci-app-xteve
 legacy-21.02	./luci-app-xunlei	luci-app-xunlei	duplicate	selected silime__luci-app-xunlei/.
 legacy-21.02	./luci-app-xunyou	luci-app-xunyou	duplicate	selected kenzok8__small-package/./luci-app-xunyou

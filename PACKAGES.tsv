@@ -172,9 +172,9 @@ rblibtorrent	sbwml__luci-app-qbittorrent	./rblibtorrent	not-build-tested
 luci-app-temp-status	gSpotx2f__luci-app-temp-status	.	not-build-tested
 luci-app-tinyfilemanager	muink__luci-app-tinyfilemanager	.	not-build-tested
 luci-app-tn-netports	muink__luci-app-tn-netports	.	not-build-tested
-core	yichya__luci-app-xray	./core	not-build-tested
-geodata	yichya__luci-app-xray	./geodata	not-build-tested
-status	yichya__luci-app-xray	./status	not-build-tested
+luci-app-xray	yichya__luci-app-xray	core	not-build-tested
+luci-app-xray-geodata	yichya__luci-app-xray	geodata	not-build-tested
+luci-app-xray-status	yichya__luci-app-xray	status	not-build-tested
 alwaysonline	muink__openwrt-alwaysonline	.	not-build-tested
 einat-ebpf	muink__openwrt-einat-ebpf	.	not-build-tested
 go-stun	muink__openwrt-go-stun	.	not-build-tested

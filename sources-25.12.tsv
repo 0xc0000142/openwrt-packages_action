@@ -132,7 +132,12 @@ sbwml__luci-app-qbittorrent	https://github.com/sbwml/luci-app-qbittorrent.git	ma
 gSpotx2f__luci-app-temp-status	https://github.com/gSpotx2f/luci-app-temp-status.git	master	tree	.	luci-app-temp-status
 muink__luci-app-tinyfilemanager	https://github.com/muink/luci-app-tinyfilemanager.git	master	tree	.	luci-app-tinyfilemanager
 muink__luci-app-tn-netports	https://github.com/muink/luci-app-tn-netports.git	master	tree	.	luci-app-tn-netports
-yichya__luci-app-xray	https://github.com/yichya/luci-app-xray.git	master	tree	.	luci-app-xray
+yichya__luci-app-xray	https://github.com/yichya/luci-app-xray.git	master	package	core	luci-app-xray
+yichya__luci-app-xray	https://github.com/yichya/luci-app-xray.git	master	file	LICENSE	luci-app-xray/LICENSE
+yichya__luci-app-xray	https://github.com/yichya/luci-app-xray.git	master	package	geodata	luci-app-xray-geodata
+yichya__luci-app-xray	https://github.com/yichya/luci-app-xray.git	master	file	LICENSE	luci-app-xray-geodata/LICENSE
+yichya__luci-app-xray	https://github.com/yichya/luci-app-xray.git	master	package	status	luci-app-xray-status
+yichya__luci-app-xray	https://github.com/yichya/luci-app-xray.git	master	file	LICENSE	luci-app-xray-status/LICENSE
 muink__openwrt-alwaysonline	https://github.com/muink/openwrt-alwaysonline.git	master	tree	.	alwaysonline
 muink__openwrt-einat-ebpf	https://github.com/muink/openwrt-einat-ebpf.git	master	tree	.	einat-ebpf
 muink__openwrt-chinadns-ng	https://github.com/muink/openwrt-chinadns-ng.git	master	tree	.	chinadns-ng
