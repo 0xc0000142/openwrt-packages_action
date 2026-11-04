@@ -3,68 +3,117 @@ name: Update packages
 on:
   repository_dispatch:
   release:
-    types: published
+    types: [published]
   push:
-    branches:
-      - master
+    branches: [master]
   schedule:
-    - cron: 0 */12 * * *
+    - cron: '0 */12 * * *'
   watch:
-    types: started
+    types: [started]
   workflow_dispatch:
+    inputs:
+      target:
+        description: Package branch to update
+        type: choice
+        required: true
+        default: packages-25.12
+        options:
+          - packages-25.12
+          - packages
+          - packages-19.07
+          - packages-21.02
+          - all
+
+permissions:
+  contents: write
 
 env:
   TZ: Asia/Shanghai
+  GIT_TERMINAL_PROMPT: '0'
 
 jobs:
   build:
+    if: github.event_name != 'watch' || github.event.repository.owner.id == github.event.sender.id
     runs-on: ubuntu-latest
-    if: github.event.repository.owner.id == github.event.sender.id
-
-    name: Update ${{matrix.target}}
+    timeout-minutes: 90
+    name: Update ${{ matrix.target }}
     strategy:
       fail-fast: false
       matrix:
-        target: [packages,packages-19.07,packages-21.02]
-        
+        target: ${{ fromJSON((github.event_name != 'workflow_dispatch' || inputs.target == 'all') && '["packages","packages-19.07","packages-21.02","packages-25.12"]' || format('["{0}"]', inputs.target)) }}
+    concurrency:
+      group: update-packages-${{ github.repository }}-${{ matrix.target }}
+      cancel-in-progress: false
+    env:
+      TARGET: ${{ matrix.target }}
+    defaults:
+      run:
+        shell: bash
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@main
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: true
 
-    - name: Initialization environment
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        sudo -E apt-get -qq update
-        sudo -E apt-get -qq install git subversion git-core wget
-        sudo timedatectl set-timezone "$TZ"
-        git config --local user.name "actions"
-        git config --local user.email "action@github.com"
-        
-    - name: Clone packages
-      run: |
-        cd $GITHUB_WORKSPACE
-        chmod +x ${{matrix.target}}.sh
-        git clone -b ${{matrix.target}} https://github.com/${{ github.repository }} ${{matrix.target}}
-        cd ${{matrix.target}}
-        rm -Rf *
-        git rm --cache *
-        $GITHUB_WORKSPACE/${{matrix.target}}.sh
+      - name: Initialize environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install git subversion wget rsync
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-    - name: Upload
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        [ -e $GITHUB_WORKSPACE/LICENSE ] && cp $GITHUB_WORKSPACE/LICENSE $GITHUB_WORKSPACE/${{matrix.target}}
-        [ -e $GITHUB_WORKSPACE/README.md ] && cp $GITHUB_WORKSPACE/README.md $GITHUB_WORKSPACE/${{matrix.target}}
-        cd $GITHUB_WORKSPACE/${{matrix.target}}
-        sed -i '/url =/d' ./.git/config
-        git config --global user.name "actions"
-        git config --global user.email "action@github.com"
-        git add .
-        git commit -m "update$(TZ='Asia/Shanghai' date +@%Y%m%d)"
-        git remote set-url --add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
-        git push -u -f origin ${{matrix.target}}
- 
+      - name: Generate packages in a temporary directory
+        id: generate
+        run: |
+          staging="$(mktemp -d "$RUNNER_TEMP/packages-${TARGET}.XXXXXX")"
+          cd "$staging"
+          bash -eo pipefail "$GITHUB_WORKSPACE/${TARGET}.sh"
+          if [[ -z "$(find . -mindepth 2 -type f -name Makefile -print -quit)" ]]; then
+            echo '::error::No package Makefiles were generated; refusing to publish.'
+            exit 1
+          fi
+          cp "$GITHUB_WORKSPACE/LICENSE" "$staging/LICENSE"
+          cp "$GITHUB_WORKSPACE/README.md" "$staging/README.md"
+          if [[ "$TARGET" == packages-25.12 ]]; then
+            cp "$GITHUB_WORKSPACE/packages-25.12.sh" \
+              "$GITHUB_WORKSPACE/sources-25.12.tsv" \
+              "$GITHUB_WORKSPACE/sources-25.12-coverage.tsv" "$staging/"
+            cp -a "$GITHUB_WORKSPACE/docs" "$staging/"
+            cp -a "$GITHUB_WORKSPACE/packages-25.12-overrides" "$staging/"
+          fi
+          printf 'directory=%s\n' "$staging" >> "$GITHUB_OUTPUT"
 
- 
+      - name: Publish the completed package snapshot
+        env:
+          STAGING: ${{ steps.generate.outputs.directory }}
+        run: |
+          publish="$(mktemp -d "$RUNNER_TEMP/publish-${TARGET}.XXXXXX")"
+          cleanup() {
+            git worktree remove --force "$publish" || true
+          }
+          trap cleanup EXIT
+
+          if git ls-remote --exit-code --heads origin "refs/heads/$TARGET" > /dev/null; then
+            git fetch --no-tags --depth=1 origin "refs/heads/$TARGET"
+            git worktree add --detach "$publish" FETCH_HEAD
+          else
+            status=$?
+            if [[ "$status" -ne 2 ]]; then
+              echo '::error::Failed to check the destination branch.'
+              exit "$status"
+            fi
+            git worktree add --detach "$publish" HEAD
+            git -C "$publish" switch --orphan "publish-${TARGET}"
+          fi
+
+          rsync --archive --delete --exclude=.git "$STAGING/" "$publish/"
+          git -C "$publish" add --all
+          if git -C "$publish" diff --cached --quiet; then
+            echo "No package changes for $TARGET."
+            exit 0
+          fi
+          git -C "$publish" commit -m "update$(date +@%Y%m%d)"
+          git -C "$publish" push origin "HEAD:refs/heads/$TARGET"
