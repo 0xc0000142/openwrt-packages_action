@@ -1,0 +1,59 @@
+<%#
+ luci-app-openclaw — Web Console (18.06 compat)
+-%>
+<%+header%>
+<%
+local uci = require "luci.model.uci".cursor()
+local port = uci:get("openclaw", "main", "port") or "18789"
+%>
+<style>
+.oc-page-hdr{margin:0 0 16px}
+.oc-page-hdr h2{font-size:18px;font-weight:600;color:#333;margin:0 0 6px}
+.oc-page-hdr p{font-size:13px;color:#666;margin:0}
+.oc-wrap{border:2px solid #e0e0e0;border-radius:8px;overflow:hidden;background:#fafafa}
+.oc-wrap iframe{width:100%;height:680px;border:none;display:block}
+.oc-loading{display:flex;align-items:center;justify-content:center;height:200px;color:#666;font-size:14px}
+</style>
+
+<div class="oc-page-hdr">
+	<h2>🖥️ <%:Web Console%></h2>
+	<p><%:OpenClaw Web UI — configure AI models, messaging channels, and interact with AI.%></p>
+</div>
+
+<div class="oc-wrap" id="oc-console-wrap">
+	<div class="oc-loading" id="oc-console-loading">⏳ <%:Connecting...%></div>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+(function(){
+	var statusUrl='<%=luci.dispatcher.build_url("admin","services","openclaw","status_api")%>';
+	var tokenUrl='<%=luci.dispatcher.build_url("admin","services","openclaw","get_token")%>';
+	var wrap=document.getElementById('oc-console-wrap');
+	var loading=document.getElementById('oc-console-loading');
+
+	(new XHR()).get(tokenUrl,null,function(tx){
+		var token='';
+		try{token=JSON.parse(tx.responseText).token||'';}catch(e){}
+
+		(new XHR()).get(statusUrl,null,function(x){
+			try{
+				var d=JSON.parse(x.responseText);
+				if(d.gateway_running){
+					loading.style.display='none';
+					var url=location.protocol+'//'+location.hostname+':<%=port%>/';
+					if(token)url+='?token='+encodeURIComponent(token);
+					var iframe=document.createElement('iframe');
+					iframe.src=url;
+					iframe.setAttribute('allow','clipboard-read; clipboard-write');
+					wrap.appendChild(iframe);
+				}else{
+					loading.textContent='❌ <%:Gateway is not running. Please start the service first.%>';
+				}
+			}catch(e){loading.textContent='<%:Failed to check status%>';}
+		});
+	});
+})();
+//]]>
+</script>
+<%+footer%>

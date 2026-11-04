@@ -146,10 +146,12 @@ return view.extend({
 			_('Another channel for WeChat push, the configuration is relatively simple, and only supports official accounts'));
 		o.value('/usr/share/wechatpush/api/pushplus.json', _('pushplus'),
 			_('Another channel for WeChat push, the configuration is relatively simple, and it supports multiple push methods'));
+		o.value('/usr/share/wechatpush/api/wpush.json', _('WPUSH'),
+			_('Multi-channel push via WPUSH (WeChat, App, Feishu, DingTalk, and more). Success when response code===0'));
 		o.value('/usr/share/wechatpush/api/telegram.json', _('Telegram'),
 			_('Telegram Bot Push'));
 		o.value('/usr/share/wechatpush/api/msmtp.json', _('msmtp'),
-			_('To send emails using msmtp, you must manually install msmtp and configure `/etc/msmtprc`.'));
+			_('To send emails using msmtp, you can manually install msmtp and configure `/etc/msmtprc`, or configure the SMTP service here to override the default msmtp configuration file.'));
 		o.value('/usr/share/wechatpush/api/diy.json', _('Custom Push'),
 			_('By modifying the JSON file, you can use a custom API'));
 
@@ -222,19 +224,75 @@ return view.extend({
 		o.rmempty = false;
 		o.depends('jsonpath', '/usr/share/wechatpush/api/pushplus.json');
 
-		o = s.taboption('basic', form.Value, 'tg_token', _('TG_token'));
+		o = s.taboption('basic', form.Value, 'wpush_apikey', _('WPUSH apikey'));
+		o.description = _('Get Instructions') + ' <a href="https://wpush.cn/" target="_blank">' + _('Click here') + '</a>' + _('<br />API docs: https://docs.wpush.cn/docs/api/message.html — success when code===0');
+		o.rmempty = false;
+		o.depends('jsonpath', '/usr/share/wechatpush/api/wpush.json');
+
+		o = s.taboption('basic', form.Value, 'tg_token', _('Bot Token'));
 		o.description = _('Get Bot') + ' <a href="https://t.me/BotFather" target="_blank">' + _('Click here') + '</a>' + _('<br />Send a message to the created bot to initiate a conversation.');
 		o.rmempty = false;
 		o.depends('jsonpath', '/usr/share/wechatpush/api/telegram.json');
 
-		o = s.taboption('basic', form.Value, 'chat_id', _('TG_chatid'));
+		o = s.taboption('basic', form.Value, 'tg_chat_id', _('Chat ID'));
 		o.description = _('Get chat_id') + ' <a href="https://t.me/getuserIDbot" target="_blank">' + _('Click here') + '</a>' + _('<br />If you want to send to a group/channel, please create a non-Chinese group/channel (for easier chatid lookup, you can rename it later).<br />Add the bot to the group, send a message, and use https://api.telegram.org/bot token /getUpdates to obtain the chatid.');
+		o.rmempty = false;
+		o.depends('jsonpath', '/usr/share/wechatpush/api/telegram.json');
+
+		o = s.taboption('basic', form.Value, 'tg_thread_id', _('Message Thread ID'));
+		o.description = _('Optional: specify a thread (topic) ID for forum-style Telegram chats.');
+		o.rmempty = false;
+		o.optional = true;
+		o.depends('jsonpath', '/usr/share/wechatpush/api/telegram.json');
+
+		o = s.taboption('basic', form.Value, 'tg_api_server', _('API Server URL'));
+		o.placeholder = 'https://api.telegram.org';
 		o.rmempty = false;
 		o.depends('jsonpath', '/usr/share/wechatpush/api/telegram.json');
 
 		o = s.taboption('basic', form.Value, 'recipient_email', _('Recipient Email Address'));
 		o.depends('jsonpath', '/usr/share/wechatpush/api/msmtp.json');
+		o.rmempty = false;
 		o.description = _('opkg update<br />opkg install msmtp');
+
+		o = s.taboption('basic', form.Value, 'smtp_host', _('SMTP Host'));
+		o.depends('jsonpath', '/usr/share/wechatpush/api/msmtp.json');
+		o.placeholder = "mail.oursite.example";
+
+		o = s.taboption('basic', form.Value, 'smtp_port', _('SMTP Port'));
+		o.depends('jsonpath', '/usr/share/wechatpush/api/msmtp.json');
+		o.placeholder = "25";
+
+		o = s.taboption('basic', form.ListValue, 'smtp_tls', _('Enable/Disable TLS'));
+		o.depends('jsonpath', '/usr/share/wechatpush/api/msmtp.json');
+		o.widget = 'radio';
+		o.value('on', _('Enable'));
+		o.value('off', _('Disable'));
+		o.value('', _('Ignore'));
+		o.default = '';
+
+		o = s.taboption('basic', form.ListValue, 'smtp_starttls', _('Enable/Disable STARTTLS'));
+		o.depends('jsonpath', '/usr/share/wechatpush/api/msmtp.json');
+		o.widget = 'radio';
+		o.value('on', _('Enable'));
+		o.value('off', _('Disable'));
+		o.value('', _('Ignore'));
+		o.default = '';
+
+		o = s.taboption('basic', form.Value, 'smtp_user', _('User'));
+		o.depends('jsonpath', '/usr/share/wechatpush/api/msmtp.json');
+
+		o = s.taboption('basic', form.Value, 'smtp_passwordeval', _('Password Command'));
+		o.depends('jsonpath', '/usr/share/wechatpush/api/msmtp.json');
+		o.description = _('Set the password for authentication to the output (stdout) of the command.');
+
+		o = s.taboption('basic', form.Value, 'smtp_from', _('From Address'));
+		o.depends('jsonpath', '/usr/share/wechatpush/api/msmtp.json');
+		o.placeholder = "user@oursite.example";
+
+		o = s.taboption('basic', form.Value, 'smtp_from_full_name', _('From Full Name'));
+		o.depends('jsonpath', '/usr/share/wechatpush/api/msmtp.json');
+		o.description = _('If set, it is usually displayed as a nickname of the sender in email clients.');
 
 		o = s.taboption('basic', form.TextValue, 'diy_json', _('Custom Push'));
 		o.rows = 28;
@@ -260,6 +318,7 @@ return view.extend({
 		o.depends('jsonpath', '/usr/share/wechatpush/api/qywx_mpnews.json');
 		o.depends('jsonpath', '/usr/share/wechatpush/api/wxpusher.json');
 		o.depends('jsonpath', '/usr/share/wechatpush/api/pushplus.json');
+		o.depends('jsonpath', '/usr/share/wechatpush/api/wpush.json');
 		o.depends('jsonpath', '/usr/share/wechatpush/api/telegram.json');
 		o.depends('jsonpath', '/usr/share/wechatpush/api/diy.json');
 
@@ -285,6 +344,7 @@ return view.extend({
 		o.depends('jsonpath', '/usr/share/wechatpush/api/qywx_mpnews.json');
 		o.depends('jsonpath', '/usr/share/wechatpush/api/wxpusher.json');
 		o.depends('jsonpath', '/usr/share/wechatpush/api/pushplus.json');
+		o.depends('jsonpath', '/usr/share/wechatpush/api/wpush.json');
 		o.depends('jsonpath', '/usr/share/wechatpush/api/telegram.json');
 		o.depends('jsonpath', '/usr/share/wechatpush/api/diy.json');
 
@@ -326,6 +386,10 @@ return view.extend({
 		o.depends('oui_data', '2');
 
 		o = s.taboption('basic', form.Flag, 'reset_regularly', _('Reset Traffic Data Every Day at Midnight'));
+
+		o = s.taboption('basic', form.Flag, 'prefer_client_page', _('Prefer displaying online devices'));
+		o.default = '1';
+		o.description = _('Only effective when service is running');
 
 		o = s.taboption('basic', form.Flag, 'debuglevel', _('Enable Logging'));
 
@@ -510,7 +574,12 @@ return view.extend({
 		o.rmempty = false;
 		o.datatype = 'and(uinteger,min(0))';
 		o.depends('login_web_black', '1');
-		o.description = _('\"0\" in ipset means permanent blacklist, use with caution. If misconfigured, change the device IP and clear rules in LUCI.<br/>Note: The whitelist for bans is located under the \"Do Not Disturb\" tab.');
+		o.description = _('"0" means permanent blacklist, use with caution. If misconfigured, change the device IP and clear rules in LUCI.<br/>Note: The whitelist for bans is located under the "Do Not Disturb" tab.');
+
+		o = s.taboption('ipset', form.Flag, 'block_blacklisted_forwarding', _('Block forwarded traffic from blacklisted IPs'));
+		o.default = '0';
+		o.depends('login_web_black', '1');
+		o.description = _('Includes port-forwarded access to downstream devices and LAN clients accessing the Internet.');
 
 		o = s.taboption('ipset', form.Flag, 'port_knocking_enable', _('Port knocking'));
 		o.default = '0';

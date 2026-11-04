@@ -1,0 +1,11 @@
+{
+	"luci-app-eqos": {
+		"description": "Grant access to EQOS",
+		"read": {
+			"uci": { "eqos": ["global", "device"] }
+		},
+		"write": {
+			"uci": { "eqos": ["global", "device"] }
+		}
+	}
+}

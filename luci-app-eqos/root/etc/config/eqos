@@ -1,0 +1,5 @@
+config eqos 'global'
+    option enabled '0'
+    option wan 'wan'
+    option download '100'
+    option upload '50'

@@ -1,0 +1,185 @@
+<%
+local dispatcher = luci.dispatcher
+local http = luci.http
+local action = http.formvalue("action")
+
+if action == "status" then
+    http.prepare_content("application/json")
+    local status = os.execute("pidof subconverter >/dev/null") == 0 and "running" or "stopped"
+    local enabled = os.execute("ls /etc/rc.d/*subconverter >/dev/null 2>&1") == 0 and "enabled" or "disabled"
+    local port = "36611"
+    local scheduled_time = "-1"
+    
+    for line in io.lines("/etc/subconverter/pref.ini") do
+        local port_match = line:match("^port=(%d+)")
+        if port_match then
+            port = port_match
+            break
+        end
+    end
+    
+    local cron_file = io.popen("crontab -l 2>/dev/null")
+    if cron_file then
+        local cron_content = cron_file:read("*a")
+        cron_file:close()
+        local time_match = cron_content:match("0 (%d+) %* %* %* /etc/init.d/subconverter start")
+        if time_match then
+            scheduled_time = time_match
+        end
+    end
+    
+    http.write('{"status":"' .. status .. '","enabled":"' .. enabled .. '","scheduledTime":"' .. scheduled_time .. '","port":' .. port .. '}')
+    return
+end
+
+if http.formvalue("start") then
+    os.execute("/etc/init.d/subconverter start")
+end
+
+if http.formvalue("stop") then
+    os.execute("/etc/init.d/subconverter stop")
+end
+
+if http.formvalue("set") then
+    local enable = http.formvalue("enable")
+    local schedule = http.formvalue("schedule")
+    local schedule_time = tonumber(http.formvalue("scheduleTime")) or -1
+    local port = tonumber(http.formvalue("port"))
+
+    os.execute("/etc/init.d/subconverter stop")
+
+    local cron_file = io.popen("crontab -l 2>/dev/null")
+    local cron_content = cron_file and cron_file:read("*a") or ""
+    if cron_file then cron_file:close() end
+    
+    cron_content = cron_content:gsub("0 %d+ %* %* %* /etc/init.d/subconverter [a-z]+\n?", "")
+    
+    local should_start = false
+
+    if enable == "on" then
+        if schedule == "on" and schedule_time >= 0 and schedule_time <= 23 then
+            os.execute("/etc/init.d/subconverter disable")
+            cron_content = cron_content .. string.format("0 %d * * * /etc/init.d/subconverter start\n0 %d * * * /etc/init.d/subconverter stop\n", schedule_time, (schedule_time + 2) % 24)
+            if (tonumber(os.date("%H")) - schedule_time) % 24 < 2 then
+                should_start = true
+            end
+        else
+            os.execute("/etc/init.d/subconverter enable")
+            should_start = true
+        end
+    else
+        os.execute("/etc/init.d/subconverter disable")
+    end
+
+    local new_cron_file = io.popen("crontab -", "w")
+    if new_cron_file then
+        new_cron_file:write(cron_content)
+        new_cron_file:close()
+    end
+
+    if port and port >= 1 and port <= 65535 then
+        os.execute(string.format("sed -i 's/^port=.*/port=%d/' /etc/subconverter/pref.ini || echo 'port=%d' >> /etc/subconverter/pref.ini", port, port))
+    end
+
+    if should_start then
+        os.execute("/etc/init.d/subconverter start")
+    end
+end
+%>
+<%+header%>
+<style>.running{color:green}.stopped{color:red}</style>
+<div>
+  <h2>Subconverter</h2>
+  <div class="cbi-map-descr"><a target="_blank" href="https://github.com/0x2196f3/luci-app-subconverter">luci-app-subconverter</a> is a control panel for <a target="_blank" href="https://github.com/stilleshan/subweb">subweb</a> and <a target="_blank" href="https://github.com/asdlokj1qpi233/subconverter">subconverter</a>.</div>
+  <form method="POST">
+    <input type="hidden" name="set" value="1">
+    <div class="cbi-value">
+      <label class="cbi-value-title">Status</label>
+      <span id="status_display" class="cbi-value-field"></span>
+    </div>
+    <div class="cbi-checkbox cbi-value">
+      <label for="check_enable" class="cbi-value-title">Enable</label>
+      <input type="checkbox" id="check_enable" name="enable" class="cbi-value-field"/>
+    </div>
+    <div class="cbi-checkbox cbi-value" id="container_schedule_checkbox" style="display:none">
+      <label for="check_schedule" class="cbi-value-title">Schedule</label>
+      <input type="checkbox" id="check_schedule" name="schedule" class="cbi-value-field"/>
+    </div>  
+    <div class="cbi-value" id="container_schedule_time" style="display:none">
+      <label for="select_schedule_time" class="cbi-value-title">Scheduled Time</label>
+      <div class="cbi-value-field">
+        <select id="select_schedule_time" name="scheduleTime" class="cbi-input-select">
+          <option value="-1">Select Time</option>
+          <script>
+            let selectElement = document.getElementById('select_schedule_time');
+            for (let i = 0; i < 24; i++) {
+              let option = document.createElement('option');
+              option.value = i;
+              option.text = `${String(i).padStart(2, '0')}:00-${String((i + 2) % 24).padStart(2, '0')}:00`;
+              selectElement.appendChild(option);
+            }
+          </script>
+        </select>
+      </div>
+    </div>
+    <div class="cbi-value">
+      <label for="input_port" class="cbi-value-title">Service Port</label>
+      <div class="cbi-value-field">
+        <input id="input_port" name="port" type="number" min="1" max="65535" class="cbi-input-text">
+      </div>
+    </div>
+    <div class="cbi-page-actions">
+      <input class="cbi-button cbi-button-apply important" type="submit" value="Apply"/>
+      <button class="cbi-button cbi-button-save" onclick="location.href='?start=1';return false;"><i class="icon-play"></i>Start</button>
+      <button class="cbi-button cbi-button-reset" onclick="location.href='?stop=1';return false;"><i class="icon-stop"></i>Stop</button>
+    </div>
+  </form>
+</div>
+<script>
+  let checkEnable = document.getElementById('check_enable');
+  let scheduleContainerCheckbox = document.getElementById('container_schedule_checkbox');
+  let checkSchedule = document.getElementById('check_schedule');
+  let scheduleContainer = document.getElementById('container_schedule_time');
+
+  checkEnable.onchange = () => {
+      scheduleContainerCheckbox.style.display = checkEnable.checked ? '' : 'none';
+      checkSchedule.dispatchEvent(new Event('change'));
+  };
+
+  checkSchedule.onchange = () => {
+      scheduleContainer.style.display = checkSchedule.checked ? '' : 'none';
+  };
+
+  function updateStatus() {
+      fetch('?action=status')
+          .then(response => response.json())
+          .then(data => {
+              let statusSpan = document.getElementById('status_display');
+              statusSpan.className = data.status + " cbi-value-field";
+              statusSpan.innerText = data.status;
+              
+              document.getElementById('input_port').value = data.port;
+              if (data.enabled === "enabled" || data.scheduledTime !== "-1") {
+                  checkEnable.checked = true;
+              }
+              if (data.scheduledTime !== "-1") {
+                  checkSchedule.checked = true;
+                  document.getElementById('select_schedule_time').value = data.scheduledTime;
+              }
+              checkEnable.dispatchEvent(new Event('change'));
+          });
+  }
+
+  updateStatus();
+  
+  setInterval(() => {
+      fetch('?action=status')
+          .then(response => response.json())
+          .then(data => {
+              let statusSpan = document.getElementById('status_display');
+              statusSpan.className = data.status + " cbi-value-field";
+              statusSpan.innerText = data.status;
+          });
+  }, 2000);
+</script>
+<%+footer%>

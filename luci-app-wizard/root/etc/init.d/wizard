@@ -1,0 +1,284 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+boot() {
+	XBOOT=1 start
+	SSID=$(uci get wireless.@wifi-iface[0].ssid 2>/dev/null)
+	KEY=$(uci get wireless.@wifi-iface[0].key 2>/dev/null)
+	IPADDR=$(uci get network.lan.ipaddr 2>/dev/null)
+	NETMASK=$(uci get network.lan.netmask 2>/dev/null)
+	fakemesh=$(uci get fakemesh.default.enabled 2>/dev/null || echo 0)
+
+	if [ "$(uci get wizard.default.wifi_ssid 2>/dev/null)" = "$SSID" ] && [ "$(uci get wizard.default.lan_ipaddr 2>/dev/null)" = "$IPADDR" ]; then
+		:
+	else
+		uci set wizard.default=wizard
+		[ "$fakemesh" = "1" ] || {
+			uci set wizard.default.wifi_ssid="$SSID"
+			uci set wizard.default.wifi_key="$KEY"
+		}
+		uci set wizard.default.lan_ipaddr="$IPADDR"
+		uci set wizard.default.lan_netmask="$NETMASK"
+		uci commit wizard
+	fi
+
+	if [ "$fakemesh" = "1" ]; then
+		bsh=$(uci get fakemesh.default.band_steer_helper 2>/dev/null || echo none)
+		case "$bsh" in
+			usteer)
+				uci set wizard.default.usteer='1'
+				uci set wizard.default.dawn='0'
+				;;
+			dawn)
+				uci set wizard.default.usteer='0'
+				uci set wizard.default.dawn='1'
+				;;
+			*)
+				uci set wizard.default.usteer='0'
+				uci set wizard.default.dawn='0'
+				;;
+		esac
+		uci commit wizard
+	fi
+}
+
+switch_onoff()
+{
+	local service=$1
+	local opt=$2
+
+	test -e /etc/init.d/$service || return 0
+
+	if [ "$opt" = "1" ]; then
+		/etc/init.d/$service enabled || {
+			/etc/init.d/$service enable 2>/dev/null
+			/etc/init.d/$service start &>/dev/null
+		}
+	else
+		/etc/init.d/$service enabled && {
+			/etc/init.d/$service disable 2>/dev/null
+			/etc/init.d/$service stop &>/dev/null
+		}
+	fi
+}
+
+process_kmod_group()
+{
+	local opt=$1
+	shift
+	local mod_patterns="$*"
+	local ver="$(uname -r 2>/dev/null)"
+	local lib_dir="/lib/modules/$ver"
+	local rom_dir="/rom/lib/modules/$ver"
+	local upper_dir="/overlay/upper/lib/modules/$ver"
+
+	[ -d "$rom_dir" ] || rom_dir="/rom/lib/modules"
+	[ -d "$lib_dir" ] || lib_dir="/lib/modules"
+	[ -d "$upper_dir" ] || upper_dir="/overlay/upper/lib/modules"
+
+	for pattern in $mod_patterns; do
+		if [ "$opt" = "0" ]; then
+			find "$lib_dir" -name "${pattern}*" -exec rm -f {} + 2>/dev/null
+		else
+			if [ -d "$rom_dir" ]; then
+				find "$rom_dir" -name "${pattern}*" 2>/dev/null | while read -r rom_file; do
+					[ -f "$rom_file" ] || continue
+					local rel_path="${rom_file#$rom_dir/}"
+					local upper_file="$upper_dir/$rel_path"
+					local target_file="$lib_dir/$rel_path"
+					if [ -d "$upper_dir" ]; then
+						rm -f "$upper_file" 2>/dev/null
+					fi
+					if [ ! -e "$target_file" ]; then
+						local target_dir="$(dirname "$target_file")"
+						mkdir -p "$target_dir"
+						cp -f "$rom_file" "$target_file" 2>/dev/null
+					fi
+				done
+			fi
+		fi
+	done
+}
+
+add_wizard() {
+	local cfg="$1"
+	local opt
+	config_get opt "$cfg" urllogger '0'
+	switch_onoff urllogger $opt
+
+	config_get opt "$cfg" qos '0'
+	switch_onoff natflow-simple-qos $opt
+
+	config_get opt "$cfg" miniupnpd '0'
+	switch_onoff miniupnpd $opt
+
+	fakemesh=$(uci get fakemesh.default.enabled 2>/dev/null || echo 0)
+	if ! [ "$fakemesh" = "1" ]; then
+		config_get opt "$cfg" usteer '0'
+		switch_onoff usteer $opt
+
+		config_get opt "$cfg" dawn '0'
+		switch_onoff dawn $opt
+	fi
+
+	config_get opt "$cfg" ipv6 '0'
+	switch_onoff odhcpd $opt
+
+	config_get opt "$cfg" umdns '0'
+	switch_onoff umdns $opt
+
+	config_get opt "$cfg" switch_ports_status '0'
+	switch_onoff switch_ports_status $opt
+
+	config_get opt "$cfg" kmod_wireguard '1'
+	process_kmod_group $opt wireguard.ko
+
+	config_get opt "$cfg" kmod_openvpn_tun '1'
+	process_kmod_group $opt ovpn.ko tun.ko
+
+	config_get opt "$cfg" kmod_gre_sit '1'
+	process_kmod_group $opt ip_gre.ko ip6_gre.ko sit.ko
+
+	config_get opt "$cfg" kmod_vlan '1'
+	process_kmod_group $opt ipvlan.ko macvlan.ko
+
+	config_get opt "$cfg" kmod_qos '1'
+	process_kmod_group $opt sch_cake.ko sch_htb.ko sch_hfsc.ko sch_tbf.ko sch_ingress.ko cls_u32.ko cls_fw.ko cls_flower.ko cls_basic.ko cls_matchall.ko cls_flow.ko cls_route.ko act_mirred.ko act_skbedit.ko act_gact.ko
+
+	config_get opt "$cfg" kmod_alg '1'
+	process_kmod_group $opt nf_nat_sip.ko nf_conntrack_sip.ko nf_nat_h323.ko nf_conntrack_h323.ko nf_nat_pptp.ko nf_conntrack_pptp.ko nf_nat_ftp.ko nf_conntrack_ftp.ko nf_nat_amanda.ko nf_conntrack_amanda.ko nf_nat_irc.ko nf_conntrack_irc.ko nf_nat_tftp.ko nf_conntrack_tftp.ko nf_nat_snmp_basic.ko nf_conntrack_snmp.ko nf_nat_rtsp.ko nf_conntrack_rtsp.ko
+
+	config_get opt "$cfg" kmod_crypto '1'
+	process_kmod_group $opt cryptodev.ko algif_hash.ko algif_skcipher.ko algif_aead.ko algif_rng.ko crypto_user.ko
+
+	config_get opt "$cfg" kmod_usb '1'
+	process_kmod_group $opt usbcore.ko usb-common.ko usb-storage.ko usbnet.ko usbserial.ko
+
+	config_get opt "$cfg" kmod_ppp '1'
+	process_kmod_group $opt pppoe.ko pptp.ko ppp_generic.ko pppox.ko ppp_async.ko ppp_mppe.ko
+
+	[ "x$XBOOT" = "x1" ] && return 0
+	local wan_proto wan_ipaddr wan_netmask wan_gateway wan_dns wan_pppoe_user wan_pppoe_pass
+	local wifi_ssid wifi_key
+	local lan_ipaddr lan_netmask
+	local device ifname
+
+	config_get wan_proto "$cfg" wan_proto dhcp
+
+	device=$(uci get network.wan.device 2>/dev/null)
+	ifname=$(uci get network.wan.ifname 2>/dev/null)
+	case "${wan_proto}" in
+		dhcp)
+			uci delete network.wan
+			uci set network.wan=interface
+			test -n "$device" && uci set network.wan.device="$device"
+			test -n "$ifname" && uci set network.wan.ifname="$ifname"
+			uci set network.wan.proto='dhcp'
+			uci set network.wan.metric='40'
+
+			config_get wan_dns "$cfg" wan_dns
+			test -n "${wan_dns}" && {
+				uci set network.wan.peerdns='0'
+				uci set network.wan.dns="${wan_dns}"
+			}
+		;;
+		static)
+			config_get wan_ipaddr "$cfg" wan_ipaddr
+			config_get wan_netmask "$cfg" wan_netmask
+			config_get wan_gateway "$cfg" wan_gateway
+			test -n "${wan_ipaddr}" && test -n "${wan_netmask}" && {
+				uci delete network.wan
+				uci set network.wan=interface
+				uci set network.wan.proto='static'
+				uci set network.wan.force_link='0'
+				test -n "$device" && uci set network.wan.device="$device"
+				test -n "$ifname" && uci set network.wan.ifname="$ifname"
+				uci set network.wan.metric='40'
+				uci set network.wan.ipaddr="${wan_ipaddr}"
+				uci set network.wan.netmask="${wan_netmask}"
+				uci set network.wan.gateway="${wan_gateway}"
+
+				config_get wan_dns "$cfg" wan_dns
+				test -n "${wan_dns}" && {
+					uci set network.wan.peerdns='0'
+					uci set network.wan.dns="${wan_dns}"
+				}
+			}
+		;;
+		pppoe)
+			config_get wan_pppoe_user "$cfg" wan_pppoe_user
+			config_get wan_pppoe_pass "$cfg" wan_pppoe_pass
+			uci delete network.wan
+			uci set network.wan=interface
+			uci set network.wan.proto='pppoe'
+			test -n "$device" && uci set network.wan.device="$device"
+			test -n "$ifname" && uci set network.wan.ifname="$ifname"
+			uci set network.wan.metric='40'
+			uci set network.wan.username="${wan_pppoe_user}"
+			uci set network.wan.password="${wan_pppoe_pass}"
+			uci set network.wan.keepalive='5 5'
+			uci set network.wan.mtu='1492'
+			uci set network.wan.ipv6='auto'
+
+			config_get wan_dns "$cfg" wan_dns
+			test -n "${wan_dns}" && {
+				uci set network.wan.peerdns='0'
+				uci set network.wan.dns="${wan_dns}"
+			}
+		;;
+	esac
+
+	config_get lan_ipaddr "$cfg" lan_ipaddr
+	config_get lan_netmask "$cfg" lan_netmask
+	test -n "${lan_ipaddr}" && test -n "${lan_netmask}" && {
+		uci set network.lan.ipaddr="${lan_ipaddr}"
+		uci set network.lan.netmask="${lan_netmask}"
+	}
+
+	fakemesh=$(uci get fakemesh.default.enabled 2>/dev/null || echo 0)
+	if ! [ "$fakemesh" = "1" ]; then
+
+	config_get wifi_ssid "$cfg" wifi_ssid
+	config_get wifi_key "$cfg" wifi_key
+
+	test -n "${wifi_ssid}" && test -n "${wifi_key}" && {
+		for idx in `seq 0 64`; do
+			uci get wireless.@wifi-iface[$idx] 2>/dev/null || break
+			[ "$(uci get wireless.@wifi-iface[$idx].mode 2>/dev/null)" = "ap" ] && {
+				subfix="$(uci get wireless.@wifi-iface[$idx].subfix 2>/dev/null)"
+				uci set wireless.@wifi-iface[$idx].ssid="${wifi_ssid}${subfix}"
+				uci set wireless.@wifi-iface[$idx].key="${wifi_key}"
+				uci set wireless.@wifi-iface[$idx].encryption='psk2'
+			}
+			device=$(uci get wireless.@wifi-iface[$idx].device)
+			[ "$(uci get wireless.${device}.band)" = "2g" ] || [ "$(uci get wireless.${device}.band)" = "5g" ] || {
+				uci set wireless.@wifi-iface[$idx].ocv='0'
+				uci set wireless.@wifi-iface[$idx].ssid="${wifi_ssid}_6G"
+				uci set wireless.@wifi-iface[$idx].key="${wifi_key}"
+				uci set wireless.@wifi-iface[$idx].encryption='sae'
+				uci delete wireless.@wifi-iface[$idx].ft_psk_generate_local
+				uci set wireless.${device}.country='DE'
+				uci set wireless.${device}.channel='21'
+				uci set wireless.${device}.band='6g'
+			}
+		done
+	}
+
+	fi
+
+	uci commit network
+	uci commit wireless
+	(sleep 15
+	 /etc/init.d/network reload
+	 /etc/init.d/dnsmasq reload)&
+}
+
+start() {
+	config_load wizard
+	config_foreach add_wizard wizard
+}
+
+restart() {
+	XRELOAD=1 start
+}

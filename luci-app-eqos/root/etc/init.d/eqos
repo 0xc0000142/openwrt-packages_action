@@ -1,0 +1,22 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2024 kenzok78
+
+START=50
+STOP=10
+USE_PROCD=0
+
+start_service() {
+    eqos start
+}
+
+stop_service() {
+    eqos stop
+}
+
+reload_service() {
+    eqos restart
+}
+
+service_triggers() {
+    procd_add_reload_trigger eqos
+}

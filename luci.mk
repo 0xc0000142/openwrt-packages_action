@@ -10,26 +10,15 @@ LUCI_BASENAME?=$(patsubst luci-$(LUCI_TYPE)-%,%,$(LUCI_NAME))
 LUCI_LANGUAGES:=$(sort $(filter-out templates,$(notdir $(wildcard ${CURDIR}/po/*))))
 LUCI_DEFAULTS:=$(notdir $(wildcard ${CURDIR}/root/etc/uci-defaults/*))
 LUCI_PKGARCH?=$(if $(realpath src/Makefile),,all)
-LUCI_SECTION?=luci
-LUCI_CATEGORY?=LuCI
-LUCI_URL?=https://github.com/openwrt/luci
-LUCI_MAINTAINER?=OpenWrt LuCI community
-LUCI_MINIFY_LUA?=1
-LUCI_MINIFY_CSS?=1
-LUCI_MINIFY_JS?=1
 
 # Language code titles
-LUCI_LANG.ar=العربية (Arabic)
 LUCI_LANG.bg=български (Bulgarian)
-LUCI_LANG.bn_BD=বাংলা (Bengali)
 LUCI_LANG.ca=Català (Catalan)
 LUCI_LANG.cs=Čeština (Czech)
-LUCI_LANG.da=Dansk (Danish)
 LUCI_LANG.de=Deutsch (German)
 LUCI_LANG.el=Ελληνικά (Greek)
 LUCI_LANG.en=English
 LUCI_LANG.es=Español (Spanish)
-LUCI_LANG.fi=Suomi (Finnish)
 LUCI_LANG.fr=Français (French)
 LUCI_LANG.he=עִבְרִית (Hebrew)
 LUCI_LANG.hi=हिंदी (Hindi)
@@ -37,10 +26,9 @@ LUCI_LANG.hu=Magyar (Hungarian)
 LUCI_LANG.it=Italiano (Italian)
 LUCI_LANG.ja=日本語 (Japanese)
 LUCI_LANG.ko=한국어 (Korean)
-LUCI_LANG.mr=Marāṭhī (Marathi)
+LUCI_LANG.mr=मराठी (Marathi)
 LUCI_LANG.ms=Bahasa Melayu (Malay)
 LUCI_LANG.nb_NO=Norsk (Norwegian)
-LUCI_LANG.nl=Nederlands (Dutch)
 LUCI_LANG.pl=Polski (Polish)
 LUCI_LANG.pt_BR=Português do Brasil (Brazilian Portuguese)
 LUCI_LANG.pt=Português (Portuguese)
@@ -51,8 +39,8 @@ LUCI_LANG.sv=Svenska (Swedish)
 LUCI_LANG.tr=Türkçe (Turkish)
 LUCI_LANG.uk=Українська (Ukrainian)
 LUCI_LANG.vi=Tiếng Việt (Vietnamese)
-LUCI_LANG.zh_Hans=简体中文 (Chinese Simplified)
-LUCI_LANG.zh_Hant=繁體中文 (Chinese Traditional)
+LUCI_LANG.zh_Hans=中文 (Chinese)
+LUCI_LANG.zh_Hant=臺灣華語 (Taiwanese)
 
 # Submenu titles
 LUCI_MENU.col=1. Collections
@@ -63,53 +51,30 @@ LUCI_MENU.proto=5. Protocols
 LUCI_MENU.lib=6. Libraries
 
 # Language aliases
-LUCI_LC_ALIAS.bn_BD=bn
 LUCI_LC_ALIAS.nb_NO=no
 LUCI_LC_ALIAS.pt_BR=pt-br
 LUCI_LC_ALIAS.zh_Hans=zh-cn
 LUCI_LC_ALIAS.zh_Hant=zh-tw
 
-# Default locations
-HTDOCS = /www
-LUA_LIBRARYDIR = /usr/lib/lua
-LUCI_LIBRARYDIR = $(LUA_LIBRARYDIR)/luci
-
-
-# 1: everything expect po subdir or only po subdir
-define findrev
-  $(shell \
-    if git log -1 >/dev/null 2>/dev/null; then \
-      set -- $$(git log -1 --format="%ct %h" --abbrev=7 -- $(if $(1),. ':(exclude)po',po)); \
-      if [ -n "$$1" ]; then
-        secs="$$(($$1 % 86400))"; \
-        yday="$$(date --utc --date="@$$1" "+%y.%j")"; \
-        printf 'git-%s.%05d-%s' "$$yday" "$$secs" "$$2"; \
-      else \
-        echo "unknown"; \
-      fi; \
-    else \
-      ts=$$(find . -type f $(if $(1),-not) -path './po/*' -printf '%T@\n' 2>/dev/null | sort -rn | head -n1 | cut -d. -f1); \
-      if [ -n "$$ts" ]; then \
-        secs="$$(($$ts % 86400))"; \
-        date="$$(date --utc --date="@$$ts" "+%y%m%d")"; \
-        printf '%s.%05d' "$$date" "$$secs"; \
-      else \
-        echo "unknown"; \
-      fi; \
-    fi \
-  )
-endef
 
 PKG_NAME?=$(LUCI_NAME)
-PKG_RELEASE?=1
-PKG_INSTALL:=$(if $(realpath src/Makefile),1)
-PKG_BUILD_DEPENDS += lua/host luci-base/host LUCI_CSSTIDY:csstidy/host LUCI_SRCDIET:luasrcdiet/host $(LUCI_BUILD_DEPENDS)
-PKG_CONFIG_DEPENDS += CONFIG_LUCI_SRCDIET CONFIG_LUCI_JSMIN CONFIG_LUCI_CSSTIDY
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
-
-PKG_PO_VERSION?=$(if $(DUMP),x,$(strip $(call findrev)))
-PKG_SRC_VERSION?=$(if $(DUMP),x,$(strip $(call findrev,1)))
+PKG_VERSION?=$(if $(DUMP),x,$(strip $(shell \
+	if svn info >/dev/null 2>/dev/null; then \
+		revision="svn-r$$(LC_ALL=C svn info | sed -ne 's/^Revision: //p')"; \
+	elif git log -1 >/dev/null 2>/dev/null; then \
+		revision="svn-r$$(LC_ALL=C git log -1 | sed -ne 's/.*git-svn-id: .*@\([0-9]\+\) .*/\1/p')"; \
+		if [ "$$revision" = "svn-r" ]; then \
+			set -- $$(git log -1 --format="%ct %h" --abbrev=7); \
+			secs="$$(($$1 % 86400))"; \
+			yday="$$(date --utc --date="@$$1" "+%y.%j")"; \
+			revision="$$(printf 'git-%s.%05d-%s' "$$yday" "$$secs" "$$2")"; \
+		fi; \
+	else \
+		revision="unknown"; \
+	fi; \
+	echo "$$revision" \
+)))
 
 PKG_GITBRANCH?=$(if $(DUMP),x,$(strip $(shell \
 	variant="LuCI"; \
@@ -125,37 +90,52 @@ PKG_GITBRANCH?=$(if $(DUMP),x,$(strip $(shell \
 	echo "$$variant" \
 )))
 
+PKG_RELEASE?=1
+PKG_INSTALL:=$(if $(realpath src/Makefile),1)
+PKG_BUILD_DEPENDS += lua/host luci-base/host LUCI_CSSTIDY:csstidy/host $(LUCI_BUILD_DEPENDS)
+PKG_CONFIG_DEPENDS += CONFIG_LUCI_SRCDIET CONFIG_LUCI_JSMIN CONFIG_LUCI_CSSTIDY
+
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
+
 include $(INCLUDE_DIR)/package.mk
 
-# LUCI_SUBMENU: the submenu-item below the LuCI top-level menu inside OpoenWrt menuconfig
-#               usually one of the LUCI_MENU.* definitions
-# LUCI_SUBMENU_DEFAULT: the regular SUBMENU defined by LUCI_TYPE or derrived from the packagename
-# LUCI_SUBMENU_FORCED: manually forced value SUBMENU to set to by explicit definiton
-#                      can be any string, "none" disables the creation of a submenu 
-#                      most usefull in combination with LUCI_CATEGORY, to make the package appear
-#                      anywhere in the menu structure
-LUCI_SUBMENU_DEFAULT=$(if $(LUCI_MENU.$(LUCI_TYPE)),$(LUCI_MENU.$(LUCI_TYPE)),$(LUCI_MENU.app))
-LUCI_SUBMENU=$(if $(LUCI_SUBMENU_FORCED),$(LUCI_SUBMENU_FORCED),$(LUCI_SUBMENU_DEFAULT))
-
 define Package/$(PKG_NAME)
-  SECTION:=$(LUCI_SECTION)
-  CATEGORY:=$(LUCI_CATEGORY)
-ifneq ($(LUCI_SUBMENU),none)
-  SUBMENU:=$(LUCI_SUBMENU)
-endif
+  SECTION:=luci
+  CATEGORY:=LuCI
+  SUBMENU:=$(if $(LUCI_MENU.$(LUCI_TYPE)),$(LUCI_MENU.$(LUCI_TYPE)),$(LUCI_MENU.app))
   TITLE:=$(if $(LUCI_TITLE),$(LUCI_TITLE),LuCI $(LUCI_NAME) $(LUCI_TYPE))
   DEPENDS:=$(LUCI_DEPENDS)
-  VERSION:=$(if $(PKG_VERSION),$(PKG_VERSION),$(PKG_SRC_VERSION))
   $(if $(LUCI_EXTRA_DEPENDS),EXTRA_DEPENDS:=$(LUCI_EXTRA_DEPENDS))
   $(if $(LUCI_PKGARCH),PKGARCH:=$(LUCI_PKGARCH))
-  $(if $(PKG_PROVIDES),PROVIDES:=$(PKG_PROVIDES))
-  URL:=$(LUCI_URL)
-  MAINTAINER:=$(LUCI_MAINTAINER)
 endef
 
 ifneq ($(LUCI_DESCRIPTION),)
  define Package/$(PKG_NAME)/description
    $(strip $(LUCI_DESCRIPTION))
+ endef
+endif
+
+# Language selection for luci-base
+ifeq ($(PKG_NAME),luci-base)
+ define Package/luci-base/config
+   config LUCI_SRCDIET
+	bool "Minify Lua sources"
+	default n
+
+   config LUCI_JSMIN
+	bool "Minify JavaScript sources"
+	default y
+
+   config LUCI_CSSTIDY
+        bool "Minify CSS files"
+        default y
+
+   menu "Translations"$(foreach lang,$(LUCI_LANGUAGES),
+
+     config LUCI_LANG_$(lang)
+	   tristate "$(shell echo '$(LUCI_LANG.$(lang))' | sed -e 's/^.* (\(.*\))$$/\1/') ($(lang))")
+
+   endmenu
  endef
 endif
 
@@ -174,7 +154,7 @@ endef
 
 ifneq ($(wildcard ${CURDIR}/src/Makefile),)
  MAKE_PATH := src/
- MAKE_VARS += FPIC="$(FPIC)" LUCI_VERSION="$(PKG_SRC_VERSION)" LUCI_GITBRANCH="$(PKG_GITBRANCH)"
+ MAKE_VARS += FPIC="$(FPIC)" LUCI_VERSION="$(PKG_VERSION)" LUCI_GITBRANCH="$(PKG_GITBRANCH)"
 
  define Build/Compile
 	$(call Build/Compile/Default,clean compile)
@@ -183,6 +163,39 @@ else
  define Build/Compile
  endef
 endif
+
+HTDOCS = /www
+LUA_LIBRARYDIR = /usr/lib/lua
+LUCI_LIBRARYDIR = $(LUA_LIBRARYDIR)/luci
+
+define SrcDiet
+	$(FIND) $(1) -type f -name '*.lua' | while read src; do \
+		if LUA_PATH="$(STAGING_DIR_HOSTPKG)/lib/lua/5.1/?.lua" luasrcdiet --noopt-binequiv -o "$$$$src.o" "$$$$src"; \
+		then mv "$$$$src.o" "$$$$src"; fi; \
+	done
+endef
+
+define JsMin
+	$(FIND) $(1) -type f -name '*.js' | while read src; do \
+		if jsmin < "$$$$src" > "$$$$src.o"; \
+		then mv "$$$$src.o" "$$$$src"; fi; \
+	done
+endef
+
+define CssTidy
+	$(FIND) $(1) -type f -name '*.css' | while read src; do \
+		if csstidy "$$$$src" --template=highest --remove_last_semicolon=true "$$$$src.o"; \
+		then mv "$$$$src.o" "$$$$src"; fi; \
+	done
+endef
+
+define SubstituteVersion
+	$(FIND) $(1) -type f -name '*.htm' | while read src; do \
+		$(SED) 's/<%# *\([^ ]*\)PKG_VERSION *%>/\1$(PKG_VERSION)/g' \
+		    -e 's/"\(<%= *\(media\|resource\) *%>[^"]*\.\(js\|css\)\)"/"\1?v=$(PKG_VERSION)"/g' \
+			"$$$$src"; \
+	done
+endef
 
 define Package/$(PKG_NAME)/install
 	if [ -d $(PKG_BUILD_DIR)/luasrc ]; then \
@@ -208,7 +221,7 @@ define Package/$(PKG_NAME)/install
 	else true; fi
 endef
 
-ifndef Package/$(PKG_NAME)/postinst
+ifneq ($(LUCI_DEFAULTS),)
 define Package/$(PKG_NAME)/postinst
 [ -n "$${IPKG_INSTROOT}" ] || {$(foreach script,$(LUCI_DEFAULTS),
 	(. /etc/uci-defaults/$(script)) && rm -f /etc/uci-defaults/$(script))
@@ -218,78 +231,6 @@ define Package/$(PKG_NAME)/postinst
 	exit 0
 }
 endef
-endif
-
-# some generic macros that can be used by all packages
-ifeq ($(LUCI_MINIFY_JS),1)
-  define SrcDiet
-	$(FIND) $(1) -type f -name '*.lua' | while read src; do \
-		if LUA_PATH="$(STAGING_DIR_HOSTPKG)/lib/lua/5.1/?.lua" luasrcdiet --noopt-binequiv -o "$$$$src.o" "$$$$src"; \
-		then mv "$$$$src.o" "$$$$src"; fi; \
-	done
-  endef
-else
-  define SrcDiet
-	$$(call MESSAGE,$$(LUCI_NAME) does not support Lua source minification)
-  endef
-endif
-
-ifeq ($(LUCI_MINIFY_JS),1)
-  define JsMin
-	$(FIND) $(1) -type f -name '*.js' | while read src; do \
-		if jsmin < "$$$$src" > "$$$$src.o"; \
-		then mv "$$$$src.o" "$$$$src"; fi; \
-	done
-  endef
-else
-  define JsMin
-	$$(call MESSAGE,$$(LUCI_NAME) does not support JavaScript source minification)
-  endef
-endif
-
-ifeq ($(LUCI_MINIFY_CSS),1)
-  define CssTidy
-	$(FIND) $(1) -type f -name '*.css' | while read src; do \
-		if csstidy "$$$$src" --template=highest --remove_last_semicolon=true "$$$$src.o"; \
-		then mv "$$$$src.o" "$$$$src"; fi; \
-	done
-  endef
-else
-  define CssTidy
-	$$(call MESSAGE,$$(LUCI_NAME) does not support CSS source minification)
-  endef
-endif
-
-define SubstituteVersion
-	$(FIND) $(1) -type f -name '*.htm' | while read src; do \
-		$(SED) 's/<%# *\([^ ]*\)PKG_VERSION *%>/\1$(if $(PKG_VERSION),$(PKG_VERSION),$(PKG_SRC_VERSION))/g' \
-		    -e 's/"\(<%= *\(media\|resource\) *%>[^"]*\.\(js\|css\)\)"/"\1?v=$(if $(PKG_VERSION),$(PKG_VERSION),$(PKG_SRC_VERSION))"/g' \
-			"$$$$src"; \
-	done
-endef
-
-# additional setting luci-base package
-ifeq ($(PKG_NAME),luci-base)
- define Package/luci-base/config
-   config LUCI_SRCDIET
-	bool "Minify Lua sources"
-	default n
-
-   config LUCI_JSMIN
-	bool "Minify JavaScript sources"
-	default y
-
-   config LUCI_CSSTIDY
-        bool "Minify CSS files"
-        default n
-
-   menu "Translations"$(foreach lang,$(LUCI_LANGUAGES),
-
-     config LUCI_LANG_$(lang)
-	   tristate "$(shell echo '$(LUCI_LANG.$(lang))' | sed -e 's/^.* (\(.*\))$$/\1/') ($(lang))")
-
-   endmenu
- endef
 endif
 
 
@@ -305,7 +246,6 @@ define LuciTranslation
     HIDDEN:=1
     DEFAULT:=LUCI_LANG_$(2)||(ALL&&m)
     DEPENDS:=$(PKG_NAME)
-    VERSION:=$(PKG_PO_VERSION)
     PKGARCH:=all
   endef
 

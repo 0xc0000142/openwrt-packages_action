@@ -1,0 +1,40 @@
+<%
+local config_file = "/etc/subconverter/pref.ini"
+local http = luci.http
+local text_content = ""
+
+if http.formvalue("save") then
+    local fd = io.open(config_file, "w")
+    if fd then
+        fd:write(http.formvalue("text"):gsub("\r\n", "\n"))
+        fd:close()
+    end
+    if os.execute("pidof subconverter >/dev/null") == 0 then
+        os.execute("/etc/init.d/subconverter restart")
+    end
+end
+
+if http.formvalue("reset") then
+    local fd = io.open(config_file .. ".bak", "r")
+    text_content = fd and fd:read("*a") or ""
+    if fd then fd:close() end
+else
+    local fd = io.open(config_file, "r")
+    text_content = fd and fd:read("*a") or ""
+    if fd then fd:close() end
+end
+%>
+<%+header%>
+<div>
+  <h2>/etc/subconverter/pref.ini</h2>
+  <p class="cbi-section-descr">Configuration for <a href="https://github.com/asdlokj1qpi233/subconverter">subconverter</a>. Read the <a href="https://github.com/asdlokj1qpi233/subconverter/blob/master/README-cn.md">document</a> before making any change.</p>
+  <p class="cbi-section-descr">You can upload your custom subconverter binary to "/etc/subconverter/subconverter".</p>
+  <form method="POST">
+    <textarea style="width:100%" rows="25" name="text"><%=text_content%></textarea>
+    <div class="cbi-page-actions">
+      <button class="cbi-button cbi-button-save" name="save" value="1">Save</button>
+      <button class="cbi-button cbi-button-reset" name="reset" value="1">Reset</button>
+    </div>
+  </form>
+</div>
+<%+footer%>

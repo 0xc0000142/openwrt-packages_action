@@ -1,0 +1,22 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete firewall.luci_app_softethervpn
+	set firewall.luci_app_softethervpn=include
+	set firewall.luci_app_softethervpn.type=script
+	set firewall.luci_app_softethervpn.path=/var/etc/luci-app-softethervpn.include
+EOF
+
+if [ -x "/sbin/fw3" ] && [ ! -L "/sbin/fw3" ]; then
+	uci -q set firewall.luci_app_softethervpn.reload='1'
+else
+	uci -q delete firewall.luci_app_softethervpn.reload
+	uci -q delete firewall.luci_app_softethervpn.fw4_compatible
+fi
+uci commit firewall
+
+/etc/init.d/softethervpnserver stop 2>/dev/null
+/etc/init.d/softethervpnserver disable 2>/dev/null
+
+rm -rf /tmp/luci-*cache
+exit 0

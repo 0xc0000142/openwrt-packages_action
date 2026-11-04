@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/etc/init.d/php8-fpm stop
+/etc/init.d/php8-fpm disable
+rm -rf /tmp/luci-*cache
+exit 0

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete firewall.luci_app_timecontrol
+	set firewall.luci_app_timecontrol=include
+	set firewall.luci_app_timecontrol.type=script
+	set firewall.luci_app_timecontrol.path=/var/etc/luci-app-timecontrol.include
+EOF
+
+if [ -x "/sbin/fw3" ] && [ ! -L "/sbin/fw3" ]; then
+	uci -q set firewall.luci_app_timecontrol.reload='1'
+else
+	uci -q delete firewall.luci_app_timecontrol.reload
+	uci -q delete firewall.luci_app_timecontrol.fw4_compatible
+fi
+uci commit firewall
+
+rm -rf /tmp/luci-*cache
+exit 0

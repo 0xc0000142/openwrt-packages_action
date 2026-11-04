@@ -1,0 +1,196 @@
+line	command	original_url	original_destination	action	source	detail
+3	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-argonne	luci-theme-argonne	mapped	legacy-19.07-2022	当前来源不可用，保留对应版本已发布的固定历史源码，需兼容检查
+4	svn	https://github.com/kenzok8/luci-theme-ifit/trunk/luci-theme-ifit	luci-theme-ifit	mapped	kenzok8__openwrt-packages--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+5	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-mcat	luci-theme-mcat	mapped	legacy-19.07-2022	当前来源不可用，保留对应版本已发布的固定历史源码，需兼容检查
+6	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-tomato	luci-theme-tomato	retained	kenzok8__openwrt-packages--master	Git源码更新，替换GitHub SVN获取
+7	svn	https://github.com/XXKDB/luci-theme-argon_armygreen/trunk	luci-theme-argon_armygreen	retained	XXKDB__luci-theme-argon_armygreen--main	Git源码更新，替换GitHub SVN获取
+8	git	https://github.com/jerrykuku/luci-theme-argon.git	luci-theme-argon	mapped	legacy-19.07-2023	固定19.07历史分支中配套Argon主题/配置，避免当前3.x接口混入
+9	git	https://github.com/jerrykuku/luci-app-argon-config.git	luci-app-argon-config	mapped	legacy-19.07-2023	固定19.07历史分支中配套Argon主题/配置，避免当前3.x接口混入
+10	git	https://github.com/tano-systems/luci-theme-tano.git	luci-theme-tano	retained	tano-systems__luci-theme-tano--master	保留原Git源码及配方
+11	git	https://github.com/sajati/luci-theme-waton.git	luci-theme-waton	mapped	legacy-19.07-2022	当前来源不可用，保留对应版本已发布的固定历史源码，需兼容检查
+12	git	https://github.com/52014app/luci-theme-edge.git	luci-theme-edge	retained	52014app__luci-theme-edge--master	保留原Git源码及配方
+13	git	https://github.com/fhh200000/luci-theme-lafite-port.git	luci-theme-lafite-port	mapped	fhh200000__luci-theme-lafite-port--master	原仓库为无OpenWrt Makefile的安装树，完整保留原始源码并标记非配方，不能宣称可编译
+15	svn	https://github.com/kenzok8/openwrt-packages/trunk/	openwrt-packages	retained	kenzok8__openwrt-packages--master	Git源码更新，替换GitHub SVN获取
+16	svn	https://github.com/cnsilvan/luci-app-unblockneteasemusic/trunk/UnblockNeteaseMusic	UnblockNeteaseMusic-Go	retained	cnsilvan__luci-app-unblockneteasemusic--master	Git源码更新，替换GitHub SVN获取
+17	svn	https://github.com/cnsilvan/luci-app-unblockneteasemusic/trunk/luci-app-unblockneteasemusic	luci-app-UnblockNeteaseMusicGo	retained	cnsilvan__luci-app-unblockneteasemusic--master	Git源码更新，替换GitHub SVN获取
+18	git	https://github.com/Lienol/openwrt-package	openwrt-package	retained	Lienol__openwrt-package--main	保留原Git源码及配方
+19	git	https://github.com/goldkeyber112/openwrt-r8168.git	r8168	retained	goldkeyber112__openwrt-r8168--master	保留原Git源码及配方
+20	git	https://github.com/fw876/helloworld	helloworld	retained	fw876__helloworld--master	保留原Git源码及配方；使用面向21.02及更旧版本的master分支，Xray需Go1.21+
+21	git	https://github.com/xiaorouji/openwrt-passwall	openwrt-passwall	mapped	Openwrt-Passwall__openwrt-passwall--main	原仓库不可达或目录迁移，使用核实过的同功能来源
+22	git	https://github.com/kiddin9/my-packages	my-packages	retained	kiddin9__my-packages--master	保留原Git源码及配方
+23	git	https://github.com/kiddin9/openwrt-bypass	openwrt-bypass	mapped	legacy-19.07-2022	原仓库不可达，2022年19.07输出保存luci-app-bypass及依赖子树，固定恢复
+24	git	https://github.com/kiddin9/luci-app-dnsfilter	luci-app-dnsfilter	retained	kiddin9__luci-app-dnsfilter--main	保留原Git源码及配方
+25	git	https://github.com/kiddin9/aria2	aria2	retained	kiddin9__aria2--main	保留原Git源码及配方
+26	git	https://github.com/kiddin9/luci-app-eqos	luci-app-eqos	mapped	Huangjoe123__luci-app-eqos--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+27	git	https://github.com/kiddin9/luci-app-baidupcs-web	luci-app-baidupcs-web	retained	kiddin9__luci-app-baidupcs-web--master	保留原Git源码及配方
+28	git	https://github.com/kiddin9/qBittorrent-Enhanced-Edition	qBittorrent-Enhanced-Edition	retained	kiddin9__qBittorrent-Enhanced-Edition--master	保留原Git源码及配方
+29	git	https://github.com/kiddin9/autoshare	autoshare	retained	kiddin9__autoshare--master	保留原Git源码及配方
+30	git	https://github.com/kiddin9/openwrt-openvpn	openwrt-openvpn	retained	kiddin9__openwrt-openvpn--master	保留原Git源码及配方
+31	git	https://github.com/BoringCat/luci-app-mentohust	luci-app-mentohust	retained	BoringCat__luci-app-mentohust--master	保留原Git源码及配方
+32	git	https://github.com/kiddin9/luci-app-xlnetacc	luci-app-xlnetacc	retained	kiddin9__luci-app-xlnetacc--master	保留原Git源码及配方
+33	git	https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk	MentoHUST-OpenWrt-ipk	retained	KyleRicardo__MentoHUST-OpenWrt-ipk--master	保留原Git源码及配方
+34	git	https://github.com/rufengsuixing/luci-app-autoipsetadder	luci-app-autoipsetadder	retained	rufengsuixing__luci-app-autoipsetadder--master	保留原Git源码及配方
+35	git	https://github.com/NateLol/luci-app-beardropper	luci-app-beardropper	retained	NateLol__luci-app-beardropper--master	保留原Git源码及配方
+36	git	https://github.com/riverscn/openwrt-iptvhelper	openwrt-iptvhelper	retained	riverscn__openwrt-iptvhelper--master	保留原Git源码及配方
+37	git	https://github.com/project-lede/luci-app-godproxy	luci-app-godproxy	retained	project-lede__luci-app-godproxy--main	保留原Git源码及配方
+38	git	https://github.com/BoringCat/luci-app-minieap	luci-app-minieap	retained	BoringCat__luci-app-minieap--master	保留原Git源码及配方
+39	git	https://github.com/rufengsuixing/luci-app-onliner	luci-app-onliner	retained	rufengsuixing__luci-app-onliner--master	保留原Git源码及配方
+40	git	https://github.com/tty228/luci-app-serverchan	luci-app-serverchan	retained	tty228__luci-app-serverchan--master	保留原Git源码及配方
+41	git	https://github.com/4IceG/luci-app-sms-tool	smstool	retained	4IceG__luci-app-sms-tool--master	保留原Git源码及配方
+42	git	https://github.com/rufengsuixing/luci-app-usb3disable	luci-app-usb3disable	retained	rufengsuixing__luci-app-usb3disable--master	保留原Git源码及配方
+43	git	https://github.com/fszok/luci-app-advancedsetting.git	luci-app-advancedsetting	mapped	alvazhang79__luci-app-advancedsetting--main	原仓库不可达或目录迁移，使用核实过的同功能来源
+44	git	https://github.com/silime/luci-app-xunlei	luci-app-xunlei	retained	silime__luci-app-xunlei--master	保留原Git源码及配方
+45	git	https://github.com/ysc3839/luci-proto-minieap	luci-proto-minieap	retained	ysc3839__luci-proto-minieap--master	保留原Git源码及配方
+46	git	https://github.com/zzsj0928/luci-app-pushbot	luci-app-pushbot	retained	zzsj0928__luci-app-pushbot--master	保留原Git源码及配方
+47	git	https://github.com/shanglanxin/luci-app-homebridge	luci-app-homebridge	retained	shanglanxin__luci-app-homebridge--master	保留原Git源码及配方
+48	git	https://github.com/jerrykuku/luci-app-argon-config	luci-app-argon-config	deduplicated	legacy-19.07-2023	固定19.07历史分支中配套Argon主题/配置，避免当前3.x接口混入；复用已列出的同一导入
+49	git	https://github.com/jerrykuku/luci-app-vssr	luci-app-vssr	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+50	git	https://github.com/jerrykuku/luci-app-ttnode	ttnode	retained	jerrykuku__luci-app-ttnode--master	保留原Git源码及配方
+51	git	https://github.com/jefferymvp/luci-app-koolproxyR	luci-app-koolproxyR	retained	jefferymvp__luci-app-koolproxyR--master	保留原Git源码及配方
+52	git	https://github.com/peter-tank/luci-app-dnscrypt-proxy2	luci-app-dnscrypt-proxy2	retained	peter-tank__luci-app-dnscrypt-proxy2--master	保留原Git源码及配方
+53	git	https://github.com/sirpdboy/luci-app-advanced	luci-app-advanced	retained	sirpdboy__luci-app-advanced--master	保留原Git源码及配方
+54	git	https://github.com/sirpdboy/luci-app-netdata	luci-app-netdata	retained	sirpdboy__luci-app-netdata--main	保留原Git源码及配方
+55	git	https://github.com/jerrykuku/luci-app-jd-dailybonus	luci-app-jd-dailybonus	mapped	noiver__luci-app-jd-dailybonus--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+56	git	https://github.com/NateLol/luci-app-oled	luci-app-oled	retained	NateLol__luci-app-oled--master	保留原Git源码及配方
+57	git	https://github.com/destan19/OpenAppFilter	OpenAppFilter	retained	destan19__OpenAppFilter--master	保留原Git源码及配方
+58	git	https://github.com/esirplayground/luci-app-poweroff	luci-app-poweroff	retained	esirplayground__luci-app-poweroff--main	保留原Git源码及配方
+59	git	https://github.com/lvqier/luci-app-dnsmasq-ipset	luci-app-dnsmasq-ipset	retained	lvqier__luci-app-dnsmasq-ipset--master	保留原Git源码及配方
+60	git	https://github.com/small-5/ddns-scripts-dnspod	ddns-scripts-dnspod	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+61	git	https://github.com/small-5/ddns-scripts-aliyun	ddns-scripts-aliyun	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+62	git	https://github.com/walkingsky/luci-wifidog	luci-app-wifidog	retained	walkingsky__luci-wifidog--master	保留原Git源码及配方
+63	git	https://github.com/peter-tank/luci-app-autorepeater	luci-app-autorepeater	retained	peter-tank__luci-app-autorepeater--master	保留原Git源码及配方
+64	git	https://github.com/CCnut/feed-netkeeper	feed-netkeeper	retained	CCnut__feed-netkeeper--master	保留原Git源码及配方
+65	git	https://github.com/brvphoenix/luci-app-wrtbwmon	wrtbwmon1	retained	brvphoenix__luci-app-wrtbwmon--master	保留原Git源码及配方
+66	git	https://github.com/brvphoenix/wrtbwmon	wrtbwmon2	retained	brvphoenix__wrtbwmon--master	保留原Git源码及配方
+67	git	https://github.com/linkease/ddnsto-openwrt	ddnsto-openwrt	retained	linkease__ddnsto-openwrt--main	保留原Git源码及配方
+68	git	https://github.com/sensec/luci-app-udp2raw	luci-app-udp2raw	retained	sensec__luci-app-udp2raw--master	保留原Git源码及配方
+69	git	https://github.com/LGA1150/openwrt-sysuh3c	openwrt-sysuh3c	retained	LGA1150__openwrt-sysuh3c--master	保留原Git源码及配方
+70	git	https://github.com/gdck/luci-app-cupsd	cupsd1	retained	gdck__luci-app-cupsd--main	保留原Git源码及配方
+71	svn	https://github.com/Lienol/openwrt/trunk/package/lean/luci-app-autoreboot	luci-app-autoreboot	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+72	svn	https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-ddns/trunk/tencentcloud_ddns	luci-app-tencentddns	retained	Tencent-Cloud-Plugins__tencentcloud-openwrt-plugin-ddns--master	Git源码更新，替换GitHub SVN获取
+73	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean	ledelean	retained	coolsnowwolf__lede--master	Git源码更新，替换GitHub SVN获取
+76	svn	https://github.com/coolsnowwolf/lede/trunk/package/network/services/shellsync	shellsync	retained	coolsnowwolf__lede--master	Git源码更新，替换GitHub SVN获取
+77	svn	https://github.com/coolsnowwolf/packages/trunk/net/miniupnpd	miniupnpd	mapped	openwrt__packages--openwrt-19.07	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+78	svn	https://github.com/coolsnowwolf/packages/trunk/net/mwan3	mwan3	retained	coolsnowwolf__packages--master	Git源码更新，替换GitHub SVN获取
+79	svn	https://github.com/x-wrt/packages/trunk/net/nft-qos	nft-qos	mapped	openwrt__packages--openwrt-19.07	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+80	svn	https://github.com/x-wrt/luci/trunk/applications/luci-app-nft-qos	luci-app-nft-qos	mapped	openwrt__luci--openwrt-19.07	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+81	svn	https://github.com/immortalwrt/immortalwrt/trunk/package/lean/shadowsocksr-libev	shadowsocksr-libev	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+82	svn	https://github.com/vernesong/OpenClash/trunk/luci-app-openclash	luci-app-openclash	retained	vernesong__OpenClash--master	Git源码更新，替换GitHub SVN获取
+83	svn	https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman	luci-app-dockerman	retained	lisaac__luci-app-dockerman--master	Git源码更新，替换GitHub SVN获取
+84	svn	https://github.com/doushang/luci-app-shortcutmenu/tunk/luci-app-shortcutmenu	luci-app-shortcutmenu	retained	doushang__luci-app-shortcutmenu--master	Git源码更新，替换GitHub SVN获取
+85	svn	https://github.com/sundaqiang/openwrt-packages/trunk/luci-app-services-wolplus	luci-app-services-wolplus	mapped	sundaqiang__openwrt-packages--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+86	svn	https://github.com/openwrt/luci/trunk/applications/luci-app-aria2	luci-app-aria2	retained	openwrt__luci--openwrt-19.07	固定官方同版本分支，避免trunk滚动到新接口
+87	svn	https://github.com/openwrt/luci/trunk/applications/luci-app-ddns	luci-app-ddns	retained	openwrt__luci--openwrt-19.07	固定官方同版本分支，避免trunk滚动到新接口
+88	svn	https://github.com/openwrt/luci/trunk/applications/luci-app-https-dns-proxy	luci-app-https-dns-proxy	retained	openwrt__luci--openwrt-19.07	固定官方同版本分支，避免trunk滚动到新接口
+89	svn	https://github.com/openwrt/luci/trunk/applications/luci-app-acme	luci-app-acme	mapped	legacy-19.07-2023	当前来源不可用，保留对应版本已发布的固定历史源码，需兼容检查
+90	svn	https://github.com/openwrt/luci/trunk/applications/luci-app-ksmbd	luci-app-ksmbd	retained	openwrt__luci--openwrt-19.07	固定官方同版本分支，避免trunk滚动到新接口
+91	svn	https://github.com/openwrt/luci/trunk/applications/luci-app-samba4	luci-app-samba4	retained	openwrt__luci--openwrt-19.07	固定官方同版本分支，避免trunk滚动到新接口
+92	svn	https://github.com/openwrt/packages/trunk/net/shadowsocks-libev	shadowsocks-libev	retained	openwrt__packages--openwrt-19.07	固定官方同版本分支，避免trunk滚动到新接口
+93	svn	https://github.com/openwrt/packages/trunk/net/https-dns-proxy	https-dns-proxy	retained	openwrt__packages--openwrt-19.07	固定官方同版本分支，避免trunk滚动到新接口
+94	svn	https://github.com/openwrt/packages/trunk/net/openvpn	openvpn	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+95	svn	https://github.com/openwrt/packages/trunk/net/adguardhome	adguardhome	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+96	svn	https://github.com/openwrt/packages/trunk/utils/cgroupfs-mount	cgroupfs-mount	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+97	svn	https://github.com/x-wrt/com.x-wrt/trunk/natflow	natflow	retained	x-wrt__com.x-wrt--master	Git源码更新，替换GitHub SVN获取
+98	svn	https://github.com/x-wrt/com.x-wrt/trunk/luci-app-wizard	luci-app-wizard	retained	x-wrt__com.x-wrt--master	Git源码更新，替换GitHub SVN获取
+99	svn	https://github.com/x-wrt/com.x-wrt/trunk/luci-app-macvlan	luci-app-macvlan	retained	x-wrt__com.x-wrt--master	Git源码更新，替换GitHub SVN获取
+100	svn	https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/mt7601u-ap	mt7601u-ap	retained	immortalwrt__immortalwrt--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+101	svn	https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/mtk-eip93	mtk-eip93	retained	immortalwrt__immortalwrt--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+102	svn	https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/r8152	r8152	retained	immortalwrt__immortalwrt--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+103	svn	https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/r8168	r8168	retained	immortalwrt__immortalwrt--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+104	svn	https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/rtl8188eu	rtl8188eu	retained	immortalwrt__immortalwrt--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+105	svn	https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/rtl8812au-ac	rtl8812au-ac	retained	immortalwrt__immortalwrt--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+106	svn	https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/rtl8821cu	rtl8821cu	retained	immortalwrt__immortalwrt--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+107	svn	https://github.com/immortalwrt/immortalwrt/trunk/package/kernel/rtl88x2bu	rtl88x2bu	retained	immortalwrt__immortalwrt--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+108	svn	https://github.com/immortalwrt/packages/trunk/net/mwol	mwol	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+109	svn	https://github.com/immortalwrt/packages/trunk/net/nps	nps	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+110	svn	https://github.com/immortalwrt/packages/trunk/net/verysync	verysync	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+111	svn	https://github.com/immortalwrt/packages/trunk/net/sub-web	sub-web	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+112	svn	https://github.com/immortalwrt/packages/trunk/net/subconverter	subconverter	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+113	svn	https://github.com/immortalwrt/packages/trunk/net/ngrokc	ngrokc	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+114	svn	https://github.com/immortalwrt/packages/trunk/net/oscam	oscam	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+115	svn	https://github.com/immortalwrt/packages/trunk/net/njitclient	njitclient	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+116	svn	https://github.com/immortalwrt/packages/trunk/net/scutclient	scutclient	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+117	svn	https://github.com/immortalwrt/packages/trunk/net/gost	gost	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+118	svn	https://github.com/immortalwrt/packages/trunk/net/amule	amule	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+119	svn	https://github.com/immortalwrt/packages/trunk/net/gowebdav	gowebdav	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+120	svn	https://github.com/immortalwrt/packages/trunk/admin/bpytop	bpytop	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+121	svn	https://github.com/immortalwrt/packages/trunk/libs/jpcre2	jpcre2	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+122	svn	https://github.com/immortalwrt/packages/trunk/libs/wxbase	wxbase	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+123	svn	https://github.com/immortalwrt/packages/trunk/libs/rapidjson	rapidjson	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+124	svn	https://github.com/immortalwrt/packages/trunk/libs/libcron	libcron	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+125	svn	https://github.com/immortalwrt/packages/trunk/libs/quickjspp	quickjspp	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+126	svn	https://github.com/immortalwrt/packages/trunk/utils/cpulimit	cpulimit	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+127	svn	https://github.com/immortalwrt/packages/trunk/utils/filebrowser	filebrowser	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+128	svn	https://github.com/immortalwrt/packages/trunk/utils/phicomm-k3screenctrl	phicomm-k3screenctrl	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+129	svn	https://github.com/immortalwrt/packages/trunk/multimedia/gmediarender	gmediarender	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+131	svn	https://github.com/immortalwrt/luci/branches/openwrt-21.02/applications	applications	mapped	openwrt__luci--openwrt-19.07	改用官方同版本LuCI；额外历史应用由对应发布快照补全
+140	wget	https://github.com/immortalwrt/luci/raw/openwrt-21.02/luci.mk	luci.mk	mapped	openwrt__luci--openwrt-19.07	改用官方同版本LuCI；额外历史应用由对应发布快照补全
+141	svn	https://github.com/rufengsuixing/luci-app-adguardhome/trunk	luci-app-adguardhome	retained	rufengsuixing__luci-app-adguardhome--master	Git源码更新，替换GitHub SVN获取
+142	svn	https://github.com/immortalwrt/immortalwrt/branches/openwrt-19.07/package/ntlf9t/luci-app-advancedsetting	luci-app-advancedsetting	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+143	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-app-aliddns	luci-app-aliddns	retained	kenzok8__openwrt-packages--master	Git源码更新，替换GitHub SVN获取
+144	svn	https://github.com/frainzy1477/luci-app-clash/trunk	luci-app-clash	retained	frainzy1477__luci-app-clash--test	Git源码更新，替换GitHub SVN获取
+147	git	https://github.com/vernesong/OpenClash.git	OpenClash	deduplicated	vernesong__OpenClash--master	保留原Git源码及配方；复用已列出的同一导入
+150	svn	https://github.com/garypang13/luci-app-eqos/trunk	luci-app-eqos	deduplicated	Huangjoe123__luci-app-eqos--master	原仓库不可达或目录迁移，使用核实过的同功能来源；复用已列出的同一导入
+151	svn	https://github.com/jerrykuku/luci-app-jd-dailybonus/trunk	luci-app-jd-dailybonus	deduplicated	noiver__luci-app-jd-dailybonus--master	原仓库不可达或目录迁移，使用核实过的同功能来源；复用已列出的同一导入
+152	svn	https://github.com/jerrykuku/luci-app-vssr/trunk	luci-app-vssr	deduplicated	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方；复用已列出的同一导入
+153	svn	https://github.com/tty228/luci-app-serverchan/trunk	luci-app-serverchan	deduplicated	tty228__luci-app-serverchan--master	Git源码更新，替换GitHub SVN获取；复用已列出的同一导入
+154	svn	https://github.com/fw876/helloworld/trunk	.	deduplicated	fw876__helloworld--master	Git源码更新，替换GitHub SVN获取；复用已列出的同一导入；使用面向21.02及更旧版本的master分支，Xray需Go1.21+
+156	svn	https://github.com/xiaorouji/openwrt-package/trunk/lienol	.	mapped	legacy-19.07-2023	原lienol/obsolete/others/package子目录已消失；固定对应版本完整输出保留原聚合结果，最低优先级
+158	svn	https://github.com/xiaorouji/openwrt-package/trunk/obsolete	.	deduplicated	legacy-19.07-2023	原lienol/obsolete/others/package子目录已消失；固定对应版本完整输出保留原聚合结果，最低优先级；复用已列出的同一导入
+160	svn	https://github.com/xiaorouji/openwrt-package/trunk/others	.	deduplicated	legacy-19.07-2023	原lienol/obsolete/others/package子目录已消失；固定对应版本完整输出保留原聚合结果，最低优先级；复用已列出的同一导入
+162	svn	https://github.com/xiaorouji/openwrt-package/trunk/package	.	deduplicated	legacy-19.07-2023	原lienol/obsolete/others/package子目录已消失；固定对应版本完整输出保留原聚合结果，最低优先级；复用已列出的同一导入
+164	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-app-smartdns	luci-app-smartdns	retained	kenzok8__openwrt-packages--master	Git源码更新，替换GitHub SVN获取
+165	svn	https://github.com/kenzok8/openwrt-packages/trunk/smartdns	smartdns	retained	kenzok8__openwrt-packages--master	Git源码更新，替换GitHub SVN获取
+166	svn	https://github.com/jerrykuku/node-request/trunk	node-request	retained	jerrykuku__node-request--master	Git源码更新，替换GitHub SVN获取
+167	svn	https://github.com/jerrykuku/lua-maxminddb/trunk	lua-maxminddb	retained	jerrykuku__lua-maxminddb--master	Git源码更新，替换GitHub SVN获取
+168	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/UnblockNeteaseMusic	UnblockNeteaseMusic	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+170	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/baidupcs-web	baidupcs-web	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+171	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-baidupcs-web	luci-app-baidupcs-web	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+173	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-airplay2	luci-app-airplay2	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+174	svn	https://github.com/cnzd/luci-app-koolproxyR/trunk	luci-app-koolproxyR	retained	cnzd__luci-app-koolproxyR--master	Git源码更新，替换GitHub SVN获取
+175	svn	https://github.com/MiRouter/luci-app-vssr-plus/trunk	luci-app-vssr-plus	retained	MiRouter__luci-app-vssr-plus--master	Git源码更新，替换GitHub SVN获取
+176	svn	https://github.com/immortalwrt/packages/trunk/net/GoQuiet/	GoQuiet	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+177	svn	https://github.com/immortalwrt/packages/trunk/net/chinadns	chinadns	retained	immortalwrt__packages--openwrt-21.02	使用上游仍存在的历史分支；19.07已无同名ImmortalWrt分支，保留原历史配方待兼容验证
+178	svn	https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman	luci-app-dockerman	deduplicated	lisaac__luci-app-dockerman--master	Git源码更新，替换GitHub SVN获取；复用已列出的同一导入
+179	svn	https://github.com/lisaac/luci-lib-docker/trunk/collections/luci-lib-docker	luci-lib-docker	retained	lisaac__luci-lib-docker--master	Git源码更新，替换GitHub SVN获取
+180	svn	https://github.com/lisaac/luci-app-diskman/trunk	luci-app-diskman	retained	lisaac__luci-app-diskman--master	Git源码更新，替换GitHub SVN获取
+183	wget	https://raw.githubusercontent.com/lisaac/luci-app-diskman/master/Parted.Makefile	parted/Makefile	retained	lisaac__luci-app-diskman--master	保留原Git源码及配方
+184	svn	https://github.com/destan19/OpenAppFilter/trunk	.	deduplicated	destan19__OpenAppFilter--master	Git源码更新，替换GitHub SVN获取；复用已列出的同一导入
+186	svn	https://github.com/4IceG/luci-app-3ginfo/trunk/luci-app-3ginfo	luci-app-3ginfo	retained	4IceG__luci-app-3ginfo--master	Git源码更新，替换GitHub SVN获取
+189	git	https://github.com/brvphoenix/luci-app-wrtbwmon.git	wrtbwmonluci	deduplicated	brvphoenix__luci-app-wrtbwmon--master	保留原Git源码及配方；复用已列出的同一导入
+192	svn	https://github.com/riverscn/openwrt-iptvhelper/trunk/iptvhelper	iptvhelper	retained	riverscn__openwrt-iptvhelper--master	Git源码更新，替换GitHub SVN获取
+193	svn	https://github.com/riverscn/openwrt-iptvhelper/trunk/luci-app-iptvhelper	luci-app-iptvhelper	retained	riverscn__openwrt-iptvhelper--master	Git源码更新，替换GitHub SVN获取
+194	svn	https://github.com/brvphoenix/wrtbwmon/trunk/wrtbwmon	wrtbwmon	retained	brvphoenix__wrtbwmon--master	Git源码更新，替换GitHub SVN获取
+195	svn	https://github.com/KFERMercer/luci-app-tcpdump/trunk	luci-app-tcpdump	retained	KFERMercer__luci-app-tcpdump--master	Git源码更新，替换GitHub SVN获取
+196	svn	https://github.com/tty228/luci-app-nodogsplash/trunk	luci-app-nodogsplash	retained	tty228__luci-app-nodogsplash--master	Git源码更新，替换GitHub SVN获取
+197	svn	https://github.com/koshev-msk/luci-app-atinout/trunk	luci-app-atinout	mapped	SankySyS__luci-app-atinout--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+199	svn	https://github.com/muink/luci-app-pcap-dnsproxy/branches/dev	luci-app-pcap-dnsproxy	retained	muink__luci-app-pcap-dnsproxy--dev	Git源码更新，替换GitHub SVN获取
+200	svn	https://github.com/koshev-msk/3proxy-openwrt/trunk	3proxy	mapped	osnosn__3proxy-openwrt--main	原仓库不可达或目录迁移，使用核实过的同功能来源
+201	svn	https://github.com/pexcn/openwrt-chinadns-ng/branches/luci	luci-app-chinadns-ng	retained	pexcn__openwrt-chinadns-ng--luci	Git源码更新，替换GitHub SVN获取
+202	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-usb-printer	luci-app-usb-printer	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+203	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ramfree	luci-app-ramfree	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+204	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd	luci-app-ttyd	mapped	openwrt__luci--openwrt-19.07	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+205	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-unblockmusic	luci-app-unblockmusic	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+206	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-vlmcsd	luci-app-vlmcsd	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+207	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/vlmcsd	vlmcsd	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+208	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-vsftpd	luci-app-vsftpd	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+209	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-cpufreq	luci-app-cpufreq	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+210	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-xlnetacc	luci-app-xlnetacc	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+211	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frpc	luci-app-frpc	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+212	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/frp	frp	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+213	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frps	luci-app-frps	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+214	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_aliyun	ddns-scripts_aliyun	retained	coolsnowwolf__lede--master	Git源码更新，替换GitHub SVN获取
+215	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_dnspod	ddns-scripts_dnspod	retained	coolsnowwolf__lede--master	Git源码更新，替换GitHub SVN获取
+216	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-cifs-mount	luci-app-cifs-mount	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+217	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-turboacc	luci-app-turboacc	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+218	git	https://github.com/1mi9908303/luci-app-passwall-plus	luci-app-passwall-plus	retained	1mi9908303__luci-app-passwall-plus--master	保留原Git源码及配方
+219	svn	https://github.com/immortalwrt/packages/branches/openwrt-21.02/net/udpspeeder	udpspeeder	retained	immortalwrt__packages--openwrt-21.02	Git源码更新，替换GitHub SVN获取
+220	git	https://github.com/koshev-msk/luci-app-modeminfo	luci-app-modeminfo	mapped	4IceG__luci-app-modeminfo--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+221	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/microsocks	microsocks	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+222	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/redsocks2	redsocks2	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+223	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/tcpping	tcpping	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+224	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/dnsforwarder	dnsforwarder	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+225	git	https://github.com/sensec/luci-app-udp2raw	luci-app-udp2raw	deduplicated	sensec__luci-app-udp2raw--master	保留原Git源码及配方；复用已列出的同一导入
+226	svn	https://github.com/obsy/packages/trunk/3ginfo	3ginfo	retained	obsy__packages--master	Git源码更新，替换GitHub SVN获取
+227	git	https://github.com/jerrykuku/luci-app-argon-config	luci-app-argon-config	deduplicated	legacy-19.07-2023	固定19.07历史分支中配套Argon主题/配置，避免当前3.x接口混入；复用已列出的同一导入
+228	svn	https://github.com/sirpdboy/sirpdboy-package/trunk/luci-app-socat	luci-app-socat	mapped	4IceG__luci-app-socat--main	原仓库不可达或目录迁移，使用核实过的同功能来源
