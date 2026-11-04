@@ -1,0 +1,301 @@
+source	path	destination	status	detail
+legacy-18.06-2021	luci-theme-argon_new	luci-theme-argon_new	imported	legacy-fallback-needs-porting-review
+legacy-18.06-2021	UnblockNeteaseMusicGo	UnblockNeteaseMusicGo	imported	legacy-fallback-needs-porting-review
+legacy-18.06-2021	luci-app-passwall-plus	luci-app-passwall-plus	imported	legacy-fallback-needs-porting-review
+legacy-18.06-2021	openwrt-Pcap_DNSProxy	openwrt-Pcap_DNSProxy	imported	legacy-fallback-needs-porting-review
+jerrykuku__luci-theme-argon--18.06	.	luci-theme-argon	imported	not-build-tested
+kenzok8__openwrt-packages--master	luci-theme-ifit	luci-theme-ifit	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-atmaterial	luci-theme-atmaterial	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-atmaterial	luci-theme-atmaterial	imported	not-build-tested
+garypang13__luci-theme-edge--18.06	.	luci-theme-edge	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-opentomato	luci-theme-opentomato	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-opentomato	luci-theme-opentomato	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-opentomcat	luci-theme-opentomcat	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-opentomcat	luci-theme-opentomcat	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-Butterfly-dark	luci-theme-Butterfly-dark	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-Butterfly-dark	luci-theme-Butterfly-dark	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-Butterfly	luci-theme-Butterfly	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-Butterfly	luci-theme-Butterfly	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-argon-mc	luci-theme-argon-mc	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-argon-mc	luci-theme-argon-mc	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-argon-mod	luci-theme-argon-mod	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-argon-mod	luci-theme-argon-mod	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-argonv2	luci-theme-argonv2	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-argonv2	luci-theme-argonv2	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-argonv3	luci-theme-argonv3	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-argonv3	luci-theme-argonv3	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-darkmatter	luci-theme-darkmatter	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-darkmatter	luci-theme-darkmatter	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-infinityfreedom	luci-theme-infinityfreedom	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-infinityfreedom	luci-theme-infinityfreedom	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-netgearv2	luci-theme-netgearv2	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	themes/luci-theme-netgearv2	luci-theme-netgearv2	imported	not-build-tested
+rosywrt__luci-theme-rosy--openwrt-18.06	luci-theme-rosy	luci-theme-rosy	imported	not-build-tested
+liuran001__openwrt-theme--main	luci-theme-argon-lr	luci-theme-argon-lr	imported	not-build-tested
+jerrykuku__luci-app-argon-config--18.06	.	luci-app-argon-config	imported	not-build-tested
+kenzok8__openwrt-packages--master	adguardhome	adguardhome	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/gost	gost	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__packages--openwrt-18.06	net/gost	gost	imported	not-build-tested
+rufengsuixing__luci-app-adguardhome--master	.	luci-app-adguardhome	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-advancedsetting	luci-app-advancedsetting	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-advancedsetting	luci-app-advancedsetting	imported	not-build-tested
+kenzok8__openwrt-packages--master	luci-app-aliddns	luci-app-aliddns	imported	not-build-tested
+frainzy1477__luci-app-clash--test	.	luci-app-clash	imported	not-build-tested
+vernesong__OpenClash--master	luci-app-openclash	luci-app-openclash	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-gost	luci-app-gost	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-gost	luci-app-gost	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-vssr	luci-app-vssr	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-vssr	luci-app-vssr	imported	not-build-tested
+tty228__luci-app-serverchan--master	.	luci-app-serverchan	imported	not-build-tested
+kenzok8__openwrt-packages--master	luci-app-smartdns	luci-app-smartdns	imported	not-build-tested
+kenzok8__openwrt-packages--master	smartdns	smartdns	imported	not-build-tested
+jerrykuku__node-request--master	.	node-request	imported	not-build-tested
+jerrykuku__lua-maxminddb--master	.	lua-maxminddb	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	multimedia/UnblockNeteaseMusic	UnblockNeteaseMusic	imported	not-build-tested
+coolsnowwolf__lede--master	package/lean/adbyby	adbyby	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/baidupcs-web	baidupcs-web	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__packages--openwrt-18.06	net/baidupcs-web	baidupcs-web	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-baidupcs-web	luci-app-baidupcs-web	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-baidupcs-web	luci-app-baidupcs-web	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-adbyby-plus	luci-app-adbyby-plus	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-adbyby-plus	luci-app-adbyby-plus	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-airplay2	luci-app-airplay2	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-airplay2	luci-app-airplay2	imported	not-build-tested
+cnzd__luci-app-koolproxyR--master	.	luci-app-koolproxyR	imported	not-build-tested
+MiRouter__luci-app-vssr-plus--master	.	luci-app-vssr-plus	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/GoQuiet	GoQuiet	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__packages--openwrt-18.06	net/GoQuiet	GoQuiet	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/chinadns	chinadns	imported	not-build-tested
+lisaac__luci-app-dockerman--master	applications/luci-app-dockerman	luci-app-dockerman	imported	not-build-tested
+lisaac__luci-lib-docker--master	collections/luci-lib-docker	luci-lib-docker	imported	not-build-tested
+lisaac__luci-app-diskman--master	Parted.Makefile	parted/Makefile	imported	standalone recipe or build helper
+4IceG__luci-app-3ginfo--master	luci-app-3ginfo	luci-app-3ginfo	imported	not-build-tested
+brvphoenix__luci-app-wrtbwmon--old-master	.	luci-app-wrtbwmon	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+brvphoenix__luci-app-wrtbwmon--old-master	.	luci-app-wrtbwmon	imported	not-build-tested
+riverscn__openwrt-iptvhelper--master	iptvhelper	iptvhelper	imported	not-build-tested
+riverscn__openwrt-iptvhelper--master	luci-app-iptvhelper	luci-app-iptvhelper	imported	not-build-tested
+brvphoenix__wrtbwmon--old-master	wrtbwmon	wrtbwmon	imported	not-build-tested
+KFERMercer__luci-app-tcpdump--master	.	luci-app-tcpdump	imported	not-build-tested
+tty228__luci-app-nodogsplash--master	.	luci-app-nodogsplash	imported	not-build-tested
+muink__luci-app-pcap-dnsproxy--dev	.	luci-app-pcap-dnsproxy	imported	not-build-tested
+pexcn__openwrt-chinadns-ng--luci	.	openwrt-chinadns-ng	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-usb-printer	luci-app-usb-printer	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-usb-printer	luci-app-usb-printer	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-ramfree	luci-app-ramfree	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-ramfree	luci-app-ramfree	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-ttyd	luci-app-ttyd	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-ttyd	luci-app-ttyd	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-unblockmusic	luci-app-unblockmusic	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-unblockmusic	luci-app-unblockmusic	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-vlmcsd	luci-app-vlmcsd	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-vlmcsd	luci-app-vlmcsd	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/vlmcsd	vlmcsd	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-vsftpd	luci-app-vsftpd	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-vsftpd	luci-app-vsftpd	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-xlnetacc	luci-app-xlnetacc	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-frpc	luci-app-frpc	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-frpc	luci-app-frpc	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/frp	frp	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__packages--openwrt-18.06	net/frp	frp	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-frps	luci-app-frps	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-frps	luci-app-frps	imported	not-build-tested
+coolsnowwolf__lede--master	package/lean/ddns-scripts_aliyun	ddns-scripts_aliyun	imported	not-build-tested
+coolsnowwolf__lede--master	package/lean/ddns-scripts_dnspod	ddns-scripts_dnspod	imported	not-build-tested
+immortalwrt__luci--openwrt-18.06	applications/luci-app-cifs-mount	luci-app-cifs-mount	adapted	OpenWrt 18.06 recipe/include/dependency fixes
+immortalwrt__luci--openwrt-18.06	applications/luci-app-cifs-mount	luci-app-cifs-mount	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/udpspeeder	udpspeeder	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/microsocks	microsocks	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/redsocks2	redsocks2	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/tcpping	tcpping	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/dnscrypt-proxy	dnscrypt-proxy	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/dnsforwarder	dnsforwarder	imported	not-build-tested
+immortalwrt__packages--openwrt-18.06	net/udp2raw	udp2raw	imported	not-build-tested
+obsy__packages--master	3ginfo	3ginfo	imported	not-build-tested
+Huangjoe123__luci-app-eqos--master	.	luci-app-eqos	imported	not-build-tested
+noiver__luci-app-jd-dailybonus--master	.	luci-app-jd-dailybonus	imported	not-build-tested
+fw876__helloworld--master	./chinadns-ng	chinadns-ng	imported	not-build-tested
+fw876__helloworld--master	./dns2socks-rust	dns2socks-rust	imported	not-build-tested
+fw876__helloworld--master	./dns2socks	dns2socks	imported	not-build-tested
+fw876__helloworld--master	./dns2tcp	dns2tcp	imported	not-build-tested
+fw876__helloworld--master	./dnsproxy	dnsproxy	imported	not-build-tested
+fw876__helloworld--master	./gn	gn	imported	not-build-tested
+fw876__helloworld--master	./hysteria	hysteria	imported	not-build-tested
+fw876__helloworld--master	./ipt2socks	ipt2socks	imported	not-build-tested
+fw876__helloworld--master	./lua-neturl	lua-neturl	imported	not-build-tested
+fw876__helloworld--master	./luci-app-ssr-plus	luci-app-ssr-plus	imported	not-build-tested
+fw876__helloworld--master	./microsocks	microsocks	duplicate	selected immortalwrt__packages--openwrt-18.06/net/microsocks
+fw876__helloworld--master	./mosdns	mosdns	imported	not-build-tested
+fw876__helloworld--master	./naiveproxy	naiveproxy	imported	not-build-tested
+fw876__helloworld--master	./redsocks2	redsocks2	duplicate	selected immortalwrt__packages--openwrt-18.06/net/redsocks2
+fw876__helloworld--master	./shadow-tls	shadow-tls	imported	not-build-tested
+fw876__helloworld--master	./shadowsocks-libev	shadowsocks-libev	imported	not-build-tested
+fw876__helloworld--master	./shadowsocks-rust	shadowsocks-rust	imported	not-build-tested
+fw876__helloworld--master	./shadowsocksr-libev	shadowsocksr-libev	imported	not-build-tested
+fw876__helloworld--master	./simple-obfs	simple-obfs	imported	not-build-tested
+fw876__helloworld--master	./tcping	tcping	imported	not-build-tested
+fw876__helloworld--master	./trojan	trojan	imported	not-build-tested
+fw876__helloworld--master	./tuic-client	tuic-client	imported	not-build-tested
+fw876__helloworld--master	./v2ray-core	v2ray-core	imported	not-build-tested
+fw876__helloworld--master	./v2ray-plugin	v2ray-plugin	imported	not-build-tested
+fw876__helloworld--master	./v2raya	v2raya	imported	not-build-tested
+fw876__helloworld--master	./xray-core	xray-core	imported	not-build-tested
+fw876__helloworld--master	./xray-plugin	xray-plugin	imported	not-build-tested
+lisaac__luci-app-diskman--master	./applications/luci-app-diskman	luci-app-diskman	imported	not-build-tested
+destan19__OpenAppFilter--master	./luci-app-oaf	luci-app-oaf	imported	not-build-tested
+destan19__OpenAppFilter--master	./oaf	oaf	imported	not-build-tested
+destan19__OpenAppFilter--master	./open-app-filter	open-app-filter	imported	not-build-tested
+SankySyS__luci-app-atinout--master	.	luci-app-atinout	imported	not-build-tested
+osnosn__3proxy-openwrt--main	.	3proxy-openwrt	imported	not-build-tested
+4IceG__luci-app-modeminfo--master	.	luci-app-modeminfo	imported	not-build-tested
+legacy-18.06-2023	./3ginfo	3ginfo	duplicate	selected obsy__packages--master/3ginfo
+legacy-18.06-2023	./adbyby	adbyby	duplicate	selected coolsnowwolf__lede--master/package/lean/adbyby
+legacy-18.06-2023	./adguardhome	adguardhome	duplicate	selected kenzok8__openwrt-packages--master/adguardhome
+legacy-18.06-2023	./chinadns-ng	chinadns-ng	duplicate	selected fw876__helloworld--master/./chinadns-ng
+legacy-18.06-2023	./ddns-scripts_aliyun	ddns-scripts_aliyun	duplicate	selected coolsnowwolf__lede--master/package/lean/ddns-scripts_aliyun
+legacy-18.06-2023	./ddns-scripts_dnspod	ddns-scripts_dnspod	duplicate	selected coolsnowwolf__lede--master/package/lean/ddns-scripts_dnspod
+legacy-18.06-2023	./dns2socks	dns2socks	duplicate	selected fw876__helloworld--master/./dns2socks
+legacy-18.06-2023	./dns2tcp	dns2tcp	duplicate	selected fw876__helloworld--master/./dns2tcp
+legacy-18.06-2023	./gn	gn	duplicate	selected fw876__helloworld--master/./gn
+legacy-18.06-2023	./hysteria	hysteria	duplicate	selected fw876__helloworld--master/./hysteria
+legacy-18.06-2023	./ipt2socks	ipt2socks	duplicate	selected fw876__helloworld--master/./ipt2socks
+legacy-18.06-2023	./iptvhelper	iptvhelper	duplicate	selected riverscn__openwrt-iptvhelper--master/iptvhelper
+legacy-18.06-2023	./lua-maxminddb	lua-maxminddb	duplicate	selected jerrykuku__lua-maxminddb--master/.
+legacy-18.06-2023	./lua-neturl	lua-neturl	duplicate	selected fw876__helloworld--master/./lua-neturl
+legacy-18.06-2023	./luci-app-3ginfo	luci-app-3ginfo	duplicate	selected 4IceG__luci-app-3ginfo--master/luci-app-3ginfo
+legacy-18.06-2023	./luci-app-adguardhome	luci-app-adguardhome	duplicate	selected rufengsuixing__luci-app-adguardhome--master/.
+legacy-18.06-2023	./luci-app-aliddns	luci-app-aliddns	duplicate	selected kenzok8__openwrt-packages--master/luci-app-aliddns
+legacy-18.06-2023	./luci-app-argon-config	luci-app-argon-config	duplicate	selected jerrykuku__luci-app-argon-config--18.06/.
+legacy-18.06-2023	./luci-app-chinadns-ng	luci-app-chinadns-ng	duplicate	recipe luci-app-chinadns-ng selected pexcn__openwrt-chinadns-ng--luci/.
+legacy-18.06-2023	./luci-app-clash	luci-app-clash	duplicate	selected frainzy1477__luci-app-clash--test/.
+legacy-18.06-2023	./luci-app-diskman/applications/luci-app-diskman	luci-app-diskman	duplicate	selected lisaac__luci-app-diskman--master/./applications/luci-app-diskman
+legacy-18.06-2023	./luci-app-dockerman	luci-app-dockerman	duplicate	selected lisaac__luci-app-dockerman--master/applications/luci-app-dockerman
+legacy-18.06-2023	./luci-app-iptvhelper	luci-app-iptvhelper	duplicate	selected riverscn__openwrt-iptvhelper--master/luci-app-iptvhelper
+legacy-18.06-2023	./luci-app-koolproxyR	luci-app-koolproxyR	duplicate	selected cnzd__luci-app-koolproxyR--master/.
+legacy-18.06-2023	./luci-app-nodogsplash	luci-app-nodogsplash	duplicate	selected tty228__luci-app-nodogsplash--master/.
+legacy-18.06-2023	./luci-app-oaf	luci-app-oaf	duplicate	selected destan19__OpenAppFilter--master/./luci-app-oaf
+legacy-18.06-2023	./luci-app-pcap-dnsproxy	luci-app-pcap-dnsproxy	duplicate	selected muink__luci-app-pcap-dnsproxy--dev/.
+legacy-18.06-2023	./luci-app-serverchan	luci-app-serverchan	duplicate	selected tty228__luci-app-serverchan--master/.
+legacy-18.06-2023	./luci-app-smartdns	luci-app-smartdns	duplicate	selected kenzok8__openwrt-packages--master/luci-app-smartdns
+legacy-18.06-2023	./luci-app-ssr-plus	luci-app-ssr-plus	duplicate	selected fw876__helloworld--master/./luci-app-ssr-plus
+legacy-18.06-2023	./luci-app-tcpdump	luci-app-tcpdump	duplicate	selected KFERMercer__luci-app-tcpdump--master/.
+legacy-18.06-2023	./luci-app-vssr-plus	luci-app-vssr-plus	duplicate	selected MiRouter__luci-app-vssr-plus--master/.
+legacy-18.06-2023	./luci-app-vssr	luci-app-vssr	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-vssr
+legacy-18.06-2023	./luci-lib-docker	luci-lib-docker	duplicate	selected lisaac__luci-lib-docker--master/collections/luci-lib-docker
+legacy-18.06-2023	./luci-theme-argon-lr	luci-theme-argon-lr	duplicate	selected liuran001__openwrt-theme--main/luci-theme-argon-lr
+legacy-18.06-2023	./luci-theme-argon	luci-theme-argon	duplicate	selected jerrykuku__luci-theme-argon--18.06/.
+legacy-18.06-2023	./luci-theme-edge	luci-theme-edge	duplicate	selected garypang13__luci-theme-edge--18.06/.
+legacy-18.06-2023	./luci-theme-ifit	luci-theme-ifit	duplicate	selected kenzok8__openwrt-packages--master/luci-theme-ifit
+legacy-18.06-2023	./luci-theme-infinityfreedom	luci-theme-infinityfreedom	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-infinityfreedom
+legacy-18.06-2023	./luci-theme-rosy	luci-theme-rosy	duplicate	selected rosywrt__luci-theme-rosy--openwrt-18.06/luci-theme-rosy
+legacy-18.06-2023	./microsocks	microsocks	duplicate	selected immortalwrt__packages--openwrt-18.06/net/microsocks
+legacy-18.06-2023	./naiveproxy	naiveproxy	duplicate	selected fw876__helloworld--master/./naiveproxy
+legacy-18.06-2023	./node-request	node-request	duplicate	selected jerrykuku__node-request--master/.
+legacy-18.06-2023	./oaf	oaf	duplicate	selected destan19__OpenAppFilter--master/./oaf
+legacy-18.06-2023	./open-app-filter	open-app-filter	duplicate	selected destan19__OpenAppFilter--master/./open-app-filter
+legacy-18.06-2023	./parted	parted	duplicate	selected lisaac__luci-app-diskman--master/Parted.Makefile
+legacy-18.06-2023	./redsocks2	redsocks2	duplicate	selected immortalwrt__packages--openwrt-18.06/net/redsocks2
+legacy-18.06-2023	./shadowsocks-rust	shadowsocks-rust	duplicate	selected fw876__helloworld--master/./shadowsocks-rust
+legacy-18.06-2023	./shadowsocksr-libev	shadowsocksr-libev	duplicate	selected fw876__helloworld--master/./shadowsocksr-libev
+legacy-18.06-2023	./simple-obfs	simple-obfs	duplicate	selected fw876__helloworld--master/./simple-obfs
+legacy-18.06-2023	./smartdns	smartdns	duplicate	selected kenzok8__openwrt-packages--master/smartdns
+legacy-18.06-2023	./tcping	tcping	duplicate	selected fw876__helloworld--master/./tcping
+legacy-18.06-2023	./trojan	trojan	duplicate	selected fw876__helloworld--master/./trojan
+legacy-18.06-2023	./tuic-client	tuic-client	duplicate	selected fw876__helloworld--master/./tuic-client
+legacy-18.06-2023	./v2ray-core	v2ray-core	duplicate	selected fw876__helloworld--master/./v2ray-core
+legacy-18.06-2023	./v2ray-geodata	v2ray-geodata	imported	legacy-fallback-needs-porting-review
+legacy-18.06-2023	./v2ray-plugin	v2ray-plugin	duplicate	selected fw876__helloworld--master/./v2ray-plugin
+legacy-18.06-2023	./v2raya	v2raya	duplicate	selected fw876__helloworld--master/./v2raya
+legacy-18.06-2023	./wrtbwmon	wrtbwmon	duplicate	selected brvphoenix__wrtbwmon--old-master/wrtbwmon
+legacy-18.06-2023	./xray-core	xray-core	duplicate	selected fw876__helloworld--master/./xray-core
+legacy-18.06-2023	./xray-plugin	xray-plugin	duplicate	selected fw876__helloworld--master/./xray-plugin
+legacy-18.06-2021	./3ginfo	3ginfo	duplicate	selected obsy__packages--master/3ginfo
+legacy-18.06-2021	./3proxy	3proxy	duplicate	recipe 3proxy selected osnosn__3proxy-openwrt--main/.
+legacy-18.06-2021	./ChinaDNS	ChinaDNS	imported	legacy-fallback-needs-porting-review
+legacy-18.06-2021	./GoQuiet	GoQuiet	duplicate	selected immortalwrt__packages--openwrt-18.06/net/GoQuiet
+legacy-18.06-2021	./UnblockNeteaseMusic	UnblockNeteaseMusic	duplicate	selected immortalwrt__packages--openwrt-18.06/multimedia/UnblockNeteaseMusic
+legacy-18.06-2021	./UnblockNeteaseMusicGo	UnblockNeteaseMusicGo	duplicate	selected legacy-18.06-2021/UnblockNeteaseMusicGo
+legacy-18.06-2021	./adbyby	adbyby	duplicate	selected coolsnowwolf__lede--master/package/lean/adbyby
+legacy-18.06-2021	./baidupcs-web	baidupcs-web	duplicate	selected immortalwrt__packages--openwrt-18.06/net/baidupcs-web
+legacy-18.06-2021	./ddns-scripts_aliyun	ddns-scripts_aliyun	duplicate	selected coolsnowwolf__lede--master/package/lean/ddns-scripts_aliyun
+legacy-18.06-2021	./ddns-scripts_dnspod	ddns-scripts_dnspod	duplicate	selected coolsnowwolf__lede--master/package/lean/ddns-scripts_dnspod
+legacy-18.06-2021	./dnsforwarder	dnsforwarder	duplicate	selected immortalwrt__packages--openwrt-18.06/net/dnsforwarder
+legacy-18.06-2021	./frp	frp	duplicate	selected immortalwrt__packages--openwrt-18.06/net/frp
+legacy-18.06-2021	./gost	gost	duplicate	selected immortalwrt__packages--openwrt-18.06/net/gost
+legacy-18.06-2021	./iptvhelper	iptvhelper	duplicate	selected riverscn__openwrt-iptvhelper--master/iptvhelper
+legacy-18.06-2021	./lua-maxminddb	lua-maxminddb	duplicate	selected jerrykuku__lua-maxminddb--master/.
+legacy-18.06-2021	./luci-app-3ginfo	luci-app-3ginfo	duplicate	selected 4IceG__luci-app-3ginfo--master/luci-app-3ginfo
+legacy-18.06-2021	./luci-app-adbyby-plus	luci-app-adbyby-plus	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-adbyby-plus
+legacy-18.06-2021	./luci-app-adguardhome	luci-app-adguardhome	duplicate	selected rufengsuixing__luci-app-adguardhome--master/.
+legacy-18.06-2021	./luci-app-advancedsetting	luci-app-advancedsetting	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-advancedsetting
+legacy-18.06-2021	./luci-app-airplay2	luci-app-airplay2	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-airplay2
+legacy-18.06-2021	./luci-app-aliddns	luci-app-aliddns	duplicate	selected kenzok8__openwrt-packages--master/luci-app-aliddns
+legacy-18.06-2021	./luci-app-argon-config	luci-app-argon-config	duplicate	selected jerrykuku__luci-app-argon-config--18.06/.
+legacy-18.06-2021	./luci-app-atinout	luci-app-atinout	duplicate	selected SankySyS__luci-app-atinout--master/.
+legacy-18.06-2021	./luci-app-baidupcs-web	luci-app-baidupcs-web	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-baidupcs-web
+legacy-18.06-2021	./luci-app-chinadns-ng	luci-app-chinadns-ng	duplicate	recipe luci-app-chinadns-ng selected pexcn__openwrt-chinadns-ng--luci/.
+legacy-18.06-2021	./luci-app-cifs-mount	luci-app-cifs-mount	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-cifs-mount
+legacy-18.06-2021	./luci-app-clash	luci-app-clash	duplicate	selected frainzy1477__luci-app-clash--test/.
+legacy-18.06-2021	./luci-app-diskman/applications/luci-app-diskman	luci-app-diskman	duplicate	selected lisaac__luci-app-diskman--master/./applications/luci-app-diskman
+legacy-18.06-2021	./luci-app-dockerman	luci-app-dockerman	duplicate	selected lisaac__luci-app-dockerman--master/applications/luci-app-dockerman
+legacy-18.06-2021	./luci-app-eqos	luci-app-eqos	duplicate	selected Huangjoe123__luci-app-eqos--master/.
+legacy-18.06-2021	./luci-app-frpc	luci-app-frpc	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-frpc
+legacy-18.06-2021	./luci-app-frps	luci-app-frps	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-frps
+legacy-18.06-2021	./luci-app-gost	luci-app-gost	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-gost
+legacy-18.06-2021	./luci-app-iptvhelper	luci-app-iptvhelper	duplicate	selected riverscn__openwrt-iptvhelper--master/luci-app-iptvhelper
+legacy-18.06-2021	./luci-app-jd-dailybonus	luci-app-jd-dailybonus	duplicate	selected noiver__luci-app-jd-dailybonus--master/.
+legacy-18.06-2021	./luci-app-koolproxyR	luci-app-koolproxyR	duplicate	selected cnzd__luci-app-koolproxyR--master/.
+legacy-18.06-2021	./luci-app-modeminfo	luci-app-modeminfo	duplicate	selected 4IceG__luci-app-modeminfo--master/.
+legacy-18.06-2021	./luci-app-nodogsplash	luci-app-nodogsplash	duplicate	selected tty228__luci-app-nodogsplash--master/.
+legacy-18.06-2021	./luci-app-oaf	luci-app-oaf	duplicate	selected destan19__OpenAppFilter--master/./luci-app-oaf
+legacy-18.06-2021	./luci-app-openclash	luci-app-openclash	duplicate	selected vernesong__OpenClash--master/luci-app-openclash
+legacy-18.06-2021	./luci-app-passwall-plus	luci-app-passwall-plus	duplicate	selected legacy-18.06-2021/luci-app-passwall-plus
+legacy-18.06-2021	./luci-app-pcap-dnsproxy	luci-app-pcap-dnsproxy	duplicate	selected muink__luci-app-pcap-dnsproxy--dev/.
+legacy-18.06-2021	./luci-app-ramfree	luci-app-ramfree	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-ramfree
+legacy-18.06-2021	./luci-app-serverchan	luci-app-serverchan	duplicate	selected tty228__luci-app-serverchan--master/.
+legacy-18.06-2021	./luci-app-smartdns	luci-app-smartdns	duplicate	selected kenzok8__openwrt-packages--master/luci-app-smartdns
+legacy-18.06-2021	./luci-app-ssr-plus	luci-app-ssr-plus	duplicate	selected fw876__helloworld--master/./luci-app-ssr-plus
+legacy-18.06-2021	./luci-app-tcpdump	luci-app-tcpdump	duplicate	selected KFERMercer__luci-app-tcpdump--master/.
+legacy-18.06-2021	./luci-app-ttyd	luci-app-ttyd	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-ttyd
+legacy-18.06-2021	./luci-app-unblockmusic	luci-app-unblockmusic	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-unblockmusic
+legacy-18.06-2021	./luci-app-usb-printer	luci-app-usb-printer	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-usb-printer
+legacy-18.06-2021	./luci-app-vlmcsd	luci-app-vlmcsd	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-vlmcsd
+legacy-18.06-2021	./luci-app-vsftpd	luci-app-vsftpd	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-vsftpd
+legacy-18.06-2021	./luci-app-vssr-plus	luci-app-vssr-plus	duplicate	selected MiRouter__luci-app-vssr-plus--master/.
+legacy-18.06-2021	./luci-app-vssr	luci-app-vssr	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-vssr
+legacy-18.06-2021	./luci-app-xlnetacc	luci-app-xlnetacc	duplicate	selected immortalwrt__luci--openwrt-18.06/applications/luci-app-xlnetacc
+legacy-18.06-2021	./luci-lib-docker	luci-lib-docker	duplicate	selected lisaac__luci-lib-docker--master/collections/luci-lib-docker
+legacy-18.06-2021	./luci-theme-Butterfly-dark	luci-theme-Butterfly-dark	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-Butterfly-dark
+legacy-18.06-2021	./luci-theme-Butterfly	luci-theme-Butterfly	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-Butterfly
+legacy-18.06-2021	./luci-theme-argon-lr	luci-theme-argon-lr	duplicate	selected liuran001__openwrt-theme--main/luci-theme-argon-lr
+legacy-18.06-2021	./luci-theme-argon-mc	luci-theme-argon-mc	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-argon-mc
+legacy-18.06-2021	./luci-theme-argon-mod	luci-theme-argon-mod	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-argon-mod
+legacy-18.06-2021	./luci-theme-argon	luci-theme-argon	duplicate	selected jerrykuku__luci-theme-argon--18.06/.
+legacy-18.06-2021	./luci-theme-argon_new	luci-theme-argon_new	duplicate	selected legacy-18.06-2021/luci-theme-argon_new
+legacy-18.06-2021	./luci-theme-argonv2	luci-theme-argonv2	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-argonv2
+legacy-18.06-2021	./luci-theme-argonv3	luci-theme-argonv3	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-argonv3
+legacy-18.06-2021	./luci-theme-atmaterial	luci-theme-atmaterial	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-atmaterial
+legacy-18.06-2021	./luci-theme-darkmatter	luci-theme-darkmatter	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-darkmatter
+legacy-18.06-2021	./luci-theme-edge	luci-theme-edge	duplicate	selected garypang13__luci-theme-edge--18.06/.
+legacy-18.06-2021	./luci-theme-ifit	luci-theme-ifit	duplicate	selected kenzok8__openwrt-packages--master/luci-theme-ifit
+legacy-18.06-2021	./luci-theme-infinityfreedom	luci-theme-infinityfreedom	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-infinityfreedom
+legacy-18.06-2021	./luci-theme-netgearv2	luci-theme-netgearv2	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-netgearv2
+legacy-18.06-2021	./luci-theme-opentomato	luci-theme-opentomato	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-opentomato
+legacy-18.06-2021	./luci-theme-opentomcat	luci-theme-opentomcat	duplicate	selected immortalwrt__luci--openwrt-18.06/themes/luci-theme-opentomcat
+legacy-18.06-2021	./luci-theme-rosy	luci-theme-rosy	duplicate	selected rosywrt__luci-theme-rosy--openwrt-18.06/luci-theme-rosy
+legacy-18.06-2021	./microsocks	microsocks	duplicate	selected immortalwrt__packages--openwrt-18.06/net/microsocks
+legacy-18.06-2021	./naiveproxy	naiveproxy	duplicate	selected fw876__helloworld--master/./naiveproxy
+legacy-18.06-2021	./node-request	node-request	duplicate	selected jerrykuku__node-request--master/.
+legacy-18.06-2021	./oaf	oaf	duplicate	selected destan19__OpenAppFilter--master/./oaf
+legacy-18.06-2021	./open-app-filter	open-app-filter	duplicate	selected destan19__OpenAppFilter--master/./open-app-filter
+legacy-18.06-2021	./openwrt-Pcap_DNSProxy	openwrt-Pcap_DNSProxy	duplicate	selected legacy-18.06-2021/openwrt-Pcap_DNSProxy
+legacy-18.06-2021	./openwrt-udp2raw	openwrt-udp2raw	imported	legacy-fallback-needs-porting-review
+legacy-18.06-2021	./parted	parted	duplicate	selected lisaac__luci-app-diskman--master/Parted.Makefile
+legacy-18.06-2021	./redsocks2	redsocks2	duplicate	selected immortalwrt__packages--openwrt-18.06/net/redsocks2
+legacy-18.06-2021	./shadowsocks-rust	shadowsocks-rust	duplicate	selected fw876__helloworld--master/./shadowsocks-rust
+legacy-18.06-2021	./smartdns	smartdns	duplicate	selected kenzok8__openwrt-packages--master/smartdns
+legacy-18.06-2021	./tcping	tcping	duplicate	selected fw876__helloworld--master/./tcping
+legacy-18.06-2021	./tcpping	tcpping	duplicate	selected immortalwrt__packages--openwrt-18.06/net/tcpping
+legacy-18.06-2021	./vlmcsd	vlmcsd	duplicate	selected immortalwrt__packages--openwrt-18.06/net/vlmcsd
+legacy-18.06-2021	./wrtbwmon	wrtbwmon	duplicate	selected brvphoenix__wrtbwmon--old-master/wrtbwmon
+legacy-18.06-2021	./xray-core	xray-core	duplicate	selected fw876__helloworld--master/./xray-core
+legacy-18.06-2021	./xray-plugin	xray-plugin	duplicate	selected fw876__helloworld--master/./xray-plugin

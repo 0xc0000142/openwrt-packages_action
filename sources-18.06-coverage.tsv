@@ -1,0 +1,94 @@
+line	command	original_url	original_destination	action	source	detail
+2	svn	https://github.com/kenzok8/openwrt-packages/trunk/adguardhome	adguardhome	retained	kenzok8__openwrt-packages--master	Git源码更新，替换GitHub SVN获取
+3	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/gost	gost	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+4	svn	https://github.com/rufengsuixing/luci-app-adguardhome/trunk	luci-app-adguardhome	retained	rufengsuixing__luci-app-adguardhome--master	Git源码更新，替换GitHub SVN获取
+5	svn	https://github.com/project-openwrt/openwrt/trunk/package/ntlf9t/luci-app-advancedsetting	luci-app-advancedsetting	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+6	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-app-aliddns	luci-app-aliddns	retained	kenzok8__openwrt-packages--master	Git源码更新，替换GitHub SVN获取
+7	svn	https://github.com/frainzy1477/luci-app-clash/trunk	luci-app-clash	retained	frainzy1477__luci-app-clash--test	Git源码更新，替换GitHub SVN获取
+10	git	https://github.com/vernesong/OpenClash.git	OpenClash	retained	vernesong__OpenClash--master	保留原Git源码及配方
+13	svn	https://github.com/garypang13/luci-app-eqos/trunk	luci-app-eqos	mapped	Huangjoe123__luci-app-eqos--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+14	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-app-gost	luci-app-gost	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+15	svn	https://github.com/jerrykuku/luci-app-jd-dailybonus/trunk	luci-app-jd-dailybonus	mapped	noiver__luci-app-jd-dailybonus--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+16	svn	https://github.com/jerrykuku/luci-theme-argon/branches/18.06	luci-theme-argon	retained	jerrykuku__luci-theme-argon--18.06	Git源码更新，替换GitHub SVN获取
+17	svn	https://github.com/jerrykuku/luci-app-vssr/trunk	luci-app-vssr	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+18	svn	https://github.com/tty228/luci-app-serverchan/trunk	luci-app-serverchan	retained	tty228__luci-app-serverchan--master	Git源码更新，替换GitHub SVN获取
+19	svn	https://github.com/fw876/helloworld/trunk	.	retained	fw876__helloworld--master	Git源码更新，替换GitHub SVN获取；使用面向21.02及更旧版本的master分支，Xray需Go1.21+
+21	svn	https://github.com/xiaorouji/openwrt-package/trunk/lienol	.	mapped	legacy-18.06-2023	原lienol/obsolete/others/package子目录已消失；固定对应版本完整输出保留原聚合结果，最低优先级
+23	svn	https://github.com/xiaorouji/openwrt-package/trunk/obsolete	.	deduplicated	legacy-18.06-2023	原lienol/obsolete/others/package子目录已消失；固定对应版本完整输出保留原聚合结果，最低优先级；复用已列出的同一导入
+25	svn	https://github.com/xiaorouji/openwrt-package/trunk/others	.	deduplicated	legacy-18.06-2023	原lienol/obsolete/others/package子目录已消失；固定对应版本完整输出保留原聚合结果，最低优先级；复用已列出的同一导入
+27	svn	https://github.com/xiaorouji/openwrt-package/trunk/package	.	deduplicated	legacy-18.06-2023	原lienol/obsolete/others/package子目录已消失；固定对应版本完整输出保留原聚合结果，最低优先级；复用已列出的同一导入
+29	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-app-smartdns	luci-app-smartdns	retained	kenzok8__openwrt-packages--master	Git源码更新，替换GitHub SVN获取
+30	svn	https://github.com/kenzok8/openwrt-packages/trunk/smartdns	smartdns	retained	kenzok8__openwrt-packages--master	Git源码更新，替换GitHub SVN获取
+31	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-argon_new	luci-theme-argon_new	mapped	legacy-18.06-2021	当前来源不可用，保留对应版本已发布的固定历史源码，需兼容检查
+32	svn	https://github.com/kenzok8/luci-theme-ifit/trunk/luci-theme-ifit	luci-theme-ifit	mapped	kenzok8__openwrt-packages--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+33	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-atmaterial	luci-theme-atmaterial	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+34	svn	https://github.com/garypang13/luci-theme-edge/branches/18.06	luci-theme-edge	retained	garypang13__luci-theme-edge--18.06	Git源码更新，替换GitHub SVN获取
+35	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-opentomato	luci-theme-opentomato	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+36	svn	https://github.com/kenzok8/openwrt-packages/trunk/luci-theme-opentomcat	luci-theme-opentomcat	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+37	svn	https://github.com/jerrykuku/node-request/trunk	node-request	retained	jerrykuku__node-request--master	Git源码更新，替换GitHub SVN获取
+38	svn	https://github.com/jerrykuku/lua-maxminddb/trunk	lua-maxminddb	retained	jerrykuku__lua-maxminddb--master	Git源码更新，替换GitHub SVN获取
+39	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-theme-Butterfly-dark	luci-theme-Butterfly-dark	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+40	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-theme-Butterfly	luci-theme-Butterfly	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+41	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-theme-argon-mc	luci-theme-argon-mc	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+42	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-theme-argon-mod	luci-theme-argon-mod	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+43	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-theme-argonv2	luci-theme-argonv2	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+44	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-theme-argonv3	luci-theme-argonv3	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+45	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-theme-darkmatter	luci-theme-darkmatter	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+46	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-theme-infinityfreedom	luci-theme-infinityfreedom	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+47	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-theme-netgearv2	luci-theme-netgearv2	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+48	svn	https://github.com/rosywrt/luci-theme-rosy/trunk/luci-theme-rosy	luci-theme-rosy	retained	rosywrt__luci-theme-rosy--openwrt-18.06	Git源码更新，替换GitHub SVN获取
+49	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/UnblockNeteaseMusic	UnblockNeteaseMusic	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+50	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/UnblockNeteaseMusicGo	UnblockNeteaseMusicGo	mapped	legacy-18.06-2021	当前来源不可用，保留对应版本已发布的固定历史源码，需兼容检查
+51	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/adbyby	adbyby	retained	coolsnowwolf__lede--master	Git源码更新，替换GitHub SVN获取
+52	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/baidupcs-web	baidupcs-web	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+53	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-baidupcs-web	luci-app-baidupcs-web	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+54	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-adbyby-plus	luci-app-adbyby-plus	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+55	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-airplay2	luci-app-airplay2	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+56	svn	https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom/trunk/luci-theme-infinityfreedom	luci-theme-infinityfreedom	deduplicated	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方；复用已列出的同一导入
+57	svn	https://github.com/cnzd/luci-app-koolproxyR/trunk	luci-app-koolproxyR	retained	cnzd__luci-app-koolproxyR--master	Git源码更新，替换GitHub SVN获取
+58	svn	https://github.com/MiRouter/luci-app-vssr-plus/trunk	luci-app-vssr-plus	retained	MiRouter__luci-app-vssr-plus--master	Git源码更新，替换GitHub SVN获取
+59	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/GoQuiet	GoQuiet	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+60	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/ChinaDNS	ChinaDNS	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+61	svn	https://github.com/lisaac/luci-app-dockerman/trunk/applications/luci-app-dockerman	luci-app-dockerman	retained	lisaac__luci-app-dockerman--master	Git源码更新，替换GitHub SVN获取
+62	svn	https://github.com/lisaac/luci-lib-docker/trunk/collections/luci-lib-docker	luci-lib-docker	retained	lisaac__luci-lib-docker--master	Git源码更新，替换GitHub SVN获取
+63	svn	https://github.com/lisaac/luci-app-diskman/trunk	luci-app-diskman	retained	lisaac__luci-app-diskman--master	Git源码更新，替换GitHub SVN获取
+66	wget	https://raw.githubusercontent.com/lisaac/luci-app-diskman/master/Parted.Makefile	parted/Makefile	retained	lisaac__luci-app-diskman--master	保留原Git源码及配方
+67	svn	https://github.com/destan19/OpenAppFilter/trunk	.	retained	destan19__OpenAppFilter--master	Git源码更新，替换GitHub SVN获取
+69	svn	https://github.com/4IceG/luci-app-3ginfo/trunk/luci-app-3ginfo	luci-app-3ginfo	retained	4IceG__luci-app-3ginfo--master	Git源码更新，替换GitHub SVN获取
+72	git	https://github.com/brvphoenix/luci-app-wrtbwmon.git	wrtbwmonluci	retained	brvphoenix__luci-app-wrtbwmon--old-master	保留原Git源码及配方
+75	svn	https://github.com/riverscn/openwrt-iptvhelper/trunk/iptvhelper	iptvhelper	retained	riverscn__openwrt-iptvhelper--master	Git源码更新，替换GitHub SVN获取
+76	svn	https://github.com/riverscn/openwrt-iptvhelper/trunk/luci-app-iptvhelper	luci-app-iptvhelper	retained	riverscn__openwrt-iptvhelper--master	Git源码更新，替换GitHub SVN获取
+77	svn	https://github.com/brvphoenix/wrtbwmon/branches/old-master/wrtbwmon	wrtbwmon	retained	brvphoenix__wrtbwmon--old-master	Git源码更新，替换GitHub SVN获取
+78	svn	https://github.com/KFERMercer/luci-app-tcpdump/trunk	luci-app-tcpdump	retained	KFERMercer__luci-app-tcpdump--master	Git源码更新，替换GitHub SVN获取
+79	svn	https://github.com/tty228/luci-app-nodogsplash/trunk	luci-app-nodogsplash	retained	tty228__luci-app-nodogsplash--master	Git源码更新，替换GitHub SVN获取
+80	svn	https://github.com/koshev-msk/luci-app-atinout/trunk	luci-app-atinout	mapped	SankySyS__luci-app-atinout--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+82	svn	https://github.com/muink/luci-app-pcap-dnsproxy/branches/dev	luci-app-pcap-dnsproxy	retained	muink__luci-app-pcap-dnsproxy--dev	Git源码更新，替换GitHub SVN获取
+83	svn	https://github.com/koshev-msk/3proxy-openwrt/trunk	3proxy	mapped	osnosn__3proxy-openwrt--main	原仓库不可达或目录迁移，使用核实过的同功能来源
+84	svn	https://github.com/pexcn/openwrt-chinadns-ng/branches/luci	luci-app-chinadns-ng	retained	pexcn__openwrt-chinadns-ng--luci	Git源码更新，替换GitHub SVN获取
+85	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-usb-printer	luci-app-usb-printer	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+86	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ramfree	luci-app-ramfree	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+87	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-ttyd	luci-app-ttyd	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+88	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-unblockmusic	luci-app-unblockmusic	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+89	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-vlmcsd	luci-app-vlmcsd	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+90	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/vlmcsd	vlmcsd	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+91	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-vsftpd	luci-app-vsftpd	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+92	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-xlnetacc	luci-app-xlnetacc	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+93	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frpc	luci-app-frpc	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+94	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/frp	frp	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+95	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-frps	luci-app-frps	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+96	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_aliyun	ddns-scripts_aliyun	retained	coolsnowwolf__lede--master	Git源码更新，替换GitHub SVN获取
+97	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_dnspod	ddns-scripts_dnspod	retained	coolsnowwolf__lede--master	Git源码更新，替换GitHub SVN获取
+98	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/luci-app-cifs-mount	luci-app-cifs-mount	mapped	immortalwrt__luci--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+99	git	https://github.com/yiguihai/luci-app-passwall-plus	luci-app-passwall-plus	mapped	legacy-18.06-2021	当前来源不可用，保留对应版本已发布的固定历史源码，需兼容检查
+100	svn	https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/openwrt-udpspeeder	openwrt-udpspeeder	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+101	git	https://github.com/koshev-msk/luci-app-modeminfo	luci-app-modeminfo	mapped	4IceG__luci-app-modeminfo--master	原仓库不可达或目录迁移，使用核实过的同功能来源
+102	svn	https://github.com/project-openwrt/openwrt/trunk/package/ntlf9t/openwrt-Pcap_DNSProxy	openwrt-Pcap_DNSProxy	mapped	legacy-18.06-2021	当前来源不可用，保留对应版本已发布的固定历史源码，需兼容检查
+103	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/microsocks	microsocks	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+104	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/redsocks2	redsocks2	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+105	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/tcpping	tcpping	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+106	svn	https://github.com/project-openwrt/openwrt/trunk/package/ntlf9t/dnscrypt-proxy-full	dnscrypt-proxy-full	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+107	svn	https://github.com/coolsnowwolf/lede/trunk/package/lean/dnsforwarder	dnsforwarder	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+108	svn	https://github.com/project-openwrt/openwrt/trunk/package/ntlf9t/openwrt-udp2raw	openwrt-udp2raw	mapped	immortalwrt__packages--openwrt-18.06	原地址/子目录不可用，恢复同名功能的官方或ImmortalWrt历史分支配方
+109	svn	https://github.com/obsy/packages/trunk/3ginfo	3ginfo	retained	obsy__packages--master	Git源码更新，替换GitHub SVN获取
+110	svn	https://github.com/liuran001/openwrt-theme/trunk/luci-theme-argon-lr	luci-theme-argon-lr	retained	liuran001__openwrt-theme--main	Git源码更新，替换GitHub SVN获取
+111	git	https://github.com/jerrykuku/luci-app-argon-config	luci-app-argon-config	retained	jerrykuku__luci-app-argon-config--18.06	与18.06 Argon主题匹配的配置分支
