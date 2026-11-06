@@ -133,7 +133,7 @@ lisaac__luci-lib-docker	https://github.com/lisaac/luci-lib-docker.git	master	98a
 cnzd__luci-app-koolproxyR	https://github.com/cnzd/luci-app-koolproxyR.git	master	d727c6927c85fa60786a4475a1d0b30c42c4c882
 MiRouter__luci-app-vssr-plus	https://github.com/MiRouter/luci-app-vssr-plus.git	master	12b0e76389c80ad326f2e3da9aef58aa27fe6c26
 jerrykuku__node-request	https://github.com/jerrykuku/node-request.git	master	b6de1f42e18a239ea95c9ed3af0dce385e555164
-jerrykuku__lua-maxminddb	https://github.com/jerrykuku/lua-maxminddb.git	master	41ba6030198ff2966e90687eb6fc0349b5248564
+jerrykuku__lua-maxminddb	https://github.com/jerrykuku/lua-maxminddb.git	master	1f8934f38a611d6e7407825a626ca6ebeec3f200
 Huangjoe123__luci-app-eqos	https://github.com/Huangjoe123/luci-app-eqos.git	master	85f9b3765a50dd2ad2fea8dc757df89402ebe011
 sirpdboy__luci-app-eqosplus	https://github.com/sirpdboy/luci-app-eqosplus.git	main	c7ea61c971f123b59282131ea5b3438e39118dae
 chenmozhijin__turboacc	https://github.com/chenmozhijin/turboacc.git	luci	530092c532839efb96e9f328d34dbf3adff4b557
