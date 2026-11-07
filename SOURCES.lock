@@ -51,7 +51,7 @@ tty228__luci-app-wechatpush	https://github.com/tty228/luci-app-wechatpush.git	ma
 sbwml__luci-app-alist	https://github.com/sbwml/luci-app-alist.git	main	0101e8e5ef220ad6ab6b480d6fba6cca013a7e46
 sbwml__luci-app-mosdns	https://github.com/sbwml/luci-app-mosdns.git	openwrt-21.02	3154c763082c9e45c4de5fda2670e616a28345e4
 mingxiaoyu__luci-app-cloudflarespeedtest	https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest.git	main	4229177d5349dda8703271e08816b6b46130630a
-ophub__luci-app-amlogic	https://github.com/ophub/luci-app-amlogic.git	main	869a7ae501d54d9b94742a1165df374b2a4d0e69
+ophub__luci-app-amlogic	https://github.com/ophub/luci-app-amlogic.git	main	b84ff404cd425993e004701b9f0c057d7d7e1464
 kuoruan__openwrt-frp	https://github.com/kuoruan/openwrt-frp.git	master	8503943074fb6ae4a06f5cacdb07b577555b0565
 kuoruan__openwrt-v2ray	https://github.com/kuoruan/openwrt-v2ray.git	master	e940482312b927ae2a70341ef7b6553c7cbd3af2
 4IceG__luci-app-3ginfo-lite	https://github.com/4IceG/luci-app-3ginfo-lite.git	main	060026c1c7f25876e930638ab82f4e8fa85112f4
