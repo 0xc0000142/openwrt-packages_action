@@ -8,7 +8,7 @@ fhh200000__luci-theme-lafite-port--master	https://github.com/fhh200000/luci-them
 tano-systems__luci-theme-tano--master	https://github.com/tano-systems/luci-theme-tano.git	master	f7c647300351fe255039db2262562f1de395f25d
 cnsilvan__luci-app-unblockneteasemusic--master	https://github.com/cnsilvan/luci-app-unblockneteasemusic.git	master	9e7907e64803427263d6f77d57cef3a111c3798f
 goldkeyber112__openwrt-r8168--master	https://github.com/goldkeyber112/openwrt-r8168.git	master	0e7e1e5da7ad25ccbdc047d9037e44287789175c
-Openwrt-Passwall__openwrt-passwall--main	https://github.com/Openwrt-Passwall/openwrt-passwall.git	main	edf166fb1785ca02a83632c65a6d78250407e83c
+Openwrt-Passwall__openwrt-passwall--main	https://github.com/Openwrt-Passwall/openwrt-passwall.git	main	82678e8e054b274d487780fdf5d24ddb7db5b85b
 kiddin9__luci-app-dnsfilter--main	https://github.com/kiddin9/luci-app-dnsfilter.git	main	3a49542e566d8a95cb81b664a05aae29e1f534cf
 kiddin9__aria2--main	https://github.com/kiddin9/aria2.git	main	ae297d07c2443691864e70eadb120c8d125d6a4e
 kiddin9__luci-app-baidupcs-web--master	https://github.com/kiddin9/luci-app-baidupcs-web.git	master	f5c3ac8009b8ac062817bc6dac7a3445ccd1c9c6
@@ -39,7 +39,7 @@ walkingsky__luci-wifidog--master	https://github.com/walkingsky/luci-wifidog.git	
 peter-tank__luci-app-autorepeater--master	https://github.com/peter-tank/luci-app-autorepeater.git	master	031925ae633f0825f90946704867092a253c0af4
 sensec__luci-app-udp2raw--master	https://github.com/sensec/luci-app-udp2raw.git	master	0fc4992fbe933319b67365d4fc1b7f8d7ac028c5
 Tencent-Cloud-Plugins__tencentcloud-openwrt-plugin-ddns--master	https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-ddns.git	master	537a537436663cb1595a49db44989fac4314d83c
-coolsnowwolf__lede--master	https://github.com/coolsnowwolf/lede.git	master	8befdf1b8eb5dc7d80ab3a96be3f19ada2c92199
+coolsnowwolf__lede--master	https://github.com/coolsnowwolf/lede.git	master	5b3fb1a5ee7884ff11149511a125fb87905effb0
 openwrt__packages--openwrt-19.07	https://github.com/openwrt/packages.git	openwrt-19.07	6df6880800397ab3821572c6c5ad18e300374d9e
 coolsnowwolf__packages--master	https://github.com/coolsnowwolf/packages.git	master	497b99d7b47496b3d547ccedf45d07640ca3d0e7
 openwrt__luci--openwrt-19.07	https://github.com/openwrt/luci.git	openwrt-19.07	f25285a6c26e8776f153994704710cb8e51fad91
