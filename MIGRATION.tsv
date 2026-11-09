@@ -612,6 +612,7 @@ kenzok8__small-package	./luci-theme-glass	luci-theme-glass	imported	not-build-te
 kenzok8__small-package	./luci-theme-ifit	luci-theme-ifit	imported	not-build-tested
 kenzok8__small-package	./luci-theme-inas	luci-theme-inas	imported	not-build-tested
 kenzok8__small-package	./luci-theme-istorenas	luci-theme-istorenas	imported	not-build-tested
+kenzok8__small-package	./luci-theme-liquid	luci-theme-liquid	imported	not-build-tested
 kenzok8__small-package	./luci-theme-material3	luci-theme-material3	imported	not-build-tested
 kenzok8__small-package	./luci-theme-opentopd	luci-theme-opentopd	duplicate	selected sirpdboy__luci-theme-opentopd/.
 kenzok8__small-package	./luci-theme-tomato	luci-theme-tomato	imported	not-build-tested

@@ -465,6 +465,7 @@ luci-theme-glass	kenzok8__small-package	./luci-theme-glass	not-build-tested
 luci-theme-ifit	kenzok8__small-package	./luci-theme-ifit	not-build-tested
 luci-theme-inas	kenzok8__small-package	./luci-theme-inas	not-build-tested
 luci-theme-istorenas	kenzok8__small-package	./luci-theme-istorenas	not-build-tested
+luci-theme-liquid	kenzok8__small-package	./luci-theme-liquid	not-build-tested
 luci-theme-material3	kenzok8__small-package	./luci-theme-material3	not-build-tested
 luci-theme-tomato	kenzok8__small-package	./luci-theme-tomato	not-build-tested
 luci-themedog	kenzok8__small-package	./luci-themedog	not-build-tested
