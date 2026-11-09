@@ -404,6 +404,7 @@ kenzok8__openwrt-packages--master	./luci-theme-atmaterial_new	luci-theme-atmater
 kenzok8__openwrt-packages--master	./luci-theme-design	luci-theme-design	imported	not-build-tested
 kenzok8__openwrt-packages--master	./luci-theme-glass	luci-theme-glass	imported	not-build-tested
 kenzok8__openwrt-packages--master	./luci-theme-ifit	luci-theme-ifit	duplicate	selected kenzok8__openwrt-packages--master/luci-theme-ifit
+kenzok8__openwrt-packages--master	./luci-theme-liquid	luci-theme-liquid	imported	not-build-tested
 kenzok8__openwrt-packages--master	./luci-theme-material3	luci-theme-material3	imported	not-build-tested
 kenzok8__openwrt-packages--master	./luci-theme-tomato	luci-theme-tomato	duplicate	selected kenzok8__openwrt-packages--master/luci-theme-tomato
 kenzok8__openwrt-packages--master	./lucky	lucky	imported	not-build-tested
