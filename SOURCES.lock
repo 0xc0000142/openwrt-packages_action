@@ -90,7 +90,7 @@ gdck__luci-app-cupsd	https://github.com/gdck/luci-app-cupsd.git	main	9681dba7285
 4IceG__luci-app-socat	https://github.com/4IceG/luci-app-socat.git	main	8dd6c624bd9e85a914898d6d60721304cda55104
 muink__luci-app-natmapt	https://github.com/muink/luci-app-natmapt.git	master	1b023f9b968e4cf9e786a7a3061225ae1cf8e328
 muink__openwrt-stuntman	https://github.com/muink/openwrt-stuntman.git	master	f915c1e45e8ab088abd479d60d0172f176485a38
-muink__openwrt-natmapt	https://github.com/muink/openwrt-natmapt.git	master	a5d59280b4af419a8ac1ea2ac3c4095b26a088e7
+muink__openwrt-natmapt	https://github.com/muink/openwrt-natmapt.git	master	7ee3bcb9394e583ee1c361818791206125614c0b
 4IceG__luci-app-modeminfo	https://github.com/4IceG/luci-app-modeminfo.git	master	cf80a0c876db67bbd0d19b54fa7f4b197d989fcd
 immortalwrt__packages-21.02	https://github.com/immortalwrt/packages.git	openwrt-21.02	e09f3c7d1903cfe7f523e209ab3ec778013ba309
 firkerword__openwrt-wrtbwmon	https://github.com/firkerword/openwrt-wrtbwmon.git	main	ea61715fa8ab92c91d323b491b63d24f3d026a2f
