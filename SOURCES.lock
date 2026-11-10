@@ -1,7 +1,7 @@
 source	url	ref	commit
 legacy-19.07-2022	https://github.com/0xc0000142/openwrt-packages_action.git	3080bd71accd03a5a0c950a7e0edf7df9b95e1d2	3080bd71accd03a5a0c950a7e0edf7df9b95e1d2
 legacy-19.07-2023	https://github.com/0xc0000142/openwrt-packages_action.git	c382fcbdb77353e642f6d41ed99fe32adc048494	c382fcbdb77353e642f6d41ed99fe32adc048494
-kenzok8__openwrt-packages--master	https://github.com/kenzok8/openwrt-packages.git	master	90d54601856866fe4d0c63cda450031314c7e4ab
+kenzok8__openwrt-packages--master	https://github.com/kenzok8/openwrt-packages.git	master	26de447f5d711820ceac27c6bcd698d1691bdbfe
 XXKDB__luci-theme-argon_armygreen--main	https://github.com/XXKDB/luci-theme-argon_armygreen.git	main	802bcef701a729289990c5fc3e78d4994f59d454
 52014app__luci-theme-edge--master	https://github.com/52014app/luci-theme-edge.git	master	32c39dfb6bcbd3c8a8a8164144258535075b159a
 fhh200000__luci-theme-lafite-port--master	https://github.com/fhh200000/luci-theme-lafite-port.git	master	66b7cd7a21a0cf3f4fa2cde20f497ab0582217e2
@@ -39,7 +39,7 @@ walkingsky__luci-wifidog--master	https://github.com/walkingsky/luci-wifidog.git	
 peter-tank__luci-app-autorepeater--master	https://github.com/peter-tank/luci-app-autorepeater.git	master	031925ae633f0825f90946704867092a253c0af4
 sensec__luci-app-udp2raw--master	https://github.com/sensec/luci-app-udp2raw.git	master	0fc4992fbe933319b67365d4fc1b7f8d7ac028c5
 Tencent-Cloud-Plugins__tencentcloud-openwrt-plugin-ddns--master	https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-ddns.git	master	537a537436663cb1595a49db44989fac4314d83c
-coolsnowwolf__lede--master	https://github.com/coolsnowwolf/lede.git	master	ff6b739d41cdc3767b266d777dfe8a87c89bff00
+coolsnowwolf__lede--master	https://github.com/coolsnowwolf/lede.git	master	80122feac964889bc69b62420cedfefaaf701eb0
 openwrt__packages--openwrt-19.07	https://github.com/openwrt/packages.git	openwrt-19.07	6df6880800397ab3821572c6c5ad18e300374d9e
 coolsnowwolf__packages--master	https://github.com/coolsnowwolf/packages.git	master	be676542771da2d8edb7abcd32eeb4d1849bc289
 openwrt__luci--openwrt-19.07	https://github.com/openwrt/luci.git	openwrt-19.07	f25285a6c26e8776f153994704710cb8e51fad91
