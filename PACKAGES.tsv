@@ -269,6 +269,7 @@ luci-lib-taskd	kenzok8__openwrt-packages--master	./luci-lib-taskd	not-build-test
 luci-lib-xterm	kenzok8__openwrt-packages--master	./luci-lib-xterm	not-build-tested
 luci-theme-alpha	kenzok8__openwrt-packages--master	./luci-theme-alpha	not-build-tested
 luci-theme-atmaterial_new	kenzok8__openwrt-packages--master	./luci-theme-atmaterial_new	not-build-tested
+luci-theme-carbon	kenzok8__openwrt-packages--master	./luci-theme-carbon	not-build-tested
 luci-theme-design	kenzok8__openwrt-packages--master	./luci-theme-design	not-build-tested
 luci-theme-glass	kenzok8__openwrt-packages--master	./luci-theme-glass	not-build-tested
 luci-theme-liquid	kenzok8__openwrt-packages--master	./luci-theme-liquid	not-build-tested

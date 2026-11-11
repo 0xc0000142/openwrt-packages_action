@@ -401,6 +401,7 @@ kenzok8__openwrt-packages--master	./luci-lib-xterm	luci-lib-xterm	imported	not-b
 kenzok8__openwrt-packages--master	./luci-theme-alpha	luci-theme-alpha	imported	not-build-tested
 kenzok8__openwrt-packages--master	./luci-theme-argon	luci-theme-argon	duplicate	selected legacy-19.07-2023/luci-theme-argon
 kenzok8__openwrt-packages--master	./luci-theme-atmaterial_new	luci-theme-atmaterial_new	imported	not-build-tested
+kenzok8__openwrt-packages--master	./luci-theme-carbon	luci-theme-carbon	imported	not-build-tested
 kenzok8__openwrt-packages--master	./luci-theme-design	luci-theme-design	imported	not-build-tested
 kenzok8__openwrt-packages--master	./luci-theme-glass	luci-theme-glass	imported	not-build-tested
 kenzok8__openwrt-packages--master	./luci-theme-ifit	luci-theme-ifit	duplicate	selected kenzok8__openwrt-packages--master/luci-theme-ifit
