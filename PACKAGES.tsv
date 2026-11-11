@@ -460,6 +460,7 @@ luci-nginxer	kenzok8__small-package	./luci-nginxer	not-build-tested
 luci-theme-alpha	kenzok8__small-package	./luci-theme-alpha	not-build-tested
 luci-theme-argone	kenzok8__small-package	./luci-theme-argone	not-build-tested
 luci-theme-atmaterial_new	kenzok8__small-package	./luci-theme-atmaterial_new	not-build-tested
+luci-theme-carbon	kenzok8__small-package	./luci-theme-carbon	not-build-tested
 luci-theme-design	kenzok8__small-package	./luci-theme-design	not-build-tested
 luci-theme-glass	kenzok8__small-package	./luci-theme-glass	not-build-tested
 luci-theme-ifit	kenzok8__small-package	./luci-theme-ifit	not-build-tested

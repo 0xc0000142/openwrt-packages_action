@@ -606,6 +606,7 @@ kenzok8__small-package	./luci-theme-alpha	luci-theme-alpha	imported	not-build-te
 kenzok8__small-package	./luci-theme-argon	luci-theme-argon	duplicate	selected jerrykuku__luci-theme-argon/.
 kenzok8__small-package	./luci-theme-argone	luci-theme-argone	imported	not-build-tested
 kenzok8__small-package	./luci-theme-atmaterial_new	luci-theme-atmaterial_new	imported	not-build-tested
+kenzok8__small-package	./luci-theme-carbon	luci-theme-carbon	imported	not-build-tested
 kenzok8__small-package	./luci-theme-design	luci-theme-design	imported	not-build-tested
 kenzok8__small-package	./luci-theme-edge	luci-theme-edge	duplicate	selected 52014app__luci-theme-edge/.
 kenzok8__small-package	./luci-theme-glass	luci-theme-glass	imported	not-build-tested
