@@ -1,5 +1,5 @@
 source	url	ref	commit
-kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	1564095583406cd59798fdc729c152d18c23fbb1
+kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	7eb80dc5f33ec5a6ada44c0085ccdb3563fd003c
 fw876__helloworld	https://github.com/fw876/helloworld.git	dev	e8efa31ae45ddf217863dced9068730bf24dd37a
 immortalwrt__packages-25.12	https://github.com/immortalwrt/packages.git	openwrt-25.12	fa25995d74a720c1c98bf6265d3dd8b4eb620d1f
 openwrt__packages	https://github.com/openwrt/packages.git	openwrt-25.12	07e0d16305d2b5903b37ad7913e33e18795f81a4
@@ -10,7 +10,7 @@ immortalwrt__core-25.12	https://github.com/immortalwrt/immortalwrt.git	openwrt-2
 jerrykuku__luci-theme-argon	https://github.com/jerrykuku/luci-theme-argon.git	master	c6d63bd68aa9272e40c35cee5e615f45cc1e4eb0
 vernesong__OpenClash	https://github.com/vernesong/OpenClash.git	master	e553e82e01c697aefbe1555261a503f425e00ccd
 Openwrt-Passwall__openwrt-passwall	https://github.com/Openwrt-Passwall/openwrt-passwall.git	main	44e9a0295cd86bad7339d6a2730f72ebcde73656
-Openwrt-Passwall__openwrt-passwall-packages	https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git	main	4dad9be70a37343ad3ef88cd3722576e8e234edf
+Openwrt-Passwall__openwrt-passwall-packages	https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git	main	b094b79c32ac4e4de3113a5c44971c6182eee535
 sbwml__luci-app-mosdns	https://github.com/sbwml/luci-app-mosdns.git	v5	dbdd91ab8ac8b079b6a3ca1a48d99e970d17111b
 sbwml__luci-app-openlist2	https://github.com/sbwml/luci-app-openlist2.git	main	46506b02c1d3fc8ea0dda1b539c155a77cda73c0
 immortalwrt__luci	https://github.com/immortalwrt/luci.git	openwrt-25.12	8f18275bb510818c501e4b124f872b6d30573d8a

@@ -349,6 +349,7 @@ kenzok8__small-package	./luci-app-alpha-config	luci-app-alpha-config	imported	no
 kenzok8__small-package	./luci-app-amlogic	luci-app-amlogic	duplicate	selected ophub__luci-app-amlogic/./luci-app-amlogic
 kenzok8__small-package	./luci-app-ap-modem	luci-app-ap-modem	imported	not-build-tested
 kenzok8__small-package	./luci-app-arcadia	luci-app-arcadia	imported	not-build-tested
+kenzok8__small-package	./luci-app-argon-config	luci-app-argon-config	duplicate	recipe luci-app-argon-config selected jerrykuku__luci-theme-argon/.
 kenzok8__small-package	./luci-app-argone-config	luci-app-argone-config	imported	not-build-tested
 kenzok8__small-package	./luci-app-autoipsetadder	luci-app-autoipsetadder	duplicate	selected rufengsuixing__luci-app-autoipsetadder/.
 kenzok8__small-package	./luci-app-autorepeater	luci-app-autorepeater	duplicate	selected peter-tank__luci-app-autorepeater/.
