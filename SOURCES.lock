@@ -152,5 +152,5 @@ pexcn__openwrt-udpspeeder	https://github.com/pexcn/openwrt-udpspeeder.git	master
 gw826943555__openwrt-cpufreq	https://github.com/gw826943555/openwrt-cpufreq.git	main	d39384efb99967548f5a062a593e3eb4a9b95ea9
 openwrt__packages-21.02	https://github.com/openwrt/packages.git	openwrt-21.02	1be343f776e7b035b20357fa7e8dcd14c6e4fb61
 qiuweichao__luci-app-modem-info	https://github.com/qiuweichao/luci-app-modem-info.git	main	010c46f9e53ff68b18524c6d5e6502a91c2fed1d
-Lienol__openwrt-package	https://github.com/Lienol/openwrt-package.git	lua	00eac89b2002936e9ee5bb3b21934fb84c7c156d
+Lienol__openwrt-package	https://github.com/Lienol/openwrt-package.git	lua	e30bf450fa69fc47583a469e70f64a6e4f8a5c73
 fw876__helloworld	https://github.com/fw876/helloworld.git	master	2abdc9aa9e19607774dc9789709212b70b8607c6
