@@ -432,6 +432,7 @@ luci-app-unifi	kenzok8__small-package	./luci-app-unifi	not-build-tested
 luci-app-unishare	kenzok8__small-package	./luci-app-unishare	not-build-tested
 luci-app-uptimekuma	kenzok8__small-package	./luci-app-uptimekuma	not-build-tested
 luci-app-v2raya	kenzok8__small-package	./luci-app-v2raya	not-build-tested
+luci-app-vantage	kenzok8__small-package	./luci-app-vantage	not-build-tested
 luci-app-vaultwarden	kenzok8__small-package	./luci-app-vaultwarden	not-build-tested
 luci-app-verysync	kenzok8__small-package	./luci-app-verysync	not-build-tested
 luci-app-virtualdog	kenzok8__small-package	./luci-app-virtualdog	not-build-tested
@@ -469,6 +470,7 @@ luci-theme-istorenas	kenzok8__small-package	./luci-theme-istorenas	not-build-tes
 luci-theme-liquid	kenzok8__small-package	./luci-theme-liquid	not-build-tested
 luci-theme-material3	kenzok8__small-package	./luci-theme-material3	not-build-tested
 luci-theme-tomato	kenzok8__small-package	./luci-theme-tomato	not-build-tested
+luci-theme-vantage	kenzok8__small-package	./luci-theme-vantage	not-build-tested
 luci-themedog	kenzok8__small-package	./luci-themedog	not-build-tested
 lucky	kenzok8__small-package	./lucky	not-build-tested
 mhz	kenzok8__small-package	./mhz	not-build-tested
@@ -518,6 +520,7 @@ pdnsd-alt	kenzok8__small-package	./pdnsd-alt	not-build-tested
 pgyvpn	kenzok8__small-package	./pgyvpn	not-build-tested
 phtunnel	kenzok8__small-package	./phtunnel	not-build-tested
 quickjspp	kenzok8__small-package	./quickjspp	not-build-tested
+quickstart-netpolicy	kenzok8__small-package	./quickstart-netpolicy	not-build-tested
 quickstart	kenzok8__small-package	./quickstart	not-build-tested
 rapidjson	kenzok8__small-package	./rapidjson	not-build-tested
 redsocks2	kenzok8__small-package	./redsocks2	not-build-tested

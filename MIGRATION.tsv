@@ -568,6 +568,7 @@ kenzok8__small-package	./luci-app-uptimekuma	luci-app-uptimekuma	imported	not-bu
 kenzok8__small-package	./luci-app-usb-printer	luci-app-usb-printer	duplicate	recipe luci-app-usb-printer selected siwind__luci-app-usb_printer/.
 kenzok8__small-package	./luci-app-usb3disable	luci-app-usb3disable	duplicate	selected rufengsuixing__luci-app-usb3disable/.
 kenzok8__small-package	./luci-app-v2raya	luci-app-v2raya	imported	not-build-tested
+kenzok8__small-package	./luci-app-vantage	luci-app-vantage	imported	not-build-tested
 kenzok8__small-package	./luci-app-vaultwarden	luci-app-vaultwarden	imported	not-build-tested
 kenzok8__small-package	./luci-app-verysync	luci-app-verysync	imported	not-build-tested
 kenzok8__small-package	./luci-app-virtualdog	luci-app-virtualdog	imported	not-build-tested
@@ -618,6 +619,7 @@ kenzok8__small-package	./luci-theme-liquid	luci-theme-liquid	imported	not-build-
 kenzok8__small-package	./luci-theme-material3	luci-theme-material3	imported	not-build-tested
 kenzok8__small-package	./luci-theme-opentopd	luci-theme-opentopd	duplicate	selected sirpdboy__luci-theme-opentopd/.
 kenzok8__small-package	./luci-theme-tomato	luci-theme-tomato	imported	not-build-tested
+kenzok8__small-package	./luci-theme-vantage	luci-theme-vantage	imported	not-build-tested
 kenzok8__small-package	./luci-themedog	luci-themedog	imported	not-build-tested
 kenzok8__small-package	./lucky	lucky	imported	not-build-tested
 kenzok8__small-package	./mentohust/luci-app-mentohust	luci-app-mentohust	duplicate	selected BoringCat__luci-app-mentohust/.
@@ -704,6 +706,7 @@ kenzok8__small-package	./qbittorrent	qbittorrent	duplicate	selected sbwml__luci-
 kenzok8__small-package	./qt6base	qt6base	duplicate	selected sbwml__luci-app-qbittorrent/./qt6base
 kenzok8__small-package	./qt6tools	qt6tools	duplicate	selected sbwml__luci-app-qbittorrent/./qt6tools
 kenzok8__small-package	./quickjspp	quickjspp	imported	not-build-tested
+kenzok8__small-package	./quickstart-netpolicy	quickstart-netpolicy	imported	not-build-tested
 kenzok8__small-package	./quickstart	quickstart	imported	not-build-tested
 kenzok8__small-package	./rapidjson	rapidjson	imported	not-build-tested
 kenzok8__small-package	./rblibtorrent	rblibtorrent	duplicate	selected sbwml__luci-app-qbittorrent/./rblibtorrent
