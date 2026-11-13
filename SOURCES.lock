@@ -1,7 +1,7 @@
 source	url	ref	commit
 legacy-18.06-2021	https://github.com/0xc0000142/openwrt-packages_action.git	c1cd1daaee398559574a102c075698122755aac4	c1cd1daaee398559574a102c075698122755aac4
 jerrykuku__luci-theme-argon--18.06	https://github.com/jerrykuku/luci-theme-argon.git	18.06	d6dd165802938d455e4967aefd8a95e47773b5d7
-kenzok8__openwrt-packages--master	https://github.com/kenzok8/openwrt-packages.git	master	8099fdd55809957fc4b02c5f910be1fc329ae6af
+kenzok8__openwrt-packages--master	https://github.com/kenzok8/openwrt-packages.git	master	4e5691bcfcbcee9d2ff71418cb62829df964f8ff
 immortalwrt__luci--openwrt-18.06	https://github.com/immortalwrt/luci.git	openwrt-18.06	6d4e76757f4b6eb3ee4da74a97a8edecef3c481e
 garypang13__luci-theme-edge--18.06	https://github.com/garypang13/luci-theme-edge.git	18.06	09cb90b55a1ae57ddfe4a53c35e5fde26d9becb1
 rosywrt__luci-theme-rosy--openwrt-18.06	https://github.com/rosywrt/luci-theme-rosy.git	openwrt-18.06	58dafa99df869ad9c75ffdb7a0f155594dbec766
@@ -14,7 +14,7 @@ vernesong__OpenClash--master	https://github.com/vernesong/OpenClash.git	master	e
 tty228__luci-app-serverchan--master	https://github.com/tty228/luci-app-serverchan.git	master	e7d4d49b14f3755039cc236130afa7cfc65b1e09
 jerrykuku__node-request--master	https://github.com/jerrykuku/node-request.git	master	b6de1f42e18a239ea95c9ed3af0dce385e555164
 jerrykuku__lua-maxminddb--master	https://github.com/jerrykuku/lua-maxminddb.git	master	1f8934f38a611d6e7407825a626ca6ebeec3f200
-coolsnowwolf__lede--master	https://github.com/coolsnowwolf/lede.git	master	80122feac964889bc69b62420cedfefaaf701eb0
+coolsnowwolf__lede--master	https://github.com/coolsnowwolf/lede.git	master	610cb3560d1aa92bdbba364f4271ab3addd0e3e2
 cnzd__luci-app-koolproxyR--master	https://github.com/cnzd/luci-app-koolproxyR.git	master	d727c6927c85fa60786a4475a1d0b30c42c4c882
 MiRouter__luci-app-vssr-plus--master	https://github.com/MiRouter/luci-app-vssr-plus.git	master	12b0e76389c80ad326f2e3da9aef58aa27fe6c26
 lisaac__luci-app-dockerman--master	https://github.com/lisaac/luci-app-dockerman.git	master	6fd9937954e0b080bf07967182d714ea21fe7eb1
