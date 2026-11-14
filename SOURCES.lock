@@ -1,5 +1,5 @@
 source	url	ref	commit
-kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	72b283596c1ebdf97afd2142f1e4ea90d72fbd3e
+kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	16f5af683abf030263376169f4a298967f77c4da
 fw876__helloworld	https://github.com/fw876/helloworld.git	dev	6fbc9f563c9e7cd3b65061fba13ffc62666066aa
 immortalwrt__packages-25.12	https://github.com/immortalwrt/packages.git	openwrt-25.12	fa25995d74a720c1c98bf6265d3dd8b4eb620d1f
 openwrt__packages	https://github.com/openwrt/packages.git	openwrt-25.12	c2c619e6f065b238ab000b6cfc5afa238658b0c9
