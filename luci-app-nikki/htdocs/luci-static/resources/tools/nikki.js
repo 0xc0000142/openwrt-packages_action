@@ -19,6 +19,12 @@ const callRCInit = rpc.declare({
     expect: { '': {} }
 });
 
+const callFileWrite = rpc.declare({
+    object: 'file',
+    method: 'write',
+    params: ['path', 'data', 'append', 'mode']
+});
+
 const callNikkiVersion = rpc.declare({
     object: 'luci.nikki',
     method: 'version',
@@ -28,7 +34,7 @@ const callNikkiVersion = rpc.declare({
 const callNikkiProfile = rpc.declare({
     object: 'luci.nikki',
     method: 'profile',
-    params: [ 'defaults' ],
+    params: ['defaults'],
     expect: { '': {} }
 });
 
@@ -36,6 +42,13 @@ const callNikkiUpdateSubscription = rpc.declare({
     object: 'luci.nikki',
     method: 'update_subscription',
     params: ['section_id'],
+    expect: { '': {} }
+});
+
+const callNikkiAPI = rpc.declare({
+    object: 'luci.nikki',
+    method: 'api',
+    params: ['method', 'path', 'query', 'body'],
     expect: { '': {} }
 });
 
@@ -65,23 +78,19 @@ const appLogPath = `${logDir}/app.log`;
 const coreLogPath = `${logDir}/core.log`;
 const debugLogPath = `${logDir}/debug.log`;
 const nftDir = `${homeDir}/nftables`;
-const reservedIPNFT = `${nftDir}/reserved_ip.nft`;
-const reservedIP6NFT = `${nftDir}/reserved_ip6.nft`;
 
 return baseclass.extend({
     homeDir: homeDir,
     profilesDir: profilesDir,
     subscriptionsDir: subscriptionsDir,
-    ruleProvidersDir: ruleProvidersDir,
-    proxyProvidersDir: proxyProvidersDir,
     mixinFilePath: mixinFilePath,
     runDir: runDir,
+    runProfilePath: runProfilePath,
+    ruleProvidersDir: ruleProvidersDir,
+    proxyProvidersDir: proxyProvidersDir,
     appLogPath: appLogPath,
     coreLogPath: coreLogPath,
     debugLogPath: debugLogPath,
-    runProfilePath: runProfilePath,
-    reservedIPNFT: reservedIPNFT,
-    reservedIP6NFT: reservedIP6NFT,
 
     status: async function () {
         return (await callRCList('nikki'))?.nikki?.running;
@@ -93,6 +102,34 @@ return baseclass.extend({
 
     restart: function () {
         return callRCInit('nikki', 'restart');
+    },
+
+    writefile: function (path, data, mode) {
+        data = (data != null) ? String(data) : '';
+        mode = (mode != null) ? mode : 0o644;
+
+        const encoder = new TextEncoder();
+        const decoder = new TextDecoder();
+        const chunkSize = 8 * 1024;
+
+        const bytes = encoder.encode(data);
+
+        if (bytes.length <= chunkSize) {
+            return callFileWrite(path, data, false, mode);
+        }
+
+        let promise = Promise.resolve();
+        for(let offset = 0; offset < bytes.length; offset += chunkSize) {
+            const chunkStart = offset;
+            const chunkEnd = Math.min(offset + chunkSize, bytes.length);
+            const isLastChunk = chunkEnd === bytes.length;
+            const chunkBytes = bytes.slice(chunkStart, chunkEnd);
+            const chunk = decoder.decode(chunkBytes, { stream: !isLastChunk });
+            const append = offset > 0;
+            promise = promise.then(() => callFileWrite(path, chunk, append, mode));
+        }
+
+        return promise;
     },
 
     version: function () {
@@ -107,44 +144,52 @@ return baseclass.extend({
         return callNikkiUpdateSubscription(section_id);
     },
 
-    api: async function (method, path, query, body) {
-        const profile = await callNikkiProfile({ 'external-controller': null, 'secret': null });
-        const apiListen = profile['external-controller'];
-        const apiSecret = profile['secret'] ?? '';
-        const apiPort = apiListen.substring(apiListen.lastIndexOf(':') + 1);
-        const url = `http://${window.location.hostname}:${apiPort}${path}`;
-        return request.request(url, {
-            method: method,
-            headers: { 'Authorization': `Bearer ${apiSecret}` },
-            query: query,
-            content: body
-        })
+    updateDashboard: function () {
+        return callNikkiAPI('POST', '/upgrade/ui');
     },
 
     openDashboard: async function () {
-        const profile = await callNikkiProfile({ 'external-ui-name': null, 'external-controller': null, 'secret': null });
+        const profile = await callNikkiProfile({
+            'external-ui-name': null,
+            'external-controller': null,
+            'external-controller-tls': null,
+            'secret': null
+        });
         const uiName = profile['external-ui-name'];
         const apiListen = profile['external-controller'];
+        const apiTLSListen = profile['external-controller-tls'];
         const apiSecret = profile['secret'] ?? '';
-        const apiPort = apiListen.substring(apiListen.lastIndexOf(':') + 1);
+        if (!apiListen && !apiTLSListen) {
+            return Promise.reject('API has not been configured');
+        }
+
+        let protocol;
+        let port;
+        if (apiTLSListen) {
+            protocol = 'https';
+            port = apiTLSListen.substring(apiTLSListen.lastIndexOf(':') + 1);
+        } else {
+            protocol = 'http';
+            port = apiListen.substring(apiListen.lastIndexOf(':') + 1);
+        }
+
         const params = {
             host: window.location.hostname,
             hostname: window.location.hostname,
-            port: apiPort,
+            port: port,
             secret: apiSecret
         };
         const query = new URLSearchParams(params).toString();
         let url;
         if (uiName) {
-            url = `http://${window.location.hostname}:${apiPort}/ui/${uiName}/?${query}`;
+            url = `${protocol}://${window.location.hostname}:${port}/ui/${uiName}/?${query}`;
         } else {
-            url = `http://${window.location.hostname}:${apiPort}/ui/?${query}`;
+            url = `${protocol}://${window.location.hostname}:${port}/ui/?${query}`;
         }
-        setTimeout(function () { window.open(url, '_blank') }, 0);
-    },
 
-    updateDashboard: function () {
-        return this.api('POST', '/upgrade/ui');
+        setTimeout(function () { window.open(url, '_blank') }, 0);
+
+        return Promise.resolve();
     },
 
     getIdentifiers: function () {
@@ -172,11 +217,11 @@ return baseclass.extend({
     },
 
     clearAppLog: function () {
-        return fs.write(this.appLogPath);
+        return this.writefile(this.appLogPath, '');
     },
 
     clearCoreLog: function () {
-        return fs.write(this.coreLogPath);
+        return this.writefile(this.coreLogPath, '');
     },
 
     debug: function () {

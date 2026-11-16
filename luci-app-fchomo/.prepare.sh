@@ -7,7 +7,7 @@ export PATH="$PATH:$PKG_BUILD_BIN"
 
 OS=linux
 ARCH=amd64
-JQVERSION=1.7.1
+JQVERSION=1.8.1
 DOCNAME=Ruleset-URI-Scheme
 SHARKIMG='img/shark-taiko.gif'
 SHARKAUDIO='audio/A!.mp3'
@@ -33,8 +33,8 @@ echo '</style>'
 tail -n +$(( $p +1 )) $DOCNAME.html
 } > buildin.html
 popd
-minify "$PKG_BUILD_DIR"/buildin.html | base64 | tr -d '\n' > "$PKG_BUILD_DIR"/base64
-sed -i "s|'cmxzdHBsYWNlaG9sZGVy'|'$(cat "$PKG_BUILD_DIR"/base64)'|" "$PKG_BUILD_DIR"/htdocs/luci-static/resources/fchomo.js
+minify "$PKG_BUILD_DIR"/buildin.html | gzip -9 -c | base64 | tr -d '\n' > "$PKG_BUILD_DIR"/base64
+sed -i "s|'H4sIAAAAAAAAAyvKKS4pyElMTs3Iz0lJLQIA8fIyYQ8AAAA='|'$(cat "$PKG_BUILD_DIR"/base64)'|" "$PKG_BUILD_DIR"/htdocs/luci-static/resources/fchomo.js
 # shaka audio
 sed -i "s|audio/x-wav|audio/mpeg|;
 		s|'UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA='|'$(base64 "$CURDIR/docs/$SHARKAUDIO" | tr -d '\n')'|" \
@@ -50,6 +50,11 @@ cat "$PKG_BUILD_DIR"/base64
 tail -n +$(( $p +1 )) "$PKG_BUILD_DIR"/htdocs/luci-static/resources/fchomo.js
 } > "$PKG_BUILD_DIR"/htdocs/luci-static/resources/fchomo.js.new
 mv -f "$PKG_BUILD_DIR"/htdocs/luci-static/resources/fchomo.js.new "$PKG_BUILD_DIR"/htdocs/luci-static/resources/fchomo.js
+# md5
+pushd "$PKG_BUILD_DIR"/htdocs/luci-static/resources/fchomo/
+cp "$(readlink -f md5.js)" md5.js.new
+rm -f md5.js && mv -f md5.js.new md5.js && rm -rf js-md5
+popd
 
 if [ -d "$CURDIR/.git" ]; then
 	config="$CURDIR/.git/config"

@@ -265,12 +265,14 @@ kenzok8__small-package	./brook	brook	imported	not-build-tested
 kenzok8__small-package	./btop	btop	imported	not-build-tested
 kenzok8__small-package	./cdnspeedtest	cdnspeedtest	imported	not-build-tested
 kenzok8__small-package	./cgroupfs-mount	cgroupfs-mount	imported	not-build-tested
+kenzok8__small-package	./changeguard	changeguard	imported	not-build-tested
 kenzok8__small-package	./chinadns-ng	chinadns-ng	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./chinadns-ng
 kenzok8__small-package	./clashoo	clashoo	imported	not-build-tested
 kenzok8__small-package	./coremark	coremark	imported	not-build-tested
 kenzok8__small-package	./cpulimit	cpulimit	imported	not-build-tested
 kenzok8__small-package	./cups	cups	duplicate	selected gdck__luci-app-cupsd/./cups/cups
 kenzok8__small-package	./dae	dae	imported	not-build-tested
+kenzok8__small-package	./daed-next	daed-next	imported	not-build-tested
 kenzok8__small-package	./daed	daed	imported	not-build-tested
 kenzok8__small-package	./ddns-go	ddns-go	imported	not-build-tested
 kenzok8__small-package	./ddns-scripts	ddns-scripts	imported	not-build-tested
@@ -330,6 +332,7 @@ kenzok8__small-package	./linkease-common-bin	linkease-common-bin	imported	not-bu
 kenzok8__small-package	./linkease-runtime-transition	linkease-runtime-transition	imported	not-build-tested
 kenzok8__small-package	./linkease	linkease	imported	not-build-tested
 kenzok8__small-package	./linkeasefull	linkeasefull	imported	not-build-tested
+kenzok8__small-package	./linkspace	linkspace	imported	not-build-tested
 kenzok8__small-package	./lua-ipops	lua-ipops	imported	not-build-tested
 kenzok8__small-package	./lua-maxminddb	lua-maxminddb	duplicate	selected jerrykuku__lua-maxminddb/.
 kenzok8__small-package	./lua-neturl	lua-neturl	imported	not-build-tested
@@ -375,6 +378,7 @@ kenzok8__small-package	./luci-app-control-weburl	luci-app-control-weburl	importe
 kenzok8__small-package	./luci-app-cupsd	luci-app-cupsd	duplicate	selected gdck__luci-app-cupsd/./luci-app-cupsd
 kenzok8__small-package	./luci-app-dae	luci-app-dae	adapted	OpenWrt 25.12 recipe/include/dependency fixes
 kenzok8__small-package	./luci-app-dae	luci-app-dae	imported	not-build-tested
+kenzok8__small-package	./luci-app-daed-next	luci-app-daed-next	imported	not-build-tested
 kenzok8__small-package	./luci-app-daed	luci-app-daed	adapted	OpenWrt 25.12 recipe/include/dependency fixes
 kenzok8__small-package	./luci-app-daed	luci-app-daed	imported	not-build-tested
 kenzok8__small-package	./luci-app-daede	luci-app-daede	imported	not-build-tested
@@ -404,6 +408,7 @@ kenzok8__small-package	./luci-app-eqosplus	luci-app-eqosplus	duplicate	selected 
 kenzok8__small-package	./luci-app-excalidraw	luci-app-excalidraw	imported	not-build-tested
 kenzok8__small-package	./luci-app-fakemesh	luci-app-fakemesh	imported	not-build-tested
 kenzok8__small-package	./luci-app-fastnet	luci-app-fastnet	imported	not-build-tested
+kenzok8__small-package	./luci-app-fchomo	luci-app-fchomo	imported	not-build-tested
 kenzok8__small-package	./luci-app-feishuvpn	luci-app-feishuvpn	imported	not-build-tested
 kenzok8__small-package	./luci-app-fileassistant	luci-app-fileassistant	imported	not-build-tested
 kenzok8__small-package	./luci-app-filebrowser-go	luci-app-filebrowser-go	imported	not-build-tested
@@ -428,6 +433,11 @@ kenzok8__small-package	./luci-app-honk	luci-app-honk	imported	not-build-tested
 kenzok8__small-package	./luci-app-htreader	luci-app-htreader	imported	not-build-tested
 kenzok8__small-package	./luci-app-ikoolproxy	luci-app-ikoolproxy	duplicate	recipe luci-app-ikoolproxy selected project-lede__luci-app-godproxy/.
 kenzok8__small-package	./luci-app-immich	luci-app-immich	imported	not-build-tested
+kenzok8__small-package	./luci-app-internet-detector/internet-detector-mod-email	internet-detector-mod-email	duplicate	selected gSpotx2f__luci-app-internet-detector/./internet-detector-mod-email
+kenzok8__small-package	./luci-app-internet-detector/internet-detector-mod-modem-restart	internet-detector-mod-modem-restart	duplicate	selected gSpotx2f__luci-app-internet-detector/./internet-detector-mod-modem-restart
+kenzok8__small-package	./luci-app-internet-detector/internet-detector-mod-telegram	internet-detector-mod-telegram	duplicate	selected gSpotx2f__luci-app-internet-detector/./internet-detector-mod-telegram
+kenzok8__small-package	./luci-app-internet-detector/internet-detector	internet-detector	duplicate	selected gSpotx2f__luci-app-internet-detector/./internet-detector
+kenzok8__small-package	./luci-app-internet-detector/luci-app-internet-detector	luci-app-internet-detector	duplicate	selected gSpotx2f__luci-app-internet-detector/./luci-app-internet-detector
 kenzok8__small-package	./luci-app-iperf3-server	luci-app-iperf3-server	imported	not-build-tested
 kenzok8__small-package	./luci-app-ipsec-server	luci-app-ipsec-server	imported	not-build-tested
 kenzok8__small-package	./luci-app-iptvhelper	luci-app-iptvhelper	duplicate	selected riverscn__openwrt-iptvhelper/./luci-app-iptvhelper
@@ -456,6 +466,7 @@ kenzok8__small-package	./luci-app-memos	luci-app-memos	imported	not-build-tested
 kenzok8__small-package	./luci-app-mentohust	luci-app-mentohust	duplicate	selected BoringCat__luci-app-mentohust/.
 kenzok8__small-package	./luci-app-mfun	luci-app-mfun	imported	not-build-tested
 kenzok8__small-package	./luci-app-minieap	luci-app-minieap	duplicate	selected BoringCat__luci-app-minieap/.
+kenzok8__small-package	./luci-app-momo	luci-app-momo	imported	not-build-tested
 kenzok8__small-package	./luci-app-mosdns	luci-app-mosdns	duplicate	selected sbwml__luci-app-mosdns/./luci-app-mosdns
 kenzok8__small-package	./luci-app-msd_lite	luci-app-msd_lite	imported	not-build-tested
 kenzok8__small-package	./luci-app-mtphotos	luci-app-mtphotos	imported	not-build-tested
@@ -464,7 +475,8 @@ kenzok8__small-package	./luci-app-my-dnshelper	luci-app-my-dnshelper	imported	no
 kenzok8__small-package	./luci-app-mymind	luci-app-mymind	imported	not-build-tested
 kenzok8__small-package	./luci-app-nastools	luci-app-nastools	imported	not-build-tested
 kenzok8__small-package	./luci-app-nat6-helper	luci-app-nat6-helper	imported	not-build-tested
-kenzok8__small-package	./luci-app-natmap	luci-app-natmap	duplicate	selected blueberry-pie-11__luci-app-natmap/./luci-app-natmap
+kenzok8__small-package	./luci-app-natmap/luci-app-natmap	luci-app-natmap	duplicate	selected blueberry-pie-11__luci-app-natmap/./luci-app-natmap
+kenzok8__small-package	./luci-app-natmap/natmap	natmap	duplicate	selected blueberry-pie-11__luci-app-natmap/./natmap
 kenzok8__small-package	./luci-app-natter	luci-app-natter	duplicate	selected muink__luci-app-natter/.
 kenzok8__small-package	./luci-app-natter2	luci-app-natter2	imported	not-build-tested
 kenzok8__small-package	./luci-app-navidrome	luci-app-navidrome	imported	not-build-tested
@@ -475,6 +487,7 @@ kenzok8__small-package	./luci-app-netwizard	luci-app-netwizard	duplicate	selecte
 kenzok8__small-package	./luci-app-nextcloud	luci-app-nextcloud	imported	not-build-tested
 kenzok8__small-package	./luci-app-nginx-manager	luci-app-nginx-manager	imported	not-build-tested
 kenzok8__small-package	./luci-app-nginx-pingos	luci-app-nginx-pingos	imported	not-build-tested
+kenzok8__small-package	./luci-app-nikki	luci-app-nikki	imported	not-build-tested
 kenzok8__small-package	./luci-app-npc	luci-app-npc	imported	not-build-tested
 kenzok8__small-package	./luci-app-oaf	luci-app-oaf	duplicate	selected destan19__OpenAppFilter/./luci-app-oaf
 kenzok8__small-package	./luci-app-oled/luci-app-oled	luci-app-oled	duplicate	selected NateLol__luci-app-oled/./luci-app-oled
@@ -488,6 +501,7 @@ kenzok8__small-package	./luci-app-openlist2	luci-app-openlist2	duplicate	selecte
 kenzok8__small-package	./luci-app-openvpn-client	luci-app-openvpn-client	imported	not-build-tested
 kenzok8__small-package	./luci-app-openvpn-server	luci-app-openvpn-server	duplicate	selected kiddin9__openwrt-openvpn/./luci-app-openvpn-server
 kenzok8__small-package	./luci-app-openwebui	luci-app-openwebui	imported	not-build-tested
+kenzok8__small-package	./luci-app-optimemachine	luci-app-optimemachine	imported	not-build-tested
 kenzok8__small-package	./luci-app-ota	luci-app-ota	imported	not-build-tested
 kenzok8__small-package	./luci-app-owntone	luci-app-owntone	imported	not-build-tested
 kenzok8__small-package	./luci-app-packet-capture	luci-app-packet-capture	imported	not-build-tested
@@ -514,6 +528,7 @@ kenzok8__small-package	./luci-app-rtbwmon	luci-app-rtbwmon	imported	not-build-te
 kenzok8__small-package	./luci-app-runmynas	luci-app-runmynas	imported	not-build-tested
 kenzok8__small-package	./luci-app-shadowrt	luci-app-shadowrt	imported	not-build-tested
 kenzok8__small-package	./luci-app-shanligong	luci-app-shanligong	imported	not-build-tested
+kenzok8__small-package	./luci-app-shortcutmenu	luci-app-shortcutmenu	imported	not-build-tested
 kenzok8__small-package	./luci-app-shutdown	luci-app-shutdown	imported	not-build-tested
 kenzok8__small-package	./luci-app-smartdns	luci-app-smartdns	duplicate	selected pymumu__luci-app-smartdns/.
 kenzok8__small-package	./luci-app-sms-tool	luci-app-sms-tool	duplicate	selected 4IceG__luci-app-sms-tool/./luci-app-sms-tool
@@ -539,6 +554,8 @@ kenzok8__small-package	./luci-app-tencentcloud-cos	luci-app-tencentcloud-cos	imp
 kenzok8__small-package	./luci-app-tencentddns	luci-app-tencentddns	duplicate	selected msylgj__luci-app-tencentddns/.
 kenzok8__small-package	./luci-app-timecontrol	luci-app-timecontrol	imported	not-build-tested
 kenzok8__small-package	./luci-app-timewol	luci-app-timewol	imported	not-build-tested
+kenzok8__small-package	./luci-app-tinyfilemanager	luci-app-tinyfilemanager	duplicate	selected muink__luci-app-tinyfilemanager/.
+kenzok8__small-package	./luci-app-torbp	luci-app-torbp	imported	not-build-tested
 kenzok8__small-package	./luci-app-tower	luci-app-tower	imported	not-build-tested
 kenzok8__small-package	./luci-app-transmission	luci-app-transmission	imported	not-build-tested
 kenzok8__small-package	./luci-app-ttnode	luci-app-ttnode	duplicate	selected jerrykuku__luci-app-ttnode/.
@@ -612,13 +629,16 @@ kenzok8__small-package	./mentohust/luci-app-mentohust	luci-app-mentohust	duplica
 kenzok8__small-package	./mentohust/mentohust	mentohust	duplicate	recipe mentohust selected KyleRicardo__MentoHUST-OpenWrt-ipk/.
 kenzok8__small-package	./mhz	mhz	imported	not-build-tested
 kenzok8__small-package	./microsocks	microsocks	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./microsocks
+kenzok8__small-package	./mihomo	mihomo	imported	not-build-tested
 kenzok8__small-package	./mise	mise	imported	not-build-tested
+kenzok8__small-package	./momo	momo	imported	not-build-tested
 kenzok8__small-package	./mosdns	mosdns	duplicate	selected sbwml__luci-app-mosdns/./mosdns
 kenzok8__small-package	./msd_lite	msd_lite	imported	not-build-tested
 kenzok8__small-package	./msmtp	msmtp	imported	not-build-tested
 kenzok8__small-package	./mwan3	mwan3	imported	not-build-tested
 kenzok8__small-package	./my-dnshelper	my-dnshelper	imported	not-build-tested
 kenzok8__small-package	./naiveproxy	naiveproxy	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./naiveproxy
+kenzok8__small-package	./nanohatoled	nanohatoled	imported	not-build-tested
 kenzok8__small-package	./natflow	natflow	imported	not-build-tested
 kenzok8__small-package	./natter	natter	duplicate	recipe natter selected muink__openwrt-Natter/.
 kenzok8__small-package	./natter2	natter2	imported	not-build-tested
@@ -626,9 +646,11 @@ kenzok8__small-package	./netatalk	netatalk	imported	not-build-tested
 kenzok8__small-package	./netdata	netdata	duplicate	recipe netdata selected muink__openwrt-netdata-ssl/.
 kenzok8__small-package	./netkeeper-interception	netkeeper-interception	duplicate	selected CCnut__feed-netkeeper/./netkeeper-interception
 kenzok8__small-package	./netkeeper	netkeeper	duplicate	selected CCnut__feed-netkeeper/./netkeeper
+kenzok8__small-package	./netmaker	netmaker	imported	not-build-tested
 kenzok8__small-package	./nftables	nftables	excluded	base-system/original exclusion
 kenzok8__small-package	./nginx	nginx	imported	not-build-tested
 kenzok8__small-package	./ngrokc	ngrokc	imported	not-build-tested
+kenzok8__small-package	./nikki	nikki	imported	not-build-tested
 kenzok8__small-package	./nps	nps	imported	not-build-tested
 kenzok8__small-package	./oaf	oaf	duplicate	selected destan19__OpenAppFilter/./oaf
 kenzok8__small-package	./open-app-filter	open-app-filter	duplicate	selected destan19__OpenAppFilter/./open-app-filter
@@ -638,6 +660,7 @@ kenzok8__small-package	./openwrt-fastfetch	openwrt-fastfetch	imported	not-build-
 kenzok8__small-package	./openwrt-minieap	openwrt-minieap	imported	not-build-tested
 kenzok8__small-package	./openwrt-natmap	openwrt-natmap	duplicate	recipe natmap selected blueberry-pie-11__luci-app-natmap/./natmap
 kenzok8__small-package	./opkg	opkg	excluded	base-system/original exclusion
+kenzok8__small-package	./optimemachine	optimemachine	imported	not-build-tested
 kenzok8__small-package	./oscam	oscam	imported	not-build-tested
 kenzok8__small-package	./other/k3wifi	k3wifi	imported	not-build-tested
 kenzok8__small-package	./other/lean/adbyby	adbyby	imported	not-build-tested
@@ -857,7 +880,7 @@ fw876__helloworld	./ipt2socks	ipt2socks	duplicate	selected Openwrt-Passwall__ope
 fw876__helloworld	./lua-neturl	lua-neturl	duplicate	selected kenzok8__small-package/./lua-neturl
 fw876__helloworld	./luci-app-ssr-plus	luci-app-ssr-plus	duplicate	selected kenzok8__small-package/./luci-app-ssr-plus
 fw876__helloworld	./microsocks	microsocks	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./microsocks
-fw876__helloworld	./mihomo	mihomo	imported	not-build-tested
+fw876__helloworld	./mihomo	mihomo	duplicate	selected kenzok8__small-package/./mihomo
 fw876__helloworld	./mosdns	mosdns	duplicate	selected sbwml__luci-app-mosdns/./mosdns
 fw876__helloworld	./naiveproxy	naiveproxy	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./naiveproxy
 fw876__helloworld	./redsocks2	redsocks2	duplicate	selected kenzok8__small-package/./redsocks2
@@ -922,7 +945,7 @@ legacy-21.02	./cpulimit	cpulimit	duplicate	selected kenzok8__small-package/./cpu
 legacy-21.02	./cups	cups	duplicate	selected gdck__luci-app-cupsd/./cups/cups
 legacy-21.02	./cxxopts	cxxopts	imported	legacy-fallback-needs-porting-review
 legacy-21.02	./dae	dae	duplicate	selected kenzok8__small-package/./dae
-legacy-21.02	./daed-next	daed-next	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./daed-next	daed-next	duplicate	selected kenzok8__small-package/./daed-next
 legacy-21.02	./daed	daed	duplicate	selected kenzok8__small-package/./daed
 legacy-21.02	./ddns-go	ddns-go	duplicate	selected kenzok8__small-package/./ddns-go
 legacy-21.02	./ddns-scripts	ddns-scripts	duplicate	selected kenzok8__small-package/./ddns-scripts
@@ -1063,7 +1086,7 @@ legacy-21.02	./luci-app-cpu-status-mini	luci-app-cpu-status-mini	duplicate	selec
 legacy-21.02	./luci-app-cpu-status	luci-app-cpu-status	duplicate	selected gSpotx2f__luci-app-cpu-status/.
 legacy-21.02	./luci-app-cpufreq	luci-app-cpufreq	duplicate	selected openwrt-xiaomi__luci-app-cpufreq/.
 legacy-21.02	./luci-app-cupsd	luci-app-cupsd	duplicate	selected gdck__luci-app-cupsd/./luci-app-cupsd
-legacy-21.02	./luci-app-daed-next	luci-app-daed-next	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-daed-next	luci-app-daed-next	duplicate	selected kenzok8__small-package/./luci-app-daed-next
 legacy-21.02	./luci-app-daed	luci-app-daed	duplicate	selected kenzok8__small-package/./luci-app-daed
 legacy-21.02	./luci-app-ddns-go	luci-app-ddns-go	duplicate	selected kenzok8__small-package/./luci-app-ddns-go
 legacy-21.02	./luci-app-ddnsto	luci-app-ddnsto	duplicate	selected linkease__ddnsto-openwrt/./luci-app-ddnsto
@@ -1090,7 +1113,7 @@ legacy-21.02	./luci-app-eqosplus	luci-app-eqosplus	duplicate	selected sirpdboy__
 legacy-21.02	./luci-app-excalidraw	luci-app-excalidraw	duplicate	selected kenzok8__small-package/./luci-app-excalidraw
 legacy-21.02	./luci-app-fakemesh	luci-app-fakemesh	duplicate	selected kenzok8__small-package/./luci-app-fakemesh
 legacy-21.02	./luci-app-fancontrol	luci-app-fancontrol	imported	legacy-fallback-needs-porting-review
-legacy-21.02	./luci-app-fchomo	luci-app-fchomo	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-fchomo	luci-app-fchomo	duplicate	selected kenzok8__small-package/./luci-app-fchomo
 legacy-21.02	./luci-app-feishuvpn	luci-app-feishuvpn	duplicate	selected kenzok8__small-package/./luci-app-feishuvpn
 legacy-21.02	./luci-app-fileassistant	luci-app-fileassistant	duplicate	selected kenzok8__small-package/./luci-app-fileassistant
 legacy-21.02	./luci-app-filebrowser	luci-app-filebrowser	duplicate	selected kenzok8__small-package/./luci-app-filebrowser
@@ -1171,7 +1194,7 @@ legacy-21.02	./luci-app-nextcloud	luci-app-nextcloud	duplicate	selected kenzok8_
 legacy-21.02	./luci-app-nft-timecontrol	luci-app-nft-timecontrol	imported	legacy-fallback-needs-porting-review
 legacy-21.02	./luci-app-nginx-manager	luci-app-nginx-manager	duplicate	selected kenzok8__small-package/./luci-app-nginx-manager
 legacy-21.02	./luci-app-nginx-pingos	luci-app-nginx-pingos	duplicate	selected kenzok8__small-package/./luci-app-nginx-pingos
-legacy-21.02	./luci-app-nikki	luci-app-nikki	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-nikki	luci-app-nikki	duplicate	selected kenzok8__small-package/./luci-app-nikki
 legacy-21.02	./luci-app-nodogsplash	luci-app-nodogsplash	duplicate	selected tty228__luci-app-nodogsplash/.
 legacy-21.02	./luci-app-npc	luci-app-npc	duplicate	selected kenzok8__small-package/./luci-app-npc
 legacy-21.02	./luci-app-oaf	luci-app-oaf	duplicate	selected destan19__OpenAppFilter/./luci-app-oaf
@@ -1215,7 +1238,7 @@ legacy-21.02	./luci-app-samba	luci-app-samba	duplicate	selected tcsr200722__luci
 legacy-21.02	./luci-app-serverchan	luci-app-serverchan	duplicate	selected tty228__luci-app-serverchan/.
 legacy-21.02	./luci-app-shadowsocks	luci-app-shadowsocks	duplicate	selected shadowsocks__luci-app-shadowsocks/.
 legacy-21.02	./luci-app-shanligong	luci-app-shanligong	duplicate	selected kenzok8__small-package/./luci-app-shanligong
-legacy-21.02	./luci-app-shortcutmenu	luci-app-shortcutmenu	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-shortcutmenu	luci-app-shortcutmenu	duplicate	selected kenzok8__small-package/./luci-app-shortcutmenu
 legacy-21.02	./luci-app-shutdown	luci-app-shutdown	duplicate	selected kenzok8__small-package/./luci-app-shutdown
 legacy-21.02	./luci-app-smartdns	luci-app-smartdns	duplicate	selected pymumu__luci-app-smartdns/.
 legacy-21.02	./luci-app-sms-tool-js/luci-app-sms-tool-js	luci-app-sms-tool-js	duplicate	selected 4IceG__luci-app-sms-tool-js/./luci-app-sms-tool-js
@@ -1242,7 +1265,7 @@ legacy-21.02	./luci-app-tencentddns	luci-app-tencentddns	duplicate	selected msyl
 legacy-21.02	./luci-app-timecontrol	luci-app-timecontrol	duplicate	selected kenzok8__small-package/./luci-app-timecontrol
 legacy-21.02	./luci-app-tinyfilemanager	luci-app-tinyfilemanager	duplicate	selected muink__luci-app-tinyfilemanager/.
 legacy-21.02	./luci-app-tn-netports	luci-app-tn-netports	duplicate	selected muink__luci-app-tn-netports/.
-legacy-21.02	./luci-app-torbp	luci-app-torbp	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./luci-app-torbp	luci-app-torbp	duplicate	selected kenzok8__small-package/./luci-app-torbp
 legacy-21.02	./luci-app-transmission	luci-app-transmission	duplicate	selected kenzok8__small-package/./luci-app-transmission
 legacy-21.02	./luci-app-ttnode	luci-app-ttnode	duplicate	selected jerrykuku__luci-app-ttnode/.
 legacy-21.02	./luci-app-typecho	luci-app-typecho	duplicate	selected kenzok8__small-package/./luci-app-typecho
@@ -1317,7 +1340,7 @@ legacy-21.02	./mentohust/luci-app-mentohust	luci-app-mentohust	duplicate	selecte
 legacy-21.02	./mentohust/mentohust	mentohust	duplicate	recipe mentohust selected KyleRicardo__MentoHUST-OpenWrt-ipk/.
 legacy-21.02	./mhz	mhz	duplicate	selected kenzok8__small-package/./mhz
 legacy-21.02	./microsocks	microsocks	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./microsocks
-legacy-21.02	./mihomo	mihomo	duplicate	selected fw876__helloworld/./mihomo
+legacy-21.02	./mihomo	mihomo	duplicate	selected kenzok8__small-package/./mihomo
 legacy-21.02	./miniupnpd-iptables	miniupnpd-iptables	imported	legacy-fallback-needs-porting-review
 legacy-21.02	./modemband	modemband	duplicate	selected legacy-21.02/./luci-app-modemband/modemband
 legacy-21.02	./mosdns	mosdns	duplicate	selected sbwml__luci-app-mosdns/./mosdns
@@ -1330,7 +1353,7 @@ legacy-21.02	./my-packages/luci-lighttpd	luci-lighttpd	duplicate	selected kiddin
 legacy-21.02	./my-packages/my-default-settings	my-default-settings	duplicate	selected kiddin9__my-packages/./my-default-settings
 legacy-21.02	./n2n-2.4-stable	n2n-2.4-stable	duplicate	selected obsy__packages/./n2n-2.4-stable
 legacy-21.02	./naiveproxy	naiveproxy	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./naiveproxy
-legacy-21.02	./nanohatoled	nanohatoled	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./nanohatoled	nanohatoled	duplicate	selected kenzok8__small-package/./nanohatoled
 legacy-21.02	./natflow	natflow	duplicate	selected kenzok8__small-package/./natflow
 legacy-21.02	./natmapt	natmapt	duplicate	selected muink__openwrt-natmapt/.
 legacy-21.02	./natter	natter	duplicate	recipe natter selected muink__openwrt-Natter/.
@@ -1340,10 +1363,10 @@ legacy-21.02	./netdata-ssl	netdata-ssl	duplicate	selected muink__openwrt-netdata
 legacy-21.02	./netdata	netdata	duplicate	recipe netdata selected muink__openwrt-netdata-ssl/.
 legacy-21.02	./netkeeper-interception	netkeeper-interception	duplicate	selected CCnut__feed-netkeeper/./netkeeper-interception
 legacy-21.02	./netkeeper	netkeeper	duplicate	selected CCnut__feed-netkeeper/./netkeeper
-legacy-21.02	./netmaker	netmaker	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./netmaker	netmaker	duplicate	selected kenzok8__small-package/./netmaker
 legacy-21.02	./nginx	nginx	duplicate	selected kenzok8__small-package/./nginx
 legacy-21.02	./ngrokc	ngrokc	duplicate	selected kenzok8__small-package/./ngrokc
-legacy-21.02	./nikki	nikki	imported	legacy-fallback-needs-porting-review
+legacy-21.02	./nikki	nikki	duplicate	selected kenzok8__small-package/./nikki
 legacy-21.02	./njitclient	njitclient	imported	legacy-fallback-needs-porting-review
 legacy-21.02	./node-request	node-request	duplicate	selected jerrykuku__node-request/.
 legacy-21.02	./nps	nps	duplicate	selected kenzok8__small-package/./nps

@@ -3,6 +3,7 @@
 . /usr/share/libubox/jshn.sh
 
 CONF="fchomo"
+GITHUB_TOKEN="$(uci -q get $CONF.resources.github_token)"
 
 RESOURCES_DIR="/etc/$CONF/resources"
 VER_PATH="/etc/$CONF/resources.json"
@@ -16,25 +17,8 @@ log() {
 	echo -e "$(date "+%F %T") $*" >> "$LOG_PATH"
 }
 
-set_lock() {
-	local act="$1"
-	local type="$2"
-
-	local lock="$RUN_DIR/update_resources-$type.lock"
-	if [ "$act" = "set" ]; then
-		if [ -e "$lock" ]; then
-			log "[$(to_upper "$type")] A task is already running."
-			exit 2
-		else
-			touch "$lock"
-		fi
-	elif [ "$act" = "remove" ]; then
-		rm -f "$lock"
-	fi
-}
-
 to_upper() {
-	echo -e "$1" | tr "[a-z]" "[A-Z]"
+	echo -e "$1" | tr "a-z" "A-Z"
 }
 
 get_local_ver() {
@@ -55,18 +39,22 @@ check_dashboard_update() {
 	local dashtype="$1"
 	local dashrepo="$2"
 	local dashrepoid="$(echo -n "$dashrepo" | sed 's|\W|_|g' | tr 'A-Z' 'a-z')"
+	local lock="$RUN_DIR/update_resources-$dashtype.lock"
 	local wget="wget --tries=1 --timeout=10 -q"
+	[ -z "$GITHUB_TOKEN" ] || local github_token="--header=Authorization: Bearer $GITHUB_TOKEN"
 
-	set_lock "set" "$dashtype"
+	exec 200>"$lock"
+	if ! flock -n 200 &> "/dev/null"; then
+		log "[$(to_upper "$dashtype")] A task is already running."
+		return 2
+	fi
 
-	local dash_ver="$($wget -O- "https://api.github.com/repos/$dashrepo/releases/latest" | jsonfilter -e "@.tag_name" 2>/dev/null)"
+	local dash_ver="$($wget "${github_token:--q}" -O- "https://api.github.com/repos/$dashrepo/releases/latest" | jsonfilter -qe "@.tag_name" 2>/dev/null)"
 	[ -n "$dash_ver" ] || {
-		dash_ver="$($wget -O- "https://api.github.com/repos/$dashrepo/tags" | jsonfilter -e "@[*].name" | head -n1)"
+		dash_ver="$($wget "${github_token:--q}" -O- "https://api.github.com/repos/$dashrepo/tags" | jsonfilter -qe "@[*].name" | head -n1)"
 	}
 	if [ -z "$dash_ver" ]; then
 		log "[$(to_upper "$dashtype")] [$dashrepo] Failed to get the latest version, please retry later."
-
-		set_lock "remove" "$dashtype"
 		return 1
 	fi
 
@@ -74,18 +62,14 @@ check_dashboard_update() {
 	if [ "$local_dash_ver" = "$dash_ver" ]; then
 		log "[$(to_upper "$dashtype")] [$dashrepo] Current version: $dash_ver."
 		log "[$(to_upper "$dashtype")] [$dashrepo] You're already at the latest version."
-
-		set_lock "remove" "$dashtype"
 		return 3
 	else
 		log "[$(to_upper "$dashtype")] [$dashrepo] Local version: $local_dash_ver, latest version: $dash_ver."
 	fi
 
-	if ! $wget "https://codeload.github.com/$dashrepo/tar.gz/refs/heads/gh-pages" -O "$RUN_DIR/$dashtype.tgz" || ! tar -tzf "$RUN_DIR/$dashtype.tgz" >/dev/null; then
+	if ! $wget "${github_token:--q}" "https://codeload.github.com/$dashrepo/tar.gz/refs/heads/gh-pages" -O "$RUN_DIR/$dashtype.tgz" || ! tar -tzf "$RUN_DIR/$dashtype.tgz" >/dev/null; then
 		rm -f "$RUN_DIR/$dashtype.tgz"
 		log "[$(to_upper "$dashtype")] [$dashrepo] Update failed."
-
-		set_lock "remove" "$dashtype"
 		return 1
 	fi
 
@@ -99,8 +83,6 @@ check_dashboard_update() {
 	json_add_string version "$dash_ver"
 	json_dump > "$VER_PATH"
 	log "[$(to_upper "$dashtype")] [$dashrepo] Successfully updated."
-
-	set_lock "remove" "$dashtype"
 	return 0
 }
 
@@ -108,15 +90,19 @@ check_dashboard_update() {
 check_geodata_update() {
 	local geotype="$1"
 	local georepo="$2"
+	local lock="$RUN_DIR/update_resources-$geotype.lock"
 	local wget="wget --tries=1 --timeout=10 -q"
+	[ -z "$GITHUB_TOKEN" ] || local github_token="--header=Authorization: Bearer $GITHUB_TOKEN"
 
-	set_lock "set" "$geotype"
+	exec 200>"$lock"
+	if ! flock -n 200 &> "/dev/null"; then
+		log "[$(to_upper "$geotype")] A task is already running."
+		return 2
+	fi
 
-	local geodata_ver="$($wget -O- "https://api.github.com/repos/$georepo/releases/latest" | jsonfilter -e "@.tag_name")"
+	local geodata_ver="$($wget "${github_token:--q}" -O- "https://api.github.com/repos/$georepo/releases/latest" | jsonfilter -qe "@.tag_name")"
 	if [ -z "$geodata_ver" ]; then
 		log "[$(to_upper "$geotype")] Failed to get the latest version, please retry later."
-
-		set_lock "remove" "$geotype"
 		return 1
 	fi
 
@@ -124,21 +110,17 @@ check_geodata_update() {
 	if [ "$local_geodata_ver" = "$geodata_ver" ]; then
 		log "[$(to_upper "$geotype")] Current version: $geodata_ver."
 		log "[$(to_upper "$geotype")] You're already at the latest version."
-
-		set_lock "remove" "$geotype"
 		return 3
 	else
 		log "[$(to_upper "$geotype")] Local version: $local_geodata_ver, latest version: $geodata_ver."
 	fi
 
 	local geodata_hash
-	$wget "https://github.com/$georepo/releases/download/$geodata_ver/$geotype.dat" -O "$RUN_DIR/$geotype.dat"
-	geodata_hash="$($wget -O- "https://github.com/$georepo/releases/download/$geodata_ver/$geotype.dat.sha256sum" | awk '{print $1}')"
+	$wget "${github_token:--q}" "https://github.com/$georepo/releases/download/$geodata_ver/$geotype.dat" -O "$RUN_DIR/$geotype.dat"
+	geodata_hash="$($wget "${github_token:--q}" -O- "https://github.com/$georepo/releases/download/$geodata_ver/$geotype.dat.sha256sum" | awk '{print $1}')"
 	if ! echo -e "$geodata_hash $RUN_DIR/$geotype.dat" | sha256sum -s -c -; then
 		rm -f "$RUN_DIR/$geotype.dat"
 		log "[$(to_upper "$geotype")] Update failed."
-
-		set_lock "remove" "$geotype"
 		return 1
 	fi
 
@@ -149,8 +131,6 @@ check_geodata_update() {
 	json_add_string "$geotype" "$geodata_ver"
 	json_dump > "$VER_PATH"
 	log "[$(to_upper "$geotype")] Successfully updated."
-
-	set_lock "remove" "$geotype"
 	return 0
 }
 
@@ -160,17 +140,21 @@ check_list_update() {
 	local listrepo="$2"
 	local listref="$3"
 	local listname="$4"
+	local lock="$RUN_DIR/update_resources-$listtype.lock"
 	local wget="wget --tries=1 --timeout=10 -q"
+	[ -z "$GITHUB_TOKEN" ] || local github_token="--header=Authorization: Bearer $GITHUB_TOKEN"
 
-	set_lock "set" "$listtype"
+	exec 200>"$lock"
+	if ! flock -n 200 &> "/dev/null"; then
+		log "[$(to_upper "$listtype")] A task is already running."
+		return 2
+	fi
 
-	local list_info="$($wget -O- "https://api.github.com/repos/$listrepo/commits?sha=$listref&path=$listname")"
-	local list_sha="$(echo -e "$list_info" | jsonfilter -e "@[0].sha")"
-	local list_ver="$(echo -e "$list_info" | jsonfilter -e "@[0].commit.message" | grep -Eo "[0-9-]+" | tr -d '-')"
+	local list_info="$($wget "${github_token:--q}" -O- "https://api.github.com/repos/$listrepo/commits?sha=$listref&path=$listname")"
+	local list_sha="$(echo -e "$list_info" | jsonfilter -qe "@[0].sha")"
+	local list_ver="$(echo -e "$list_info" | jsonfilter -qe "@[0].commit.message" | grep -Eo "[0-9-]+" | tr -d ' \n-')"
 	if [ -z "$list_sha" ] || [ -z "$list_ver" ]; then
 		log "[$(to_upper "$listtype")] Failed to get the latest version, please retry later."
-
-		set_lock "remove" "$listtype"
 		return 1
 	fi
 
@@ -178,8 +162,6 @@ check_list_update() {
 	if [ "$local_list_ver" = "$list_ver" ]; then
 		log "[$(to_upper "$listtype")] Current version: $list_ver."
 		log "[$(to_upper "$listtype")] You're already at the latest version."
-
-		set_lock "remove" "$listtype"
 		return 3
 	else
 		log "[$(to_upper "$listtype")] Local version: $local_list_ver, latest version: $list_ver."
@@ -188,8 +170,6 @@ check_list_update() {
 	if ! $wget "https://fastly.jsdelivr.net/gh/$listrepo@$list_sha/$listname" -O "$RUN_DIR/$listname" || [ ! -s "$RUN_DIR/$listname" ]; then
 		rm -f "$RUN_DIR/$listname"
 		log "[$(to_upper "$listtype")] Update failed."
-
-		set_lock "remove" "$listtype"
 		return 1
 	fi
 
@@ -200,15 +180,13 @@ check_list_update() {
 	json_add_string "$listtype" "$list_ver"
 	json_dump > "$VER_PATH"
 	log "[$(to_upper "$listtype")] Successfully updated."
-
-	set_lock "remove" "$listtype"
 	return 0
 }
 
 case "$1" in
 "ALL")
 	# Since the VER_PATH lock is not designed, parallelism is not currently supported.
-	for _type in geoip geosite asn china_ip4 china_ip6 gfw_list china_list; do
+	for _type in geoip geosite asn bundlemrs china_ip4 china_ip6 gfw_list china_list; do
 		"$0" "$_type"
 	done
 	# dashboard
@@ -234,6 +212,10 @@ case "$1" in
 	check_list_update "$1" "Loyalsoldier/geoip" "release" "GeoLite2-ASN.mmdb" &&
 		mv -f "$RESOURCES_DIR/asn.mmdb" "$RESOURCES_DIR/../asn.mmdb"
 	;;
+"bundlemrs")
+	check_list_update "$1" "MetaCubeX/meta-rules-dat" "release" "BundleMRS.7z" &&
+		mv -f "$RESOURCES_DIR/bundlemrs.7z" "$RESOURCES_DIR/../BundleMRS.7z"
+	;;
 "china_ip4")
 	check_list_update "$1" "fcshark-org/route-list" "release" "china_ipv4.txt"
 	;;
@@ -247,7 +229,7 @@ case "$1" in
 	check_list_update "$1" "fcshark-org/route-list" "release" "china_list2.txt"
 	;;
 *)
-	echo -e "Usage: $0 <ALL / dashboard / geoip / geosite / asn / china_ip4 / china_ip6 / gfw_list / china_list>"
+	echo -e "Usage: $0 <ALL / dashboard / geoip / geosite / asn / bundlemrs / china_ip4 / china_ip6 / gfw_list / china_list>"
 	exit 1
 	;;
 esac
