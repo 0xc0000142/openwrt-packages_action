@@ -1,4 +1,5 @@
-import { readfile, popen } from 'fs';
+import { readfile, lsdir, lstat } from 'fs';
+import { connect } from 'ubus';
 
 export function uci_bool(obj) {
 	return obj == null ? null : obj == '1';
@@ -63,25 +64,13 @@ export function get_groups() {
 };
 
 export function get_cgroups() {
+	const ubus = connect();
+	const services = ubus.call('service', 'list');
 	const result = [];
-	if (get_cgroups_version() == 2) {
-		const cgroup_path = '/sys/fs/cgroup/';
-		const process = popen(`find ${cgroup_path} -type d -mindepth 1`);
-		if (process) {
-			for (let line = process.read('line'); length(line); line = process.read('line')) {
-				push(result, substr(trim(line), length(cgroup_path)));
-			}
+	for (let name in services) {
+		if (length(services[name]['instances']) > 0) {
+			push(result, name);
 		}
-	}
-	return result;
-};
-
-export function load_profile() {
-	let result = {};
-	const process = popen('yq -M -p yaml -o json /etc/nikki/run/config.yaml');
-	if (process) {
-		result = json(process.read('all'));
-		process.close();
 	}
 	return result;
 };

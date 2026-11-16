@@ -63,9 +63,6 @@ return view.extend({
             return nikki.updateSubscription(section_id);
         };
 
-        o = s.option(form.Value, 'info_url', _('Subscription Info Url'));
-        o.modalonly = true;
-
         o = s.option(form.Value, 'url', _('Subscription Url'));
         o.modalonly = true;
         o.rmempty = false;
@@ -81,7 +78,6 @@ return view.extend({
         o = s.option(form.ListValue, 'prefer', _('Prefer'));
         o.default = 'remote';
         o.modalonly = true;
-        o.rmempty = false;
         o.value('remote', _('Remote'));
         o.value('local', _('Local'));
 

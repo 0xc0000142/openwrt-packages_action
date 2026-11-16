@@ -5,70 +5,27 @@
 'require fs';
 'require poll';
 'require rpc';
-'require uci';
 'require ui';
 'require view';
 
-'require fchomo as hm';
+/* Thanks to luci-app-aria2 */
+const css = '				\
+#log_textarea {				\
+	padding: 10px;			\
+	text-align: left;		\
+}					\
+#log_textarea pre {			\
+	padding: .5rem;			\
+	word-break: break-all;		\
+	margin: 0;			\
+}					\
+.description {				\
+	background-color: #33ccff;	\
+}';
 
-document.querySelector('head').appendChild(E('style', [
-	'\
-	#log_textarea {\
-		padding: 10px;\
-		text-align: left;\
-	}\
-	#log_textarea pre {\
-		padding: .5rem;\
-		word-break: break-all;\
-		margin: 0;\
-	}\
-	'
-]));
+const hm_dir = '/var/run/fchomo';
 
-const RUN_DIR = '/var/run/fchomo';
-
-function getRuntimeLog(name, option_index, section_id, in_table) {
-	const filename = this.option.split('_')[1];
-
-	let section, option, log_level_el;
-	switch (filename) {
-		case 'fchomo':
-			section = null;
-			option = null;
-			break;
-		case 'mihomo-c':
-			section = 'global';
-			option = 'log_level';
-			break;
-		case 'mihomo-s':
-			section = 'global';
-			option = 'server_log_level';
-			break;
-	}
-
-	if (section) {
-		const selected = uci.get('fchomo', section, option) || 'warning';
-
-		log_level_el = E('select', {
-			'id': this.cbid(section_id),
-			'class': 'cbi-input-select',
-			'style': 'margin-left: 4px; width: 6em;',
-			'change': ui.createHandlerFn(this, (ev) => {
-				uci.set('fchomo', section, option, ev.target.value);
-				return this.map.save(null, true).then(() => {
-					ui.changes.apply(true);
-				});
-			})
-		});
-
-		hm.log_levels.forEach(([k, v]) => {
-			log_level_el.appendChild(E('option', {
-				'value': k,
-				'selected': (k === selected) ? '' : null
-			}, [ v ]));
-		});
-	}
-
+function getRuntimeLog(name, filename) {
 	const callLogClean = rpc.declare({
 		object: 'luci.fchomo',
 		method: 'log_clean',
@@ -76,15 +33,15 @@ function getRuntimeLog(name, option_index, section_id, in_table) {
 		expect: { '': {} }
 	});
 
-	const log_textarea = E('div', { 'id': 'log_textarea' },
+	let log_textarea = E('div', { 'id': 'log_textarea' },
 		E('pre', {
 			'class': 'spinning'
 		}, _('Collecting data...'))
 	);
 
 	let log;
-	poll.add(function() {
-		return fs.read_direct(String.format('%s/%s.log', RUN_DIR, filename), 'text')
+	poll.add(L.bind(function() {
+		return fs.read_direct(String.format('%s/%s.log', hm_dir, filename), 'text')
 		.then((res) => {
 			log = E('pre', { 'wrap': 'pre' }, [
 				res.trim() || _('Log is empty.')
@@ -103,17 +60,17 @@ function getRuntimeLog(name, option_index, section_id, in_table) {
 
 			dom.content(log_textarea, log);
 		});
-	});
+	}));
 
 	return E([
+		E('style', [ css ]),
 		E('div', {'class': 'cbi-map'}, [
-			E('h3', {'name': 'content', 'style': 'align-items: center; display: flex;'}, [
+			E('h3', {'name': 'content'}, [
 				_('%s log').format(name),
-				log_level_el || '',
+				' ',
 				E('button', {
 					'class': 'btn cbi-button cbi-button-action',
-					'style': 'margin-left: 4px;',
-					'click': ui.createHandlerFn(this, () => {
+					'click': ui.createHandlerFn(this, function() {
 						return L.resolveDefault(callLogClean(filename), {});
 					})
 				}, [ _('Clean log') ])
@@ -142,7 +99,7 @@ return view.extend({
 		ss = o.subsection;
 
 		so = ss.option(form.DummyValue, '_fchomo_logview');
-		so.render = L.bind(getRuntimeLog, so, _('FullCombo Shark!'));
+		so.render = L.bind(getRuntimeLog, so, _('FullCombo Shark!'), 'fchomo');
 		/* FullCombo Shark! END */
 
 		/* Mihomo client START */
@@ -151,7 +108,7 @@ return view.extend({
 		ss = o.subsection;
 
 		so = ss.option(form.DummyValue, '_mihomo-c_logview');
-		so.render = L.bind(getRuntimeLog, so, _('Mihomo client'));
+		so.render = L.bind(getRuntimeLog, so, _('Mihomo client'), 'mihomo-c');
 		/* Mihomo client END */
 
 		/* Mihomo server START */
@@ -160,7 +117,7 @@ return view.extend({
 		ss = o.subsection;
 
 		so = ss.option(form.DummyValue, '_mihomo-s_logview');
-		so.render = L.bind(getRuntimeLog, so, _('Mihomo server'));
+		so.render = L.bind(getRuntimeLog, so, _('Mihomo server'), 'mihomo-s');
 		/* Mihomo server END */
 
 		return m.render();

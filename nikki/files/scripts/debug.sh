@@ -49,8 +49,8 @@ const config = uci.get_all("nikki");
 const result = {};
 
 for (let section_id in config) {
-	const section = config[section_id];
-	const section_type = section[".type"];
+    const section = config[section_id];
+    const section_type = section[".type"];
 	if (result[section_type] == null) {
 		result[section_type] = [];
 	}
@@ -160,7 +160,7 @@ function desensitize_proxies(proxies) {
 
 function desensitize_profile() {
 	let profile = {};
-	const process = popen("yq -M -p yaml -o json /etc/nikki/run/config.yaml");
+	const process = popen("yq -p yaml -o json /etc/nikki/run/config.yaml");
 	if (process) {
 		profile = json(process);
 		if (exists(profile, "secret")) {
@@ -201,12 +201,12 @@ ip rule list
 \`\`\`
 TPROXY: 
 `
-ip route list table "$(uci get nikki.routing.tproxy_route_table)"
+ip route list table "$TPROXY_ROUTE_TABLE"
 `
 
 TUN: 
 `
-ip route list table "$(uci get nikki.routing.tun_route_table)"
+ip route list table "$TUN_ROUTE_TABLE"
 `
 \`\`\`
 ## ip6 rule
@@ -219,12 +219,12 @@ ip -6 rule list
 \`\`\`
 TPROXY: 
 `
-ip -6 route list table "$(uci get nikki.routing.tproxy_route_table)"
+ip -6 route list table "$TPROXY_ROUTE_TABLE"
 `
 
 TUN: 
 `
-ip -6 route list table "$(uci get nikki.routing.tun_route_table)"
+ip -6 route list table "$TUN_ROUTE_TABLE"
 `
 \`\`\`
 ## nftables

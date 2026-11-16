@@ -2,9 +2,9 @@
 
 'use strict';
 
-import { access, lsdir, lstat, mkstemp, popen, readfile, writefile } from 'fs';
+import { access, lsdir, lstat, popen, readfile, writefile } from 'fs';
 import {
-	shellQuote, isBinary, executeCommand, yqRead, yqReadFile,
+	shellQuote, isBinary, yqRead, yqReadFile,
 	HM_DIR, EXE_DIR, SDL_DIR, RUN_DIR
 } from 'fchomo';
 
@@ -16,10 +16,10 @@ function wGET(url, header, filepath) {
 	if (!url || type(url) !== 'string')
 		return null;
 
-	let ua = 'Wget/1.24 (FullCombo Shark!)';
+	let ua = 'Wget/1.21 (FullCombo Shark!)';
 
 	if (header) {
-		header = json(trim(header) || '{}');
+		header = json(trim(header) || {});
 
 		header = join(' ', filter(map(keys(header), (k) => {
 			let v = join(', ', type(header[k]) === 'array' ? filter(header[k], v => v) : []);
@@ -37,84 +37,30 @@ function wGET(url, header, filepath) {
 	return exitcode;
 }
 
-const RES_TYPE = ['certs', 'node', 'provider', 'ruleset', 'resources', 'templates'];
+const RES_TYPE = ['certs', 'provider', 'ruleset', 'resources', 'templates'];
 
 const methods = {
 	mihomo_generator: {
-		args: { type: 'type', params: 'params' },
+		args: { type: 'type' },
 		call: function(req) {
-			/* https://github.com/MetaCubeX/mihomo/blob/Alpha/component/generator/cmd.go */
-			if (!(req.args?.type in ['uuid', 'ss-password',
-				'reality-keypair', 'wg-keypair', 'sudoku-keypair',
-				'age-x25519', 'age-mlkem768-x25519', 'age-convert',
-				'vless-mlkem768', 'vless-x25519',
-				'ech-keypair'])) {
+			if (!(req.args?.type in ['uuid', 'reality-keypair', 'wg-keypair']))
 				return { result: false, error: 'illegal type' };
-			}
 
 			const type = req.args?.type;
 			let result = {};
 
-			let cmd = `generate ${type}`;
-			switch (type) {
-				case 'age-x25519':
-					cmd = 'age keygen';
-					break;
-				case 'age-mlkem768-x25519':
-					cmd = 'age keygen-pq';
-					break;
-				case 'age-convert':
-					cmd = 'age convert';
-					break;
-			}
-
-			const fd = popen(`/usr/bin/mihomo ${cmd} ${shellQuote(req.args.params ?? '')}`);
+			const fd = popen('/usr/bin/mihomo generate ' + type);
 			if (fd) {
 				for (let line = fd.read('line'); length(line); line = fd.read('line')) {
 					if (type === 'uuid')
 						result.uuid = trim(line);
-					if (type === 'ss-password')
-						result.password = trim(line);
-					else if (type in ['reality-keypair', 'wg-keypair', 'sudoku-keypair']) {
+					else if (type in ['reality-keypair', 'wg-keypair']) {
 						let priv = match(trim(line), /PrivateKey: (.*)/);
 						if (priv)
 							result.private_key = priv[1];
 						let pub = match(trim(line), /PublicKey: (.*)/);
 						if (pub)
 							result.public_key = pub[1];
-					} else if (type in ['age-x25519', 'age-mlkem768-x25519']) {
-						let priv = match(trim(line), /AGE-SECRET-KEY-.*/);
-						if (priv)
-							result.private_key = priv[0];
-						let pub = match(trim(line), /# public key: (.*)/);
-						if (pub)
-							result.public_key = pub[1];
-					} else if (type in ['age-convert']) {
-						result.public_key = trim(line);
-					} else if (type in ['vless-x25519', 'vless-mlkem768']) {
-						let priv = match(trim(line), /PrivateKey: (.*)/);
-						if (priv)
-							result.private_key = priv[1];
-						let pass = match(trim(line), /Password: (.*)/);
-						if (pass)
-							result.password = pass[1];
-						let seed = match(trim(line), /Seed: (.*)/);
-						if (seed)
-							result.seed = seed[1];
-						let client = match(trim(line), /Client: (.*)/);
-						if (client)
-							result.client = client[1];
-						let hash = match(trim(line), /Hash32: (.*)/);
-						if (hash)
-							result.hash32 = hash[1];
-					} else if (type in ['ech-keypair']) {
-						result.ech_key = result.ech_key ? result.ech_key + '\n' + trim(line) : '';
-						let cfg = match(trim(line), /Config: (.*)/);
-						if (cfg)
-							result.ech_cfg = cfg[1];
-						let key = match(trim(line), /Key: (.*)/);
-						if (key)
-							result.ech_key = key[1];
 					}
 				}
 
@@ -125,61 +71,11 @@ const methods = {
 		}
 	},
 
-	age_crypto: {
-		args: { action: 'action', key: 'key', content: 'content'},
-		call: function(req) {
-			if (!(req.args?.action in ['decrypt', 'encrypt']))
-				return { result: false, error: 'illegal action' };
-
-			if (!req.args?.key)
-				return { result: false, error: 'illegal key' };
-
-			if (!req.args?.content)
-				return { result: '' };
-
-			let content = req.args?.content;
-			let infd = mkstemp();
-
-			if (content) {
-				content = trim(content);
-				content = replace(content, /\r\n?/g, '\n');
-			}
-			infd.write(content);
-
-			infd.seek();
-			const out = executeCommand(infd, '/usr/bin/mihomo age', req.args?.action, shellQuote(req.args?.key), '-', '-');
-			infd.close();
-
-			return out.exitcode === 0 ? { result: out.stdout } : { result: false, error: out.stderr };
-		}
-	},
-
-	age_crypto_file: {
-		args: { action: 'action', key: 'key', input: 'input', output: 'output'},
-		call: function(req) {
-			if (!(req.args?.action in ['decrypt', 'encrypt']))
-				return { result: false, error: 'illegal action' };
-
-			if (!req.args?.key)
-				return { result: false, error: 'illegal key' };
-
-			if ((!req.args?.input) || match(req.args?.input, /\.\.\//))
-				return { result: false, error: 'illegal input' };
-
-			if ((!req.args?.output) || match(req.args?.output, /\.\.\//))
-				return { result: false, error: 'illegal output' };
-
-			const out = executeCommand(null, '/usr/bin/mihomo age', req.args?.action, shellQuote(req.args?.key), shellQuote(req.args?.input), shellQuote(req.args?.output));
-
-			return out.exitcode === 0 ? { result: true } : { result: false, error: out.stderr };
-		}
-	},
-
 	get_features: {
 		call: function() {
 			let features = {};
 
-			const use_apk = system('command -v apk') == 0 || null; // @less_25_12
+			const use_apk = system('command -v apk') == 0 || null;
 
 			const fd = popen('/usr/bin/mihomo -v');
 			if (fd) {
@@ -196,11 +92,11 @@ const methods = {
 				fd.close();
 			}
 
-			features.app_version = trim(popen(`${use_apk ? 'apk list -I --manifest' : 'opkg list-installed'} luci-app-fchomo | ` +
-				`awk '{print $NF}'`).read('all')) || null; // @less_25_12
+			features.app_version = trim(popen(`${use_apk ? 'apk list -I' : 'opkg list-installed'} luci-app-fchomo | ` +
+				`awk '{print $${use_apk ? '1' : 'NF'}}'`).read('all')) || null;
 
-			features.has_luci_app_tinyfilemanager = system(`[ -n "$(${use_apk ? 'apk list -qI' : 'opkg list-installed'} luci-app-tinyfilemanager)" ]`) == 0 || null; // @less_25_12
-			features.has_dnsmasq_full = system(`[ -n "$(${use_apk ? 'apk list -qI' : 'opkg list-installed'} dnsmasq-full)" ]`) == 0 || null; // @less_25_12
+			features.has_dnsmasq_full = system(`[ -n "$(${use_apk ? 'apk list -qI' : 'opkg list-installed'} dnsmasq-full)" ]`) == 0 || null;
+			features.has_ip_full = access('/usr/libexec/ip-full');
 			features.has_stunclient = access('/usr/bin/stunclient');
 			features.has_tcp_brutal = hasKernelModule('brutal.ko');
 			features.has_tproxy = hasKernelModule('nft_tproxy.ko') || access('/etc/modules.d/nft-tproxy');
@@ -235,7 +131,7 @@ const methods = {
 			if (!req.args?.url)
 				return { httpcode: null, error: 'illegal url' };
 
-			const httpcode = trim(popen(`wget --spider -t1 -ST3 ${shellQuote(req.args?.url)} 2>&1 | awk '/^\\s*HTTP\\//{print $2}'`).read('all')) || '-1';
+			const httpcode = trim(popen(`wget --spider -t1 -ST3 '${req.args?.url}' 2>&1 | awk '/^\\s*HTTP\\//{print $2}'`).read('all')) || '-1';
 
 			return { httpcode: httpcode };
 		}
@@ -246,10 +142,8 @@ const methods = {
 		call: function(req) {
 			if (req.args?.type == 'resources') {
 				system(`sed -i "/${replace(EXE_DIR, "/", "\\/")}\\/update_resources.sh/d" /etc/crontabs/root`);
-				if ((req.args?.expr && match(req.args?.expr, /^[0-9 ,\*\/\?-]+$/)))
+				if (req.args?.expr)
 					system(`echo -e "` + req.args?.expr + ` ${EXE_DIR}/update_resources.sh ALL" >> /etc/crontabs/root`);
-				else
-					return { result: false, error: 'illegal expr' };
 			} else
 				return { result: false, error: 'illegal type' };
 
@@ -320,20 +214,6 @@ const methods = {
 		}
 	},
 
-	yamlfile2json: {
-		args: { type: 'type', filename: 'filename', command: 'command' },
-		call: function(req) {
-			if (!(req.args?.type in RES_TYPE))
-				return { content: null, error: 'illegal type' };
-
-			if ((!req.args?.filename) || match(req.args?.filename, /\.\.\//))
-				return { content: null, error: 'illegal filename' };
-
-			const filepath = `${HM_DIR}/${req.args?.type}/${req.args?.filename}`;
-			return { result: json(trim(yqReadFile('-oj', req.args?.command || '.', filepath)) || '{}') };
-		}
-	},
-
 	dir_ls: {
 		args: { type: 'type' },
 		call: function(req) {
@@ -346,7 +226,7 @@ const methods = {
 	},
 
 	file_read: {
-		args: { type: 'type', filename: 'filename', isbinary: 'isbinary' },
+		args: { type: 'type', filename: 'filename' },
 		call: function(req) {
 			if (!(req.args?.type in RES_TYPE))
 				return { content: null, error: 'illegal type' };
@@ -354,17 +234,13 @@ const methods = {
 			if ((!req.args?.filename) || match(req.args?.filename, /\.\.\//))
 				return { content: null, error: 'illegal filename' };
 
-			let filecontent = readfile(`${HM_DIR}/${req.args?.type}/${req.args?.filename}`);
-
-			if (req.args?.isbinary == 1)
-				filecontent = b64enc(filecontent);
-
+			const filecontent = readfile(`${HM_DIR}/${req.args?.type}/${req.args?.filename}`);
 			return { content: filecontent };
 		}
 	},
 
 	file_write: {
-		args: { type: 'type', filename: 'filename', content: 'content', isbinary: 'isbinary' },
+		args: { type: 'type', filename: 'filename', content: 'content' },
 		call: function(req) {
 			if (!(req.args?.type in RES_TYPE))
 				return { result: false, error: 'illegal type' };
@@ -382,9 +258,6 @@ const methods = {
 				if (!match(content, /\n$/))
 					content += '\n';
 			}
-
-			if (req.args?.isbinary == 1)
-				content = b64dec(content);
 
 			//system(`mkdir -p ${HM_DIR}/${req.args?.type}`);
 			writefile(file, content);
@@ -426,13 +299,13 @@ const methods = {
 			if ((!req.args?.filename) || match(req.args?.filename, /\.\.\//))
 				return { result: false, error: 'illegal filename' };
 
-			system(`rm -rf ${HM_DIR}/${req.args?.type}/${shellQuote(req.args?.filename)}`);
+			system(`rm -f ${HM_DIR}/${req.args?.type}/${req.args?.filename}`);
 
 			return { result: true };
 		}
 	},
 
-	/* thanks to homeproxy */
+	// thanks to homeproxy
 	certificate_write: {
 		args: { filename: 'filename' },
 		call: function(req) {
@@ -488,11 +361,9 @@ const methods = {
 			switch (filename) {
 			case 'client_ca':
 			case 'server_publickey':
-			case 'client_publickey':
 				return writeCertificate(filename, false);
 				break;
 			case 'server_privatekey':
-			case 'client_privatekey':
 				return writeCertificate(filename, true);
 				break;
 			default:

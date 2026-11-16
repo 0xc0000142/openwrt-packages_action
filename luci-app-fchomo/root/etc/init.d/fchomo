@@ -18,7 +18,7 @@ RUN_DIR="/var/run/fchomo"
 LOG_PATH="$RUN_DIR/fchomo.log"
 
 # Compatibility
-[ -x "$(command -v apk)" ] && OPM='apk' || OPM='opkg' # @less_25_12
+[ -x "$(command -v apk)" ] && OPM='apk' || OPM='opkg'
 #
 # thanks to homeproxy
 # we don't know which is the default server, just take the first one
@@ -30,7 +30,7 @@ else
 fi
 #
 # opmc action $@
-opmc() {  # @less_25_12
+opmc() {
 	local action="$1"; shift;
 
 	if [ "$OPM" = "apk" ]; then
@@ -43,38 +43,6 @@ opmc() {  # @less_25_12
 	fi
 
 	$OPM $action "$@"
-}
-
-# add_firewall
-add_firewall() {
-	local enabled auto_firewall listen listen_port type
-	config_get_bool enabled "$1" "enabled" "1"
-	config_get_bool auto_firewall "$1" "auto_firewall" "1"
-	config_get listen "$1" "listen" "::"
-	config_get listen_port "$1" "listen_port"
-	config_get type "$1" "type"
-
-	local "${type}_listen_port"
-	config_get "${type}_listen_port" "$1" "${type}_listen_port"
-	eval "listen_port=\"$listen_port,\$${type}_listen_port\""
-
-	[ "$enabled" = "0" ] && return 0
-	[ "$auto_firewall" = "0" ] && return 0
-
-	for port in ${listen_port//,/ }; do
-		json_add_object ''
-		json_add_string type rule
-		json_add_string target ACCEPT
-		json_add_string name "$1"
-		#json_add_string family '' # '' = IPv4 and IPv6
-		json_add_string proto 'tcp udp'
-		json_add_string direction in
-		json_add_string src "*"
-		#json_add_string dest '' # '' = input
-		json_add_string dest_ip "$(echo "$listen" | grep -vE '^(0\.\d+\.\d+\.\d+|::)$')"
-		json_add_string dest_port "$port"
-		json_close_object
-	done
 }
 
 config_load "$CONF"
@@ -131,9 +99,10 @@ log() {
 }
 
 start_service() {
-	local client_enabled server_enabled
-	config_get_bool client_enabled "routing" "client_enabled" "0"
+	local client_enabled server_enabled server_auto_firewall
+	config_get client_enabled "routing" "client_enabled" "0"
 	config_get_bool server_enabled "routing" "server_enabled" "0"
+	config_get_bool server_auto_firewall "routing" "server_auto_firewall" "0"
 
 	if [ "$client_enabled" = "0" -a "$server_enabled" = "0" ]; then
 		return 1
@@ -141,20 +110,17 @@ start_service() {
 
 	mkdir -p "$RUN_DIR"
 
-	# Global ENV variables
-	config_get_bool SKIP_SAFE_PATH_CHECK "experimental" "skip_safe_path_check" "0"
-	export SKIP_SAFE_PATH_CHECK=$([ "$SKIP_SAFE_PATH_CHECK" = "1" ] && echo true || echo false)
-
 	# Client
 	if [ "$client_enabled" = "1" ]; then
 	if [ -z "$1" -o "$1" = "mihomo-c" ]; then
+		# Env variables
+		export SAFE_PATHS="$RUN_DIR/"
 
 		# Generate/Validate client config
 		ucode -S "$SDL_DIR/generate_client.uc" 2>>"$LOG_PATH" | yq -Poy | yq \
 			'.sniffer["force-domain"][] style="double"
 			| .sniffer["skip-domain"][] style="double"
-			| with(.dns["nameserver-policy"]; ... style="double")
-			| with(.dns["proxy-server-nameserver-policy"]; ... style="double")
+			| with(.dns["nameserver-policy"] | keys; .. style="double")
 			| .dns["fallback-filter"].domain[] style="double"
 			| with(.["proxy-providers"][] | select(.payload); .payload style="literal")
 			| with(.["rule-providers"][] | select(.payload); .payload style="literal")' \
@@ -165,27 +131,9 @@ start_service() {
 		if [ ! -e "$RUN_DIR/mihomo-c.yaml" ]; then
 			log "Error: failed to generate client configuration."
 			return 1
-		else
-			# Set ENV variables for Client
-			export SAFE_PATHS="$RUN_DIR$(
-				yq 'with(.external-ui; select(. != null) | . = sub("(/?$)", "/placeholder"))
-					| [.external-ui, .tls.certificate, .tls.private-key, .tls.client-auth-cert, .realm-opts.certificate, .realm-opts.private-key] | unique | map(select(. != null))
-					| .[] |= sub("(/[^/]+$)", "") | unique
-					| .[] | sub("(^)", ":")' \
-				"$RUN_DIR/mihomo-c.yaml" | tr -d '\n'
-			)"
-			export SAFE_PATHS="$SAFE_PATHS$( # mTLS
-				yq '.proxies | map([.certificate, .private-key][]) | unique | map(select(. != null))
-					| .[] |= sub("(/[^/]+$)", "") | unique
-					| .[] | sub("(^)", ":")' \
-				"$RUN_DIR/mihomo-c.yaml" | tr -d '\n'
-			)"
-
-			if ! "$PROG" -t -d "$HM_DIR" -f "$RUN_DIR/mihomo-c.yaml" >/dev/null; then
-				log "Error: wrong client configuration detected."
-				"$PROG" -t -d "$HM_DIR" -f "$RUN_DIR/mihomo-c.yaml" >>"$LOG_PATH"
-				return 1
-			fi
+		elif ! "$PROG" -t -d "$HM_DIR" -f "$RUN_DIR/mihomo-c.yaml" >/dev/null 2>>"$LOG_PATH"; then
+			log "Error: wrong client configuration detected."
+			return 1
 		fi
 		echo > "$RUN_DIR/mihomo-c.log"
 
@@ -198,64 +146,24 @@ start_service() {
 			mv "$RUN_DIR/"*-gh-pages/ "$RUN_DIR/ui/"
 		fi
 
-		# Generate runtime ruleset
-		# <format> <src> <dst> [domainOnlay]
-		write_runtime_ruleset_file() {
-			local format="$1"
-			local src="$2"
-			local dst="$3"
-			local domainOnlay="$4"
-
-			if [ "$format" = "fchmclist" ]; then
-				if [ -n "$domainOnlay" ]; then
-					yq '.[] |= with(select(. == null); . = [])
-						| with(.DOMAIN[]; . = "DOMAIN-SUFFIX,\(.)")
-					| {"payload": .DOMAIN}' "$src" > "$dst"
-				else
-					yq '.[] |= with(select(. == null); . = [])
-						| with(.DOMAIN[]; . = "DOMAIN-SUFFIX,\(.)")
-						| with(.IPCIDR[]; . = "IP-CIDR,\(.)")
-						| with(.IPCIDR6[]; . = "IP-CIDR6,\(.)")
-					| {"payload": [.DOMAIN[], .IPCIDR[], .IPCIDR6[]]}' "$src" > "$dst"
-				fi
-			elif [ "$format" = "domain" ]; then
-				sed -E 's|^([^\.])|+.\1|' "$src" > "$dst.tmp"
-				mihomo convert-ruleset domain text "$dst.tmp" "$dst"
-				rm -f "$dst.tmp"
-			fi
-		}
-
-		# runtime ruleset
-		write_runtime_ruleset_file fchmclist "$HM_DIR/resources/direct_list.yaml" "$RUN_DIR/direct_list.yaml" domainOnlay
-		write_runtime_ruleset_file fchmclist "$HM_DIR/resources/proxy_list.yaml" "$RUN_DIR/proxy_list.yaml"
-		write_runtime_ruleset_file domain "$HM_DIR/resources/china_list.txt" "$RUN_DIR/china_list.mrs"
-		write_runtime_ruleset_file domain "$HM_DIR/resources/gfw_list.txt" "$RUN_DIR/gfw_list.mrs"
-
 		# Setup DNSMasq servers and IP-sets
 		local global_ipv6 dns_ipv6
 		config_get_bool global_ipv6 "global" "ipv6" "1"
 		config_get_bool dns_ipv6 "dns" "ipv6" "1"
 		local dns_port tunnel_port
 		config_get dns_port "dns" "dns_port" "7853"
-		config_get tunnel_port "inbound" "tunnel_port" "7893" # @Not required for v1.19.2+
-		local top_upstream routing_mode routing_domain
-		config_get_bool top_upstream "routing" "top_upstream" "0"
+		config_get tunnel_port "inbound" "tunnel_port" "7893" # Not required for v1.19.2+
+		local routing_mode routing_domain
 		config_get routing_mode "routing" "routing_mode" ""
 		config_get_bool routing_domain "routing" "routing_domain" "0"
 
 		mkdir -p "$DNSMASQ_DIR"
-		echo -e "conf-dir=$DNSMASQ_DIR" > "$DNSMASQ_DIR/../$([ "$top_upstream" = "1" ] && echo '00-')dnsmasq-fchomo.conf"
+		echo -e "conf-dir=$DNSMASQ_DIR" > "$DNSMASQ_DIR/../dnsmasq-fchomo.conf"
 		cat <<-EOF > "$DNSMASQ_DIR/forward-dns.conf"
 			no-poll
 			no-resolv
 			server=127.0.0.1#$dns_port
 		EOF
-
-		# fix dnsmasq
-		if [ "$top_upstream" = "1" -a "$(uci -q get dhcp.@dnsmasq[0].strictorder)" != "1" ]; then
-			uci set dhcp.@dnsmasq[0].strictorder="1"
-			uci commit dhcp
-		fi
 
 		# <family> <set_name> <src> <dst> [yaml]
 		write_ipset_file() {
@@ -266,7 +174,7 @@ start_service() {
 			local yaml="$5"
 
 			if [ -n "$yaml" ]; then
-				yq '.[] |= with(select(. == null); . = []) | .DOMAIN[]' "$src" | \
+				yq '.[] |= with(select(. == null); . = []) | .FQDN[]' "$src" | \
 				sed "s|^|nftset=/|;s|$|/${family}#inet#fchomo#${set_name}|" > "$dst"
 			else
 				sed "s|^|nftset=/|;s|$|/${family}#inet#fchomo#${set_name}|" "$src" > "$dst"
@@ -298,6 +206,8 @@ start_service() {
 				esac
 			fi
 		fi
+
+		/etc/init.d/dnsmasq reload >/dev/null 2>&1
 
 		# Setup routing table
 		local proxy_mode table_id rule_pref
@@ -341,7 +251,7 @@ start_service() {
 
 		procd_set_param command /bin/sh
 		procd_append_param command -c "'$PROG' -d '$HM_DIR' -f '$RUN_DIR/mihomo-c.yaml' >> '$RUN_DIR/mihomo-c.log' 2>&1"
-		procd_set_param env SAFE_PATHS="$SAFE_PATHS" SKIP_SAFE_PATH_CHECK="$SKIP_SAFE_PATH_CHECK" # The syntax of this environment variable is the same as the PATH environment variable parsing rules of this operating system (i.e., semicolon-separated under Windows and colon-separated under other systems)
+		procd_set_param env SAFE_PATHS="$RUN_DIR:/etc/ssl" SKIP_SAFE_PATH_CHECK=true # The syntax of this environment variable is the same as the PATH environment variable parsing rules of this operating system (i.e., semicolon-separated under Windows and colon-separated under other systems)
 
 		# Only supports `Global`` and does not support `Proxy Group` and `Proxy Node`
 		local bind_ifname
@@ -365,16 +275,6 @@ start_service() {
 		procd_set_param stderr 1
 		procd_set_param respawn
 
-		# add_firewall
-		procd_open_data
-		# configure firewall
-		json_add_array firewall
-			# meta l4proto %s th dport %s counter accept comment "!%s: accept server instance [%s]"
-			config_foreach add_firewall "inbound"
-			config_foreach add_firewall "node"
-		json_close_array
-		procd_close_data
-
 		procd_close_instance
 	fi
 	fi
@@ -388,20 +288,9 @@ start_service() {
 		if [ ! -e "$RUN_DIR/mihomo-s.yaml" ]; then
 			log "Error: failed to generate server configuration."
 			return 1
-		else
-			# Set ENV variables for Server
-			export SAFE_PATHS="$RUN_DIR$(
-				yq '.listeners | map([.certificate, .private-key, .client-auth-cert, .realm-opts.certificate, .realm-opts.private-key][]) | unique | map(select(. != null))
-					| .[] |= sub("(/[^/]+$)", "") | unique
-					| .[] | sub("(^)", ":")' \
-				"$RUN_DIR/mihomo-s.yaml" | tr -d '\n'
-			)"
-
-			if ! "$PROG" -t -d "$HM_DIR" -f "$RUN_DIR/mihomo-s.yaml" >/dev/null; then
-				log "Error: wrong server configuration detected."
-				"$PROG" -t -d "$HM_DIR" -f "$RUN_DIR/mihomo-s.yaml" >>"$LOG_PATH"
-				return 1
-			fi
+		elif ! "$PROG" -t -d "$HM_DIR" -f "$RUN_DIR/mihomo-s.yaml" >/dev/null 2>>"$LOG_PATH"; then
+			log "Error: wrong server configuration detected."
+			return 1
 		fi
 		echo > "$RUN_DIR/mihomo-s.log"
 
@@ -410,7 +299,6 @@ start_service() {
 
 		procd_set_param command /bin/sh
 		procd_append_param command -c "'$PROG' -d '$HM_DIR' -f '$RUN_DIR/mihomo-s.yaml' >> '$RUN_DIR/mihomo-s.log' 2>&1"
-		procd_set_param env SAFE_PATHS="$SAFE_PATHS" SKIP_SAFE_PATH_CHECK="$SKIP_SAFE_PATH_CHECK" # The syntax of this environment variable is the same as the PATH environment variable parsing rules of this operating system (i.e., semicolon-separated under Windows and colon-separated under other systems)
 
 		#procd_set_param capabilities "/etc/capabilities/fchomo.json"
 		#procd_set_param user mihomo
@@ -421,14 +309,36 @@ start_service() {
 		procd_set_param stderr 1
 		procd_set_param respawn
 
-		# add_firewall
-		procd_open_data
-		# configure firewall
-		json_add_array firewall
-			# meta l4proto %s th dport %s counter accept comment "!%s: accept server instance [%s]"
-			config_foreach add_firewall "server"
-		json_close_array
-		procd_close_data
+		if [ "$server_auto_firewall" = "1" ]; then
+			add_firewall() {
+				local enabled listen port
+				config_get_bool enabled "$1" "enabled" "1"
+				config_get listen "$1" "listen" "::"
+				config_get port "$1" "port"
+
+				[ "$enabled" = "0" ] && return 0
+
+				json_add_object ''
+				json_add_string type rule
+				json_add_string target ACCEPT
+				json_add_string name "$1"
+				#json_add_string family '' # '' = IPv4 and IPv6
+				json_add_string proto 'tcp udp'
+				json_add_string src "*"
+				#json_add_string dest '' # '' = input
+				json_add_string dest_ip "$(echo "$listen" | grep -vE '^(0\.\d+\.\d+\.\d+|::)$')"
+				json_add_string dest_port "$port"
+				json_close_object
+			}
+
+			procd_open_data
+			# configure firewall
+			json_add_array firewall
+				# meta l4proto %s th dport %s counter accept comment "!%s: accept server instance [%s]"
+				config_foreach add_firewall "server"
+			json_close_array
+			procd_close_data
+		fi
 
 		procd_close_instance
 	fi
@@ -450,20 +360,13 @@ start_service() {
 	log "$(mihomo -v | awk 'NR==1{print $1,$3}') started."
 }
 
-service_started() {
-	procd_set_config_changed dhcp
-	procd_set_config_changed firewall
-}
+service_started() { procd_set_config_changed firewall; }
 
 stop_service() {
 	# Client
 	[ -z "$1" -o "$1" = "mihomo-c" ] && stop_client
 	# Server
 	[ -z "$1" -o "$1" = "mihomo-s" ] && stop_server
-	# Directory
-	#find "$RUN_DIR"/* -maxdepth 0 -type d -exec rm -rf "{}" \;
-	# Resources
-	rm -rf "$RUN_DIR"/*.lock
 	# Setup firewall
 	echo 2>"/dev/null" > "$RUN_DIR/fchomo_pre.nft"
 	return 0
@@ -498,13 +401,9 @@ stop_client() {
 	nft delete table inet fchomo 2>"/dev/null"
 	echo 2>"/dev/null" > "$RUN_DIR/fchomo_post.nft"
 
-	# Remove runtime ruleset
-	echo 2>"/dev/null" > "$RUN_DIR/direct_list.yaml"
-	echo 2>"/dev/null" > "$RUN_DIR/proxy_list.yaml"
-	rm -rf "$RUN_DIR/china_list.mrs" "$RUN_DIR/gfw_list.mrs"
-
 	# Remove DNSMasq servers
-	rm -rf "$DNSMASQ_DIR/../dnsmasq-fchomo.conf" "$DNSMASQ_DIR/../00-dnsmasq-fchomo.conf" "$DNSMASQ_DIR" # no bash, no {,00-}dnsmasq-fchomo.conf
+	rm -rf "$DNSMASQ_DIR/../dnsmasq-fchomo.conf" "$DNSMASQ_DIR"
+	/etc/init.d/dnsmasq reload >/dev/null 2>&1
 
 	# Remove Clash API Dashboard
 	rm -rf "$RUN_DIR/ui"
@@ -528,7 +427,6 @@ service_stopped() {
 	[ -n "$(/etc/init.d/$CONF info | jsonfilter -q -e '@.'"$CONF"'.instances["mihomo-c"]')" ] || client_stopped
 	# Server
 
-	procd_set_config_changed dhcp
 	procd_set_config_changed firewall
 }
 

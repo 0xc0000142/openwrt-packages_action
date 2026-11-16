@@ -1,5 +1,5 @@
 source	url	ref	commit
-kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	a1be9441b9bf0c71d7cb7bcfbc75f6fe6aee3a8f
+kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	cfb0e7a4576af050f7b44d5281de73ce70099690
 fw876__helloworld	https://github.com/fw876/helloworld.git	dev	6fbc9f563c9e7cd3b65061fba13ffc62666066aa
 immortalwrt__packages-25.12	https://github.com/immortalwrt/packages.git	openwrt-25.12	fa25995d74a720c1c98bf6265d3dd8b4eb620d1f
 openwrt__packages	https://github.com/openwrt/packages.git	openwrt-25.12	c2c619e6f065b238ab000b6cfc5afa238658b0c9
@@ -76,7 +76,7 @@ liudf0716__luci-app-apfree-wifidog	https://github.com/liudf0716/luci-app-apfree-
 fonlan__luci-app-poddns	https://github.com/fonlan/luci-app-poddns.git	main	fef45c26df0e4f7b5da7d2a5411343d5033d8b56
 blueberry-pie-11__luci-app-natmap	https://github.com/blueberry-pie-11/luci-app-natmap.git	master	18c4c7c0ba039178c33d1ece8d68b13bc335af5a
 animegasan__luci-app-droidnet	https://github.com/animegasan/luci-app-droidnet.git	master	07f47192da567c99257c2eac30aaf2c40240faaa
-danchexiaoyang__luci-app-kodexplore	https://github.com/danchexiaoyang/luci-app-kodexplore.git	main	e43beaaa22780df420ae16c5c8020aef9d649d6f
+danchexiaoyang__luci-app-kodexplore	https://github.com/danchexiaoyang/luci-app-kodexplore.git	main	811abbd5b2540f608c5ef7812d41e1221dcb2c78
 gSpotx2f__luci-app-log	https://github.com/gSpotx2f/luci-app-log.git	master	b8539ff6b52c8ca4c90e94b33e69b5b288a9dcae
 messense__aliyundrive-webdav	https://github.com/messense/aliyundrive-webdav.git	main	00caff62b55ae53327f1c8824b19b1c9532cc174
 frainzy1477__luci-app-clash	https://github.com/frainzy1477/luci-app-clash.git	test	f65ed1b77c21fce83611f1fd1f6457da4cef1e99

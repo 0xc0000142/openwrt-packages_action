@@ -32,9 +32,7 @@ The shortest format is `/`.
 + `behav`: Required. Available values ​​refer to **behavior**.
 + `sec`: Optional. Available under **remote**. Available values ​​refer to **interval**.
 + `rawq`: Optional. Available under **remote**. Available values ​​refer to **rawQuery**.
-+ `hdr`: Optional. Available under **remote**. Available values ​​refer to **header**.
 + `fill`: Optional. Available under **local**. Available values ​​refer to **filler**.
-+ `bpath`: Optional. Available when **format** is `mrs`. Available values ​​refer to **bundlePath**.
 
 #### format
 
@@ -46,36 +44,24 @@ Can be `domain` or `ipcidr` or `classical`. Rule file behavior.
 
 #### interval
 
-The update interval for the Rule set, in seconds or `/^(\d+)(s|m|h|d)?$/`.
+The update interval for the Rule set, in seconds or /^(\d+)(s|m|h|d)?$/.
 
 #### rawQuery
 
 This parameter is required if the original link contains a url query.\
 Encrypt the part `key1=value1&key2=value2` after `?` in the original link with `encodeURIComponent` and use it as the payload of this parameter.
 
-#### header
-
-JSON format HTTP request headers. Example: `{"User-Agent":["mihomo/1.18.3"]}`.\
-Must be encoded as Base64edStr.
-
 #### filler
 
 Base64edStr format file content.
 
-#### bundlePath
-
-The `mrs` file path in `BundleMRS.7z`.\
-Need encrypt the original content with `encodeURIComponent`.
-
 ### Base64edStr
 
-Encoded steps:
+Generation steps:
 
-  0. Payload only supports `string` format.
-  1. Compress payload using `gzip`. (Optional)
-  2. Base64 encode payload/compressed payload.
-  3. Replace all `+` with `-` and all `/` with `_` in base64 string.
-  4. Remove all `=` from the EOF the base64 string.
+  1. Base64 encode payload.
+  2. Replace all `+` with `-` and all `/` with `_` in base64 string.
+  3. Remove all `=` from the EOF the base64 string.
 
 ### URIFragment
 

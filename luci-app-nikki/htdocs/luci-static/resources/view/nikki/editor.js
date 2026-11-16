@@ -3,7 +3,7 @@
 'require view';
 'require uci';
 'require fs';
-'require tools.nikki as nikki';
+'require tools.nikki as nikki'
 
 return view.extend({
     load: function () {
@@ -47,13 +47,15 @@ return view.extend({
 
         o.value(nikki.mixinFilePath, _('File for Mixin'));
         o.value(nikki.runProfilePath, _('Profile for Startup'));
+        o.value(nikki.reservedIPNFT, _('File for Reserved IP'));
+        o.value(nikki.reservedIP6NFT, _('File for Reserved IP6'));
 
         o.write = function (section_id, formvalue) {
             return true;
         };
         o.onchange = function (event, section_id, value) {
             return L.resolveDefault(fs.read_direct(value), '').then(function (content) {
-                m.lookupOption('_file_content', section_id)[0].getUIElement(section_id).setValue(content);
+                m.lookupOption('nikki.editor._file_content')[0].getUIElement('editor').setValue(content);
             });
         };
 
@@ -61,12 +63,12 @@ return view.extend({
         o.rows = 25;
         o.wrap = false;
         o.write = function (section_id, formvalue) {
-            const path = m.lookupOption('_file', section_id)[0].formvalue(section_id);
-            return nikki.writefile(path, formvalue);
+            const path = m.lookupOption('nikki.editor._file')[0].formvalue('editor');
+            return fs.write(path, formvalue);
         };
         o.remove = function (section_id) {
-            const path = m.lookupOption('_file', section_id)[0].formvalue(section_id);
-            return nikki.writefile(path);
+            const path = m.lookupOption('nikki.editor._file')[0].formvalue('editor');
+            return fs.write(path);
         };
 
         return m.render();

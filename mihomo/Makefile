@@ -1,59 +1,77 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Copyright (C) 2024-2026 Anya Lin <hukk1996@gmail.com>
-
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mihomo
-PKG_VERSION:=1.19.34
+PKG_VERSION:=1.19.33
 PKG_RELEASE:=1
 
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_URL:=https://github.com/MetaCubeX/mihomo.git
+PKG_SOURCE_VERSION:=v$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/metacubex/mihomo/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=e3284a44f1052f1c454c90d418faa244516c2470bf232b455ea18fc4f5fa6028
+PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
+PKG_MIRROR_HASH:=f29117485648124b819d5f790a27fceef3f8e2a9aceec6b12584bd99c8ab3fdf
 
-PKG_MAINTAINER:=Anya Lin <hukk1996@gmail.com>
-PKG_LICENSE:=GPL-2.0
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE:=GPL3.0+
+PKG_MAINTAINER:=Joseph Mory <morytyann@gmail.com>
 
-PKG_BUILD_DEPENDS:=golang/host
+PKG_BUILD_DEPENDS:=golang/host upx/host
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
 
-GO_PKG:=github.com/metacubex/mihomo
+PKG_BUILD_VERSION:=v$(PKG_VERSION)
+PKG_BUILD_TIME:=$(shell date -u -Iseconds)
 
-PKG_BUILD_TIME:=$(shell date -u +%FT%TZ%z)
-GO_PKG_LDFLAGS_X:=\
-	$(GO_PKG)/constant.Version=v$(PKG_VERSION) \
-	$(GO_PKG)/constant.BuildTime=$(PKG_BUILD_TIME)
+GO_PKG:=github.com/metacubex/mihomo
+GO_PKG_LDFLAGS:=-s -w
+GO_PKG_LDFLAGS_X:=$(GO_PKG)/constant.Version=$(PKG_BUILD_VERSION) $(GO_PKG)/constant.BuildTime=$(PKG_BUILD_TIME)
 GO_PKG_TAGS:=with_gvisor
+GO_PKG_INSTALL_BIN_PATH:=/usr/libexec
 
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
-define Build/Prepare
-	$(Build/Prepare/Default)
-	# rm unit test
-	rm -rf $(PKG_BUILD_DIR)/rules/logic_test
+# Generate a private overlay with the exact Go toolchain used for this package.
+# Runtime DT detection restricts hardware use to AN7581 without ARM AES.
+ifeq ($(GO_ARCH),arm64)
+  define Build/Compile
+	$(GO_PKG_VARS) python3 $(PKG_BUILD_DIR)/tools/eip93/overlay.py --go go --out $(PKG_BUILD_DIR)/.eip93-overlay
+	$(call GoPackage/Build/Compile,-overlay=$(PKG_BUILD_DIR)/.eip93-overlay/overlay.json)
+  endef
+endif
+
+# Compress once per build, not once per package/rootfs installation.
+# Keep Go's output intact and let the .built stamp guard the packed copy.
+define Build/Install
+	$(INSTALL_DIR) $(PKG_BUILD_DIR)/.upx
+	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/mihomo $(PKG_BUILD_DIR)/.upx/mihomo
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(PKG_BUILD_DIR)/.upx/mihomo
 endef
+
+# Go's -s -w flags strip the binary before UPX; do not strip it again.
+RSTRIP:=:
 
 define Package/mihomo
   SECTION:=net
   CATEGORY:=Network
-  TITLE:=Another Mihomo Kernel.
+  TITLE:=A rule based proxy in Go.
   URL:=https://wiki.metacubex.one
-  DEPENDS:=$(GO_ARCH_DEPENDS)
-  PROVIDES:=mihomo
+  DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
   ALTERNATIVES:=\
-    100:/usr/bin/mihomo:/usr/libexec/mihomo-core
+    300:/usr/bin/mihomo:/usr/libexec/mihomo
+endef
+
+define Package/mihomo/description
+  Mihomo is a rule based proxy in Go.
 endef
 
 define Package/mihomo/install
-	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
-	$(CURDIR)/.prepare.sh $(VERSION) $(CURDIR) $(PKG_INSTALL_DIR)/usr/bin/$(PKG_NAME)
+	$(INSTALL_DIR) $(1)/usr/libexec
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/.upx/mihomo $(1)/usr/libexec/mihomo
+endef
 
-	$(INSTALL_DIR) $(1)/usr/libexec/
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/$(PKG_NAME) $(1)/usr/libexec/mihomo-core
+define Build/Prepare
+	$(Build/Prepare/Default)
+	$(RM) -r $(PKG_BUILD_DIR)/rules/logic_test
 endef
 
 $(eval $(call GoBinPackage,mihomo))
