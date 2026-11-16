@@ -1,7 +1,9 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI support for KodExplorer
-
+LUCI_PKGARCH:=all
+PKG_VERSION:=1
+PKG_RELEASE:=1
 # 核心依赖（保证菜单可见）
 LUCI_DEPENDS:= \
 	+php8 \
@@ -26,9 +28,7 @@ LUCI_DEPENDS+= \
 	+PACKAGE_php8-mod-xml:php8-mod-xml \
 	+PACKAGE_php8-mod-zip:php8-mod-zip
 
-LUCI_PKGARCH:=all
-PKG_VERSION:=1
-PKG_RELEASE:=1
+
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
