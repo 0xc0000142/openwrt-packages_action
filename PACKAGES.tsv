@@ -279,6 +279,7 @@ lua-ipops	kenzok8__small-package	./lua-ipops	not-build-tested
 lua-neturl	kenzok8__small-package	./lua-neturl	not-build-tested
 luci-app-LingTiGameAcc	kenzok8__small-package	./luci-app-LingTiGameAcc	not-build-tested
 luci-app-UUGameAcc	kenzok8__small-package	./luci-app-UUGameAcc	not-build-tested
+luci-app-agent2api	kenzok8__small-package	./luci-app-agent2api	not-build-tested
 luci-app-agentflow	kenzok8__small-package	./luci-app-agentflow	not-build-tested
 luci-app-airconnect	kenzok8__small-package	./luci-app-airconnect	not-build-tested
 luci-app-aliddns	kenzok8__small-package	./luci-app-aliddns	not-build-tested

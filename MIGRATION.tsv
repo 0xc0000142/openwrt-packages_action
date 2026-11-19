@@ -341,6 +341,7 @@ kenzok8__small-package	./luci-app-LingTiGameAcc	luci-app-LingTiGameAcc	imported	
 kenzok8__small-package	./luci-app-UUGameAcc	luci-app-UUGameAcc	imported	not-build-tested
 kenzok8__small-package	./luci-app-adguardhome	luci-app-adguardhome	duplicate	selected rufengsuixing__luci-app-adguardhome/.
 kenzok8__small-package	./luci-app-advanced	luci-app-advanced	duplicate	selected sirpdboy__luci-app-advanced/.
+kenzok8__small-package	./luci-app-agent2api	luci-app-agent2api	imported	not-build-tested
 kenzok8__small-package	./luci-app-agentflow	luci-app-agentflow	imported	not-build-tested
 kenzok8__small-package	./luci-app-airconnect	luci-app-airconnect	imported	not-build-tested
 kenzok8__small-package	./luci-app-aliddns	luci-app-aliddns	imported	not-build-tested

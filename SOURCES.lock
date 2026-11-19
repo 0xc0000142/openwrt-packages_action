@@ -1,5 +1,5 @@
 source	url	ref	commit
-kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	c399d26dd1e71973aa662efa4b707f7e838f990e
+kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	2f6eedc4e4fd4592f8b17e2a068fd6dbc455907e
 fw876__helloworld	https://github.com/fw876/helloworld.git	dev	e825742c1e9267906d5208f080fb3b65d8b300e7
 immortalwrt__packages-25.12	https://github.com/immortalwrt/packages.git	openwrt-25.12	fa25995d74a720c1c98bf6265d3dd8b4eb620d1f
 openwrt__packages	https://github.com/openwrt/packages.git	openwrt-25.12	f72672bb0736dce0f94281909d6bffb937d030f6
@@ -12,7 +12,7 @@ vernesong__OpenClash	https://github.com/vernesong/OpenClash.git	master	e553e82e0
 Openwrt-Passwall__openwrt-passwall	https://github.com/Openwrt-Passwall/openwrt-passwall.git	main	f8001b9084b8cd55b415af05f16b1d4628caaef2
 Openwrt-Passwall__openwrt-passwall-packages	https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git	main	8147e8bf8abc62b5357f76defa37f380e35f6e0a
 sbwml__luci-app-mosdns	https://github.com/sbwml/luci-app-mosdns.git	v5	a8a6caffe04167dbb17407a63463eb4ce7243873
-sbwml__luci-app-openlist2	https://github.com/sbwml/luci-app-openlist2.git	main	46506b02c1d3fc8ea0dda1b539c155a77cda73c0
+sbwml__luci-app-openlist2	https://github.com/sbwml/luci-app-openlist2.git	main	193ed4d2c2a715534f47ceed40e5c1749ebd483c
 immortalwrt__luci	https://github.com/immortalwrt/luci.git	openwrt-25.12	476b5257e3aa8274a727d648ba06c4ed284c159b
 aa65535__openwrt-chinadns	https://github.com/aa65535/openwrt-chinadns.git	master	f7cd09262019f790e665483e976d28a71c925c29
 immortalwrt__packages	https://github.com/immortalwrt/packages.git	openwrt-21.02	e09f3c7d1903cfe7f523e209ab3ec778013ba309
