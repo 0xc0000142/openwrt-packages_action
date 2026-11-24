@@ -310,6 +310,7 @@ luci-app-daede	kenzok8__small-package	./luci-app-daede	not-build-tested
 luci-app-ddns-go	kenzok8__small-package	./luci-app-ddns-go	not-build-tested
 luci-app-demon	kenzok8__small-package	./luci-app-demon	not-build-tested
 luci-app-design-config	kenzok8__small-package	./luci-app-design-config	not-build-tested
+luci-app-dockergo	kenzok8__small-package	./luci-app-dockergo	not-build-tested
 luci-app-dockermanager	kenzok8__small-package	./luci-app-dockermanager	not-build-tested
 luci-app-dogcom	kenzok8__small-package	./luci-app-dogcom	not-build-tested
 luci-app-dpanel	kenzok8__small-package	./luci-app-dpanel	not-build-tested

@@ -392,6 +392,7 @@ kenzok8__small-package	./luci-app-dnscrypt-proxy2	luci-app-dnscrypt-proxy2	dupli
 kenzok8__small-package	./luci-app-dnsfilter	luci-app-dnsfilter	duplicate	selected kiddin9__luci-app-dnsfilter/.
 kenzok8__small-package	./luci-app-dnsmasq-ipset	luci-app-dnsmasq-ipset	duplicate	selected lvqier__luci-app-dnsmasq-ipset/.
 kenzok8__small-package	./luci-app-dnsproxy	luci-app-dnsproxy	duplicate	selected muink__luci-app-dnsproxy/.
+kenzok8__small-package	./luci-app-dockergo	luci-app-dockergo	imported	not-build-tested
 kenzok8__small-package	./luci-app-dockerman	luci-app-dockerman	duplicate	selected lisaac__luci-app-dockerman/./applications/luci-app-dockerman
 kenzok8__small-package	./luci-app-dockermanager	luci-app-dockermanager	imported	not-build-tested
 kenzok8__small-package	./luci-app-dogcom	luci-app-dogcom	imported	not-build-tested
