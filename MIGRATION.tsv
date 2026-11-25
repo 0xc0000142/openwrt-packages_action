@@ -268,6 +268,8 @@ kenzok8__small-package	./cgroupfs-mount	cgroupfs-mount	imported	not-build-tested
 kenzok8__small-package	./changeguard	changeguard	imported	not-build-tested
 kenzok8__small-package	./chinadns-ng	chinadns-ng	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./chinadns-ng
 kenzok8__small-package	./clashoo	clashoo	imported	not-build-tested
+kenzok8__small-package	./claude-code	claude-code	imported	not-build-tested
+kenzok8__small-package	./codex	codex	imported	not-build-tested
 kenzok8__small-package	./coremark	coremark	imported	not-build-tested
 kenzok8__small-package	./cpulimit	cpulimit	imported	not-build-tested
 kenzok8__small-package	./cups	cups	duplicate	selected gdck__luci-app-cupsd/./cups/cups
@@ -320,6 +322,7 @@ kenzok8__small-package	./kai-agent	kai-agent	imported	not-build-tested
 kenzok8__small-package	./kai	kai	imported	not-build-tested
 kenzok8__small-package	./kai_session	kai_session	imported	not-build-tested
 kenzok8__small-package	./kaiplus	kaiplus	imported	not-build-tested
+kenzok8__small-package	./kimi	kimi	imported	not-build-tested
 kenzok8__small-package	./ks-cli	ks-cli	imported	not-build-tested
 kenzok8__small-package	./lcdsimple	lcdsimple	imported	not-build-tested
 kenzok8__small-package	./libcron	libcron	imported	not-build-tested
@@ -331,6 +334,7 @@ kenzok8__small-package	./linkease-app-entry	linkease-app-entry	imported	not-buil
 kenzok8__small-package	./linkease-common-bin	linkease-common-bin	imported	not-build-tested
 kenzok8__small-package	./linkease-runtime-transition	linkease-runtime-transition	imported	not-build-tested
 kenzok8__small-package	./linkease	linkease	imported	not-build-tested
+kenzok8__small-package	./linkeasefull-web	linkeasefull-web	imported	not-build-tested
 kenzok8__small-package	./linkeasefull	linkeasefull	imported	not-build-tested
 kenzok8__small-package	./linkspace	linkspace	imported	not-build-tested
 kenzok8__small-package	./lua-ipops	lua-ipops	imported	not-build-tested
@@ -369,10 +373,12 @@ kenzok8__small-package	./luci-app-chongyoung	luci-app-chongyoung	imported	not-bu
 kenzok8__small-package	./luci-app-chongyoung2.0	luci-app-chongyoung2.0	imported	not-build-tested
 kenzok8__small-package	./luci-app-clash	luci-app-clash	duplicate	selected frainzy1477__luci-app-clash/.
 kenzok8__small-package	./luci-app-clashoo	luci-app-clashoo	imported	not-build-tested
+kenzok8__small-package	./luci-app-claude-code	luci-app-claude-code	imported	not-build-tested
 kenzok8__small-package	./luci-app-clouddrive2	luci-app-clouddrive2	imported	not-build-tested
 kenzok8__small-package	./luci-app-cloudflarespeedtest	luci-app-cloudflarespeedtest	duplicate	selected mingxiaoyu__luci-app-cloudflarespeedtest/./applications/luci-app-cloudflarespeedtest
 kenzok8__small-package	./luci-app-cloudreve	luci-app-cloudreve	imported	not-build-tested
 kenzok8__small-package	./luci-app-codeserver	luci-app-codeserver	imported	not-build-tested
+kenzok8__small-package	./luci-app-codex	luci-app-codex	imported	not-build-tested
 kenzok8__small-package	./luci-app-control-timewol	luci-app-control-timewol	imported	not-build-tested
 kenzok8__small-package	./luci-app-control-webrestriction	luci-app-control-webrestriction	imported	not-build-tested
 kenzok8__small-package	./luci-app-control-weburl	luci-app-control-weburl	imported	not-build-tested
@@ -453,6 +459,7 @@ kenzok8__small-package	./luci-app-ittools	luci-app-ittools	imported	not-build-te
 kenzok8__small-package	./luci-app-jackett	luci-app-jackett	imported	not-build-tested
 kenzok8__small-package	./luci-app-jellyfin	luci-app-jellyfin	imported	not-build-tested
 kenzok8__small-package	./luci-app-kaiplus	luci-app-kaiplus	imported	not-build-tested
+kenzok8__small-package	./luci-app-kimi	luci-app-kimi	imported	not-build-tested
 kenzok8__small-package	./luci-app-kodexplorer	luci-app-kodexplorer	duplicate	recipe luci-app-kodexplorer selected danchexiaoyang__luci-app-kodexplore/.
 kenzok8__small-package	./luci-app-koolproxyR	luci-app-koolproxyR	duplicate	selected jefferymvp__luci-app-koolproxyR/.
 kenzok8__small-package	./luci-app-lanraragi	luci-app-lanraragi	imported	not-build-tested
@@ -468,6 +475,7 @@ kenzok8__small-package	./luci-app-memos	luci-app-memos	imported	not-build-tested
 kenzok8__small-package	./luci-app-mentohust	luci-app-mentohust	duplicate	selected BoringCat__luci-app-mentohust/.
 kenzok8__small-package	./luci-app-mfun	luci-app-mfun	imported	not-build-tested
 kenzok8__small-package	./luci-app-minieap	luci-app-minieap	duplicate	selected BoringCat__luci-app-minieap/.
+kenzok8__small-package	./luci-app-mise	luci-app-mise	imported	not-build-tested
 kenzok8__small-package	./luci-app-momo	luci-app-momo	imported	not-build-tested
 kenzok8__small-package	./luci-app-mosdns	luci-app-mosdns	duplicate	selected sbwml__luci-app-mosdns/./luci-app-mosdns
 kenzok8__small-package	./luci-app-msd_lite	luci-app-msd_lite	imported	not-build-tested
@@ -498,6 +506,7 @@ kenzok8__small-package	./luci-app-onliner	luci-app-onliner	duplicate	selected ru
 kenzok8__small-package	./luci-app-openclash	luci-app-openclash	duplicate	selected vernesong__OpenClash/luci-app-openclash
 kenzok8__small-package	./luci-app-openclaw	luci-app-openclaw	imported	not-build-tested
 kenzok8__small-package	./luci-app-openclawmgr	luci-app-openclawmgr	imported	not-build-tested
+kenzok8__small-package	./luci-app-opencode	luci-app-opencode	imported	not-build-tested
 kenzok8__small-package	./luci-app-openlist	luci-app-openlist	imported	not-build-tested
 kenzok8__small-package	./luci-app-openlist2	luci-app-openlist2	duplicate	selected sbwml__luci-app-openlist2/./luci-app-openlist2
 kenzok8__small-package	./luci-app-openvpn-client	luci-app-openvpn-client	imported	not-build-tested
@@ -525,6 +534,7 @@ kenzok8__small-package	./luci-app-quickfile/luci-app-quickfile	luci-app-quickfil
 kenzok8__small-package	./luci-app-quickfile/quickfile	quickfile	imported	not-build-tested
 kenzok8__small-package	./luci-app-quickstart	luci-app-quickstart	imported	not-build-tested
 kenzok8__small-package	./luci-app-ramfree	luci-app-ramfree	duplicate	selected immortalwrt__luci/applications/luci-app-ramfree
+kenzok8__small-package	./luci-app-routelink	luci-app-routelink	imported	not-build-tested
 kenzok8__small-package	./luci-app-routerdog	luci-app-routerdog	imported	not-build-tested
 kenzok8__small-package	./luci-app-rtbwmon	luci-app-rtbwmon	imported	not-build-tested
 kenzok8__small-package	./luci-app-runmynas	luci-app-runmynas	imported	not-build-tested
@@ -632,6 +642,7 @@ kenzok8__small-package	./mentohust/mentohust	mentohust	duplicate	recipe mentohus
 kenzok8__small-package	./mhz	mhz	imported	not-build-tested
 kenzok8__small-package	./microsocks	microsocks	duplicate	selected Openwrt-Passwall__openwrt-passwall-packages/./microsocks
 kenzok8__small-package	./mihomo	mihomo	imported	not-build-tested
+kenzok8__small-package	./mise-runtime	mise-runtime	imported	not-build-tested
 kenzok8__small-package	./mise	mise	imported	not-build-tested
 kenzok8__small-package	./momo	momo	imported	not-build-tested
 kenzok8__small-package	./mosdns	mosdns	duplicate	selected sbwml__luci-app-mosdns/./mosdns
@@ -656,6 +667,7 @@ kenzok8__small-package	./nikki	nikki	imported	not-build-tested
 kenzok8__small-package	./nps	nps	imported	not-build-tested
 kenzok8__small-package	./oaf	oaf	duplicate	selected destan19__OpenAppFilter/./oaf
 kenzok8__small-package	./open-app-filter	open-app-filter	duplicate	selected destan19__OpenAppFilter/./open-app-filter
+kenzok8__small-package	./opencode	opencode	imported	not-build-tested
 kenzok8__small-package	./openlist2	openlist2	duplicate	selected sbwml__luci-app-openlist2/./openlist2
 kenzok8__small-package	./openvpn-easy-rsa-whisky	openvpn-easy-rsa-whisky	duplicate	selected kiddin9__openwrt-openvpn/./openvpn-easy-rsa-whisky
 kenzok8__small-package	./openwrt-fastfetch	openwrt-fastfetch	imported	not-build-tested
@@ -717,6 +729,7 @@ kenzok8__small-package	./quickstart	quickstart	imported	not-build-tested
 kenzok8__small-package	./rapidjson	rapidjson	imported	not-build-tested
 kenzok8__small-package	./rblibtorrent	rblibtorrent	duplicate	selected sbwml__luci-app-qbittorrent/./rblibtorrent
 kenzok8__small-package	./redsocks2	redsocks2	imported	not-build-tested
+kenzok8__small-package	./routelinkd	routelinkd	imported	not-build-tested
 kenzok8__small-package	./routergo	routergo	imported	not-build-tested
 kenzok8__small-package	./rp-pppoe	rp-pppoe	imported	not-build-tested
 kenzok8__small-package	./scutclient	scutclient	imported	not-build-tested

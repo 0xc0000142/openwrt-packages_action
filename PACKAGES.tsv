@@ -227,6 +227,8 @@ cdnspeedtest	kenzok8__small-package	./cdnspeedtest	not-build-tested
 cgroupfs-mount	kenzok8__small-package	./cgroupfs-mount	not-build-tested
 changeguard	kenzok8__small-package	./changeguard	not-build-tested
 clashoo	kenzok8__small-package	./clashoo	not-build-tested
+claude-code	kenzok8__small-package	./claude-code	not-build-tested
+codex	kenzok8__small-package	./codex	not-build-tested
 coremark	kenzok8__small-package	./coremark	not-build-tested
 cpulimit	kenzok8__small-package	./cpulimit	not-build-tested
 dae	kenzok8__small-package	./dae	not-build-tested
@@ -263,6 +265,7 @@ kai-agent	kenzok8__small-package	./kai-agent	not-build-tested
 kai	kenzok8__small-package	./kai	not-build-tested
 kai_session	kenzok8__small-package	./kai_session	not-build-tested
 kaiplus	kenzok8__small-package	./kaiplus	not-build-tested
+kimi	kenzok8__small-package	./kimi	not-build-tested
 ks-cli	kenzok8__small-package	./ks-cli	not-build-tested
 lcdsimple	kenzok8__small-package	./lcdsimple	not-build-tested
 libcron	kenzok8__small-package	./libcron	not-build-tested
@@ -273,6 +276,7 @@ linkease-app-entry	kenzok8__small-package	./linkease-app-entry	not-build-tested
 linkease-common-bin	kenzok8__small-package	./linkease-common-bin	not-build-tested
 linkease-runtime-transition	kenzok8__small-package	./linkease-runtime-transition	not-build-tested
 linkease	kenzok8__small-package	./linkease	not-build-tested
+linkeasefull-web	kenzok8__small-package	./linkeasefull-web	not-build-tested
 linkeasefull	kenzok8__small-package	./linkeasefull	not-build-tested
 linkspace	kenzok8__small-package	./linkspace	not-build-tested
 lua-ipops	kenzok8__small-package	./lua-ipops	not-build-tested
@@ -297,9 +301,11 @@ luci-app-chinesesubfinder	kenzok8__small-package	./luci-app-chinesesubfinder	not
 luci-app-chongyoung	kenzok8__small-package	./luci-app-chongyoung	not-build-tested
 luci-app-chongyoung2.0	kenzok8__small-package	./luci-app-chongyoung2.0	not-build-tested
 luci-app-clashoo	kenzok8__small-package	./luci-app-clashoo	not-build-tested
+luci-app-claude-code	kenzok8__small-package	./luci-app-claude-code	not-build-tested
 luci-app-clouddrive2	kenzok8__small-package	./luci-app-clouddrive2	not-build-tested
 luci-app-cloudreve	kenzok8__small-package	./luci-app-cloudreve	not-build-tested
 luci-app-codeserver	kenzok8__small-package	./luci-app-codeserver	not-build-tested
+luci-app-codex	kenzok8__small-package	./luci-app-codex	not-build-tested
 luci-app-control-timewol	kenzok8__small-package	./luci-app-control-timewol	not-build-tested
 luci-app-control-webrestriction	kenzok8__small-package	./luci-app-control-webrestriction	not-build-tested
 luci-app-control-weburl	kenzok8__small-package	./luci-app-control-weburl	not-build-tested
@@ -355,6 +361,7 @@ luci-app-ittools	kenzok8__small-package	./luci-app-ittools	not-build-tested
 luci-app-jackett	kenzok8__small-package	./luci-app-jackett	not-build-tested
 luci-app-jellyfin	kenzok8__small-package	./luci-app-jellyfin	not-build-tested
 luci-app-kaiplus	kenzok8__small-package	./luci-app-kaiplus	not-build-tested
+luci-app-kimi	kenzok8__small-package	./luci-app-kimi	not-build-tested
 luci-app-lanraragi	kenzok8__small-package	./luci-app-lanraragi	not-build-tested
 luci-app-lingtigameacc	kenzok8__small-package	./luci-app-lingtigameacc	not-build-tested
 luci-app-linkease	kenzok8__small-package	./luci-app-linkease	not-build-tested
@@ -366,6 +373,7 @@ luci-app-macvlan	kenzok8__small-package	./luci-app-macvlan	not-build-tested
 luci-app-mail	kenzok8__small-package	./luci-app-mail	not-build-tested
 luci-app-memos	kenzok8__small-package	./luci-app-memos	not-build-tested
 luci-app-mfun	kenzok8__small-package	./luci-app-mfun	not-build-tested
+luci-app-mise	kenzok8__small-package	./luci-app-mise	not-build-tested
 luci-app-momo	kenzok8__small-package	./luci-app-momo	not-build-tested
 luci-app-msd_lite	kenzok8__small-package	./luci-app-msd_lite	not-build-tested
 luci-app-mtphotos	kenzok8__small-package	./luci-app-mtphotos	not-build-tested
@@ -385,6 +393,7 @@ luci-app-npc	kenzok8__small-package	./luci-app-npc	not-build-tested
 luci-app-oneapi	kenzok8__small-package	./luci-app-oneapi	not-build-tested
 luci-app-openclaw	kenzok8__small-package	./luci-app-openclaw	not-build-tested
 luci-app-openclawmgr	kenzok8__small-package	./luci-app-openclawmgr	not-build-tested
+luci-app-opencode	kenzok8__small-package	./luci-app-opencode	not-build-tested
 luci-app-openlist	kenzok8__small-package	./luci-app-openlist	not-build-tested
 luci-app-openvpn-client	kenzok8__small-package	./luci-app-openvpn-client	not-build-tested
 luci-app-openwebui	kenzok8__small-package	./luci-app-openwebui	not-build-tested
@@ -403,6 +412,7 @@ luci-app-pve	kenzok8__small-package	./luci-app-pve	not-build-tested
 luci-app-quickfile	kenzok8__small-package	./luci-app-quickfile/luci-app-quickfile	not-build-tested
 quickfile	kenzok8__small-package	./luci-app-quickfile/quickfile	not-build-tested
 luci-app-quickstart	kenzok8__small-package	./luci-app-quickstart	not-build-tested
+luci-app-routelink	kenzok8__small-package	./luci-app-routelink	not-build-tested
 luci-app-routerdog	kenzok8__small-package	./luci-app-routerdog	not-build-tested
 luci-app-rtbwmon	kenzok8__small-package	./luci-app-rtbwmon	not-build-tested
 luci-app-runmynas	kenzok8__small-package	./luci-app-runmynas	not-build-tested
@@ -480,6 +490,7 @@ luci-themedog	kenzok8__small-package	./luci-themedog	not-build-tested
 lucky	kenzok8__small-package	./lucky	not-build-tested
 mhz	kenzok8__small-package	./mhz	not-build-tested
 mihomo	kenzok8__small-package	./mihomo	not-build-tested
+mise-runtime	kenzok8__small-package	./mise-runtime	not-build-tested
 mise	kenzok8__small-package	./mise	not-build-tested
 momo	kenzok8__small-package	./momo	not-build-tested
 msd_lite	kenzok8__small-package	./msd_lite	not-build-tested
@@ -495,6 +506,7 @@ nginx	kenzok8__small-package	./nginx	not-build-tested
 ngrokc	kenzok8__small-package	./ngrokc	not-build-tested
 nikki	kenzok8__small-package	./nikki	not-build-tested
 nps	kenzok8__small-package	./nps	not-build-tested
+opencode	kenzok8__small-package	./opencode	not-build-tested
 openwrt-fastfetch	kenzok8__small-package	./openwrt-fastfetch	not-build-tested
 openwrt-minieap	kenzok8__small-package	./openwrt-minieap	not-build-tested
 optimemachine	kenzok8__small-package	./optimemachine	not-build-tested
@@ -530,6 +542,7 @@ quickstart-netpolicy	kenzok8__small-package	./quickstart-netpolicy	not-build-tes
 quickstart	kenzok8__small-package	./quickstart	not-build-tested
 rapidjson	kenzok8__small-package	./rapidjson	not-build-tested
 redsocks2	kenzok8__small-package	./redsocks2	not-build-tested
+routelinkd	kenzok8__small-package	./routelinkd	not-build-tested
 routergo	kenzok8__small-package	./routergo	not-build-tested
 rp-pppoe	kenzok8__small-package	./rp-pppoe	not-build-tested
 scutclient	kenzok8__small-package	./scutclient	not-build-tested
