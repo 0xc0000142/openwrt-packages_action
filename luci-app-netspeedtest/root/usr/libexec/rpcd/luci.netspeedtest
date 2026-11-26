@@ -12,19 +12,46 @@ NAMEDDSECTION='config'
 OOKLA_SPEEDTEST='/usr/libexec/netspeedtest/speedtest'
 SPEEDTEST_RESULT='/tmp/speedtest_result'
 
-# api
-speedTestServersUrl="https://www.speedtest.net/api/js/servers"
-speedTestServersAlternativeUrl="https://www.speedtest.net/speedtest-servers-static.php"
-speedTestServersAndroid="https://www.speedtest.net/api/android/config.php"
-speedTestServersIOS="https://www.speedtest.net/api/ios-config.php"
+# Used only by the optional LuCI server picker.
+SPEEDTEST_SERVERS_URL="https://www.speedtest.net/api/js/servers"
+SPEEDTEST_SERVERS_ALTERNATIVEURL="https://www.speedtest.net/speedtest-servers-static.php"
+SPEEDTEST_SERVERS_ANDROID="https://www.speedtest.net/api/android/config.php"
+SPEEDTEST_SERVERS_IOS="https://www.speedtest.net/api/ios-config.php"
 
 ookla_verify() {
 	[ -x "$OOKLA_SPEEDTEST" ]
 	return $?
 }
 
+configure_proxy() {
+	local protocol server
+
+	if [ "$(uci -q get "$CONFIG_NAME.$NAMEDDSECTION.proxy_enabled")" = "1" ]; then
+		protocol=$(uci -q get "$CONFIG_NAME.$NAMEDDSECTION.proxy_protocol")
+		server=$(uci -q get "$CONFIG_NAME.$NAMEDDSECTION.proxy_server")
+		[ -n "$protocol" -a -n "$server" ] && export ALL_PROXY="$protocol://$server" || true
+	fi
+}
+
+list_servers() {
+	local server_list
+
+	configure_proxy
+	server_list="$(curl --connect-timeout 5 --max-time 15 --retry 2 -fsSL "$SPEEDTEST_SERVERS_URL" 2>/dev/null)"
+	if [ -z "$server_list" ] || ! printf '%s' "$server_list" | jsonfilter -qe '@[0].id' >/dev/null 2>&1; then
+		json_init
+		json_add_boolean "result" 0
+		json_add_string "error" 'Unable to retrieve the server list'
+		json_dump
+		return 0
+	fi
+
+	printf '{"result":true,"servers":%s}\n' "$server_list"
+}
+
 # func [args...]
 speedtest() {
+	configure_proxy
 	echo "Testing" > "$SPEEDTEST_RESULT"
 	result=$($OOKLA_SPEEDTEST --accept-gdpr --accept-license --progress=no "$@" | grep 'Result URL' | awk '{print $NF}')
 	[ -n "$result" ] && echo "$result" > "$SPEEDTEST_RESULT" || echo "Test failed" > "$SPEEDTEST_RESULT"
@@ -41,7 +68,11 @@ case "$1" in
 		json_add_object "ookla_verify"
 		json_close_object
 
+		json_add_object "list_servers"
+		json_close_object
+
 		json_add_object "speedtest"
+		json_add_string "server_id"
 		json_close_object
 
 		json_dump
@@ -60,8 +91,7 @@ case "$1" in
 					exit
 				fi
 
-				[ "$(uci -q get $CONFIG_NAME.$NAMEDDSECTION.proxy_enabled)" = "1" ] && \
-				export ALL_PROXY=$(uci -q get $CONFIG_NAME.$NAMEDDSECTION.proxy_protocol)://$(uci -q get $CONFIG_NAME.$NAMEDDSECTION.proxy_server)
+				configure_proxy
 
 				UA='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 		Safari/537.36'
 
@@ -104,7 +134,23 @@ case "$1" in
 				json_add_boolean "result" $(ookla_verify && echo 1 || echo 0)
 				json_dump
 				;;
+			list_servers)
+				list_servers
+				;;
 			speedtest)
+				read -t 1 -r input
+				SERVER_ID=$(echo "$input" | jsonfilter -qe '@.server_id' 2>/dev/null)
+				case "$SERVER_ID" in
+					'') ;;
+					0|0*|*[!0-9]*)
+						json_init
+						json_add_boolean "result" 0
+						json_add_string "error" 'Invalid server ID'
+						json_dump
+						exit
+						;;
+				esac
+
 				if pgrep -f "$OOKLA_SPEEDTEST" >/dev/null; then
 					json_init
 					json_add_boolean "result" 0
@@ -113,20 +159,13 @@ case "$1" in
 					exit
 				fi
 
-				[ "$(uci -q get $CONFIG_NAME.$NAMEDDSECTION.proxy_enabled)" = "1" ] && \
-				export ALL_PROXY=$(uci -q get $CONFIG_NAME.$NAMEDDSECTION.proxy_protocol)://$(uci -q get $CONFIG_NAME.$NAMEDDSECTION.proxy_server)
-
-				serverList="$(curl --connect-timeout 10 --retry 3 -sSL "$speedTestServersUrl")"
-				if [ -z "$serverList" ]; then
-					echo "No available servers" > "$SPEEDTEST_RESULT"
-					json_init
-					json_add_boolean "result" 0
-					json_add_string "error" 'No available servers'
-					json_dump
-					exit
+				# Omit --server-id to let Ookla select the server automatically.
+				if [ -n "$SERVER_ID" ]; then
+					speedtest --server-id="$SERVER_ID" &
+				else
+					speedtest &
 				fi
 
-				speedtest --server-id=$(echo "$serverList" | jsonfilter -e '@[0].id') &
 				json_init
 				json_add_boolean "result" 1
 				json_dump
