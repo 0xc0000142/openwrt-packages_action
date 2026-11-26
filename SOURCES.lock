@@ -1,5 +1,5 @@
 source	url	ref	commit
-kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	36a037dc98010c7990aa8e78799140cd6c3cdd2d
+kenzok8__small-package	https://github.com/kenzok8/small-package.git	main	1dedfbfe49729abe98592c6b9846d693667fb04b
 fw876__helloworld	https://github.com/fw876/helloworld.git	dev	a8ae1e4a7e0a8753cbfcca83d7f4bb2356d87014
 immortalwrt__packages-25.12	https://github.com/immortalwrt/packages.git	openwrt-25.12	3f37537ae8f410bd300852330a0e540d71c70a95
 openwrt__packages	https://github.com/openwrt/packages.git	openwrt-25.12	59b79c524e81159aa13fe5bfb12edb97d2002268
@@ -9,7 +9,7 @@ immortalwrt__core-25.12	https://github.com/immortalwrt/immortalwrt.git	openwrt-2
 4IceG__luci-app-mini-diskmanager	https://github.com/4IceG/luci-app-mini-diskmanager.git	main	4b2b7332896063ef888f34da2187c3cc6f366037
 jerrykuku__luci-theme-argon	https://github.com/jerrykuku/luci-theme-argon.git	master	5d6a6e8b86ea9aee0f3cbb9637f9140414153a45
 vernesong__OpenClash	https://github.com/vernesong/OpenClash.git	master	e553e82e01c697aefbe1555261a503f425e00ccd
-Openwrt-Passwall__openwrt-passwall	https://github.com/Openwrt-Passwall/openwrt-passwall.git	main	bc622894605a7b4d88028cb172e9807c57e6cdca
+Openwrt-Passwall__openwrt-passwall	https://github.com/Openwrt-Passwall/openwrt-passwall.git	main	6dc121ea3545e01bff2c4dfa0551da5404c2dfa2
 Openwrt-Passwall__openwrt-passwall-packages	https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git	main	a7e65d1d5d624f4b7910ba738ba7045fc2f534ce
 sbwml__luci-app-mosdns	https://github.com/sbwml/luci-app-mosdns.git	v5	a8a6caffe04167dbb17407a63463eb4ce7243873
 sbwml__luci-app-openlist2	https://github.com/sbwml/luci-app-openlist2.git	main	de2ebbe393a8f4feba533e9e821d0c2a05786d3f
@@ -105,7 +105,7 @@ gdck__luci-app-cupsd	https://github.com/gdck/luci-app-cupsd.git	main	9681dba7285
 4IceG__luci-app-socat	https://github.com/4IceG/luci-app-socat.git	main	8dd6c624bd9e85a914898d6d60721304cda55104
 muink__luci-app-natmapt	https://github.com/muink/luci-app-natmapt.git	master	1b023f9b968e4cf9e786a7a3061225ae1cf8e328
 muink__openwrt-stuntman	https://github.com/muink/openwrt-stuntman.git	master	f915c1e45e8ab088abd479d60d0172f176485a38
-muink__openwrt-natmapt	https://github.com/muink/openwrt-natmapt.git	master	7ee3bcb9394e583ee1c361818791206125614c0b
+muink__openwrt-natmapt	https://github.com/muink/openwrt-natmapt.git	master	20a3b03b6fc5ed1f0d40598d2658710030daed7e
 4IceG__luci-app-modeminfo	https://github.com/4IceG/luci-app-modeminfo.git	master	cf80a0c876db67bbd0d19b54fa7f4b197d989fcd
 firkerword__openwrt-wrtbwmon	https://github.com/firkerword/openwrt-wrtbwmon.git	main	ea61715fa8ab92c91d323b491b63d24f3d026a2f
 muink__luci-app-alwaysonline	https://github.com/muink/luci-app-alwaysonline.git	master	b603f4315ce3fa7ffcaf4650a3c38cc30317d92c
@@ -121,7 +121,7 @@ gSpotx2f__luci-app-internet-detector	https://github.com/gSpotx2f/luci-app-intern
 animegasan__luci-app-ipinfo	https://github.com/animegasan/luci-app-ipinfo.git	master	fb9948abe3bfe658c8c47d759b3b8ae87bb1d5d1
 muink__luci-app-natter	https://github.com/muink/luci-app-natter.git	master	3b111940a5379f52cf50523904916335223f2542
 muink__luci-app-netdata	https://github.com/muink/luci-app-netdata.git	master	a9e59b29be73063bca3578ce0542fdc0086b946a
-muink__luci-app-netspeedtest	https://github.com/muink/luci-app-netspeedtest.git	master	11147316267a2046ca6457f1b695e2efdf476891
+muink__luci-app-netspeedtest	https://github.com/muink/luci-app-netspeedtest.git	master	f8a037bf393a7b702b63bb30bbd240b3e88659fb
 muink__luci-app-packagesync	https://github.com/muink/luci-app-packagesync.git	master	b139d08f2622382454b57c1c1f4f4e000d6fe71c
 muink__luci-app-pcap-dnsproxy	https://github.com/muink/luci-app-pcap-dnsproxy.git	master	c0b38889145c7c9009962f1ac9bc961fad2651ad
 sbwml__luci-app-qbittorrent	https://github.com/sbwml/luci-app-qbittorrent.git	master	91037a8e34eec4f38430dbb7f9c2eda8f26d38b5
@@ -130,7 +130,7 @@ muink__luci-app-tinyfilemanager	https://github.com/muink/luci-app-tinyfilemanage
 muink__luci-app-tn-netports	https://github.com/muink/luci-app-tn-netports.git	master	47097a41fd075d1188b2be2042610168a0a3cd97
 yichya__luci-app-xray	https://github.com/yichya/luci-app-xray.git	master	4d5a6fd7fc4d2fbbcd7f70f1319da06b91ec1d56
 muink__openwrt-alwaysonline	https://github.com/muink/openwrt-alwaysonline.git	master	11b2420e89f62a048acc4375a447c1ee3fbb9585
-muink__openwrt-einat-ebpf	https://github.com/muink/openwrt-einat-ebpf.git	master	054c13e135749ade0c5cde0a19397bfe8e535929
+muink__openwrt-einat-ebpf	https://github.com/muink/openwrt-einat-ebpf.git	master	2a5414602063e253ed4c36d3ba054f2c786d2248
 muink__openwrt-chinadns-ng	https://github.com/muink/openwrt-chinadns-ng.git	master	7ca63c2e761f7e888bd639bd0f97ba0942edd261
 muink__openwrt-go-stun	https://github.com/muink/openwrt-go-stun.git	master	d8e9566428eb38320bbc6d99366e164134a66997
 muink__openwrt-Natter	https://github.com/muink/openwrt-Natter.git	master	d99b55ea6505900daab6e29c17e826ac4b5a6823

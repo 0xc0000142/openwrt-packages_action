@@ -289,6 +289,7 @@ kenzok8__small-package	./docker-lan-bridge	docker-lan-bridge	imported	not-build-
 kenzok8__small-package	./docker	docker	imported	not-build-tested
 kenzok8__small-package	./dockerd	dockerd	imported	not-build-tested
 kenzok8__small-package	./dockermanager	dockermanager	imported	not-build-tested
+kenzok8__small-package	./dsh	dsh	imported	not-build-tested
 kenzok8__small-package	./easytier-noweb	easytier-noweb	duplicate	recipe easytier-noweb selected kenzok8__small-package/luci-app-easytier
 kenzok8__small-package	./easytier	easytier	duplicate	recipe easytier selected kenzok8__small-package/luci-app-easytier
 kenzok8__small-package	./fail2banop	fail2banop	imported	not-build-tested
@@ -405,6 +406,7 @@ kenzok8__small-package	./luci-app-dogcom	luci-app-dogcom	imported	not-build-test
 kenzok8__small-package	./luci-app-dpanel	luci-app-dpanel	imported	not-build-tested
 kenzok8__small-package	./luci-app-drawio	luci-app-drawio	imported	not-build-tested
 kenzok8__small-package	./luci-app-droidmodem	luci-app-droidmodem	imported	not-build-tested
+kenzok8__small-package	./luci-app-dsh	luci-app-dsh	imported	not-build-tested
 kenzok8__small-package	./luci-app-easymesh	luci-app-easymesh	imported	not-build-tested
 kenzok8__small-package	./luci-app-easytier/easytier-noweb	easytier-noweb	duplicate	recipe easytier-noweb selected kenzok8__small-package/luci-app-easytier
 kenzok8__small-package	./luci-app-easytier/easytier	easytier	duplicate	recipe easytier selected kenzok8__small-package/luci-app-easytier
@@ -512,7 +514,6 @@ kenzok8__small-package	./luci-app-openlist2	luci-app-openlist2	duplicate	selecte
 kenzok8__small-package	./luci-app-openvpn-client	luci-app-openvpn-client	imported	not-build-tested
 kenzok8__small-package	./luci-app-openvpn-server	luci-app-openvpn-server	duplicate	selected kiddin9__openwrt-openvpn/./luci-app-openvpn-server
 kenzok8__small-package	./luci-app-openwebui	luci-app-openwebui	imported	not-build-tested
-kenzok8__small-package	./luci-app-optimemachine	luci-app-optimemachine	imported	not-build-tested
 kenzok8__small-package	./luci-app-ota	luci-app-ota	imported	not-build-tested
 kenzok8__small-package	./luci-app-owntone	luci-app-owntone	imported	not-build-tested
 kenzok8__small-package	./luci-app-packet-capture	luci-app-packet-capture	imported	not-build-tested
@@ -674,7 +675,6 @@ kenzok8__small-package	./openwrt-fastfetch	openwrt-fastfetch	imported	not-build-
 kenzok8__small-package	./openwrt-minieap	openwrt-minieap	imported	not-build-tested
 kenzok8__small-package	./openwrt-natmap	openwrt-natmap	duplicate	recipe natmap selected blueberry-pie-11__luci-app-natmap/./natmap
 kenzok8__small-package	./opkg	opkg	excluded	base-system/original exclusion
-kenzok8__small-package	./optimemachine	optimemachine	imported	not-build-tested
 kenzok8__small-package	./oscam	oscam	imported	not-build-tested
 kenzok8__small-package	./other/k3wifi	k3wifi	imported	not-build-tested
 kenzok8__small-package	./other/lean/adbyby	adbyby	imported	not-build-tested

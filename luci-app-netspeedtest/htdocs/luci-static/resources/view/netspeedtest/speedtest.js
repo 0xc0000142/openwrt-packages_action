@@ -24,11 +24,100 @@ var callOoklaVerify = rpc.declare({
 	expect: { '': {} }
 });
 
+var callListServers = rpc.declare({
+	object: 'luci.netspeedtest',
+	method: 'list_servers',
+	expect: { '': {} }
+});
+
 var callSpeedtest = rpc.declare({
 	object: 'luci.netspeedtest',
 	method: 'speedtest',
+	params: ['server_id'],
 	expect: { '': {} }
 });
+
+function getServerList() {
+	if (!this.serverList) {
+		this.serverList = callListServers().then((reply) => {
+			if (!reply || !reply.result || !Array.isArray(reply.servers))
+				throw new Error(reply && reply.error || _('Unable to retrieve the server list'));
+
+			const servers = reply.servers.filter((server) =>
+				server && /^[1-9][0-9]*$/.test(String(server.id))
+			);
+			if (!servers.length)
+				throw new Error(_('No available servers'));
+
+			return servers;
+		}).catch((err) => {
+			this.serverList = null;
+			throw err;
+		});
+	}
+
+	return this.serverList;
+}
+
+function setOptionValue(section_id, value) {
+	const widget = this.getUIElement(section_id);
+	if (!widget)
+		return false;
+
+	widget.setValue(value);
+	const input = widget.node.querySelector('input');
+	if (input)
+		input.dispatchEvent(new Event('change', { bubbles: true }));
+
+	return !!input;
+}
+
+function chooseServer(section_id) {
+	return getServerList.call(this).then((servers) => {
+		const rows = servers.slice(0, 30).map((server) => {
+			const id = String(server.id);
+			const provider = server.sponsor || _('Unknown provider');
+			const location = [server.name, server.country].filter(Boolean).join(', ');
+
+			return E('tr', {}, [
+				E('td', {}, [provider]),
+				E('td', {}, [location || '—']),
+				E('td', {}, [id]),
+				E('td', {}, [E('button', {
+					'class': 'btn cbi-button cbi-button-action',
+					'click': ui.createHandlerFn(this, (section_id, id) => {
+						if (setOptionValue.call(this, section_id, id))
+							ui.hideModal();
+					}, section_id, id)
+				}, [_('Select')])])
+			]);
+		});
+
+		if (!rows.length)
+			throw new Error(_('No available servers'));
+
+		ui.showModal(_('Select a Speedtest server'), [
+			E('p', {}, [_('Showing the first 30 servers returned by Ookla.')]),
+			E('div', { 'style': 'max-height: 60vh; overflow:auto' }, [
+				E('table', { 'class': 'table' }, [
+					E('thead', {}, [E('tr', {}, [
+						E('th', {}, [_('Provider')]),
+						E('th', {}, [_('Location')]),
+						E('th', {}, [_('ID')]),
+						E('th', {}, [''])
+					])]),
+					E('tbody', {}, rows)
+				])
+			]),
+			E('div', { 'class': 'right' }, [E('button', {
+				'class': 'btn',
+				'click': function() { ui.hideModal(); }
+			}, [_('Close')])])
+		]);
+	}).catch((err) => {
+		ui.addNotification(null, E('p', _('Unable to load servers: %s').format(err.message || err)), 'error');
+	});
+}
 
 return view.extend({
 //	handleSaveApply: null,
@@ -48,6 +137,7 @@ return view.extend({
 		const has_ookla = data[0].result;
 		const result_content = data[1] ? data[1].trim().split("\n") : [];
 		const result_mtime = data[2] ? data[2].mtime * 1000 : 0;
+		const preferred_server_id = uci.get(data[3], 'config', 'preferred_server_id') || '';
 
 		let m, s, o;
 
@@ -108,18 +198,78 @@ return view.extend({
 		s = m.section(form.NamedSection, 'config', 'netspeedtest');
 		s.anonymous = true;
 
+		o = s.option(form.ListValue, '_server_mode', _('Server selection'));
+		o.default = /^[1-9][0-9]*$/.test(preferred_server_id) ? 'preferred' : 'auto';
+		o.value('auto', _('Automatic (Ookla)'));
+		o.value('manual', _('Manually specify a server ID'));
+		o.value('preferred', _('Use preferred server'));
+		o.onchange = function(ev, section_id, value) {
+			this.default = value;
+		}
+		o.write = function() {};
+
+		o = s.option(form.Value, '_server_id', _('Server ID'));
+		o.renderWidget = function(section_id, option_index, cfgvalue) {
+			const node = form.Value.prototype.renderWidget.apply(this, arguments);
+
+			if (!this.password)
+				node.classList.add('control-group');
+
+			(node.querySelector('.control-group') || node).appendChild(E('button', {
+				class: 'cbi-button cbi-button-add',
+				title: _('Choose server'),
+				click: ui.createHandlerFn(this, chooseServer, section_id)
+			}, [ _('Choose server') ]));
+
+			return node;
+		}
+		o.datatype = 'uinteger';
+		o.placeholder = _('Valid positive server ID');
+		o.validate = function(section_id, value) {
+			return value === '' || /^[1-9][0-9]*$/.test(value) || _('Enter or select a valid positive server ID.');
+		}
+		o.write = function() {};
+		o.depends('_server_mode', 'manual');
+
+		o = s.option(form.Value, 'preferred_server_id', _('Preferred server ID'),
+			_('This ID is saved in UCI and becomes the default server for subsequent tests.'));
+		o.datatype = 'uinteger';
+		o.placeholder = _('Enter a server ID');
+		o.validate = function(section_id, value) {
+			return value === '' || /^[1-9][0-9]*$/.test(value) || _('Valid positive server ID');
+		}
+		o.depends('_server_mode', 'preferred');
+
 		o = s.option(form.Button, '_start', _('Start Test'));
 		o.inputtitle = _('Start Test');
 		o.inputstyle = 'apply';
 		if (result_content.length && result_content[0] == 'Testing' && (Date.now() - result_mtime) < TestTimeout)
 			o.readonly = true;
 		o.onclick = function(ev, section_id) {
+			const mode = this.section.getOption('_server_mode').formvalue(section_id);
+
+			let serverId = '';
+
+			switch (mode) {
+			case 'manual':
+				serverId = this.section.getOption('_server_id').formvalue(section_id);
+				break;
+			case 'preferred':
+				serverId = this.section.getOption('preferred_server_id').formvalue(section_id);
+				break;
+			}
+
+			if (mode !== 'auto' && !/^[1-9][0-9]*$/.test(serverId || '')) {
+				ui.addNotification(null, E('p', _('Select or enter a valid server ID first.')), 'error');
+				return Promise.resolve();
+			}
+
 			//L.env.rpctimeout = 180; // 3 minutes
 			window.setTimeout(function() {
 				window.location = window.location.href.split('#')[0];
 			}, L.env.apply_display * 500);
 
-			return callSpeedtest().then((res) => {
+			return callSpeedtest(serverId).then((res) => {
 				if (!res.result)
 					ui.addNotification(null, E('p', _('Test failed: %s').format(res.error)), 'error');
 			});

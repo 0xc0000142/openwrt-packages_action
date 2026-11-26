@@ -244,6 +244,7 @@ docker-lan-bridge	kenzok8__small-package	./docker-lan-bridge	not-build-tested
 docker	kenzok8__small-package	./docker	not-build-tested
 dockerd	kenzok8__small-package	./dockerd	not-build-tested
 dockermanager	kenzok8__small-package	./dockermanager	not-build-tested
+dsh	kenzok8__small-package	./dsh	not-build-tested
 fail2banop	kenzok8__small-package	./fail2banop	not-build-tested
 fastnet	kenzok8__small-package	./fastnet	not-build-tested
 ffmpeg-remux	kenzok8__small-package	./ffmpeg-remux	not-build-tested
@@ -322,6 +323,7 @@ luci-app-dogcom	kenzok8__small-package	./luci-app-dogcom	not-build-tested
 luci-app-dpanel	kenzok8__small-package	./luci-app-dpanel	not-build-tested
 luci-app-drawio	kenzok8__small-package	./luci-app-drawio	not-build-tested
 luci-app-droidmodem	kenzok8__small-package	./luci-app-droidmodem	not-build-tested
+luci-app-dsh	kenzok8__small-package	./luci-app-dsh	not-build-tested
 luci-app-easymesh	kenzok8__small-package	./luci-app-easymesh	not-build-tested
 luci-app-easyupdate	kenzok8__small-package	./luci-app-easyupdate	not-build-tested
 luci-app-emby	kenzok8__small-package	./luci-app-emby	not-build-tested
@@ -397,7 +399,6 @@ luci-app-opencode	kenzok8__small-package	./luci-app-opencode	not-build-tested
 luci-app-openlist	kenzok8__small-package	./luci-app-openlist	not-build-tested
 luci-app-openvpn-client	kenzok8__small-package	./luci-app-openvpn-client	not-build-tested
 luci-app-openwebui	kenzok8__small-package	./luci-app-openwebui	not-build-tested
-luci-app-optimemachine	kenzok8__small-package	./luci-app-optimemachine	not-build-tested
 luci-app-ota	kenzok8__small-package	./luci-app-ota	not-build-tested
 luci-app-owntone	kenzok8__small-package	./luci-app-owntone	not-build-tested
 luci-app-packet-capture	kenzok8__small-package	./luci-app-packet-capture	not-build-tested
@@ -509,7 +510,6 @@ nps	kenzok8__small-package	./nps	not-build-tested
 opencode	kenzok8__small-package	./opencode	not-build-tested
 openwrt-fastfetch	kenzok8__small-package	./openwrt-fastfetch	not-build-tested
 openwrt-minieap	kenzok8__small-package	./openwrt-minieap	not-build-tested
-optimemachine	kenzok8__small-package	./optimemachine	not-build-tested
 oscam	kenzok8__small-package	./oscam	not-build-tested
 k3wifi	kenzok8__small-package	./other/k3wifi	not-build-tested
 adbyby	kenzok8__small-package	./other/lean/adbyby	not-build-tested
