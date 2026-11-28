@@ -394,6 +394,7 @@ kenzok8__small-package	./luci-app-ddns-go	luci-app-ddns-go	imported	not-build-te
 kenzok8__small-package	./luci-app-ddnsto	luci-app-ddnsto	duplicate	selected linkease__ddnsto-openwrt/./luci-app-ddnsto
 kenzok8__small-package	./luci-app-demon	luci-app-demon	imported	not-build-tested
 kenzok8__small-package	./luci-app-design-config	luci-app-design-config	imported	not-build-tested
+kenzok8__small-package	./luci-app-device-gateway	luci-app-device-gateway	imported	not-build-tested
 kenzok8__small-package	./luci-app-diskman	luci-app-diskman	duplicate	selected lisaac__luci-app-diskman/./applications/luci-app-diskman
 kenzok8__small-package	./luci-app-dnscrypt-proxy2	luci-app-dnscrypt-proxy2	duplicate	selected peter-tank__luci-app-dnscrypt-proxy2/.
 kenzok8__small-package	./luci-app-dnsfilter	luci-app-dnsfilter	duplicate	selected kiddin9__luci-app-dnsfilter/.
