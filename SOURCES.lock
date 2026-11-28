@@ -62,7 +62,7 @@ liudf0716__luci-app-apfree-wifidog	https://github.com/liudf0716/luci-app-apfree-
 fonlan__luci-app-poddns	https://github.com/fonlan/luci-app-poddns.git	main	fef45c26df0e4f7b5da7d2a5411343d5033d8b56
 blueberry-pie-11__luci-app-natmap	https://github.com/blueberry-pie-11/luci-app-natmap.git	master	18c4c7c0ba039178c33d1ece8d68b13bc335af5a
 animegasan__luci-app-droidnet	https://github.com/animegasan/luci-app-droidnet.git	master	07f47192da567c99257c2eac30aaf2c40240faaa
-danchexiaoyang__luci-app-kodexplore	https://github.com/danchexiaoyang/luci-app-kodexplore.git	main	5e5fb786886465aabaaa2b242d4546bf883da8f4
+danchexiaoyang__luci-app-kodexplore	https://github.com/danchexiaoyang/luci-app-kodexplore.git	main	9d3b5defe2875e92944df7e2c578fe599828c472
 messense__aliyundrive-webdav	https://github.com/messense/aliyundrive-webdav.git	main	00caff62b55ae53327f1c8824b19b1c9532cc174
 frainzy1477__luci-app-clash	https://github.com/frainzy1477/luci-app-clash.git	test	f65ed1b77c21fce83611f1fd1f6457da4cef1e99
 rufengsuixing__luci-app-adguardhome	https://github.com/rufengsuixing/luci-app-adguardhome.git	master	37fdf502b99328b37c9ef4c4387f069f67253f85
